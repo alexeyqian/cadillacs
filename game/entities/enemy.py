@@ -71,8 +71,8 @@ class Enemy:
                 self.attack_cooldown = 60
 
     def update_chase(self, dx, dy):
-        if dx <= 60:
-            return # stop near player
+        #if dx <= 60:
+        #    return # stop near player
 
         # horizontal movement
         if dx > 0:
