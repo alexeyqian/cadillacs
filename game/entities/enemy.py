@@ -1,4 +1,6 @@
 import pygame
+from game.animation.animation import Animation
+from game.assets.placeholder.enemy_frames import *
 
 class Enemy:
     CHASE = "CHASE"
@@ -25,6 +27,13 @@ class Enemy:
         self.knockback_velocity = 0
         # enemy gets briefly white when hit by player
         self.hit_timer = 0
+        
+        frames = create_enemy_frames()
+        self.animations = {
+            self.CHASE: Animation(frames, frame_duration=12),
+            self.ATTACK: Animation(frames, frame_duration=5)
+        }
+        self.current_animation = self.animations[self.CHASE]
 
     def update(self, player, enemies):
         if self.state == self.DEAD:
@@ -59,9 +68,11 @@ class Enemy:
 
         # execute state
         if self.state == self.CHASE:
+            self.current_animation = self.animations[self.CHASE]
             self.update_chase(dx, dy)
             self.separate_from_other_enemies(enemies)
         elif self.state == self.ATTACK:
+            self.current_animation = self.animations[self.ATTACK]
             self.update_attack(player)
 
         # 1 attack per second at 60 FPS
@@ -69,6 +80,8 @@ class Enemy:
             if self.attack_cooldown == 0:
                 player.take_damage(20)
                 self.attack_cooldown = 60
+
+        self.current_animation.update()
 
     def update_chase(self, dx, dy):
         #if dx <= 60:
@@ -121,51 +134,40 @@ class Enemy:
                 12
             )
         )
+        
+        image = self.current_animation.get_image()
+        screen.blit(image, (screen_x, self.y))
+
         # body color
-        body_color = (220, 40, 220)
-        if self.state == self.DEAD:
-            body_color = (80, 80, 80)
-        elif self.state == self.HIT:
-            body_color = (255, 255, 255)
-        elif self.state == self.ATTACK:
-            body_color = (220, 40, 220)
-        elif self.state == "CHASE":
-            body_color = (40, 40, 220)
-
-        #if self.hit_timer > 0:
+        #body_color = (220, 40, 220)
+        #if self.state == self.DEAD:
+        #    body_color = (80, 80, 80)
+        #elif self.state == self.HIT:
         #    body_color = (255, 255, 255)
+        #elif self.state == self.ATTACK:
+        #    body_color = (220, 40, 220)
+        #elif self.state == "CHASE":
+        #    body_color = (40, 40, 220)
 
-        pygame.draw.rect(
-            screen, body_color,
-            (
-                screen_x,
-                self.y,
-                self.width,
-                self.height
-            )
-        )
+        #pygame.draw.rect(
+        #    screen, body_color,
+        #    (
+        #        screen_x,
+        #        self.y,
+        #        self.width,
+        #        self.height
+        #    )
+        #)
         
         # health bar background
         pygame.draw.rect(
             screen, (120, 120, 120),
-            (
-                screen_x,
-                self.y - 12,
-                50,
-                6
-            )
-        )
+            (screen_x, self.y - 12, 50, 6))
         # health bar
         hp_width = int(50 * (self.hp / 100))
         pygame.draw.rect(
             screen, (255, 0, 0),
-            (
-                screen_x,
-                self.y - 12,
-                hp_width,
-                6
-            )
-        )
+            (screen_x, self.y - 12, hp_width, 6))
 
     def take_damage(self, damage, attacker_x):
         if self.state == self.DEAD:

@@ -1,6 +1,9 @@
-from turtle import Screen
+#from turtle import Screen
 
 import pygame
+from game.animation.animation import Animation
+from game.assets.placeholder.player_frames import *
+
 
 class Player:
     IDLE = "IDLE"
@@ -33,6 +36,16 @@ class Player:
         self.max_hp = 100
         self.hp = 100
         self.hit_timer = 0 # hit by enemy
+        
+        frames = create_player_frames()
+        self.animations = {
+            self.IDLE: Animation(frames, frame_duration=20),
+            self.WALK: Animation(frames, frame_duration=8),
+            self.ATTACK_1: Animation(frames, frame_duration=4),
+            #self.ATTACK_2: Animation(frames, frame_duration=4),
+            #self.ATTACK_3: Animation(frames, frame_duration=4)
+        }
+        self.current_animation = self.animations[self.IDLE]
 
     # update() works in world coordinates
     # draw() translateds to screen coordinates using camera_x
@@ -83,8 +96,10 @@ class Player:
         # update state
         if moving:
             self.state = self.WALK
+            self.current_animation = self.animations[self.WALK]
         else:
             self.state = self.IDLE
+            self.current_animation = self.animations[self.IDLE]
 
         # world boundaries
         # cannot go left of 0
@@ -98,6 +113,8 @@ class Player:
         self.y = max(250, self.y)
         # cannot go below y=450
         self.y = min(450, self.y)
+        
+        self.current_animation.update()
 
 
     #World:   [--------------------PLAYER----]
@@ -128,19 +145,24 @@ class Player:
         )
         # end of depth
 
-        body_color = (180, 40,40) # default body color
-        if self.state == self.DEAD:
-            body_color = (80, 80, 80)
-        elif self.state == self.HIT:
-            body_color = (255, 255, 255)
+        image = self.current_animation.get_image()
+        if not self.facing_right:
+            image = pygame.transform.flip(image, True, False)
+        screen.blit(image, (screen_x, self.y))
+        
+        #body_color = (180, 40,40) # default body color
+        #if self.state == self.DEAD:
+        #    body_color = (80, 80, 80)
+        #elif self.state == self.HIT:
+        #    body_color = (255, 255, 255)
         # add attacking visual feedback
-        elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
-            body_color = (255, 180, 0)
-        elif self.state == self.WALK:
-            body_color = (220, 40, 40)
+        #elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
+        #    body_color = (255, 180, 0)
+        #elif self.state == self.WALK:
+        #    body_color = (220, 40, 40)
 
-        pygame.draw.rect(screen, body_color,
-            (screen_x, self.y, self.width,self.height))
+        #pygame.draw.rect(screen, body_color,
+        #    (screen_x, self.y, self.width,self.height))
         
         # attack hitbox debug
         attack_rect = self.get_attack_rect()
@@ -156,6 +178,8 @@ class Player:
             return
 
         self.is_attacking = True
+        self.current_animation = self.animations[self.ATTACK_1] # default to first attack animation
+        self.current_animation.reset()
         self.attack_timer = self.attack_duration
         self.already_hit_enemy = False
 
