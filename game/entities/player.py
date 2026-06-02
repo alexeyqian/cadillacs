@@ -93,13 +93,17 @@ class Player:
         if keys[pygame.K_j]:
             self.start_attack()
                 
-        # update state
-        if moving:
-            self.state = self.WALK
-            self.current_animation = self.animations[self.WALK]
+        # update state (preserve attack state if attacking)
+        if self.is_attacking:
+            # keep attack state and animation set by start_attack
+            pass
         else:
-            self.state = self.IDLE
-            self.current_animation = self.animations[self.IDLE]
+            if moving:
+                self.state = self.WALK
+                self.current_animation = self.animations[self.WALK]
+            else:
+                self.state = self.IDLE
+                self.current_animation = self.animations[self.IDLE]
 
         # world boundaries
         # cannot go left of 0
