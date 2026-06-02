@@ -14,12 +14,11 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Cadillacs and Dinosaurs")
     font = pygame.font.SysFont(None, 30)
+    big_font = pygame.font.SysFont(None, 60)
 
     clock = pygame.time.Clock()
-
     player = Player()
     camera = Camera()
-
     # create enemies
     enemies = [
         Enemy(700, 300),
@@ -36,26 +35,31 @@ def main():
                 running = False
 
         ############# update #############
+        # update player
         player.update()
-        for enemy in enemies:
-            enemy.update(player)
 
-        # combat detection:
+        # update enemies
+        for enemy in enemies:
+            enemy.update(player, enemies)
+
+        # combat detection / player attack collision:
         attack_rect = player.get_attack_rect()
-        if attack_rect and not player.already_hit:
+        if attack_rect and not player.already_hit_enemy:
             for enemy in enemies:
                 enemy_rect = create_enemy_rect(enemy)
                 if attack_rect.colliderect(enemy_rect):
-                    enemy.take_damage(20, player.x)
-                    player.already_hit = True
+                    enemy.take_damage(player.attack_damage(), player.x)
+                    player.already_hit_enemy = True
                     break # ?? useless	
 
         # remove dead enemies
         enemies = [enemy for enemy in enemies if enemy.hp > 0]
 
+        # update camera
         camera.update(player)
 
         ############# draw #############
+        # draw background
         screen.fill((120, 190, 255))
         # ground
         pygame.draw.rect(screen, 
@@ -87,18 +91,43 @@ def main():
         for entity in entities:
             entity.draw(screen, camera.x)
 
+        # draw hp bar
+        pygame.draw.rect(screen,
+            (100,100,100),
+            (20,20,200,20))
+        hp_width = int(200 * (player.hp / player.max_hp))
+        pygame.draw.rect(screen,
+            (0,255,0), (20,20,hp_width,20))
+
+        # hp text
+        hp_text = font.render(f"HP: {player.hp}/{player.max_hp}", True, (0,0,0))
+        screen.blit(hp_text, (230, 18))
+
         # debug text
-        text1 = font.render(
-                f"Player x: {int(player.x)} Camera x: {int(camera.x)}",
-                True, (0,0,0))
-        # stamp it to specific coordinates on the screen
-        screen.blit(text1, (10, 10))
-        text2 = font.render(
+        state_text = font.render(f"State: {player.state}", True, (0,0,0))
+        screen.blit(state_text, (20, 55))
+        combo_text = font.render(f"Combo: {player.combo_step}", True, (0,0,0))
+        screen.blit(combo_text, (20, 85))
+
+        enemies_text = font.render(
             f"Enemies: {len(enemies)}",
             True, (0, 0, 0))
-        screen.blit(text2,(10, 40))
+        screen.blit(enemies_text,(20, 115))
+        pos_text = font.render(
+                f"Player x:{int(player.x)} y:{int(player.y)} Camera x: {int(camera.x)}",
+                True, (0,0,0))
+        # stamp it to specific coordinates on the screen
+        screen.blit(pos_text, (20, 145))
         # end of debugging
+        
+        # GAME OVER
+        if player.state == Player.DEAD:
+            game_over_text = big_font.render("GAME OVER", True, (255,0,0))
+            game_over_rect = game_over_text.get_rect(
+                    center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+            screen.blit(game_over_text, game_over_rect)
 
+        # flip
         pygame.display.flip()
         clock.tick(FPS)
 

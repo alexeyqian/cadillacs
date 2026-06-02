@@ -3,33 +3,88 @@ from turtle import Screen
 import pygame
 
 class Player:
+    IDLE = "IDLE"
+    WALK = "WALK"
+    ATTACK_1 = "ATTACK_1"
+    ATTACK_2 = "ATTACK_2"
+    ATTACK_3 = "ATTACK_3"
+    HIT = "HIT" # hit by enemies
+    DEAD = "DEAD"
+
     def __init__(self):
         self.x = 200
         self.y = 350
         self.width = 50
         self.height = 80
         self.speed = 5
+        self.facing_right = True
 
         self.is_attacking = False
         self.attack_timer = 0
-        self.attack_duration = 15
-        self.already_hit = False
-        self.facing_right = True
+        self.attack_duration = 12
+        self.already_hit_enemy = False # already_hit
+
+        # classic combo system
+        # J punch 1, J punch 2, J punch 3
+        self.combo_step = 0
+        self.combo_timer = 0
+
+        self.state = self.IDLE
+        self.max_hp = 100
+        self.hp = 100
+        self.hit_timer = 0 # hit by enemy
 
     # update() works in world coordinates
     # draw() translateds to screen coordinates using camera_x
     def update(self):
+        if self.state == self.DEAD:
+            return
+
+        if self.hit_timer > 0:
+            self.hit_timer -= 1
+            if self.hit_timer == 0:
+                self.state = self.IDLE
+
+        if self.combo_timer > 0:
+            self.combo_timer -= 1
+        else:
+            self.combo_step = 0
+
+        # attack timer
+        if self.is_attacking:
+            self.attack_timer -= 1
+            if self.attack_timer <= 0:
+                self.is_attacking = False
+                if self.state != self.DEAD:
+                    self.state = self.IDLE
+            return # skip movement while attacking
+
+        # movements
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        moving = False
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.x -= self.speed
-            self.facing_right = False	
-        if keys[pygame.K_RIGHT]:
+            self.facing_right = False
+            moving = True
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.x += self.speed
             self.facing_right = True
-        if keys[pygame.K_UP]:
+            moving = True
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
             self.y -= self.speed
-        if keys[pygame.K_DOWN]:
+            moving = True
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
             self.y += self.speed
+            moving = True
+
+        if keys[pygame.K_j]:
+            self.start_attack()
+                
+        # update state
+        if moving:
+            self.state = self.WALK
+        else:
+            self.state = self.IDLE
 
         # world boundaries
         # cannot go left of 0
@@ -43,15 +98,6 @@ class Player:
         self.y = max(250, self.y)
         # cannot go below y=450
         self.y = min(450, self.y)
-
-        if keys[pygame.K_j]:
-            if not self.is_attacking:
-                self.start_attack()
-
-        if self.is_attacking:
-            self.attack_timer -= 1
-            if self.attack_timer <= 0:
-                self.is_attacking = False
 
 
     #World:   [--------------------PLAYER----]
@@ -82,15 +128,21 @@ class Player:
         )
         # end of depth
 
-        body_color = (220, 40,40)
+        body_color = (180, 40,40) # default body color
+        if self.state == self.DEAD:
+            body_color = (80, 80, 80)
+        elif self.state == self.HIT:
+            body_color = (255, 255, 255)
         # add attacking visual feedback
-        if self.is_attacking:
+        elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
             body_color = (255, 180, 0)
+        elif self.state == self.WALK:
+            body_color = (220, 40, 40)
 
         pygame.draw.rect(screen, body_color,
             (screen_x, self.y, self.width,self.height))
         
-        # draw attack hitbox
+        # attack hitbox debug
         attack_rect = self.get_attack_rect()
         if attack_rect:
             pygame.draw.rect(screen, (255, 255, 0),
@@ -98,10 +150,41 @@ class Player:
                  attack_rect.width, attack_rect.height), 2)
 
     def start_attack(self):
+        # The current start_attack() prevents attack chaining while an attack is active:
+        # we'll replace this with an input buffer system
+        if self.is_attacking:
+            return
+
         self.is_attacking = True
         self.attack_timer = self.attack_duration
-        self.already_hit = False
+        self.already_hit_enemy = False
 
+        if self.combo_timer > 0:
+            self.combo_step += 1
+        else:
+            self.combo_step = 1
+        
+        self.combo_step = min(self.combo_step, 3)
+        self.combo_timer = 30 # time window to continue the combo
+        # state
+        if self.combo_step == 1:
+            self.state = self.ATTACK_1
+        elif self.combo_step == 2:
+            self.state = self.ATTACK_2
+        else:
+            self.state = self.ATTACK_3
+
+    def attack_damage(self):
+        if self.state == self.ATTACK_1:
+            return 15
+        elif self.state == self.ATTACK_2:
+            return 20
+        elif self.state == self.ATTACK_3:
+            return 35
+
+        return 0
+
+    # hit box
     def get_attack_rect(self): # hitbox
         if not self.is_attacking:
             return None
@@ -115,4 +198,16 @@ class Player:
                 self.x - 50,
                 self.y + 10,
                 50, 40)
+
+    def take_damage(self, damage):
+        if self.state == self.DEAD:
+            return
+
+        self.hp -= damage
+        self.state = self.HIT
+        self.hit_timer = 20
+
+        if self.hp <= 0:
+            self.hp = 0
+            self.state = self.DEAD
 
