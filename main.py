@@ -55,6 +55,17 @@ def main():
         # remove dead enemies
         enemies = [enemy for enemy in enemies if enemy.hp > 0]
 
+        # if no enemies remain, show win screen and stop
+        if len(enemies) == 0:
+            screen.fill((120, 190, 255))
+            game_win_text = big_font.render("YOU WIN!", True, (255, 215, 0))
+            game_win_rect = game_win_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+            screen.blit(game_win_text, game_win_rect)
+            pygame.display.flip()
+            pygame.time.delay(2000)  # pause 2 seconds so player can see the message
+            #running = False
+            continue
+
         # update camera
         camera.update(player)
 
