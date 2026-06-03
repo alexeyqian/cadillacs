@@ -7,6 +7,7 @@ from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.player_frames import *
+from game.settings import FPS
 
 
 class Player:
@@ -80,18 +81,24 @@ class Player:
 
         # animation manager
         self.animation_manager = AnimationManager()
+        # compute frame durations (number of game frames each animation frame should last)
+        idle_dur = max(1, int(FPS / ANIM_FPS_IDLE))
+        walk_dur = max(1, int(FPS / ANIM_FPS_WALK))
+        attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK))
+        hit_dur = max(1, int(FPS / ANIM_FPS_HIT))
+
         self.animation_manager.add_animation(
-            self.IDLE,Animation(idle_frames, 20))
+            self.IDLE, Animation(idle_frames, idle_dur))
         self.animation_manager.add_animation(
-            self.WALK,Animation(walk_frames, 10))
+            self.WALK, Animation(walk_frames, walk_dur))
         self.animation_manager.add_animation(
-            self.ATTACK,Animation(attack_frames, 5)
+            self.ATTACK, Animation(attack_frames, attack_dur)
         )
         self.animation_manager.add_animation(
-            self.HIT,Animation(create_hit_frames(), 8)
+            self.HIT, Animation(create_hit_frames(), hit_dur)
         )
         self.animation_manager.add_animation(
-            self.DEAD,Animation(create_dead_frames(),999)
+            self.DEAD, Animation(create_dead_frames(), 999)
         )
 
 

@@ -6,6 +6,7 @@ from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.enemy_frames import *
 from game.assets.placeholder.player_frames import create_hit_frames
+from game.settings import FPS
 
 class Enemy:
     IDLE = "IDLE"
@@ -57,12 +58,16 @@ class Enemy:
 
         # animation manager
         self.animation_manager = AnimationManager()
+        # compute frame durations to match game FPS
+        walk_dur = max(1, int(FPS / ANIM_FPS_WALK_ENEMY))
+        attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK_ENEMY))
+        hit_dur = max(1, int(FPS / ANIM_FPS_HIT_ENEMY))
         self.animation_manager.add_animation(
-            self.WALK, Animation(walk_frames, 12))
+            self.WALK, Animation(walk_frames, walk_dur))
         self.animation_manager.add_animation(
-            self.ATTACK, Animation(attack_frames, 12))
+            self.ATTACK, Animation(attack_frames, attack_dur))
         self.animation_manager.add_animation(
-            self.HIT, Animation(create_enemy_frames(), 8))
+            self.HIT, Animation(create_enemy_frames(), hit_dur))
 
     def update(self, player, enemies):
         if self.state == self.DEAD:
