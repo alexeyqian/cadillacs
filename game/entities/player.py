@@ -203,6 +203,10 @@ class Player:
         image = pygame.transform.scale(image, (80, 100))
         screen.blit(image, (screen_x, self.y))
 
+        # debug: draw player's bounding box (world -> screen)
+        screen_x = self.x - camera_x
+        pygame.draw.rect(screen, (0, 255, 255), (screen_x, self.y, self.width, self.height), 2)
+
         # attack hitbox debug
         attack_rect = self.get_attack_rect()
         if attack_rect:
