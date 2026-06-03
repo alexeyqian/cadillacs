@@ -48,6 +48,10 @@ class Player:
         self.attack_hitbox_h = 60
         self.attack_hitbox_offset_y = 10
         
+        # lane boundaries
+        self.lane_top = 150
+        self.lane_bottom = 450
+        
         # load frames
         if file_exists(PLAYER_IDLE["file"]):
             idle_frames = AssetLoader.load_animation(
@@ -169,10 +173,10 @@ class Player:
         # beat'em up lane limits
         # creates the illusion of depth
         # player walks on a horizontal strip, not full screen
-        # cannot go above y=250
-        self.y = max(250, self.y)
-        # cannot go below y=450
-        self.y = min(450, self.y)
+        # cannot go above lane_top
+        self.y = max(self.lane_top, self.y)
+        # cannot go below lane_bottom
+        self.y = min(self.lane_bottom, self.y)
 
         self.update_animation()
 
@@ -221,6 +225,22 @@ class Player:
             pygame.draw.rect(screen, (255, 255, 0),
                 (attack_rect.x - camera_x, attack_rect.y,
                  attack_rect.width, attack_rect.height), 2)
+
+        # player health bar (above player)
+        hb_x = screen_x
+        hb_y = self.y - 16
+        hb_w = self.width
+        hb_h = 8
+        # background
+        pygame.draw.rect(screen, (100, 100, 100), (hb_x, hb_y, hb_w, hb_h))
+        # filled portion (clamped between 0 and 1)
+        fill_ratio = 0
+        try:
+            fill_ratio = max(0.0, min(1.0, float(self.hp) / float(self.max_hp)))
+        except Exception:
+            fill_ratio = 0
+        hp_w = int(hb_w * fill_ratio)
+        pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
 
     def update_animation(self):
         if self.state == self.DEAD:

@@ -34,6 +34,10 @@ class Enemy:
         self.knockback_velocity = 0
         # enemy gets briefly white when hit by player
         self.hit_timer = 0
+        
+        #lane boundaries
+        self.lane_top = 150
+        self.lane_bottom = 450
 
         # assets loader
         if file_exists(ENEMY_WALK["file"]):
@@ -178,8 +182,8 @@ class Enemy:
                 self.y -= self.speed
 
         # Keep enemy inside lane
-        self.y = max(250, self.y)
-        self.y = min(450, self.y)
+        self.y = max(self.lane_top, self.y)
+        self.y = min(self.lane_bottom, self.y)
 
     def separate_from_other_enemies(self, enemies):
         for other in enemies:

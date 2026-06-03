@@ -23,14 +23,7 @@ def main():
     player = Player()
     level = Level()
     camera = Camera()
-    # create enemies
-    enemies = [
-        Enemy(700, 300),
-        Enemy(1000, 400),
-        Enemy(1400, 350),
-        Enemy(1800, 320),
-        Enemy(2200, 380)
-    ]
+    enemies = []
 
     running = True
     while running:
@@ -39,8 +32,25 @@ def main():
                 running = False
 
         ############# update #############
+        # trigger wave
+        wave = level.get_current_wave()
+        if wave:
+            if (not wave.started and player.x >= wave.trigger_x):
+                enemies.extend(wave.spawn())
+                # lock camera only when wave actually starts
+                level.camera_locked = True
+                level.lock_x = wave.trigger_x
+
         # update player
         player.update()
+        # prevent escaping arena
+        if level.camera_locked:
+            left_wall = level.lock_x
+            right_wall = level.lock_x + SCREEN_WIDTH - player.width
+            if player.x < left_wall:
+                player.x = left_wall
+            if player.x > right_wall:
+                player.x = right_wall
 
         # update enemies
         for enemy in enemies:
@@ -59,6 +69,12 @@ def main():
         # remove dead enemies
         enemies = [enemy for enemy in enemies if enemy.hp > 0]
 
+        wave = level.get_current_wave()
+        if wave and wave.started and len(enemies) == 0:
+            wave.completed = True
+            level.current_wave += 1
+            level.camera_locked = False
+
         # if no enemies remain, show win screen and stop
         if len(enemies) == 0:
             screen.fill((120, 190, 255))
@@ -71,7 +87,10 @@ def main():
             #continue
 
         # update camera
-        camera.update(player)
+        if level.camera_locked:
+            camera.update(player, level.lock_x)
+        else:
+            camera.update(player)
 
         ############# draw #############
         # draw background
@@ -79,7 +98,7 @@ def main():
         # ground
         pygame.draw.rect(screen, 
                         (80, 180, 80),# green
-                        (0, 250, SCREEN_WIDTH, 250))
+                        (0, 150, SCREEN_WIDTH, 350))
 
         # world markers
         for x in range(0, WORLD_WIDTH, 200):
@@ -87,8 +106,8 @@ def main():
             pygame.draw.line(
                 screen,
                 (150, 150, 150),
-                (screen_x, 250),
-                (screen_x, 500),
+                (screen_x, 150),
+                (screen_x, 550),
                 2
             )
         
@@ -116,19 +135,15 @@ def main():
         screen.blit(hp_text, (230, 20))
 
         # debug text
-        state_text = small_font.render(f"State: {player.state}", True, (0,0,0))
-        screen.blit(state_text, (20, 50))
         pos_text = small_font.render(
-                f"Player x:{int(player.x)} y:{int(player.y)} Camera x: {int(camera.x)}",
+                f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)}",
                 True, (0,0,0))
         screen.blit(pos_text, (150, 50)) # stamp it to specific coordinates on the screen
-        combo_text = small_font.render(f"Combo: {player.combo_step}", True, (0,0,0))
-        screen.blit(combo_text, (500, 50))
 
         enemies_text = small_font.render(
-            f"Enemies: {len(enemies)}",
+            f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}",
             True, (0, 0, 0))
-        screen.blit(enemies_text,(20, 100))
+        screen.blit(enemies_text,(20, 80))
         # end of debugging
         
         # GAME OVER
