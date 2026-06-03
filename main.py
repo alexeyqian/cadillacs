@@ -28,7 +28,9 @@ def main():
     enemies = []
     weapons = [
             Weapon(900,350, "knife"),
-            Weapon(1500,350, "bat")]
+            Weapon(1500,350, "bat"),
+            Weapon(2000, 350, "pistol")]
+    projectiles = []
 
     running = True
     while running:
@@ -65,10 +67,17 @@ def main():
         # drop weapon
         if keys[pygame.K_q]:
             player.drop_weapon()
+        # fire weapon
+        if keys[pygame.K_k]:
+            player.fire_weapon()
 
         ############# update #############
         # update player
         player.update()
+        # ? spawn projectiles
+        if player.pending_projectile:
+            projectiles.append(player.pending_projectile)
+            player.pending_projectile = None
         # prevent escaping arena
         if level.camera_locked:
             left_wall = level.lock_x
@@ -78,11 +87,27 @@ def main():
             if player.x > right_wall:
                 player.x = right_wall
 
+        # update projectiles
+        for projectile in projectiles:
+            projectile.update()
+
         # update enemies
         for enemy in enemies:
             enemy.update(player, enemies)
+            
+        # player projectile collision
+        for projectile in projectiles:
+            if not projectile.active:
+                continue
+            projectile_rect = projectile.get_rect()
+            for enemy in enemies:
+                enemy_rect = pygame.Rect(enemy.x, enemy.y, enemy.width, enemy.height)
+                if projectile_rect.colliderect(enemy_rect):
+                    enemy.take_damage(projectile.damage, player.x)
+                    projectile.active = False
+                    break
 
-        # combat detection / player attack collision:
+        # player attack collision / combat detection
         attack_rect = player.get_attack_rect()
         if attack_rect and not player.already_hit_enemy:
             for enemy in enemies:
@@ -94,6 +119,8 @@ def main():
 
         # remove dead enemies
         enemies = [enemy for enemy in enemies if enemy.hp > 0]
+        # clean up projectiles
+        projectiles = [p for p in projectiles if p.active]
 
         wave = level.get_current_wave()
         if wave and wave.started and len(enemies) == 0:
@@ -148,57 +175,57 @@ def main():
         # draw entities
         for entity in entities:
             entity.draw(screen, camera.x)
+        # draw projectiles
+        for projectile in projectiles:
+            projectile.draw(screen, camera.x)
         # draw weapons
         for weapon in weapons:
             weapon.draw(screen, camera.x)
 
-        # draw hp bar
-        pygame.draw.rect(screen,
-            (100,100,100), (20,20,200,20))
+        ####### UI ######
+        # health UI
+        pygame.draw.rect(screen,(100,100,100), (20,20,200,20))
         hp_width = int(200 * (player.hp / player.max_hp))
         pygame.draw.rect(screen, (0,255,0), (20,20,hp_width,20))
-        # hp text
         hp_text = font.render(f"HP: {player.hp}/{player.max_hp}", True, (0,0,0))
         screen.blit(hp_text, (230, 20))
-
-        # debug text
-        weapon_name = "None"
+        # Weapon UI
+        weapon_name = ""
+        ammo_str = ""
         if player.weapon:
             weapon_name = player.weapon.weapon_type
+            if player.weapon.is_range:
+                ammo_str = f" Ammo:{player.weapon.ammo}"
+            weapon_text = small_font.render(f"Weapon:{weapon_name}{ammo_str}",True,(0,0,0))
+            screen.blit(weapon_text,(500, 20))
+        # enemies UI
+        #boss_alive = False
+        #boss_str = ""
+        #for enemy in enemies:
+        #    if enemy.__class__.__name__ == "BossEnemy":
+        #        boss_alive = True
+        #if boss_alive:
+        #    boss_str = "Boss Alive"
+        #if boss_alive:
+        #    boss_text = big_font.render("BOSS", True, (255,50,50))
+        #    screen.blit(boss_text, (SCREEN_WIDTH//2 - 120, 80))
 
-        boss_alive = False
-        boss_text = ""
-        for enemy in enemies:
-            if enemy.__class__.__name__ == "BossEnemy":
-                boss_alive = True
-        if boss_alive:
-            boss_text = "Boss Alive"
-
-        player_text = small_font.render(
-                f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Weapon: {weapon_name} " 
-                + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)} Boss: {boss_text}",
-                True, (0,0,0))
-        # stamp it to specific coordinates on the screen
-        screen.blit(player_text, (400, 20))
-
-        control_text = small_font.render("Attack:J, Pickup:E, Drop:Q", True, (0,0,0))
-        screen.blit(control_text, (20, 50))
-        # end of debug text
-
+        # WIN OR GAME OVER UI
         if level.current_wave >= len(level.waves):
             stage_clear = big_font.render("Stage Clear - YOU WIN!", True, (0,200,0))
             screen.blit(stage_clear, stage_clear.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
-
-        if boss_alive:
-           boss_intro = big_font.render("BOSS", True, (255,50,50))
-           screen.blit(boss_intro, (SCREEN_WIDTH//2 - 120, 80))
-
-        # GAME OVER
         if player.state == Player.DEAD:
             game_over_text = big_font.render("GAME OVER", True, (255,0,0))
-            game_over_rect = game_over_text.get_rect(
-                    center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+            game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
             screen.blit(game_over_text, game_over_rect)
+
+        # debug UI
+        control_text = small_font.render("Attack:J, Pickup:E, Drop:Q", True, (0,0,0))
+        screen.blit(control_text, (20, 50))
+        player_str =  f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}"
+        player_text = small_font.render(player_str,True, (0,0,0))
+        screen.blit(player_text, (400, 50))
+        # end of debug text
 
         # flip
         pygame.display.flip()

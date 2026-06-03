@@ -8,7 +8,7 @@ from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.player_frames import *
 from game.settings import *
-
+from game.entities.projectile import Projectile
 
 class Player:
     IDLE = "IDLE"
@@ -45,6 +45,7 @@ class Player:
         self.hit_timer = 0 # hit by enemy
 
         self.weapon = None
+        self.pending_projectile = None
 
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = PLAYER_HITBOX_W
@@ -376,3 +377,17 @@ class Player:
         self.weapon.y = self.y + 30
         self.weapon = None
 
+    def fire_weapon(self):
+        if self.weapon is None:
+            return
+        if not self.weapon.is_range:
+            return
+        if self.weapon.ammo <= 0:
+            return
+
+        direction = 1
+        if not self.facing_right:
+            direction = -1
+        projectile = Projectile(self.x+40, self.y+30, direction, self.weapon.damage)
+        self.pending_projectile = projectile
+        self.weapon.ammo -= 1

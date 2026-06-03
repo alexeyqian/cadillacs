@@ -9,11 +9,17 @@ class Weapon:
         self.width = 40
         self.height = 12
 
+        self.damage = 20
         self.picked_up = False
+        self.is_range = False
         if weapon_type == "knife":
             self.damage = 25
         elif weapon_type == "bat": # baseball bat
             self.damage = 40
+        elif weapon_type == "pistol":
+            self.damage = 30
+            self.is_range = True
+            self.ammo = 20
         else:
             self.damage = 20
 

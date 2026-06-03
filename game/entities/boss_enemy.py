@@ -10,7 +10,7 @@ class BossEnemy(Enemy):
         self.hp = 500
         self.width = 100
         self.height = 120
-        self.speed = 1
+        self.speed = 1.5
         self.attack_damage = 20
         self.attack_range = BOSS_ENEMY_HITBOX_W
         # special attack
