@@ -58,11 +58,11 @@ class Enemy:
         # animation manager
         self.animation_manager = AnimationManager()
         self.animation_manager.add_animation(
-            self.WALK, Animation(walk_frames,12))
+            self.WALK, Animation(walk_frames, 12))
         self.animation_manager.add_animation(
-            self.ATTACK,Animation(attack_frames,5))
+            self.ATTACK, Animation(attack_frames, 12))
         self.animation_manager.add_animation(
-            self.HIT,Animation(create_enemy_frames(),3))
+            self.HIT, Animation(create_enemy_frames(), 8))
 
     def update(self, player, enemies):
         if self.state == self.DEAD:
