@@ -43,8 +43,8 @@ class Player:
         self.hit_timer = 0 # hit by enemy
 
         # attack hitbox settings (kept symmetric for left/right)
-        self.attack_hitbox_w = 50
-        self.attack_hitbox_h = 40
+        self.attack_hitbox_w = 60
+        self.attack_hitbox_h = 60
         self.attack_hitbox_offset_y = 10
         
         # load frames
@@ -200,7 +200,7 @@ class Player:
         if not self.facing_right:
             image = pygame.transform.flip(image, True, False)
         # Real sprites are often larger than gameplay hitboxes.
-        image = pygame.transform.scale(image, (80, 100))
+        image = pygame.transform.scale(image, (self.width, self.height))
         screen.blit(image, (screen_x, self.y))
 
         # debug: draw player's bounding box (world -> screen)
