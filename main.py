@@ -41,7 +41,11 @@ def main():
                 # lock camera only when wave actually starts
                 # set lock_x to current camera.x so the viewport does not jump
                 level.camera_locked = True
+                # todo: current boss can walk off screen?
                 level.lock_x = camera.x # wave.trigger_x
+                # todo: below code has issues
+                #if wave.__class__.__name__ == "BossWave":
+                    #level.lock_x = 2800
 
         # update player
         player.update()
@@ -135,14 +139,30 @@ def main():
         screen.blit(hp_text, (230, 20))
 
         # debug text
+        boss_alive = False
+        for enemy in enemies:
+            if enemy.__class__.__name__ == "BossEnemy":
+                boss_alive = True
+        boss_text = ""
+        if boss_alive:
+            boss_text = "Boss Alive"
+
         pos_text = small_font.render(
                 f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} " 
-                    + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}",
+                + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)} Boss: {boss_text}",
                 True, (0,0,0))
         # stamp it to specific coordinates on the screen
         screen.blit(pos_text, (400, 20))
         # end of debugging
-        
+
+        if level.current_wave >= len(level.waves):
+            stage_clear = big_font.render("Stage Clear - YOU WIN!", True, (0,200,0))
+            screen.blit(stage_clear, stage_clear.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
+
+        if boss_alive:
+           boss_intro = big_font.render("BOSS", True, (255,50,50))
+           screen.blit(boss_intro, (SCREEN_WIDTH//2 - 120, 80))
+
         # GAME OVER
         if player.state == Player.DEAD:
             game_over_text = big_font.render("GAME OVER", True, (255,0,0))
