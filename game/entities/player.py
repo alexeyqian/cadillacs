@@ -2,12 +2,14 @@
 
 import pygame
 from game.animation.animation import Animation
+from game.animation.animation_manager import AnimationManager
 from game.assets.placeholder.player_frames import *
 
 
 class Player:
     IDLE = "IDLE"
     WALK = "WALK"
+    ATTACK = "ATTACK" # including 1,2,3
     ATTACK_1 = "ATTACK_1"
     ATTACK_2 = "ATTACK_2"
     ATTACK_3 = "ATTACK_3"
@@ -37,15 +39,21 @@ class Player:
         self.hp = 100
         self.hit_timer = 0 # hit by enemy
         
-        frames = create_player_frames()
-        self.animations = {
-            self.IDLE: Animation(frames, frame_duration=20),
-            self.WALK: Animation(frames, frame_duration=8),
-            self.ATTACK_1: Animation(frames, frame_duration=4),
-            #self.ATTACK_2: Animation(frames, frame_duration=4),
-            #self.ATTACK_3: Animation(frames, frame_duration=4)
-        }
-        self.current_animation = self.animations[self.IDLE]
+        self.animation_manager = AnimationManager()
+        self.animation_manager.add_animation(
+            self.IDLE,Animation(create_idle_frames(),20))
+        self.animation_manager.add_animation(
+            self.WALK,Animation(create_walk_frames(),10))
+        self.animation_manager.add_animation(
+            self.ATTACK,Animation(create_attack_frames(),5)
+        )
+        self.animation_manager.add_animation(
+            self.HIT,Animation(create_hit_frames(),8)
+        )
+        self.animation_manager.add_animation(
+            self.DEAD,Animation(create_dead_frames(),999)
+        )
+
 
     # update() works in world coordinates
     # draw() translateds to screen coordinates using camera_x
@@ -100,10 +108,10 @@ class Player:
         else:
             if moving:
                 self.state = self.WALK
-                self.current_animation = self.animations[self.WALK]
+                #self.current_animation = self.animations[self.WALK]
             else:
                 self.state = self.IDLE
-                self.current_animation = self.animations[self.IDLE]
+                #self.current_animation = self.animations[self.IDLE]
 
         # world boundaries
         # cannot go left of 0
@@ -117,9 +125,22 @@ class Player:
         self.y = max(250, self.y)
         # cannot go below y=450
         self.y = min(450, self.y)
-        
-        self.current_animation.update()
 
+        self.update_animation()
+
+    def update_animation(self):
+        if self.state == self.DEAD:
+            self.animation_manager.play(self.DEAD)
+        elif self.state == self.HIT:
+            self.animation_manager.play(self.HIT)
+        elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
+            self.animation_manager.play(self.ATTACK)
+        elif self.state == self.WALK:
+            self.animation_manager.play(self.WALK)
+        else:
+            self.animation_manager.play(self.IDLE)
+
+        self.animation_manager.update()
 
     #World:   [--------------------PLAYER----]
     #                          x=800
@@ -149,7 +170,7 @@ class Player:
         )
         # end of depth
 
-        image = self.current_animation.get_image()
+        image = self.animation_manager.get_image()
         if not self.facing_right:
             image = pygame.transform.flip(image, True, False)
         screen.blit(image, (screen_x, self.y))
@@ -182,8 +203,6 @@ class Player:
             return
 
         self.is_attacking = True
-        self.current_animation = self.animations[self.ATTACK_1] # default to first attack animation
-        self.current_animation.reset()
         self.attack_timer = self.attack_duration
         self.already_hit_enemy = False
 

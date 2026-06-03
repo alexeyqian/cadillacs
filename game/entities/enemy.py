@@ -1,9 +1,12 @@
 import pygame
 from game.animation.animation import Animation
+from game.animation.animation_manager import AnimationManager
 from game.assets.placeholder.enemy_frames import *
+from game.assets.placeholder.player_frames import create_hit_frames
 
 class Enemy:
-    CHASE = "CHASE"
+    IDLE = "IDLE"
+    WALK = "WALK"
     ATTACK = "ATTACK"
     HIT = "HIT"
     DEAD = "DEAD"
@@ -15,7 +18,7 @@ class Enemy:
         self.height = 80
         self.speed = 2
         self.hp = 100
-        self.state = self.CHASE
+        self.state = self.WALK
 
         # attack players / combat
         self.attack_timer = 0 # ?
@@ -27,18 +30,36 @@ class Enemy:
         self.knockback_velocity = 0
         # enemy gets briefly white when hit by player
         self.hit_timer = 0
-        
-        frames = create_enemy_frames()
-        self.animations = {
-            self.CHASE: Animation(frames, frame_duration=12),
-            self.ATTACK: Animation(frames, frame_duration=5)
-        }
-        self.current_animation = self.animations[self.CHASE]
+
+        self.animation_manager = AnimationManager()
+        self.animation_manager.add_animation(
+            self.WALK,
+            Animation(
+                create_enemy_frames(),
+                12
+            )
+        )
+
+        self.animation_manager.add_animation(
+            self.ATTACK,
+            Animation(
+                create_enemy_frames(),
+                5
+            )
+        )
+
+        self.animation_manager.add_animation(
+            self.HIT,
+            Animation(
+                create_enemy_frames(),
+                3
+            )
+        )
 
     def update(self, player, enemies):
         if self.state == self.DEAD:
             return
-        
+
         # attack cooldown
         if self.attack_cooldown > 0:
             self.attack_cooldown -= 1
@@ -49,7 +70,7 @@ class Enemy:
             self.hit_timer -= 1
             self.apply_knockback()
             if self.hit_timer == 0:
-                self.state = self.CHASE
+                self.state = self.WALK
             return
         # apply any remaining knockback
         self.apply_knockback()
@@ -64,15 +85,15 @@ class Enemy:
         if distance_x <= self.attack_range:
             self.state = self.ATTACK
         else:
-            self.state = self.CHASE
+            self.state = self.WALK
 
         # execute state
-        if self.state == self.CHASE:
-            self.current_animation = self.animations[self.CHASE]
-            self.update_chase(dx, dy)
+        if self.state == self.WALK:
+            #self.current_animation = self.animations[self.WALK]
+            self.update_walking(dx, dy)
             self.separate_from_other_enemies(enemies)
         elif self.state == self.ATTACK:
-            self.current_animation = self.animations[self.ATTACK]
+            #self.current_animation = self.animations[self.ATTACK]
             self.update_attack(player)
 
         # 1 attack per second at 60 FPS
@@ -81,9 +102,35 @@ class Enemy:
                 player.take_damage(20)
                 self.attack_cooldown = 60
 
-        self.current_animation.update()
+        self.update_animation()
 
-    def update_chase(self, dx, dy):
+    def draw(self, screen, camera_x):
+        screen_x = self.x - camera_x
+        # shadow
+        pygame.draw.ellipse(
+            screen, (50, 50, 50),
+            (
+                screen_x,
+                self.y + self.height - 10,
+                self.width,
+                12
+            )
+        )
+
+        image = self.animation_manager.get_image()
+        screen.blit(image, (screen_x, self.y))
+
+        # health bar background
+        pygame.draw.rect(
+            screen, (120, 120, 120),
+            (screen_x, self.y - 12, 50, 6))
+        # health bar
+        hp_width = int(50 * (self.hp / 100))
+        pygame.draw.rect(
+            screen, (255, 0, 0),
+            (screen_x, self.y - 12, hp_width, 6))
+
+    def update_walking(self, dx, dy):
         #if dx <= 60:
         #    return # stop near player
 
@@ -115,59 +162,12 @@ class Enemy:
                     self.x -= 1
                 else:
                     self.x += 1
-    
+
     def update_attack(self, player):
         if self.attack_cooldown > 0:
             return
         player.take_damage(self.attack_damage)
         self.attack_cooldown = 60
-
-    def draw(self, screen, camera_x):
-        screen_x = self.x - camera_x
-        # shadow
-        pygame.draw.ellipse(
-            screen, (50, 50, 50),
-            (
-                screen_x,
-                self.y + self.height - 10,
-                self.width,
-                12
-            )
-        )
-        
-        image = self.current_animation.get_image()
-        screen.blit(image, (screen_x, self.y))
-
-        # body color
-        #body_color = (220, 40, 220)
-        #if self.state == self.DEAD:
-        #    body_color = (80, 80, 80)
-        #elif self.state == self.HIT:
-        #    body_color = (255, 255, 255)
-        #elif self.state == self.ATTACK:
-        #    body_color = (220, 40, 220)
-        #elif self.state == "CHASE":
-        #    body_color = (40, 40, 220)
-
-        #pygame.draw.rect(
-        #    screen, body_color,
-        #    (
-        #        screen_x,
-        #        self.y,
-        #        self.width,
-        #        self.height
-        #    )
-        #)
-        
-        # health bar background
-        pygame.draw.rect(
-            screen, (120, 120, 120),
-            (screen_x, self.y - 12, 50, 6))
-        # health bar
-        hp_width = int(50 * (self.hp / 100))
-        pygame.draw.rect(
-            screen, (255, 0, 0),
-            (screen_x, self.y - 12, hp_width, 6))
 
     def take_damage(self, damage, attacker_x):
         if self.state == self.DEAD:
@@ -195,3 +195,15 @@ class Enemy:
         self.knockback_velocity *= 0.8
         if abs(self.knockback_velocity) < 0.5:
             self.knockback_velocity = 0
+
+    def update_animation(self):
+        if self.state == self.DEAD:
+            self.animation_manager.play(self.DEAD)
+        elif self.state == self.HIT:
+            self.animation_manager.play(self.HIT)
+        elif self.state == self.ATTACK:
+            self.animation_manager.play(self.ATTACK)
+        elif self.state == self.WALK:
+            self.animation_manager.play(self.WALK)
+
+        self.animation_manager.update()
