@@ -143,6 +143,16 @@ class Enemy:
             screen, (255, 0, 0),
             (screen_x, self.y - 12, hp_width, 6))
 
+        # debug: draw enemy attack hitbox when attacking
+        if self.state == self.ATTACK:
+            # represent attack area using attack_range centered in front of enemy
+            hit_w = int(self.attack_range)
+            hit_h = max(20, int(self.height / 2))
+            hit_y = int(self.y + 10)
+            # center attack box on enemy horizontally
+            hit_x = int(self.x + (self.width / 2) - (hit_w / 2))
+            pygame.draw.rect(screen, (255, 165, 0), (hit_x - camera_x, hit_y, hit_w, hit_h), 2)
+
     def update_walking(self, dx, dy):
         #if dx <= 60:
         #    return # stop near player
