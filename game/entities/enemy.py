@@ -127,8 +127,11 @@ class Enemy:
 
         image = self.animation_manager.get_image()
         # Real sprites are often larger than gameplay hitboxes.
-        image = pygame.transform.scale(image,(80,100))
+        image = pygame.transform.scale(image,(self.width, self.height))
         screen.blit(image, (screen_x, self.y))
+
+        # debug: draw enemy bounding box (world -> screen)
+        pygame.draw.rect(screen, (255, 0, 255), (screen_x, self.y, self.width, self.height), 2)
 
         # health bar background
         pygame.draw.rect(

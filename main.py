@@ -13,7 +13,9 @@ def main():
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Cadillacs and Dinosaurs")
+
     font = pygame.font.SysFont(None, 30)
+    small_font = pygame.font.SysFont(None, 20)
     big_font = pygame.font.SysFont(None, 60)
 
     clock = pygame.time.Clock()
@@ -104,31 +106,27 @@ def main():
 
         # draw hp bar
         pygame.draw.rect(screen,
-            (100,100,100),
-            (20,20,200,20))
+            (100,100,100), (20,20,200,20))
         hp_width = int(200 * (player.hp / player.max_hp))
-        pygame.draw.rect(screen,
-            (0,255,0), (20,20,hp_width,20))
-
+        pygame.draw.rect(screen, (0,255,0), (20,20,hp_width,20))
         # hp text
         hp_text = font.render(f"HP: {player.hp}/{player.max_hp}", True, (0,0,0))
-        screen.blit(hp_text, (230, 18))
+        screen.blit(hp_text, (230, 20))
 
         # debug text
-        state_text = font.render(f"State: {player.state}", True, (0,0,0))
-        screen.blit(state_text, (20, 55))
-        combo_text = font.render(f"Combo: {player.combo_step}", True, (0,0,0))
-        screen.blit(combo_text, (20, 85))
-
-        enemies_text = font.render(
-            f"Enemies: {len(enemies)}",
-            True, (0, 0, 0))
-        screen.blit(enemies_text,(20, 115))
-        pos_text = font.render(
+        state_text = small_font.render(f"State: {player.state}", True, (0,0,0))
+        screen.blit(state_text, (20, 50))
+        pos_text = small_font.render(
                 f"Player x:{int(player.x)} y:{int(player.y)} Camera x: {int(camera.x)}",
                 True, (0,0,0))
-        # stamp it to specific coordinates on the screen
-        screen.blit(pos_text, (20, 145))
+        screen.blit(pos_text, (150, 50)) # stamp it to specific coordinates on the screen
+        combo_text = small_font.render(f"Combo: {player.combo_step}", True, (0,0,0))
+        screen.blit(combo_text, (500, 50))
+
+        enemies_text = small_font.render(
+            f"Enemies: {len(enemies)}",
+            True, (0, 0, 0))
+        screen.blit(enemies_text,(20, 100))
         # end of debugging
         
         # GAME OVER
