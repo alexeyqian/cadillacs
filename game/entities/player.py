@@ -46,6 +46,7 @@ class Player:
 
         self.weapon = None
         self.pending_projectile = None
+        self.fire_pressed = False  # track K_k edge for single-shot firing
 
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = PLAYER_HITBOX_W
@@ -156,7 +157,15 @@ class Player:
 
         if keys[pygame.K_j]:
             self.start_attack()
-                
+
+        # fire weapon on key-down only (prevent holding K from firing repeatedly)
+        if keys[pygame.K_k]:
+            if not self.fire_pressed:
+                self.fire_weapon()
+                self.fire_pressed = True
+        else:
+            self.fire_pressed = False
+
         # update state (preserve attack state if attacking)
         if self.is_attacking:
             # keep attack state and animation set by start_attack

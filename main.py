@@ -53,7 +53,7 @@ def main():
                 #if wave.__class__.__name__ == "BossWave":
                     #level.lock_x = 2800
 
-        # pickup weapon
+        # pickup / drop handled via input; firing is handled inside player.update() to detect key-down events
         keys = pygame.key.get_pressed()
         if keys[pygame.K_e]:
             if player.weapon is None:
@@ -67,9 +67,6 @@ def main():
         # drop weapon
         if keys[pygame.K_q]:
             player.drop_weapon()
-        # fire weapon
-        if keys[pygame.K_k]:
-            player.fire_weapon()
 
         ############# update #############
         # update player
