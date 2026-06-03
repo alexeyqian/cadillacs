@@ -125,7 +125,8 @@ class Player:
                 self.is_attacking = False
                 if self.state != self.DEAD:
                     self.state = self.IDLE
-            return # skip movement while attacking
+            # comment out, so still can move during attacking
+            #return # skip movement while attacking
 
         # movements
         keys = pygame.key.get_pressed()

@@ -3,6 +3,7 @@ from game.settings import *
 from game.camera import Camera
 from game.entities.player import Player
 from game.entities.enemy import Enemy
+from game.level.level import Level
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -20,6 +21,7 @@ def main():
 
     clock = pygame.time.Clock()
     player = Player()
+    level = Level()
     camera = Camera()
     # create enemies
     enemies = [
