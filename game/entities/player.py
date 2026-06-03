@@ -47,6 +47,7 @@ class Player:
         self.weapon = None
         self.pending_projectile = None
         self.fire_pressed = False  # track K_k edge for single-shot firing
+        self.drop_pressed = False  # track K_q edge for single-press drop
 
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = PLAYER_HITBOX_W
@@ -165,6 +166,14 @@ class Player:
                 self.fire_pressed = True
         else:
             self.fire_pressed = False
+
+        # drop weapon on key-down only
+        if keys[pygame.K_q]:
+            if not self.drop_pressed:
+                self.drop_weapon()
+                self.drop_pressed = True
+        else:
+            self.drop_pressed = False
 
         # update state (preserve attack state if attacking)
         if self.is_attacking:

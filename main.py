@@ -64,9 +64,6 @@ def main():
                     if player_rect.colliderect(weapon.get_rect()):
                         player.pick_up_weapon(weapon)
                         break
-        # drop weapon
-        if keys[pygame.K_q]:
-            player.drop_weapon()
 
         ############# update #############
         # update player
