@@ -3,6 +3,7 @@ from game.settings import *
 from game.camera import Camera
 from game.entities.player import Player
 from game.entities.enemy import Enemy
+from game.entities.weapon import Weapon
 from game.level.level import Level
 from game.settings import LANE_TOP, LANE_BOTTOM
 
@@ -25,6 +26,9 @@ def main():
     level = Level()
     camera = Camera()
     enemies = []
+    weapons = [
+            Weapon(900,350, "knife"),
+            Weapon(1500,350, "bat")]
 
     running = True
     while running:
@@ -32,7 +36,6 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        ############# update #############
         # trigger wave
         wave = level.get_current_wave()
         if wave:
@@ -43,10 +46,27 @@ def main():
                 level.camera_locked = True
                 # todo: current boss can walk off screen?
                 level.lock_x = camera.x # wave.trigger_x
+                # todo: fix boss camera lock feature
                 # todo: below code has issues
                 #if wave.__class__.__name__ == "BossWave":
                     #level.lock_x = 2800
 
+        # pickup weapon
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_e]:
+            if player.weapon is None:
+                player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+                for weapon in weapons:
+                    if weapon.picked_up:
+                        continue
+                    if player_rect.colliderect(weapon.get_rect()):
+                        player.pick_up_weapon(weapon)
+                        break
+        # drop weapon
+        if keys[pygame.K_q]:
+            player.drop_weapon()
+
+        ############# update #############
         # update player
         player.update()
         # prevent escaping arena
@@ -128,6 +148,9 @@ def main():
         # draw entities
         for entity in entities:
             entity.draw(screen, camera.x)
+        # draw weapons
+        for weapon in weapons:
+            weapon.draw(screen, camera.x)
 
         # draw hp bar
         pygame.draw.rect(screen,
@@ -139,21 +162,28 @@ def main():
         screen.blit(hp_text, (230, 20))
 
         # debug text
+        weapon_name = "None"
+        if player.weapon:
+            weapon_name = player.weapon.weapon_type
+
         boss_alive = False
+        boss_text = ""
         for enemy in enemies:
             if enemy.__class__.__name__ == "BossEnemy":
                 boss_alive = True
-        boss_text = ""
         if boss_alive:
             boss_text = "Boss Alive"
 
-        pos_text = small_font.render(
-                f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} " 
+        player_text = small_font.render(
+                f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Weapon: {weapon_name} " 
                 + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)} Boss: {boss_text}",
                 True, (0,0,0))
         # stamp it to specific coordinates on the screen
-        screen.blit(pos_text, (400, 20))
-        # end of debugging
+        screen.blit(player_text, (400, 20))
+
+        control_text = small_font.render("Attack:J, Pickup:E, Drop:Q", True, (0,0,0))
+        screen.blit(control_text, (20, 50))
+        # end of debug text
 
         if level.current_wave >= len(level.waves):
             stage_clear = big_font.render("Stage Clear - YOU WIN!", True, (0,200,0))

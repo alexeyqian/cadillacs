@@ -6,7 +6,7 @@ from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.enemy_frames import *
 from game.assets.placeholder.player_frames import create_hit_frames
-from game.settings import FPS, LANE_TOP, LANE_BOTTOM
+from game.settings import *
 
 class Enemy:
     IDLE = "IDLE"
@@ -28,7 +28,7 @@ class Enemy:
         self.attack_timer = 0 # ?
         self.attack_cooldown = 0
         self.attack_damage = 10
-        self.attack_range = 70
+        self.attack_range = ENEMY_HITBOX_W
 
         # hit reaction
         self.knockback_velocity = 0

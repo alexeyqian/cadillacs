@@ -1,5 +1,6 @@
 import pygame
 from game.entities.enemy import Enemy
+from game.settings import *
 
 class BossEnemy(Enemy):
     def __init__(self, x, y):
@@ -11,7 +12,7 @@ class BossEnemy(Enemy):
         self.height = 120
         self.speed = 1
         self.attack_damage = 20
-        self.attack_range = 100
+        self.attack_range = BOSS_ENEMY_HITBOX_W
         # special attack
         self.special_attack_cooldown=300
 

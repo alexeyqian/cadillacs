@@ -7,13 +7,14 @@ from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.player_frames import *
-from game.settings import FPS, LANE_TOP, LANE_BOTTOM
+from game.settings import *
 
 
 class Player:
     IDLE = "IDLE"
     WALK = "WALK"
     ATTACK = "ATTACK" # including 1,2,3
+    # punch combo
     ATTACK_1 = "ATTACK_1"
     ATTACK_2 = "ATTACK_2"
     ATTACK_3 = "ATTACK_3"
@@ -43,8 +44,10 @@ class Player:
         self.hp = 100
         self.hit_timer = 0 # hit by enemy
 
+        self.weapon = None
+
         # attack hitbox settings (kept symmetric for left/right)
-        self.attack_hitbox_w = 60
+        self.attack_hitbox_w = PLAYER_HITBOX_W
         self.attack_hitbox_h = 60
         self.attack_hitbox_offset_y = 10
         
@@ -215,6 +218,11 @@ class Player:
         image = pygame.transform.scale(image, (self.width, self.height))
         screen.blit(image, (screen_x, self.y))
 
+        # weapon section
+        if self.weapon:
+            pygame.draw.rect(screen, (255,255,0),
+                (screen_x+45, self.y+30,20,5))
+
         # debug: draw player's bounding box (world -> screen)
         screen_x = self.x - camera_x
         pygame.draw.rect(screen, (0, 255, 255), (screen_x, self.y, self.width, self.height), 2)
@@ -282,14 +290,18 @@ class Player:
             self.state = self.ATTACK_3
 
     def attack_damage(self):
+        base_damage = 10
         if self.state == self.ATTACK_1:
-            return 15
+            base_damage = 10
         elif self.state == self.ATTACK_2:
-            return 20
+            base_damage = 15
         elif self.state == self.ATTACK_3:
-            return 35
+            base_damage = 20
 
-        return 0
+        if self.weapon:
+            base_damage += self.weapon.damage
+
+        return base_damage
 
     # hit box
     def get_attack_rect(self): # hitbox
@@ -316,4 +328,18 @@ class Player:
         if self.hp <= 0:
             self.hp = 0
             self.state = self.DEAD
+
+    def pick_up_weapon(self, weapon):
+        self.weapon = weapon
+        weapon.picked_up = True
+
+
+    def drop_weapon(self):
+        if self.weapon is None:
+            return
+
+        self.weapon.picked_up = False
+        self.weapon.x = self.x
+        self.weapon.y = self.y + 30
+        self.weapon = None
 
