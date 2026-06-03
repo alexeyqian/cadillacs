@@ -218,6 +218,39 @@ class Player:
         image = pygame.transform.scale(image, (self.width, self.height))
         screen.blit(image, (screen_x, self.y))
 
+        # hat: a simple visual on the player's head that points based on facing
+        hat_w = int(self.width * 0.3)
+        hat_h = max(6, int(self.height * 0.10))
+        hat_x = screen_x + (self.width - hat_w) // 2
+        hat_y = self.y #self.y - hat_h - 4
+        # hat body
+        pygame.draw.rect(screen, (180, 30, 30), (hat_x, hat_y, hat_w, hat_h))
+        # brim (half-brim shown on side the player is facing)
+        brim_w = hat_w + 8
+        brim_x = hat_x - 4
+        brim_y = hat_y + hat_h
+        center_x = hat_x + hat_w // 2
+        if self.facing_right:
+            # show right half brim
+            pygame.draw.rect(screen, (80, 40, 0), (center_x, brim_y, brim_x + brim_w - center_x, 3))
+        else:
+            # show left half brim
+            pygame.draw.rect(screen, (80, 40, 0), (brim_x, brim_y, center_x - brim_x, 3))
+        # tip pointing direction
+        if self.facing_right:
+            tip_pts = [
+                (hat_x + hat_w, hat_y),
+                (hat_x + hat_w + 10, hat_y + hat_h // 2),
+                (hat_x + hat_w, hat_y + hat_h)
+            ]
+        else:
+            tip_pts = [
+                (hat_x, hat_y),
+                (hat_x - 10, hat_y + hat_h // 2),
+                (hat_x, hat_y + hat_h)
+            ]
+        pygame.draw.polygon(screen, (180, 30, 30), tip_pts)
+
         # weapon section
         if self.weapon:
             pygame.draw.rect(screen, (255,255,0),
