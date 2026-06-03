@@ -6,7 +6,7 @@ from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.enemy_frames import *
 from game.assets.placeholder.player_frames import create_hit_frames
-from game.settings import FPS
+from game.settings import FPS, LANE_TOP, LANE_BOTTOM
 
 class Enemy:
     IDLE = "IDLE"
@@ -36,8 +36,8 @@ class Enemy:
         self.hit_timer = 0
         
         #lane boundaries
-        self.lane_top = 150
-        self.lane_bottom = 450
+        self.lane_top = LANE_TOP
+        self.lane_bottom = LANE_BOTTOM
 
         # assets loader
         if file_exists(ENEMY_WALK["file"]):

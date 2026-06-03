@@ -7,7 +7,7 @@ from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.player_frames import *
-from game.settings import FPS
+from game.settings import FPS, LANE_TOP, LANE_BOTTOM
 
 
 class Player:
@@ -49,8 +49,8 @@ class Player:
         self.attack_hitbox_offset_y = 10
         
         # lane boundaries
-        self.lane_top = 150
-        self.lane_bottom = 450
+        self.lane_top = LANE_TOP
+        self.lane_bottom = LANE_BOTTOM
         
         # load frames
         if file_exists(PLAYER_IDLE["file"]):

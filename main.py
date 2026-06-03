@@ -4,6 +4,7 @@ from game.camera import Camera
 from game.entities.player import Player
 from game.entities.enemy import Enemy
 from game.level.level import Level
+from game.settings import LANE_TOP, LANE_BOTTOM
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -38,8 +39,9 @@ def main():
             if (not wave.started and player.x >= wave.trigger_x):
                 enemies.extend(wave.spawn())
                 # lock camera only when wave actually starts
+                # set lock_x to current camera.x so the viewport does not jump
                 level.camera_locked = True
-                level.lock_x = wave.trigger_x
+                level.lock_x = camera.x # wave.trigger_x
 
         # update player
         player.update()
@@ -96,25 +98,23 @@ def main():
         # draw background
         screen.fill((120, 190, 255))
         # ground
-        pygame.draw.rect(screen, 
-                        (80, 180, 80),# green
-                        (0, 150, SCREEN_WIDTH, 350))
+        pygame.draw.rect(screen, (80, 180, 80),# green
+                        (0, LANE_TOP, SCREEN_WIDTH, LANE_BOTTOM - LANE_TOP + player.height))
 
         # world markers
         for x in range(0, WORLD_WIDTH, 200):
             screen_x = x - camera.x
             pygame.draw.line(
-                screen,
-                (150, 150, 150),
-                (screen_x, 150),
-                (screen_x, 550),
+                screen, (150, 150, 150),
+                (screen_x, LANE_TOP),
+                (screen_x, LANE_BOTTOM+player.height),
                 2
             )
         
         # depth sorting
         # Classic beat'em-up games draw lower objects later.
         # other wise, may render incorrectly.
-        # higher y draw later, appeas closer to camera
+        # higher y draw later, appears closer to camera
         # Exactly how arcade beat'em-ups fake depth.
         entities = []
         entities.append(player)
@@ -136,14 +136,11 @@ def main():
 
         # debug text
         pos_text = small_font.render(
-                f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)}",
+                f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} " 
+                    + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}",
                 True, (0,0,0))
-        screen.blit(pos_text, (150, 50)) # stamp it to specific coordinates on the screen
-
-        enemies_text = small_font.render(
-            f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}",
-            True, (0, 0, 0))
-        screen.blit(enemies_text,(20, 80))
+        # stamp it to specific coordinates on the screen
+        screen.blit(pos_text, (400, 20))
         # end of debugging
         
         # GAME OVER
