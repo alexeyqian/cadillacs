@@ -61,10 +61,10 @@ def main():
             game_win_text = big_font.render("YOU WIN!", True, (255, 215, 0))
             game_win_rect = game_win_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
             screen.blit(game_win_text, game_win_rect)
-            pygame.display.flip()
-            pygame.time.delay(2000)  # pause 2 seconds so player can see the message
+            #pygame.display.flip()
+            #pygame.time.delay(2000)  # pause 2 seconds so player can see the message
             #running = False
-            continue
+            #continue
 
         # update camera
         camera.update(player)

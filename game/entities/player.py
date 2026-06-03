@@ -3,6 +3,9 @@
 import pygame
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
+from game.animation.asset_loader import AssetLoader
+from game.animation.animation_config import *
+from game.animation.file_utils import *
 from game.assets.placeholder.player_frames import *
 
 
@@ -38,17 +41,54 @@ class Player:
         self.max_hp = 100
         self.hp = 100
         self.hit_timer = 0 # hit by enemy
+
+        # attack hitbox settings (kept symmetric for left/right)
+        self.attack_hitbox_w = 50
+        self.attack_hitbox_h = 40
+        self.attack_hitbox_offset_y = 10
         
+        # load frames
+        if file_exists(PLAYER_IDLE["file"]):
+            idle_frames = AssetLoader.load_animation(
+                PLAYER_IDLE["file"],
+                PLAYER_IDLE["frame_width"],
+                PLAYER_IDLE["frame_height"],
+                PLAYER_IDLE["frame_count"]
+            )
+        else:
+            idle_frames = create_idle_frames()
+
+        if file_exists(PLAYER_WALK["file"]):
+            walk_frames = AssetLoader.load_animation(
+                PLAYER_IDLE["file"],
+                PLAYER_IDLE["frame_width"],
+                PLAYER_IDLE["frame_height"],
+                PLAYER_IDLE["frame_count"]
+            )
+        else:
+            walk_frames = create_walk_frames()
+            
+        if file_exists(PLAYER_ATTACK["file"]):
+            attack_frames = AssetLoader.load_animation(
+                PLAYER_IDLE["file"],
+                PLAYER_IDLE["frame_width"],
+                PLAYER_IDLE["frame_height"],
+                PLAYER_IDLE["frame_count"]
+            )
+        else:
+            attack_frames = create_attack_frames()
+
+        # animation manager
         self.animation_manager = AnimationManager()
         self.animation_manager.add_animation(
-            self.IDLE,Animation(create_idle_frames(),20))
+            self.IDLE,Animation(idle_frames, 20))
         self.animation_manager.add_animation(
-            self.WALK,Animation(create_walk_frames(),10))
+            self.WALK,Animation(walk_frames, 10))
         self.animation_manager.add_animation(
-            self.ATTACK,Animation(create_attack_frames(),5)
+            self.ATTACK,Animation(attack_frames, 5)
         )
         self.animation_manager.add_animation(
-            self.HIT,Animation(create_hit_frames(),8)
+            self.HIT,Animation(create_hit_frames(), 8)
         )
         self.animation_manager.add_animation(
             self.DEAD,Animation(create_dead_frames(),999)
@@ -128,20 +168,6 @@ class Player:
 
         self.update_animation()
 
-    def update_animation(self):
-        if self.state == self.DEAD:
-            self.animation_manager.play(self.DEAD)
-        elif self.state == self.HIT:
-            self.animation_manager.play(self.HIT)
-        elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
-            self.animation_manager.play(self.ATTACK)
-        elif self.state == self.WALK:
-            self.animation_manager.play(self.WALK)
-        else:
-            self.animation_manager.play(self.IDLE)
-
-        self.animation_manager.update()
-
     #World:   [--------------------PLAYER----]
     #                          x=800
     #Screen window starts at camera_x=600:
@@ -173,28 +199,30 @@ class Player:
         image = self.animation_manager.get_image()
         if not self.facing_right:
             image = pygame.transform.flip(image, True, False)
+        # Real sprites are often larger than gameplay hitboxes.
+        image = pygame.transform.scale(image, (80, 100))
         screen.blit(image, (screen_x, self.y))
-        
-        #body_color = (180, 40,40) # default body color
-        #if self.state == self.DEAD:
-        #    body_color = (80, 80, 80)
-        #elif self.state == self.HIT:
-        #    body_color = (255, 255, 255)
-        # add attacking visual feedback
-        #elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
-        #    body_color = (255, 180, 0)
-        #elif self.state == self.WALK:
-        #    body_color = (220, 40, 40)
 
-        #pygame.draw.rect(screen, body_color,
-        #    (screen_x, self.y, self.width,self.height))
-        
         # attack hitbox debug
         attack_rect = self.get_attack_rect()
         if attack_rect:
             pygame.draw.rect(screen, (255, 255, 0),
-                (attack_rect.x - camera_x, attack_rect.y, 
+                (attack_rect.x - camera_x, attack_rect.y,
                  attack_rect.width, attack_rect.height), 2)
+
+    def update_animation(self):
+        if self.state == self.DEAD:
+            self.animation_manager.play(self.DEAD)
+        elif self.state == self.HIT:
+            self.animation_manager.play(self.HIT)
+        elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
+            self.animation_manager.play(self.ATTACK)
+        elif self.state == self.WALK:
+            self.animation_manager.play(self.WALK)
+        else:
+            self.animation_manager.play(self.IDLE)
+
+        self.animation_manager.update()
 
     def start_attack(self):
         # The current start_attack() prevents attack chaining while an attack is active:
@@ -235,16 +263,15 @@ class Player:
     def get_attack_rect(self): # hitbox
         if not self.is_attacking:
             return None
+        # Use symmetric hitbox size and offsets so left/right behave identically
+        hit_w = self.attack_hitbox_w
+        hit_h = self.attack_hitbox_h
+        hit_y = int(self.y + self.attack_hitbox_offset_y)
         if self.facing_right:
-            return pygame.Rect(
-                self.x + self.width,
-                self.y + 10,
-                50, 40)
+            hit_x = int(self.x + self.width)
         else:
-            return pygame.Rect(
-                self.x - 50,
-                self.y + 10,
-                50, 40)
+            hit_x = int(self.x - hit_w)
+        return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
     def take_damage(self, damage):
         if self.state == self.DEAD:

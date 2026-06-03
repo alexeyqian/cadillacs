@@ -1,6 +1,9 @@
 import pygame
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
+from game.animation.asset_loader import AssetLoader
+from game.animation.animation_config import *
+from game.animation.file_utils import *
 from game.assets.placeholder.enemy_frames import *
 from game.assets.placeholder.player_frames import create_hit_frames
 
@@ -31,30 +34,35 @@ class Enemy:
         # enemy gets briefly white when hit by player
         self.hit_timer = 0
 
+        # assets loader
+        if file_exists(ENEMY_WALK["file"]):
+            walk_frames = AssetLoader.load_animation(
+                    ENEMY_WALK["file"],
+                    ENEMY_WALK["frame_width"],
+                    ENEMY_WALK["frame_height"],
+                    ENEMY_WALK["frame_count"]
+                )
+        else:
+            walk_frames = create_enemy_frames()
+
+        if file_exists(ENEMY_ATTACK["file"]):
+            attack_frames = AssetLoader.load_animation(
+                    ENEMY_ATTACK["file"],
+                    ENEMY_ATTACK["frame_width"],
+                    ENEMY_ATTACK["frame_height"],
+                    ENEMY_ATTACK["frame_count"]
+                )
+        else:
+            attack_frames = create_enemy_frames()
+
+        # animation manager
         self.animation_manager = AnimationManager()
         self.animation_manager.add_animation(
-            self.WALK,
-            Animation(
-                create_enemy_frames(),
-                12
-            )
-        )
-
+            self.WALK, Animation(walk_frames,12))
         self.animation_manager.add_animation(
-            self.ATTACK,
-            Animation(
-                create_enemy_frames(),
-                5
-            )
-        )
-
+            self.ATTACK,Animation(attack_frames,5))
         self.animation_manager.add_animation(
-            self.HIT,
-            Animation(
-                create_enemy_frames(),
-                3
-            )
-        )
+            self.HIT,Animation(create_enemy_frames(),3))
 
     def update(self, player, enemies):
         if self.state == self.DEAD:
@@ -118,6 +126,8 @@ class Enemy:
         )
 
         image = self.animation_manager.get_image()
+        # Real sprites are often larger than gameplay hitboxes.
+        image = pygame.transform.scale(image,(80,100))
         screen.blit(image, (screen_x, self.y))
 
         # health bar background
