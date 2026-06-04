@@ -223,8 +223,15 @@ class Player:
 
         # weapon section
         if self.weapon:
+            weapon_len = 20
+            if not self.weapon.is_ranged:
+                weapon_len += self.weapon.attack_range_bonus
+            weapon_x = screen_x + self.width
+            if not self.facing_right:
+                weapon_x = screen_x - weapon_len
+            
             pygame.draw.rect(screen, (255,255,0),
-                (screen_x+45, self.y+30,20,5))
+                (weapon_x, self.y+30,weapon_len,5))
 
         screen_x = self.x - camera_x
 
@@ -304,7 +311,7 @@ class Player:
         elif self.state == self.ATTACK_3:
             base_damage = 20
 
-        if self.weapon:
+        if self.weapon and not self.weapon.is_ranged:
             base_damage += self.weapon.damage
 
         return base_damage
@@ -316,6 +323,10 @@ class Player:
         # Use symmetric hitbox size and offsets so left/right behave identically
         hit_w = self.attack_hitbox_w
         hit_h = self.attack_hitbox_h
+        if self.weapon and not self.weapon.is_ranged:
+            hit_w += self.weapon.attack_range_bonus
+            hit_h += self.weapon.attack_height_bonus
+
         hit_y = int(self.y + self.attack_hitbox_offset_y)
         if self.facing_right:
             hit_x = int(self.x + self.width)

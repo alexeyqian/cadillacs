@@ -18,23 +18,32 @@ class Weapon:
 
         self.damage = 20
         self.picked_up = False
-        self.is_ranged = False
+        
         # cache for procedural icons
         self._knife_image = None
         self._icon_knife = None
         self._icon_bat = None
         self._icon_pistol = None
 
+        self.is_ranged = False
         if weapon_type == "knife":
             self.damage = 25
-        elif weapon_type == "bat": # baseball bat
+            self.attack_range_bonus = 20
+            self.attack_height_bonus = 0
+        elif weapon_type == "bat":
             self.damage = 40
+            self.attack_range_bonus = 45
+            self.attack_height_bonus = 10
         elif weapon_type == "pistol":
             self.damage = 30
             self.is_ranged = True
             self.ammo = 20
+            self.attack_range_bonus = 0
+            self.attack_height_bonus = 0
         else:
             self.damage = 20
+            self.attack_range_bonus = 0
+            self.attack_height_bonus = 0
 
     def _load_knife_image(self):
         try:
