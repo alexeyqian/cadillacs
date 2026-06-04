@@ -2,6 +2,11 @@ import pygame
 
 KNIFE_IMAGE_FILE = "game/assets/weapon/knife.png"
 
+# Fist: short range, low damage
+# Knife: medium range, fast damage
+# Bat: long range, heavy damage
+# Pistol: ranged only, no melee bonus
+
 class Weapon:
     def __init__(self, x, y, weapon_type="knife"):
         self.x = x
