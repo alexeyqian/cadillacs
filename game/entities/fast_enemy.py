@@ -4,6 +4,7 @@ from game.animation.animation_config import *
 class FastEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y,
+                    idle_config=FAST_ENEMY_IDLE,
                     walk_config=FAST_ENEMY_WALK,
                     attack_config=FAST_ENEMY_ATTACK)
 

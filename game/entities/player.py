@@ -226,16 +226,19 @@ class Player:
             pygame.draw.rect(screen, (255,255,0),
                 (screen_x+45, self.y+30,20,5))
 
-        # debug: draw player's bounding box (world -> screen)
         screen_x = self.x - camera_x
-        pygame.draw.rect(screen, (0, 255, 255), (screen_x, self.y, self.width, self.height), 2)
+
+        # debug: draw player's bounding box (world -> screen)
+        if SHOW_PLAYER_RECT:
+            pygame.draw.rect(screen, (0, 255, 255), (screen_x, self.y, self.width, self.height), 1)
 
         # attack hitbox debug
-        attack_rect = self.get_attack_rect()
-        if attack_rect:
-            pygame.draw.rect(screen, (255, 255, 0),
-                (attack_rect.x - camera_x, attack_rect.y,
-                attack_rect.width, attack_rect.height), 2)
+        if SHOW_PLAYER_HITBOX:
+            attack_rect = self.get_attack_rect()
+            if attack_rect:
+                pygame.draw.rect(screen, (255, 255, 0),
+                    (attack_rect.x - camera_x, attack_rect.y,
+                    attack_rect.width, attack_rect.height), 1)
 
         # player health bar (above player)
         hb_x = screen_x

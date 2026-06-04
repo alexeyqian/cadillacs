@@ -19,8 +19,8 @@ class Enemy:
     HIT = "HIT"
     DEAD = "DEAD"
 
-    def __init__(self, x, y, walk_config=None, attack_config=None,
-                fallback_frame_factory=None):
+    def __init__(self, x, y, idle_config=None, walk_config=None,
+                attack_config=None, fallback_frame_factory=None):
         self.x = x
         self.y = y
         self.width = 50
@@ -54,6 +54,8 @@ class Enemy:
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
         
+        if idle_config is None:
+            idle_config = NORMAL_ENEMY_IDLE
         if walk_config is None:
             walk_config = NORMAL_ENEMY_WALK
         if attack_config is None:
@@ -62,6 +64,16 @@ class Enemy:
             fallback_frame_factory = create_enemy_frames
 
         # assets loader
+        if file_exists(idle_config["file"]):
+            idle_frames = AssetLoader.load_animation(
+                    idle_config["file"],
+                    idle_config["frame_width"],
+                    idle_config["frame_height"],
+                    idle_config["frame_count"]
+                )
+        else:
+            idle_frames = fallback_frame_factory()
+
         if file_exists(walk_config["file"]):
             walk_frames = AssetLoader.load_animation(
                     walk_config["file"],
@@ -88,6 +100,9 @@ class Enemy:
         walk_dur = max(1, int(FPS / ANIM_FPS_WALK_ENEMY))
         attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK_ENEMY))
         hit_dur = max(1, int(FPS / ANIM_FPS_HIT_ENEMY))
+        idle_dur = max(1, int(FPS / ANIM_FPS_IDLE_ENEMY))
+        self.animation_manager.add_animation(
+            self.IDLE, Animation(idle_frames, idle_dur))
         self.animation_manager.add_animation(
             self.WALK, Animation(walk_frames, walk_dur))
         self.animation_manager.add_animation(
@@ -164,7 +179,8 @@ class Enemy:
         screen.blit(image, (blit_x, blit_y))
 
         # debug: draw enemy bounding box (world -> screen)
-        pygame.draw.rect(screen, (255, 0, 255), (screen_x, self.y, self.width, self.height), 2)
+        if SHOW_ENEMY_RECT:
+            pygame.draw.rect(screen, (255, 0, 255), (screen_x, self.y, self.width, self.height), 2)
 
         # health bar background
         pygame.draw.rect(
@@ -267,10 +283,12 @@ class Enemy:
             self.animation_manager.play(self.HIT)
         elif self.state == self.ATTACK:
             self.animation_manager.play(self.ATTACK)
+        elif self.state == self.IDLE:
+            self.animation_manager.play(self.IDLE)
         elif self.state == self.WALK:
             self.animation_manager.play(self.WALK)
         elif self.state == self.PATROL:
-            self.animation_manager.play(self.WALK)
+            self.animation_manager.play(self.IDLE)
         elif self.state == self.CHASE:
             self.animation_manager.play(self.WALK)
 

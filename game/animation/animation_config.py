@@ -23,6 +23,13 @@ PLAYER_ATTACK = {
 # Normal Enemy
 # ==========================================
 
+NORMAL_ENEMY_IDLE = {
+    "file":"game/assets/enemy/normal_enemy_idle.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":4
+}
+
 NORMAL_ENEMY_WALK = {
     "file":"game/assets/enemy/normal_enemy_walk.png",
     "frame_width":64,
@@ -31,7 +38,7 @@ NORMAL_ENEMY_WALK = {
 }
 
 NORMAL_ENEMY_ATTACK = {
-    "file":"game/assets/enemy/normal_enemy_walk.png",
+    "file":"game/assets/enemy/normal_enemy_attack.png",
     "frame_width":64,
     "frame_height":64,
     "frame_count":6
@@ -41,6 +48,13 @@ NORMAL_ENEMY_ATTACK = {
 # Fast Enemy
 # ==========================================
 
+FAST_ENEMY_IDLE = {
+    "file":"game/assets/enemy/fast_enemy_idle.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":4
+}
+
 FAST_ENEMY_WALK = {
     "file":"game/assets/enemy/fast_enemy_walk.png",
     "frame_width":64,
@@ -49,7 +63,7 @@ FAST_ENEMY_WALK = {
 }
 
 FAST_ENEMY_ATTACK = {
-    "file":"game/assets/enemy/fast_enemy_walk.png",
+    "file":"game/assets/enemy/fast_enemy_attack.png",
     "frame_width":64,
     "frame_height":64,
     "frame_count":6
@@ -59,6 +73,13 @@ FAST_ENEMY_ATTACK = {
 # Heavy Enemy
 # ==========================================
 
+HEAVY_ENEMY_IDLE = {
+    "file":"game/assets/enemy/heavy_enemy_idle.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":4
+}
+
 HEAVY_ENEMY_WALK = {
     "file":"game/assets/enemy/heavy_enemy_walk.png",
     "frame_width":64,
@@ -67,7 +88,7 @@ HEAVY_ENEMY_WALK = {
 }
 
 HEAVY_ENEMY_ATTACK = {
-    "file":"game/assets/enemy/heavy_enemy_walk.png",
+    "file":"game/assets/enemy/heavy_enemy_attack.png",
     "frame_width":64,
     "frame_height":64,
     "frame_count":6

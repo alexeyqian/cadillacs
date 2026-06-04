@@ -4,6 +4,7 @@ from game.animation.animation_config import *
 class HeavyEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y, 
+                        idle_config=HEAVY_ENEMY_IDLE,
                         walk_config=HEAVY_ENEMY_WALK,
                         attack_config=HEAVY_ENEMY_ATTACK)
 
