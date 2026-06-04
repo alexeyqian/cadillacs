@@ -72,13 +72,6 @@ def main():
             if new_enemies:
                 enemies.extend(new_enemies)
         # create loots when breakable destroys
-        for obj in objects:
-            if obj.destroyed and not obj.loot_generated:
-                loot = obj.create_loot()
-                if loot:
-                    loot_items.append(loot)
-                obj.loot_generated = True
-        # create loots when breakable destroys
         for enemy in enemies:
             if enemy.hp > 0:
                 continue
@@ -190,6 +183,14 @@ def main():
             if projectile.get_rect().colliderect(player_rect):
                 player.take_damage(projectile.damage)
                 projectile.active = False
+
+        # Create loot after combat damage, before destroyed objects are removed.
+        for obj in objects:
+            if obj.destroyed and not obj.loot_generated:
+                loot = obj.create_loot()
+                if loot:
+                    loot_items.append(loot)
+                obj.loot_generated = True
         
         # remove dead enemies
         enemies = [enemy for enemy in enemies if enemy.hp > 0]
