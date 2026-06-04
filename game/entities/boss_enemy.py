@@ -3,6 +3,11 @@ from game.entities.enemy import Enemy
 from game.settings import *
 from game.animation.animation_config import *
 
+# boss phase system
+# make boss behavior change as HP decreases
+# Phase 1: normal boss
+# Phase 2: faster attacks below 60% HP
+# Phase 3: dangerous final phase below 30% HP
 class BossEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x,y,
@@ -18,9 +23,15 @@ class BossEnemy(Enemy):
         self.attack_range = BOSS_ENEMY_HITBOX_W
         # special attack
         self.special_attack_cooldown=300
+        self.phase = 1
+        self.phase_message_timer = 0
 
     def update(self, player, enemies):
         super().update(player, enemies)
+
+        self.update_phase()
+        if self.phase_message_timer > 0:
+            self.phase_message_timer -= 1
 
         if self.state == self.DEAD:
             return
@@ -58,4 +69,29 @@ class BossEnemy(Enemy):
         if self.hp <= 0:
             self.hp = 0
             self.state = self.DEAD
+
+    def update_phase(self):
+        hp_ratio = self.hp / self.max_hp
+        old_phase = self.phase
+
+        if hp_ratio <= 0.3:
+            self.phase = 3
+        elif hp_ratio <= 0.6:
+            self.phase = 2
+        else:
+            self.phase = 1
+
+        if self.phase != old_phase:
+            self.phase_message_timer = 120
+
+            if self.phase == 2:
+                self.speed += 0.5
+                self.attack_damage += 10
+                self.attack_cooldown = 30
+
+            elif self.phase == 3:
+                self.speed += 1
+                self.attack_damage += 15
+                self.attack_range += 40
+                self.special_attack_cooldown = 120
 

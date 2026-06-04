@@ -67,7 +67,7 @@ def main():
             level.lock_x = camera.x
 
         # if wave has started, spawn pending enemies over time
-        if wave and wave.started:
+        if wave and wave.started and hasattr(wave, "update_spawn"):
             new_enemies = wave.update_spawn()
             if new_enemies:
                 enemies.extend(new_enemies)

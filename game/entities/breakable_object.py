@@ -3,6 +3,8 @@ import random
 
 from game.entities.loot import Loot
 
+BOX_IMAGE = None
+
 class BreakableObject:
     def __init__(self, x, y):
         self.x = x
@@ -17,6 +19,17 @@ class BreakableObject:
         if self.destroyed:
             return
         screen_x = self.x - camera_x
+        # try to draw box image if available
+        global BOX_IMAGE
+        if BOX_IMAGE is None:
+            try:
+                BOX_IMAGE = pygame.image.load("game/assets/objects/box.png").convert_alpha()
+                BOX_IMAGE = pygame.transform.smoothscale(BOX_IMAGE, (self.width, self.height))
+            except Exception:
+                BOX_IMAGE = None
+        if BOX_IMAGE:
+            screen.blit(BOX_IMAGE, (screen_x, self.y))
+            return
         pygame.draw.rect(screen, (150,90,40),
                 (screen_x, self.y, self.width, self.height))
 
