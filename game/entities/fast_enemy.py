@@ -8,3 +8,5 @@ class FastEnemy(Enemy):
         self.hp = self.max_hp
         self.speed = 4
         self.attack_damage = 8
+        # give enemy different personalities
+        self.detect_range = 350

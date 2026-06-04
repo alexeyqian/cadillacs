@@ -13,6 +13,11 @@ def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
                 enemy.width, enemy.height)
 
+# level manages progression
+# camera manages view
+# wave manages spawning
+# enemy manages AI
+
 def main():
     pygame.init()
 

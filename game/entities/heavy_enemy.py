@@ -10,3 +10,4 @@ class HeavyEnemy(Enemy):
         self.attack_damage = 25
         self.width = 70
         self.height = 100
+        self.detect_range = 180

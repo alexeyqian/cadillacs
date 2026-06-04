@@ -12,7 +12,9 @@ from game.entities.loot import Loot
 
 class Enemy:
     IDLE = "IDLE"
-    WALK = "WALK"
+    PATROL = "PATROL"
+    WALK = "WALK" # will remove in future
+    CHASE = "CHASE"
     ATTACK = "ATTACK"
     HIT = "HIT"
     DEAD = "DEAD"
@@ -27,6 +29,14 @@ class Enemy:
         self.hp = self.max_hp
         self.state = self.WALK
         self.loot_generated = False
+
+        # within this range, enemy chases player
+        # outside this range, enemy ignores player
+        self.detect_range = 250
+        # enemy remembers where it spawned
+        self.spawn_x = x
+        self.patrol_distance = 80
+        self.patrol_direction = 1
 
         # attack players / combat
         self.attack_timer = 0 # ?
@@ -108,16 +118,18 @@ class Enemy:
         # attack if close enough
         if distance_x <= self.attack_range and distance_y <= self.attack_range:
             self.state = self.ATTACK
+        elif distance_x <= self.detect_range:
+            self.state = self.CHASE
         else:
-            self.state = self.WALK
+            self.state = self.PATROL
 
         # execute state
-        if self.state == self.WALK:
-            #self.current_animation = self.animations[self.WALK]
+        if self.state == self.PATROL:
+            self.update_patrol()
+        elif self.state == self.CHASE:
             self.update_walking(dx, dy)
             self.separate_from_other_enemies(enemies)
         elif self.state == self.ATTACK:
-            #self.current_animation = self.animations[self.ATTACK]
             self.update_attack(player)
 
         self.update_animation()
@@ -186,6 +198,14 @@ class Enemy:
         self.y = max(self.lane_top, self.y)
         self.y = min(self.lane_bottom, self.y)
 
+    # enemy patrol back and forth
+    def update_patrol(self):
+        self.x += self.patrol_direction
+        if self.x > self.spawn_x + self.patrol_distance:
+            self.patrol_direction -= 1
+        if self.x < self.spawn_x - self.patrol_distance:
+            self.patrol_direction = 1
+
     def separate_from_other_enemies(self, enemies):
         for other in enemies:
             if other is self:
@@ -240,6 +260,10 @@ class Enemy:
         elif self.state == self.ATTACK:
             self.animation_manager.play(self.ATTACK)
         elif self.state == self.WALK:
+            self.animation_manager.play(self.WALK)
+        elif self.state == self.PATROL:
+            self.animation_manager.play(self.WALK)
+        elif self.state == self.CHASE:
             self.animation_manager.play(self.WALK)
 
         self.animation_manager.update()
