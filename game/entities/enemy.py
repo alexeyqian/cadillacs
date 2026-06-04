@@ -1,3 +1,4 @@
+import random
 import pygame
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
@@ -7,6 +8,7 @@ from game.animation.file_utils import *
 from game.assets.placeholder.enemy_frames import *
 from game.assets.placeholder.player_frames import create_hit_frames
 from game.settings import *
+from game.entities.loot import Loot
 
 class Enemy:
     IDLE = "IDLE"
@@ -21,8 +23,10 @@ class Enemy:
         self.width = 50
         self.height = 80
         self.speed = 2
-        self.hp = 100
+        self.max_hp = 100
+        self.hp = self.max_hp
         self.state = self.WALK
+        self.loot_generated = False
 
         # attack players / combat
         self.attack_timer = 0 # ?
@@ -72,6 +76,8 @@ class Enemy:
             self.ATTACK, Animation(attack_frames, attack_dur))
         self.animation_manager.add_animation(
             self.HIT, Animation(create_enemy_frames(), hit_dur))
+        self.animation_manager.add_animation(
+            self.DEAD, Animation(create_enemy_frames(), 999))
 
     def update(self, player, enemies):
         if self.state == self.DEAD:
@@ -96,10 +102,11 @@ class Enemy:
         dx = player.x - self.x
         dy = player.y - self.y
         distance_x = abs(dx)
+        distance_y = abs(dy)
 
         # state selection
         # attack if close enough
-        if distance_x <= self.attack_range:
+        if distance_x <= self.attack_range and distance_y <= self.attack_range
             self.state = self.ATTACK
         else:
             self.state = self.WALK
@@ -112,12 +119,6 @@ class Enemy:
         elif self.state == self.ATTACK:
             #self.current_animation = self.animations[self.ATTACK]
             self.update_attack(player)
-
-        # 1 attack per second at 60 FPS
-        if self.state == self.ATTACK:
-            if self.attack_cooldown == 0:
-                player.take_damage(20)
-                self.attack_cooldown = 60
 
         self.update_animation()
 
@@ -150,7 +151,7 @@ class Enemy:
             screen, (120, 120, 120),
             (screen_x, self.y - 12, 50, 6))
         # health bar
-        hp_width = int(50 * (self.hp / 100))
+        hp_width = int(50 * (self.hp / self.max_hp))
         pygame.draw.rect(
             screen, (255, 0, 0),
             (screen_x, self.y - 12, hp_width, 6))
@@ -242,3 +243,13 @@ class Enemy:
             self.animation_manager.play(self.WALK)
 
         self.animation_manager.update()
+        
+    def create_loot(self):
+        roll = random.randint(1, 100)
+        if roll <= 30:
+            return Loot(self.x, self.y, "health")
+        elif roll <= 50:
+            return Loot(self.x, self.y, "ammo")
+
+        return None
+        

@@ -65,6 +65,16 @@ def main():
                 if loot:
                     loot_items.append(loot)
                 obj.loot_generated = True
+        # create loots when breakable destroys
+        for enemy in enemies:
+            if enemy.hp > 0:
+                continue
+            if enemy.loot_generated:
+                continue
+            loot = enemy.create_loot()
+            if loot:
+                loot_items.append(loot)
+            enemy.loot_generated = True
 
         # create projectiles
         if player.pending_projectile:
