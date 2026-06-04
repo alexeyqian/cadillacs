@@ -1,5 +1,7 @@
 import pygame
 
+KNIFE_IMAGE_FILE = "game/assets/weapon/knife.png"
+
 class Weapon:
     def __init__(self, x, y, weapon_type="knife"):
         self.x = x
@@ -13,6 +15,7 @@ class Weapon:
         self.picked_up = False
         self.is_ranged = False
         # cache for procedural icons
+        self._knife_image = None
         self._icon_knife = None
         self._icon_bat = None
         self._icon_pistol = None
@@ -27,6 +30,14 @@ class Weapon:
             self.ammo = 20
         else:
             self.damage = 20
+
+    def _load_knife_image(self):
+        try:
+            image = pygame.image.load(KNIFE_IMAGE_FILE).convert_alpha()
+        except pygame.error:
+            return None
+
+        return image
 
     def _create_knife_icon(self):
         # create a small surface with transparent background and draw a simple knife
@@ -94,10 +105,22 @@ class Weapon:
 
         screen_x = self.x - camera_x
         if self.weapon_type == "knife":
-            # draw procedural knife icon
-            if self._icon_knife is None:
-                self._icon_knife = self._create_knife_icon()
-            icon = pygame.transform.scale(self._icon_knife, (self.width * 2, self.height * 2))
+            if self._knife_image is None:
+                self._knife_image = self._load_knife_image()
+
+            if self._knife_image:
+                icon = pygame.transform.scale(
+                    self._knife_image,
+                    (self.width * 2, self.height * 2)
+                )
+            else:
+                # Fallback if the image file is missing or cannot be loaded.
+                if self._icon_knife is None:
+                    self._icon_knife = self._create_knife_icon()
+                icon = pygame.transform.scale(
+                    self._icon_knife,
+                    (self.width * 2, self.height * 2)
+                )
             icon_x = screen_x - (icon.get_width() - self.width) // 2
             icon_y = self.y - (icon.get_height() - self.height) // 2
             screen.blit(icon, (icon_x, icon_y))
@@ -119,5 +142,4 @@ class Weapon:
 
     def get_rect(self):
         return pygame.Rect(self.x,self.y,self.width, self.height)
-
 
