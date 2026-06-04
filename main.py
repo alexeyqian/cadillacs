@@ -241,6 +241,11 @@ def update_player_weapon_interaction(player,weapons,keys):
     if keys[pygame.K_q]:
         player.drop_weapon()
 
+# draw order: 
+# far background, mid background, ground layer, world decorations,
+# player, enemies, objects, weapons, projectiles, foreground, ui
+
+# world decorations: street lamps, destroyed signs, bones, trees, dinosaur skeletons etc
 def main_draw(screen, camera, level, player, enemies, 
                     weapons, projectiles, enemy_projectiles, objects, loot_items):
     main_draw_world(screen, camera, level, player, enemies, 
@@ -251,13 +256,14 @@ def main_draw(screen, camera, level, player, enemies,
 def main_draw_world(screen, camera, level, player, enemies, 
                     weapons, projectiles, enemy_projectiles, objects, loot_items):
     # draw background
-    screen.fill((120, 190, 255))
+    #screen.fill((120, 190, 255))
+    level.background.draw(screen, camera.x)
     # ground
-    pygame.draw.rect(screen, (80, 180, 80),# green
-                    (0, LANE_TOP, SCREEN_WIDTH, 
-                    LANE_BOTTOM - LANE_TOP + player.height))
+    #pygame.draw.rect(screen, (80, 180, 80),# green
+    #                (0, LANE_TOP, SCREEN_WIDTH, 
+    #                LANE_BOTTOM - LANE_TOP + player.height))
 
-    # world markers
+    # world markers - todo: remove
     for x in range(0, WORLD_WIDTH, 200):
         screen_x = x - camera.x
         pygame.draw.line(
@@ -295,6 +301,8 @@ def main_draw_world(screen, camera, level, player, enemies,
     # draw loots
     for loot in loot_items:
         loot.draw(screen, camera.x)
+        
+    level.background.draw_foreground(screen, camera.x)
 
 def main_draw_ui(screen, camera, level, player, enemies, 
                     weapons, projectiles, enemy_projectiles, objects, loot_items):
