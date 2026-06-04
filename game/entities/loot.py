@@ -1,5 +1,10 @@
 import pygame
 
+LOOT_IMAGE_FILES = {
+    "health": "game/assets/loot/health.png",
+    "ammo": "game/assets/loot/ammo.png",
+}
+
 class Loot:
     def __init__(self, x, y, loot_type):
         self.x = x
@@ -8,11 +13,33 @@ class Loot:
         self.height = 30
         self.loot_type = loot_type
         self.active = True
+        self.image = None
+
+    def load_image(self):
+        filename = LOOT_IMAGE_FILES.get(self.loot_type)
+        if filename is None:
+            return None
+
+        try:
+            return pygame.image.load(filename).convert_alpha()
+        except pygame.error:
+            return None
 
     def draw(self, screen, camera_x):
         if not self.active:
             return
         screen_x = self.x - camera_x
+        if self.image is None:
+            self.image = self.load_image()
+
+        if self.image:
+            image = pygame.transform.scale(
+                self.image,
+                (self.width, self.height)
+            )
+            screen.blit(image, (screen_x, self.y))
+            return
+
         if self.loot_type == "health":
             color = (0,255,0)
         elif self.loot_type == "ammo":
@@ -25,4 +52,3 @@ class Loot:
 
     def get_rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
-

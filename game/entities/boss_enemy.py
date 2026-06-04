@@ -1,5 +1,6 @@
 import pygame
 from game.entities.enemy import Enemy
+from game.entities.boss_projectile import BossProjectile
 from game.settings import *
 from game.animation.animation_config import *
 
@@ -27,6 +28,7 @@ class BossEnemy(Enemy):
         self.special_attack_cooldown = self.special_attack_cooldown_duration
         self.phase = 1
         self.phase_message_timer = 0
+        self.pending_projectile = None
 
     def update(self, player, enemies):
         super().update(player, enemies)
@@ -57,9 +59,35 @@ class BossEnemy(Enemy):
             (screen_x, bar_y, self.width, 10))
         pygame.draw.rect(screen, (255, 40, 40),
             (screen_x, bar_y, hp_width, 10))
+        
+        # phase warning messages
+        font = pygame.font.SysFont(None, 24)
+        phase_text = font.render(
+            f"PHASE {self.phase}",True,(255, 255, 255))
+        screen.blit(phase_text,(screen_x,self.y - 45))
+
+        if self.phase_message_timer > 0:
+            warning = font.render(
+                f"BOSS PHASE {self.phase}!",True,(255, 0, 0))
+            screen.blit(warning,(screen_x - 20,self.y - 70))
 
     def perform_special_attack(self, player):
-        player.take_damage(40)
+        direction = 1
+        if player.x < self.x:
+            direction = -1
+
+        damage = 30
+        if self.phase == 2:
+            damage = 45
+        elif self.phase == 3:
+            damage = 60
+
+        self.pending_projectile = BossProjectile(
+            self.x + self.width // 2,
+            self.y + 40,
+            direction,
+            damage
+        )
 
     def update_attack(self, player):
         if self.attack_cooldown > 0:
