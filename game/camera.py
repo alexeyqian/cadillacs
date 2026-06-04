@@ -3,8 +3,9 @@ class Camera:
     def __init__(self):
         self.x = 0
 
-# Runs every frame to keep the camera centered on the player.
+    # Runs every frame to keep the camera centered on the player.
     def update(self, player, lock_x = None):
+        # for arena lock support
         if lock_x is not None:
             self.x = lock_x
             return

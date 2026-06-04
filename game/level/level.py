@@ -3,6 +3,7 @@ from game.level.wave import *
 class Level:
     def __init__(self):
         self.current_wave = 0
+        # used by wave battles
         self.camera_locked = False
         self.lock_x = None
         self.waves = [

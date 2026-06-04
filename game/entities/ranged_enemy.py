@@ -1,5 +1,5 @@
 from game.entities.enemy import Enemy
-
+from game.entities.enemy_projectile import EnemyProjectile
 
 class RangedEnemy(Enemy):
 
@@ -10,5 +10,23 @@ class RangedEnemy(Enemy):
         self.hp = self.max_hp
 
         self.attack_damage = 12
+        self.pending_projectile = None
+        self.attack_range = 300
+        self.shoot_cooldown = 0
 
-        self.attack_range = 250
+    def update_attack(self, player):
+        if self.shoot_cooldown > 0:
+            self.shoot_cooldown -= 1
+            return
+
+        direction = -1
+        if player.x > self.x:
+            direction = 1
+
+        projectile = EnemyProjectile(self.x + self.width // 2,
+                  self.y + 30, direction, self.attack_damage)
+        self.pending_projectile = projectile
+        self.shoot_cooldown = 90
+
+
+

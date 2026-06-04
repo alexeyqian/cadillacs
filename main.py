@@ -29,6 +29,7 @@ def main():
             Weapon(1500,350, "bat"),
             Weapon(2000, 350, "pistol")]
     projectiles = []
+    enemy_projectiles = []
     # breakable objects
     objects = [
         BreakableObject(1100, 360),
@@ -76,7 +77,7 @@ def main():
                 loot_items.append(loot)
             enemy.loot_generated = True
 
-        # create projectiles
+        # collect player projectiles
         if player.pending_projectile:
             projectiles.append(player.pending_projectile)
             player.pending_projectile = None
@@ -113,8 +114,17 @@ def main():
         for enemy in enemies:
             enemy.update(player, enemies)
 
-        # update projectiles
+        # update player projectiles
         for projectile in projectiles:
+            projectile.update()
+            # collect enemy projectiles
+            if hasattr(enemy, "pending_projectile"):
+                if enemy.pending_projectile:
+                    enemy_projectiles.append(enemy.pending_projectile)
+                    enemy.pending_projectile = None
+
+        # update enemy projectiles
+        for projectile in enemy_projectiles:
             projectile.update()
 
         # update camera
@@ -140,7 +150,7 @@ def main():
                 if attack_rect.colliderect(obj.get_rect()):
                     obj.take_damage(player.attack_damage())
 
-        # projectile collision
+        # player projectile collision
         for projectile in projectiles:
             if not projectile.active:
                 continue
@@ -161,10 +171,21 @@ def main():
                     projectile.active = False
                     break
 
+        # enemy projectile collision
+        for projectile in enemy_projectiles:
+            if not projectile.active:
+                continue
+            player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+            if projectile.get_rect().colliderect(player_rect):
+                player.take_damage(projectile.damage)
+                projectile.active = False
+        
         # remove dead enemies
         enemies = [enemy for enemy in enemies if enemy.hp > 0]
-        # clean up projectiles
+        # clean up player projectiles
         projectiles = [p for p in projectiles if p.active]
+        # clean up enemy projectiles
+        enemy_projectiles = [p for p in enemy_projectiles if p.active]
         # clean up breakables
         objects = [obj for obj in objects if obj.hp > 0]
         # clean up loots
@@ -178,7 +199,7 @@ def main():
 
         ############# draw #############
         main_draw(screen, camera, level, player, enemies, 
-                    weapons, projectiles, objects, loot_items)
+                    weapons, projectiles, enemy_projectiles, objects, loot_items)
 
         pygame.display.flip()
         clock.tick(FPS)
@@ -201,14 +222,14 @@ def update_player_weapon_interaction(player,weapons,keys):
         player.drop_weapon()
 
 def main_draw(screen, camera, level, player, enemies, 
-                    weapons, projectiles, objects, loot_items):
+                    weapons, projectiles, enemy_projectiles, objects, loot_items):
     main_draw_world(screen, camera, level, player, enemies, 
-                    weapons, projectiles, objects, loot_items)
+                    weapons, projectiles, enemy_projectiles, objects, loot_items)
     main_draw_ui(screen, camera, level, player, enemies, 
-                    weapons, projectiles, objects, loot_items)
+                    weapons, projectiles, enemy_projectiles, objects, loot_items)
 
 def main_draw_world(screen, camera, level, player, enemies, 
-                    weapons, projectiles, objects, loot_items):
+                    weapons, projectiles, enemy_projectiles, objects, loot_items):
     # draw background
     screen.fill((120, 190, 255))
     # ground
@@ -242,8 +263,11 @@ def main_draw_world(screen, camera, level, player, enemies,
     # draw weapons
     for weapon in weapons:
         weapon.draw(screen, camera.x)
-    # draw projectiles
+    # draw player projectiles
     for projectile in projectiles:
+        projectile.draw(screen, camera.x)
+    # draw enemy projectiles
+    for projectile in enemy_projectiles:
         projectile.draw(screen, camera.x)
     # draw breakables
     for obj in objects:
@@ -253,7 +277,7 @@ def main_draw_world(screen, camera, level, player, enemies,
         loot.draw(screen, camera.x)
 
 def main_draw_ui(screen, camera, level, player, enemies, 
-                    weapons, projectiles, objects, loot_items):
+                    weapons, projectiles, enemy_projectiles, objects, loot_items):
     font = pygame.font.SysFont(None, 30)
     small_font = pygame.font.SysFont(None, 20)
     big_font = pygame.font.SysFont(None, 60)
