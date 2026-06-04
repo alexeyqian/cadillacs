@@ -11,7 +11,7 @@ class Weapon:
 
         self.damage = 20
         self.picked_up = False
-        self.is_range = False
+        self.is_ranged = False
         # cache for procedural icons
         self._icon_knife = None
         self._icon_bat = None
@@ -23,7 +23,7 @@ class Weapon:
             self.damage = 40
         elif weapon_type == "pistol":
             self.damage = 30
-            self.is_range = True
+            self.is_ranged = True
             self.ammo = 20
         else:
             self.damage = 20

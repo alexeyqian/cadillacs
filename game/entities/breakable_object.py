@@ -11,6 +11,7 @@ class BreakableObject:
         self.height = 50
         self.hp = 30
         self.destroyed = False
+        self.loot_generated = False
     
     def draw(self, screen, camera_x):
         if self.destroyed:

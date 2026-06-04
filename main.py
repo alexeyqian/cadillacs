@@ -60,44 +60,32 @@ def main():
                     
         # create loots when breakable destroys
         for obj in objects:
-            if obj.destroyed:
+            if obj.destroyed and not obj.loot_generated:
                 loot = obj.create_loot()
                 if loot:
                     loot_items.append(loot)
-                # prevents repeated loot generation?
-                #obj.destroyed = False
-                #obj.hp = -9999
+                obj.loot_generated = True
 
         # create projectiles
         if player.pending_projectile:
             projectiles.append(player.pending_projectile)
             player.pending_projectile = None
 
-        # todo: add weapons to global so we can move pick up to player.update()
-        # manually pickup / drop weapon
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_e]:
-            if player.weapon is None:
-                player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
-                for weapon in weapons:
-                    if weapon.picked_up:
-                        continue
-                    if player_rect.colliderect(weapon.get_rect()):
-                        player.pick_up_weapon(weapon)
-                        break
+        update_player_weapon_interaction(player, weapons, keys)
 
         # auto pickup loot
         player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
         for loot in loot_items:
             if not loot.active:
                 continue
-            if player_rect.colliderect(loop.get_rect()):
+            if player_rect.colliderect(loot.get_rect()):
                 if loot.loot_type == "health":
                     player.hp = min(player.max_hp, player.hp + 30)
                 elif loot.loot_type == "ammo":
                     if player.weapon and hasattr(player.weapon, "ammo"):
                         player.weapon.ammo += 10
-            loot.active = False
+                loot.active = False
         ############# update #############
         # update player
         player.update()
@@ -187,6 +175,21 @@ def main():
 
     pygame.quit()
 
+def update_player_weapon_interaction(player,weapons,keys):
+    if keys[pygame.K_e]:
+        if player.weapon is None:
+            player_rect = pygame.Rect(
+                player.x,player.y,
+                player.width,player.height)
+            for weapon in weapons:
+                if weapon.picked_up:
+                    continue
+                if player_rect.colliderect(weapon.get_rect()):
+                    player.pick_up_weapon(weapon)
+                    break
+    if keys[pygame.K_q]:
+        player.drop_weapon()
+
 def main_draw(screen, camera, level, player, enemies, 
                     weapons, projectiles, objects, loot_items):
     main_draw_world(screen, camera, level, player, enemies, 
@@ -256,7 +259,7 @@ def main_draw_ui(screen, camera, level, player, enemies,
     ammo_str = ""
     if player.weapon:
         weapon_name = player.weapon.weapon_type
-        if player.weapon.is_range:
+        if player.weapon.is_ranged:
             ammo_str = f" Ammo:{player.weapon.ammo}"
         weapon_text = small_font.render(f"Weapon:{weapon_name}{ammo_str}",True,(0,0,0))
         screen.blit(weapon_text,(500, 20))
@@ -293,7 +296,7 @@ def main_draw_ui(screen, camera, level, player, enemies,
         #continue
 
     # debug UI
-    control_text = small_font.render("Attack:J, Pickup:E, Drop:Q", True, (0,0,0))
+    control_text = small_font.render("Attack:J, Shoot:K, Pickup:E, Drop:Q", True, (0,0,0))
     screen.blit(control_text, (20, 50))
     player_str =  f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}"
     player_text = small_font.render(player_str,True, (0,0,0))

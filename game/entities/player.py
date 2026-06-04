@@ -1,5 +1,3 @@
-#from turtle import Screen
-
 import pygame
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
@@ -10,6 +8,8 @@ from game.assets.placeholder.player_frames import *
 from game.settings import *
 from game.entities.projectile import Projectile
 
+# Player has: movement, animation, combat, inventory
+# pickup/drop weapons should belong to inventory system
 class Player:
     IDLE = "IDLE"
     WALK = "WALK"
@@ -71,20 +71,20 @@ class Player:
 
         if file_exists(PLAYER_WALK["file"]):
             walk_frames = AssetLoader.load_animation(
-                PLAYER_IDLE["file"],
-                PLAYER_IDLE["frame_width"],
-                PLAYER_IDLE["frame_height"],
-                PLAYER_IDLE["frame_count"]
+                PLAYER_WALK["file"],
+                PLAYER_WALK["frame_width"],
+                PLAYER_WALK["frame_height"],
+                PLAYER_WALK["frame_count"]
             )
         else:
             walk_frames = create_walk_frames()
             
         if file_exists(PLAYER_ATTACK["file"]):
             attack_frames = AssetLoader.load_animation(
-                PLAYER_IDLE["file"],
-                PLAYER_IDLE["frame_width"],
-                PLAYER_IDLE["frame_height"],
-                PLAYER_IDLE["frame_count"]
+                PLAYER_ATTACK["file"],
+                PLAYER_ATTACK["frame_width"],
+                PLAYER_ATTACK["frame_height"],
+                PLAYER_ATTACK["frame_count"]
             )
         else:
             attack_frames = create_attack_frames()
@@ -113,7 +113,9 @@ class Player:
 
 
     # update() works in world coordinates
-    # draw() translateds to screen coordinates using camera_x
+    # draw() translates to screen coordinates using camera_x
+    # responsible for: Movement,Animation, State transitions, 
+    # Attack state, Hit state, Death state
     def update(self):
         if self.state == self.DEAD:
             return
@@ -166,14 +168,6 @@ class Player:
                 self.fire_pressed = True
         else:
             self.fire_pressed = False
-
-        # drop weapon on key-down only
-        if keys[pygame.K_q]:
-            if not self.drop_pressed:
-                self.drop_weapon()
-                self.drop_pressed = True
-        else:
-            self.drop_pressed = False
 
         # update state (preserve attack state if attacking)
         if self.is_attacking:
@@ -284,7 +278,7 @@ class Player:
         if attack_rect:
             pygame.draw.rect(screen, (255, 255, 0),
                 (attack_rect.x - camera_x, attack_rect.y,
-                 attack_rect.width, attack_rect.height), 2)
+                attack_rect.width, attack_rect.height), 2)
 
         # player health bar (above player)
         hb_x = screen_x
@@ -398,7 +392,7 @@ class Player:
     def fire_weapon(self):
         if self.weapon is None:
             return
-        if not self.weapon.is_range:
+        if not self.weapon.is_ranged:
             return
         if self.weapon.ammo <= 0:
             return
