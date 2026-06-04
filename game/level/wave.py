@@ -38,11 +38,11 @@ class Wave:
         self.spawn_timer = self.spawn_interval
         return [enemy]
 
-class BossWave:
+class BossWave(Wave):
     def __init__(self, trigger_x):
-        self.trigger_x = trigger_x
-        self.started = False
-        self.completed = False
-    def spawn(self):
-        self.started = True
-        return [BossEnemy(self.trigger_x, 320)]
+        # treat boss as a specialized single-enemy wave
+        super().__init__(trigger_x, ["boss"]) 
+        # bosses usually spawn slower / have different pacing
+        self.spawn_interval = 180
+
+    # use inherited spawn() and update_spawn() behavior

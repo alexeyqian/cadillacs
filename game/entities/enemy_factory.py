@@ -2,6 +2,7 @@ from game.entities.enemy import Enemy
 from game.entities.fast_enemy import FastEnemy
 from game.entities.heavy_enemy import HeavyEnemy
 from game.entities.ranged_enemy import RangedEnemy
+from game.entities.boss_enemy import BossEnemy
 
 class EnemyFactory:
     @staticmethod
@@ -12,6 +13,8 @@ class EnemyFactory:
             return HeavyEnemy(x, y)
         if enemy_type == "ranged":
             return RangedEnemy(x, y)
+        if enemy_type == "boss":
+            return BossEnemy(x, y)
         
         return Enemy(x, y)
 
