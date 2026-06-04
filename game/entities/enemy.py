@@ -106,7 +106,7 @@ class Enemy:
 
         # state selection
         # attack if close enough
-        if distance_x <= self.attack_range and distance_y <= self.attack_range
+        if distance_x <= self.attack_range and distance_y <= self.attack_range:
             self.state = self.ATTACK
         else:
             self.state = self.WALK
