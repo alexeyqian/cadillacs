@@ -5,17 +5,16 @@ from game.level.spawner import EnemySpawner
 # background image, far layer, ground layer foreground layer
 class Level:
     def __init__(self):
-        self.background = Background()
-        self.background.load(
+        self.background = Background(
             "game/assets/backgrounds/stage1/stage1_far.png",
             "game/assets/backgrounds/stage1/stage1_mid.png",
-            "game/assets/backgrounds/stage1/stage1_front.png"
-        )
+            "game/assets/backgrounds/stage1/stage1_front.png")
 
         self.current_wave = 0
         # used by wave battles
         self.camera_locked = False
         self.lock_x = None
+        
         self.waves = [
             # first wave
             Wave(

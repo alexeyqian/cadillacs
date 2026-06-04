@@ -1,26 +1,63 @@
 import pygame
 
-class Background:
-    def __init__(self):
-        self.far = None
-        self.mid = None
-        self.front = None
 
-    def load(self, far_file, mid_file, front_file):
+class Background:
+    def __init__(
+        self,
+        far_file,
+        mid_file,
+        front_file
+    ):
         self.far = pygame.image.load(far_file).convert()
         self.mid = pygame.image.load(mid_file).convert_alpha()
         self.front = pygame.image.load(front_file).convert_alpha()
 
-    def draw(self, screen, camera_x):
-        if self.far:
-            far_x = -camera_x*0.2
-            screen.blit(self.far, (far_x, 0))
+    def draw_layer(
+        self,
+        screen,
+        image,
+        camera_x,
+        scroll_speed
+    ):
+        image_width = image.get_width()
 
-        if self.mid:
-            mid_x = -camera_x*0.5
-            screen.blit(self.mid, (mid_x, 0))
+        x = -camera_x * scroll_speed
 
-    def draw_foreground(self, screen, camera_x):
-        if self.front:
-            front_x = -camera_x*0.8
-            screen.blit(self.front, (front_x, 0))
+        # repeat image horizontally
+        while x > 0:
+            x -= image_width
+
+        while x < screen.get_width():
+            screen.blit(image, (x, 0))
+            x += image_width
+
+    def draw_back(
+        self,
+        screen,
+        camera_x
+    ):
+        self.draw_layer(
+            screen,
+            self.far,
+            camera_x,
+            0.25
+        )
+
+        self.draw_layer(
+            screen,
+            self.mid,
+            camera_x,
+            0.55
+        )
+
+    def draw_front(
+        self,
+        screen,
+        camera_x
+    ):
+        self.draw_layer(
+            screen,
+            self.front,
+            camera_x,
+            0.85
+        )

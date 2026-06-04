@@ -257,21 +257,21 @@ def main_draw_world(screen, camera, level, player, enemies,
                     weapons, projectiles, enemy_projectiles, objects, loot_items):
     # draw background
     #screen.fill((120, 190, 255))
-    level.background.draw(screen, camera.x)
+    level.background.draw_back(screen, camera.x)
     # ground
     #pygame.draw.rect(screen, (80, 180, 80),# green
     #                (0, LANE_TOP, SCREEN_WIDTH, 
     #                LANE_BOTTOM - LANE_TOP + player.height))
 
     # world markers - todo: remove
-    for x in range(0, WORLD_WIDTH, 200):
-        screen_x = x - camera.x
-        pygame.draw.line(
-            screen, (150, 150, 150),
-            (screen_x, LANE_TOP),
-            (screen_x, LANE_BOTTOM+player.height),
-            2
-        )
+    #for x in range(0, WORLD_WIDTH, 200):
+    #    screen_x = x - camera.x
+    #    pygame.draw.line(
+    #        screen, (150, 150, 150),
+    #        (screen_x, LANE_TOP),
+    #        (screen_x, LANE_BOTTOM+player.height),
+    #        2
+    #    )
 
     # depth sorting
     # Classic beat'em-up games draw lower objects later.
@@ -302,7 +302,7 @@ def main_draw_world(screen, camera, level, player, enemies,
     for loot in loot_items:
         loot.draw(screen, camera.x)
         
-    level.background.draw_foreground(screen, camera.x)
+    level.background.draw_front(screen, camera.x)
 
 def main_draw_ui(screen, camera, level, player, enemies, 
                     weapons, projectiles, enemy_projectiles, objects, loot_items):
