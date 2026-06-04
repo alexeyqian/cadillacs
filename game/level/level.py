@@ -35,6 +35,15 @@ class Level:
                     "fast"
                 ]
             ),
+            # fourth wave: introduce the dinosaur enemy
+            Wave(
+                trigger_x=2200,
+                enemy_types=[
+                    "raptor",
+                    "normal",
+                    "raptor"
+                ]
+            ),
             BossWave(2300),
             SpawnWave(
                 trigger_x=2400,
@@ -55,4 +64,3 @@ class Level:
             return None
 
         return self.waves[self.current_wave]
-

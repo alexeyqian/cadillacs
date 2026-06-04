@@ -125,15 +125,14 @@ def main():
         # update enemies
         for enemy in enemies:
             enemy.update(player, enemies)
-
-        # update player projectiles
-        for projectile in projectiles:
-            projectile.update()
-            # collect enemy projectiles
             if hasattr(enemy, "pending_projectile"):
                 if enemy.pending_projectile:
                     enemy_projectiles.append(enemy.pending_projectile)
                     enemy.pending_projectile = None
+
+        # update player projectiles
+        for projectile in projectiles:
+            projectile.update()
 
         # update enemy projectiles
         for projectile in enemy_projectiles:
@@ -360,4 +359,3 @@ def main_draw_ui(screen, camera, level, player, enemies,
 
 if __name__ == "__main__":
     main()
-

@@ -1,10 +1,13 @@
 import pygame
 from game.entities.enemy import Enemy
 from game.settings import *
+from game.animation.animation_config import *
 
 class BossEnemy(Enemy):
     def __init__(self, x, y):
-        super().__init__(x,y)
+        super().__init__(x,y,
+                        walk_config=BOSS_ENEMY_WALK,
+                        attack_config=BOSS_ENEMY_ATTACK)
         
         self.max_hp = 500
         self.hp = 500

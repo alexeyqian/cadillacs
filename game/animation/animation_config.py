@@ -19,6 +19,96 @@ PLAYER_ATTACK = {
     "frame_count":4
 }
 
+# ==========================================
+# Normal Enemy
+# ==========================================
+
+NORMAL_ENEMY_WALK = {
+    "file":"game/assets/enemy/normal_enemy_walk.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":6
+}
+
+NORMAL_ENEMY_ATTACK = {
+    "file":"game/assets/enemy/normal_enemy_walk.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":6
+}
+
+# ==========================================
+# Fast Enemy
+# ==========================================
+
+FAST_ENEMY_WALK = {
+    "file":"game/assets/enemy/fast_enemy_walk.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":6
+}
+
+FAST_ENEMY_ATTACK = {
+    "file":"game/assets/enemy/fast_enemy_walk.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":6
+}
+
+# ==========================================
+# Heavy Enemy
+# ==========================================
+
+HEAVY_ENEMY_WALK = {
+    "file":"game/assets/enemy/heavy_enemy_walk.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":6
+}
+
+HEAVY_ENEMY_ATTACK = {
+    "file":"game/assets/enemy/heavy_enemy_walk.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":6
+}
+
+# ==========================================
+# Raptor Enemy
+# ==========================================
+
+RAPTOR_ENEMY_WALK = {
+    "file":"game/assets/enemy/raptor_enemy_walk.png",
+    "frame_width":70,
+    "frame_height":60,
+    "frame_count":4
+}
+
+RAPTOR_ENEMY_ATTACK = {
+    "file":"game/assets/enemy/raptor_enemy_walk.png",
+    "frame_width":70,
+    "frame_height":60,
+    "frame_count":4
+}
+
+# ==========================================
+# Boss Enemy
+# ==========================================
+
+BOSS_ENEMY_WALK = {
+    "file":"game/assets/enemy/boss_enemy_walk.png",
+    "frame_width":96,
+    "frame_height":96,
+    "frame_count":8
+}
+
+BOSS_ENEMY_ATTACK = {
+    "file":"game/assets/enemy/boss_enemy_attack.png",
+    "frame_width":96,
+    "frame_height":96,
+    "frame_count":8
+}
+
 ENEMY_IDLE = {
     "file":"game/assets/enemy/enemy_idle.png",
     "frame_width":80,

@@ -19,7 +19,8 @@ class Enemy:
     HIT = "HIT"
     DEAD = "DEAD"
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, walk_config=None, attack_config=None,
+                fallback_frame_factory=None):
         self.x = x
         self.y = y
         self.width = 50
@@ -52,27 +53,34 @@ class Enemy:
         #lane boundaries
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
+        
+        if walk_config is None:
+            walk_config = NORMAL_ENEMY_WALK
+        if attack_config is None:
+            attack_config = NORMAL_ENEMY_ATTACK
+        if fallback_frame_factory is None:
+            fallback_frame_factory = create_enemy_frames
 
         # assets loader
-        if file_exists(ENEMY_WALK["file"]):
+        if file_exists(walk_config["file"]):
             walk_frames = AssetLoader.load_animation(
-                    ENEMY_WALK["file"],
-                    ENEMY_WALK["frame_width"],
-                    ENEMY_WALK["frame_height"],
-                    ENEMY_WALK["frame_count"]
+                    walk_config["file"],
+                    walk_config["frame_width"],
+                    walk_config["frame_height"],
+                    walk_config["frame_count"]
                 )
         else:
-            walk_frames = create_enemy_frames()
+            walk_frames = fallback_frame_factory()
 
-        if file_exists(ENEMY_ATTACK["file"]):
+        if file_exists(attack_config["file"]):
             attack_frames = AssetLoader.load_animation(
-                    ENEMY_ATTACK["file"],
-                    ENEMY_ATTACK["frame_width"],
-                    ENEMY_ATTACK["frame_height"],
-                    ENEMY_ATTACK["frame_count"]
+                    attack_config["file"],
+                    attack_config["frame_width"],
+                    attack_config["frame_height"],
+                    attack_config["frame_count"]
                 )
         else:
-            attack_frames = create_enemy_frames()
+            attack_frames = fallback_frame_factory()
 
         # animation manager
         self.animation_manager = AnimationManager()
@@ -85,9 +93,9 @@ class Enemy:
         self.animation_manager.add_animation(
             self.ATTACK, Animation(attack_frames, attack_dur))
         self.animation_manager.add_animation(
-            self.HIT, Animation(create_enemy_frames(), hit_dur))
+            self.HIT, Animation(fallback_frame_factory(), hit_dur))
         self.animation_manager.add_animation(
-            self.DEAD, Animation(create_enemy_frames(), 999))
+            self.DEAD, Animation(fallback_frame_factory(), 999))
 
     def update(self, player, enemies):
         if self.state == self.DEAD:

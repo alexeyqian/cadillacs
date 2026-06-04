@@ -1,8 +1,11 @@
 from game.entities.enemy import Enemy
+from game.animation.animation_config import *
 
 class HeavyEnemy(Enemy):
     def __init__(self, x, y):
-        super().__init__(x, y)
+        super().__init__(x, y, 
+                        walk_config=HEAVY_ENEMY_WALK,
+                        attack_config=HEAVY_ENEMY_ATTACK)
 
         self.max_hp = 250
         self.hp = self.max_hp
