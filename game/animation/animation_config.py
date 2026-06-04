@@ -109,27 +109,6 @@ BOSS_ENEMY_ATTACK = {
     "frame_count":8
 }
 
-ENEMY_IDLE = {
-    "file":"game/assets/enemy/enemy_idle.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":1
-}
-
-ENEMY_WALK = {
-    "file":"game/assets/enemy/enemy_walk.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":1
-}
-
-ENEMY_ATTACK = {
-    "file":"game/assets/enemy/enemy_attack.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":1
-}
-
 # Animation target FPS (how many animation frames per real second)
 # Tune these to control perceived animation speed; values are in frames-per-second
 # for player
