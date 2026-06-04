@@ -1,14 +1,4 @@
-from game.level.wave import Wave
-from game.entities.boss_enemy import BossEnemy
-
-class BossWave:
-    def __init__(self, trigger_x):
-        self.trigger_x = trigger_x
-        self.started = False
-        self.completed = False
-    def spawn(self):
-        self.started = True
-        return [BossEnemy(2350,320)]
+from game.level.wave import *
 
 class Level:
     def __init__(self):
@@ -16,30 +6,31 @@ class Level:
         self.camera_locked = False
         self.lock_x = None
         self.waves = [
+            # first wave
             Wave(
-                500,
-                [
-                    (700,300),
-                    (750,350)
+                trigger_x=500,
+                enemy_types=[
+                    "normal",
+                    "normal",
+                    "normal"
                 ]
             ),
-
+            # second wave
             Wave(
-                1300,
-                [
-                    (1500,300),
-                    (1600,350),
-                    (1700,400)
+                trigger_x=1200,
+                enemy_types=[
+                    "normal",
+                    "fast",
+                    "fast"
                 ]
             ),
-
+            # third wave
             Wave(
-                1800,
-                [
-                    (2000,300),
-                    (2100,350),
-                    (2200,400),
-                    (2300,350)
+                trigger_x=2000,
+                enemy_types=[
+                    "heavy",
+                    "normal",
+                    "fast"
                 ]
             ),
             BossWave(2300)
