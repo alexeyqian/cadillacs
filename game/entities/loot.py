@@ -12,16 +12,16 @@ class Loot:
     def draw(self, screen, camera_x):
         if not self.active:
             return
-        scree_x = self.x - camera_x
+        screen_x = self.x - camera_x
         if self.loot_type == "health":
             color = (0,255,0)
         elif self.loot_type == "ammo":
             color = (255,255,0)
         else:
-            color=(255,255,255)
+            color = (255,255,255)
 
-        pygame.draw.rect(screen, color,
-                (scree_x, self,y, self.width, self.height))
+        # draw loot at screen coordinates
+        pygame.draw.rect(screen, color, (screen_x, self.y, self.width, self.height))
 
     def get_rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)

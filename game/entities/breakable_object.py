@@ -31,10 +31,11 @@ class BreakableObject:
 
     def create_loot(self):
         roll = random.randint(1,100)
-        if roll <= 40:
+        if roll <= 50:
             return Loot(self.x, self.y, "health")
         elif roll <= 80:
             return Loot(self.x, self.y, "ammo")
         
-        return None
+        # return None
+        return Loot(self.x, self.y, "health")
 

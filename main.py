@@ -44,21 +44,21 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        # create enemies when wave is triggered
+        # create/trigger wave when player reaches trigger_x
         wave = level.get_current_wave()
-        if wave:
-            if (not wave.started and player.x >= wave.trigger_x):
-                enemies.extend(wave.spawn())
-                # lock camera only when wave actually starts
-                # set lock_x to current camera.x so the viewport does not jump
-                level.camera_locked = True
-                # todo: current boss can walk off screen?
-                level.lock_x = camera.x # wave.trigger_x
-                # todo: fix boss camera lock feature
-                # todo: below code has issues
-                #if wave.__class__.__name__ == "BossWave":
-                    #level.lock_x = 2800
-                    
+        if wave and not wave.started and player.x >= wave.trigger_x:
+            # start the wave and initialize pending enemies
+            wave.spawn()
+            # lock camera only when wave actually starts
+            # set lock_x to current camera.x so the viewport does not jump
+            level.camera_locked = True
+            level.lock_x = camera.x
+
+        # if wave has started, spawn pending enemies over time
+        if wave and wave.started:
+            new_enemies = wave.update_spawn()
+            if new_enemies:
+                enemies.extend(new_enemies)
         # create loots when breakable destroys
         for obj in objects:
             if obj.destroyed and not obj.loot_generated:
@@ -192,7 +192,7 @@ def main():
         loot_items = [l for l in loot_items if l.active]
 
         wave = level.get_current_wave()
-        if wave and wave.started and len(enemies) == 0:
+        if wave and wave.started and len(enemies) == 0 and len(wave.pending_enemies) == 0:
             wave.completed = True
             level.current_wave += 1
             level.camera_locked = False
