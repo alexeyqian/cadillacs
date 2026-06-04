@@ -22,50 +22,67 @@ class BossEnemy(Enemy):
         self.attack_damage = 20
         self.attack_range = BOSS_ENEMY_HITBOX_W
         # special attack
-        self.special_attack_cooldown=300
+        self.attack_cooldown_duration = 60
+        self.special_attack_cooldown_duration = 300
+        self.special_attack_cooldown = self.special_attack_cooldown_duration
         self.phase = 1
         self.phase_message_timer = 0
 
     def update(self, player, enemies):
         super().update(player, enemies)
 
+        if self.state == self.DEAD:
+            return
+
         self.update_phase()
         if self.phase_message_timer > 0:
             self.phase_message_timer -= 1
 
-        if self.state == self.DEAD:
+        if self.state == self.HIT:
             return
 
         if self.special_attack_cooldown > 0:
             self.special_attack_cooldown -= 1
         else:
             self.perform_special_attack(player)
-            self.special_attack_cooldown = 300
+            self.special_attack_cooldown = self.special_attack_cooldown_duration
 
     def draw(self, screen, camera_x):
+        super().draw(screen, camera_x)
+
         screen_x = self.x - camera_x
-        # shadow
-        pygame.draw.ellipse(screen, (30,30,30),
-            (screen_x, self.y+self.height-10,self.width,15))
-        # boss body
-        pygame.draw.rect(screen, (180,40,180),
-            (screen_x, self.y, self.width, self.height))
-        # hp bar
-        pygame.draw.rect(screen, (120, 120,120),
-            (screen_x, self.y-20,self.width,10))
-        hp_width = int(100*self.hp/self.max_hp)
-        pygame.draw.rect(screen, (255,0,0),
-        (screen_x, self.y-20,hp_width,10))
+        bar_y = self.y - 24
+        hp_width = int(self.width * (self.hp / self.max_hp))
+        pygame.draw.rect(screen, (60, 20, 60),
+            (screen_x, bar_y, self.width, 10))
+        pygame.draw.rect(screen, (255, 40, 40),
+            (screen_x, bar_y, hp_width, 10))
 
     def perform_special_attack(self, player):
         player.take_damage(40)
+
+    def update_attack(self, player):
+        if self.attack_cooldown > 0:
+            return
+
+        player.take_damage(self.attack_damage)
+        self.attack_cooldown = self.attack_cooldown_duration
     
     # add better boss knockback resistance
     def take_damage(self, damage, attacker_x):
+        if self.state == self.DEAD:
+            return
+
         self.hp -= damage
         self.hit_timer = 8
+        self.state = self.HIT
+
         # boss barely moves when hit
-        self.knockback_velocity *= 0.25
+        if attacker_x < self.x:
+            self.knockback_velocity = 3
+        else:
+            self.knockback_velocity = -3
+
         if self.hp <= 0:
             self.hp = 0
             self.state = self.DEAD
@@ -87,11 +104,15 @@ class BossEnemy(Enemy):
             if self.phase == 2:
                 self.speed += 0.5
                 self.attack_damage += 10
-                self.attack_cooldown = 30
+                self.attack_cooldown_duration = 45
 
             elif self.phase == 3:
                 self.speed += 1
                 self.attack_damage += 15
                 self.attack_range += 40
-                self.special_attack_cooldown = 120
-
+                self.attack_cooldown_duration = 35
+                self.special_attack_cooldown_duration = 120
+                self.special_attack_cooldown = min(
+                    self.special_attack_cooldown,
+                    self.special_attack_cooldown_duration
+                )
