@@ -1,4 +1,5 @@
 from game.level.wave import *
+from game.level.spawner import EnemySpawner
 
 class Level:
     def __init__(self):
@@ -34,7 +35,19 @@ class Level:
                     "fast"
                 ]
             ),
-            BossWave(2300)
+            BossWave(2300),
+            SpawnWave(
+                trigger_x=2400,
+                spawners=[
+                    EnemySpawner(
+                        2800,
+                        350,
+                        "normal",
+                        5,
+                        120
+                    )
+                ]
+            )
         ]
 
     def get_current_wave(self):

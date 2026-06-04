@@ -1,13 +1,13 @@
 import pygame
 from game.settings import *
 from game.camera import Camera
+from game.level.level import Level
+from game.level.wave import SpawnWave
 from game.entities.player import Player
 from game.entities.enemy import Enemy
 from game.entities.weapon import Weapon
 from game.entities.loot import Loot
 from game.entities.breakable_object import BreakableObject
-from game.level.level import Level
-from game.settings import LANE_TOP, LANE_BOTTOM
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -46,6 +46,13 @@ def main():
 
         # create/trigger wave when player reaches trigger_x
         wave = level.get_current_wave()
+        # only for SpawnWave
+        if wave and wave.started:
+            if hasattr(wave, "update"):
+                enemies.extend(wave.update())
+
+        # for normal Wave and BossWave
+        # since they dont' implement update()
         if wave and not wave.started and player.x >= wave.trigger_x:
             # start the wave and initialize pending enemies
             wave.spawn()
@@ -191,11 +198,19 @@ def main():
         # clean up loots
         loot_items = [l for l in loot_items if l.active]
 
+        # wave completion logic
         wave = level.get_current_wave()
-        if wave and wave.started and len(enemies) == 0 and len(wave.pending_enemies) == 0:
-            wave.completed = True
-            level.current_wave += 1
-            level.camera_locked = False
+        if wave and wave.started:
+            wave_finished = False
+            if isinstance(wave, SpawnWave):
+                wave_finished = wave.all_spawners_finished() and len(enemies) == 0
+            else:
+                wave_finished = len(enemies) == 0
+
+            if wave_finished:
+                wave.completed = True
+                level.current_wave += 1
+                level.camera_locked = False
 
         ############# draw #############
         main_draw(screen, camera, level, player, enemies, 

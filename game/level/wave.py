@@ -46,3 +46,29 @@ class BossWave(Wave):
         self.spawn_interval = 180
 
     # use inherited spawn() and update_spawn() behavior
+
+class SpawnWave:
+    def __init__(self, trigger_x, spawners):
+        self.trigger_x = trigger_x
+        self.spawners = spawners
+        self.started = False
+        self.completed = False
+
+    def spawn(self):
+        self.started = True
+        return []
+
+    def update(self):
+        new_enemies = []
+        for spawner in self.spawners:
+            enemy = spawner.update()
+            if enemy:
+                new_enemies.append(enemy)
+        return new_enemies
+
+    def all_spawners_finished(self):
+        for spawner in self.spawners:
+            if not spawner.finished():
+                return False
+        return True
+
