@@ -123,7 +123,9 @@ def main_draw_ui(game_state):
     hp_width = int(200 * (player.hp / player.max_hp))
     pygame.draw.rect(screen, (0,255,0), (20,35,hp_width,15))
     hp_text = small_font.render(f"HP: {player.hp}/{player.max_hp}", True, (0,0,0))
-    screen.blit(hp_text, (230, 30))
+    screen.blit(hp_text, (230, 15))
+    lives_text = small_font.render(f"LIVES: {player.lives}", True, (255,255,255))
+    screen.blit(lives_text, (400, 15))
 
     # Weapon UI
     weapon_name = ""
@@ -151,7 +153,7 @@ def main_draw_ui(game_state):
     if level.current_wave >= len(level.waves):
         stage_clear = big_font.render("Stage Clear - YOU WIN!", True, (0,200,0))
         screen.blit(stage_clear, stage_clear.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
-    if player.state == player.DEAD:
+    if player.state == player.DEAD and player.lives <= 0:
         game_over_text = big_font.render("GAME OVER", True, (255,0,0))
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(game_over_text, game_over_rect)

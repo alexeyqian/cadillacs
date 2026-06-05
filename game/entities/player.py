@@ -43,8 +43,12 @@ class Player:
 
         self.state = self.IDLE
         self.max_hp = 100
-        self.hp = 100
+        self.hp = self.max_hp
         self.hit_timer = 0 # hit by enemy
+        self.lives = 3
+        self.respawn_x = self.x
+        self.respawn_y = self.y
+        self.respawn_timer = 0
 
         self.weapon = None
         self.pending_projectile = None
@@ -153,6 +157,8 @@ class Player:
     # Attack state, Hit state, Death state
     def update(self):
         if self.state == self.DEAD:
+            self.update_respawn()
+            self.update_animation()
             return
 
         if self.hit_timer > 0:
@@ -399,7 +405,34 @@ class Player:
 
         if self.hp <= 0:
             self.hp = 0
+            self.lose_life()
+            #self.state = self.DEAD
+
+    def lost_life(self):
+        self.lives -= 1
+        if self.lives <= 0:
             self.state = self.DEAD
+            return
+        self.state = self.DEAD
+        self.respawn_timer = 90
+        
+    def update_respawn(self):
+        if self.state != state.DEAD:
+            return
+        if self.lives <= 0:
+            return
+        if self.respawn_timer > 0:
+            self.respawn_timer -= 1
+        if self.respawn_timer <= 0:
+            self.respawn()
+            
+    def respawn(self):
+        self.hp = self.max_hp
+        self.x = self.respawn_x
+        self.y = self.respawn_y
+        self.state = self.IDLE
+        self.is_attacking = False
+        self.grabbed_enemy = None
 
     def pick_up_weapon(self, weapon):
         self.weapon = weapon

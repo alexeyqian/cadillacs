@@ -100,3 +100,17 @@ Stays down briefly
 Gets up
 ↓
 Returns to battle
+Milestone 34 — Player Lives & Respawn System
+
+If player has no weapon:
+    auto pick weapon
+
+If player has weapon:
+    compare ground weapon damage vs current weapon damage
+
+If ground weapon is stronger:
+    drop current weapon
+    pick up ground weapon
+
+Otherwise:
+    ignore ground weapon
