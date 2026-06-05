@@ -34,6 +34,7 @@ class Enemy:
         self.max_hp = 100
         self.hp = self.max_hp
         self.state = self.WALK
+        self.facing_right = False
         self.loot_generated = False
         self.death_timer = 30
         self.death_timer_started = False
@@ -156,6 +157,10 @@ class Enemy:
             return
 
         if self.state == self.THROWN:
+            if self.thrown_velocity_x > 0:
+                self.facing_right = True
+            elif self.thrown_velocity_x < 0:
+                self.facing_right = False
             self.x += self.thrown_velocity_x
             self.thrown_velocity_x *= 0.9
             self.thrown_timer -= 1
@@ -245,6 +250,8 @@ class Enemy:
         )
 
         image = self.animation_manager.get_image()
+        if self.facing_right:
+            image = pygame.transform.flip(image, True, False)
         if self.state == self.DEAD:
             image.set_alpha(120) # draw dead enemy darker
         if self.state == self.KNOCKDOWN: # knockdown show enemy sideways
@@ -290,8 +297,10 @@ class Enemy:
         # horizontal movement
         if dx > 0:
             self.x += self.speed
+            self.facing_right = True
         elif dx < 0:
             self.x -= self.speed
+            self.facing_right = False
         # vertical movement
         if abs(dy) > 10: # allow some vertical leniency
             if dy > 0:
@@ -306,8 +315,12 @@ class Enemy:
     # enemy patrol back and forth
     def update_patrol(self):
         self.x += self.patrol_direction
+        if self.patrol_direction > 0:
+            self.facing_right = True
+        elif self.patrol_direction < 0:
+            self.facing_right = False
         if self.x > self.spawn_x + self.patrol_distance:
-            self.patrol_direction -= 1
+            self.patrol_direction = -1
         if self.x < self.spawn_x - self.patrol_distance:
             self.patrol_direction = 1
 
@@ -327,6 +340,7 @@ class Enemy:
     def update_attack(self, player):
         if self.attack_cooldown > 0:
             return
+        self.facing_right = player.x > self.x
         player.take_damage(self.attack_damage)
         self.attack_cooldown = 60
 
@@ -416,6 +430,7 @@ class Enemy:
             return
         
         self.state = self.THROWN
+        self.facing_right = direction > 0
         self.thrown_velocity_x = 14 * direction
         self.thrown_timer = 30
         self.thrown_hit_targets.clear()

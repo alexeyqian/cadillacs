@@ -443,8 +443,8 @@ class Player:
             return
 
         self.weapon.picked_up = False
-        self.weapon.x = self.x
-        self.weapon.y = self.y + 30
+        self.weapon.x = self.x - 80
+        self.weapon.y = self.y + 80
         self.weapon = None
 
     def fire_weapon(self):

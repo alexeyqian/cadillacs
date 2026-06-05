@@ -42,6 +42,8 @@ class RaptorEnemy(Enemy):
 
     def leap_toward_player(self, player):
         if player.x > self.x:
+            self.facing_right = True
             self.x += self.leap_speed
         else:
+            self.facing_right = False
             self.x -= self.leap_speed

@@ -114,3 +114,5 @@ If ground weapon is stronger:
 
 Otherwise:
     ignore ground weapon
+
+Milestone 35 — Continue Screen / Coin System

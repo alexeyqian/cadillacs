@@ -31,11 +31,11 @@ class Weapon:
             self.attack_range_bonus = 20
             self.attack_height_bonus = 0
         elif weapon_type == "bat":
-            self.damage = 40
+            self.damage = 30
             self.attack_range_bonus = 45
             self.attack_height_bonus = 10
         elif weapon_type == "pistol":
-            self.damage = 30
+            self.damage = 31
             self.is_ranged = True
             self.ammo = 20
             self.attack_range_bonus = 0
