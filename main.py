@@ -84,6 +84,9 @@ def main():
         # update player
         player.update()
         collect_player_projectiles(game_state)
+        
+        # update score manager
+        score_manager.update()
 
         # should move to player's own update() function
         # prevent escaping arena

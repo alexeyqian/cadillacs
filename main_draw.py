@@ -108,6 +108,15 @@ def main_draw_ui(game_state):
         f"HI {score_manager.high_score}",
         True,(255, 255, 0))
     screen.blit(high_score_text,(180, 5))
+    
+    # combo UI
+    combo = game_state.score_manager.combo_count
+    multiplier = game_state.score_manager.get_multiplier()
+    if combo > 1:
+        combo_text = font.render(
+            f"{combo} HIT COMBO x{multiplier}",
+            True,(255, 220, 0))
+        screen.blit(combo_text,(20, 75))
 
     # health UI
     pygame.draw.rect(screen,(100,100,100), (20,35,200,15))

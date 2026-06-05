@@ -2,7 +2,41 @@ class ScoreManager:
     def __init__(self):
         self.score = 0
         self.high_score = 0
+        # Combo Score Multiplier
+        self.combo_count = 0
+        self.combo_timer = 0
+        self.combo_timeout = 120
         
+    def register_hit(self):
+        self.combo_count += 1
+        self.combo_timer = self.combo_timeout
+    
+    def update(self):
+        if self.combo_timer > 0:
+            self.combo_timer -= 1
+        else:
+            self.combo_count = 0
+
+    def get_multiplier(self):
+        if self.combo_count >= 8:
+            return 4
+        if self.combo_count >= 5:
+            return 3
+        if self.combo_count >= 3:
+            return 2
+        return 1
+    
+    def get_combo_score(self, base_points):
+        multiplier = self.get_multiplier()
+        points = base_points * multiplier
+        return points
+    
+    # deprecated
+    def add_combo_score(self, base_points):
+        points = self.get_combo_score(base_points)
+        self.add_score(points)
+        return points
+
     def add_score(self, points):
         self.score += points
         

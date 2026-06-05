@@ -15,7 +15,8 @@ def create_enemy_loot(game_state):
         if loot:
             loot_items.append(loot)
         
-        points = game_state.score_manager.enemy_score(enemy)
+        base_points = game_state.score_manager.enemy_score(enemy)
+        points = game_state.score_manager.get_combo_score(base_points)
         game_state.score_manager.add_score(points)
         floating_text = FloatingText(enemy.x, enemy.y - 20, f"+{points}", (255, 255, 0))
         game_state.floating_texts.append(floating_text)

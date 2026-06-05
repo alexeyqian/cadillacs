@@ -63,3 +63,16 @@ Enemy killed      -> score increases
 Breakable object  -> score increases
 Boss defeated     -> big bonus
 HUD shows score
+
+Combo Score Multiplier
+Hit enemies quickly
+↓
+Combo increases
+↓
+Score multiplier increases
+↓
+Combo resets if player stops attacking
+1st kill: +100
+2-hit combo: +200
+3-hit combo: +300
+5-hit combo: +500

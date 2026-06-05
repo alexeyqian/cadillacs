@@ -19,6 +19,7 @@ def handle_player_attack_collision(game_state):
         enemy_rect = create_enemy_rect(enemy)
         if attack_rect.colliderect(enemy_rect):
             enemy.take_damage(player.attack_damage(), player.x)
+            game_state.score_manager.register_hit() # for combo score
             player.already_hit_enemy = True
             #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
             break # ?? useless, only can attack one enemy at a time?
@@ -46,6 +47,7 @@ def handle_player_projectile_collision(game_state):
             enemy_rect = create_enemy_rect(enemy)
             if projectile_rect.colliderect(enemy_rect):
                 enemy.take_damage(projectile.damage, player.x)
+                game_state.score_manager.register_hit() # for combo score
                 projectile.active = False
                 #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
                 break
