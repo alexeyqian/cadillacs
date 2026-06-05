@@ -13,6 +13,7 @@ from main_draw import *
 from game.effects.hit_spark import HitSpark
 from game.game_state import GameState
 from game.systems.inventory_system import *
+from game.systems.wave_system import *
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -70,26 +71,7 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        # create/trigger wave when player reaches trigger_x
-        wave = level.get_current_wave()
-        if wave and not wave.started and player.x >= wave.trigger_x:
-            # start the wave and initialize pending enemies
-            wave.spawn()
-            # lock camera only when wave actually starts
-            # set lock_x to current camera.x so the viewport does not jump
-            level.camera_locked = True
-            level.lock_x = camera.x
-
-        # spawn pending enemies over time
-        if wave and wave.started:
-            # for normal Wave and BossWave
-            if hasattr(wave, "update_spawn"):
-                new_enemies = wave.update_spawn()
-                if new_enemies:
-                    enemies.extend(new_enemies)
-            # only for SpawnWave
-            if hasattr(wave, "update"):
-                enemies.extend(wave.update())
+        update_wave_system(game_state)
 
         # create loots when breakable destroys
         for enemy in enemies:
