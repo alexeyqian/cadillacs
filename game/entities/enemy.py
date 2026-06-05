@@ -347,6 +347,10 @@ class Enemy:
             self.animation_manager.play(self.IDLE)
         elif self.state == self.CHASE:
             self.animation_manager.play(self.WALK)
+        elif self.state == self.GRABBED:
+            self.animation_manager.play(self.IDLE)
+        elif self.state == self.THROWN:
+            self.animation_manager.play(self.HIT)
 
         self.animation_manager.update()
 
@@ -366,7 +370,7 @@ class Enemy:
         
         self.state = self.THROWN
         self.thrown_velocity_x = 14 * direction
-        self.throw_timer = 30
+        self.thrown_timer = 30
         self.thrown_hit_targets.clear()
 
     def create_loot(self):
