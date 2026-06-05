@@ -405,7 +405,7 @@ class Player:
 
         if self.hp <= 0:
             self.hp = 0
-            self.lose_life()
+            self.lost_life()
             #self.state = self.DEAD
 
     def lost_life(self):
