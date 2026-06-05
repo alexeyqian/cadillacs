@@ -126,6 +126,8 @@ def main_draw_ui(game_state):
     screen.blit(hp_text, (230, 15))
     lives_text = small_font.render(f"LIVES: {player.lives}", True, (255,255,255))
     screen.blit(lives_text, (400, 15))
+    control_text = small_font.render("Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, (0,0,0))
+    screen.blit(control_text, (500, 15))
 
     # Weapon UI
     weapon_name = ""
@@ -151,7 +153,7 @@ def main_draw_ui(game_state):
 
     # WIN OR GAME OVER UI
     if level.current_wave >= len(level.waves):
-        stage_clear = big_font.render("Stage Clear - YOU WIN!", True, (0,200,0))
+        stage_clear = big_font.render("YOU WIN!", True, (0,200,0))
         screen.blit(stage_clear, stage_clear.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
     if player.state == player.DEAD and player.lives <= 0:
         game_over_text = big_font.render("GAME OVER", True, (255,0,0))
@@ -169,8 +171,6 @@ def main_draw_ui(game_state):
         #continue
 
     # debug UI
-    control_text = small_font.render("Attack:J, Shoot:K, Grab/Throw:L, Pickup:E, Drop:Q", True, (0,0,0))
-    screen.blit(control_text, (20, 55))
     player_str =  f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}"
     player_text = small_font.render(player_str,True, (0,0,0))
     screen.blit(player_text, (400, 55))
