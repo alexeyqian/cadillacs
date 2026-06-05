@@ -35,9 +35,9 @@ class Weapon:
             self.attack_range_bonus = 45
             self.attack_height_bonus = 10
         elif weapon_type == "pistol":
-            self.damage = 31
+            self.damage = 20
             self.is_ranged = True
-            self.ammo = 20
+            self.ammo = 10
             self.attack_range_bonus = 0
             self.attack_height_bonus = 0
         else:

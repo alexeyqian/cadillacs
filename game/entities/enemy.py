@@ -50,7 +50,7 @@ class Enemy:
         # attack players / combat
         self.attack_timer = 0 # ?
         self.attack_cooldown = 0
-        self.attack_damage = 10
+        self.attack_damage = 15
         self.attack_range = ENEMY_HITBOX_W
 
         # hit reaction

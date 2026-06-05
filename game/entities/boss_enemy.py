@@ -15,8 +15,8 @@ class BossEnemy(Enemy):
                         walk_config=BOSS_ENEMY_WALK,
                         attack_config=BOSS_ENEMY_ATTACK)
         
-        self.max_hp = 500
-        self.hp = 500
+        self.max_hp = 800
+        self.hp = self.max_hp
         self.width = 100
         self.height = 120
         self.speed = 1.5

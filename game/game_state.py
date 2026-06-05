@@ -32,5 +32,9 @@ class GameState:
         self.hit_sparks = hit_sparks
         self.score_manager = score_manager
         self.floating_texts = floating_texts
+        
+        self.continue_timer = 60
+        self.continue_active = False
+        self.continue_used = 0
 
         self.running = True

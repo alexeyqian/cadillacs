@@ -49,8 +49,8 @@ def update_loot_pickup(game_state):
             continue
         if player_rect.colliderect(loot.get_rect()):
             if loot.loot_type == "health":
-                player.hp = min(player.max_hp, player.hp + 30)
+                player.hp = min(player.max_hp, player.hp + 20)
             elif loot.loot_type == "ammo":
                 if player.weapon and hasattr(player.weapon, "ammo"):
-                    player.weapon.ammo += 10
+                    player.weapon.ammo += 5
             loot.active = False

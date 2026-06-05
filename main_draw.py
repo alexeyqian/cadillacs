@@ -155,20 +155,26 @@ def main_draw_ui(game_state):
     if level.current_wave >= len(level.waves):
         stage_clear = big_font.render("YOU WIN!", True, (0,200,0))
         screen.blit(stage_clear, stage_clear.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
-    if player.state == player.DEAD and player.lives <= 0:
-        game_over_text = big_font.render("GAME OVER", True, (255,0,0))
-        game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-        screen.blit(game_over_text, game_over_rect)
-    # if no enemies remain, show win screen and stop
-    #if len(enemies) == 0:
-    #    screen.fill((120, 190, 255))
-    #    game_win_text = big_font.render("YOU WIN!", True, (255, 215, 0))
-    #    game_win_rect = game_win_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
-    #    screen.blit(game_win_text, game_win_rect)
         #pygame.display.flip()
         #pygame.time.delay(2000)  # pause 2 seconds so player can see the message
         #running = False
         #continue
+        return
+    
+    # Continue UI
+    if game_state.continue_active:
+        seconds = game_state.continue_timer // FPS
+        continue_text = big_font.render(f"CONTINUE? {seconds}", True, (255, 255,0))
+        screen.blit(continue_text, continue_text.get_rect(center=(SCREEN_WIDTH//2,SCREEN_HEIGHT//2)))
+        continue_hint_text = big_font.render(f"Press C to Continue", True, (255, 255,255))
+        screen.blit(continue_hint_text, continue_hint_text.get_rect(center=(SCREEN_WIDTH//2,SCREEN_HEIGHT//2 + 60)))
+        return
+
+    if player.state == player.DEAD and player.lives <= 0:
+        game_over_text = big_font.render("GAME OVER", True, (255,0,0))
+        game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
+        screen.blit(game_over_text, game_over_rect)
+        return
 
     # debug UI
     player_str =  f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}"

@@ -15,6 +15,7 @@ from game.systems.wave_system import *
 from game.systems.loot_system import *
 from game.systems.projectile_system import *
 from game.systems.combat_system import *
+from game.systems.continue_system import *
 from game.systems.cleanup_system import *
 from game.ui.score_manager import ScoreManager
 from game.effects.floating_text import FloatingText
@@ -84,8 +85,20 @@ def main():
         ############# update #############
         # update player
         player.update()
+
+        # player death and lives check, and related continue status
+        if player.state == player.DEAD and player.lives <= 0:
+            game_state.continue_active = True
+        update_continue_system(game_state, keys)
+        # prevent gameplay while continue screen active
+        if game_state.continue_active:
+            main_draw(game_state)
+            pygame.display.flip()
+            clock.tick(FPS)
+            continue
+
         collect_player_projectiles(game_state)
-        
+
         # update score manager
         score_manager.update()
 
