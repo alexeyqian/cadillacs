@@ -417,7 +417,7 @@ class Player:
         self.respawn_timer = 90
         
     def update_respawn(self):
-        if self.state != state.DEAD:
+        if self.state != self.DEAD:
             return
         if self.lives <= 0:
             return
