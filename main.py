@@ -14,6 +14,7 @@ from game.effects.hit_spark import HitSpark
 from game.game_state import GameState
 from game.systems.inventory_system import *
 from game.systems.wave_system import *
+from game.systems.loot_system import *
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -72,17 +73,6 @@ def main():
                 running = False
 
         update_wave_system(game_state)
-
-        # create loots when breakable destroys
-        for enemy in enemies:
-            if enemy.hp > 0:
-                continue
-            if enemy.loot_generated:
-                continue
-            loot = enemy.create_loot()
-            if loot:
-                loot_items.append(loot)
-            enemy.loot_generated = True
 
         # collect player projectiles
         if player.pending_projectile:
@@ -156,14 +146,9 @@ def main():
                 player.take_damage(projectile.damage)
                 projectile.active = False
 
-        # Create loot after combat damage, before destroyed objects are removed.
-        for obj in objects:
-            if obj.destroyed and not obj.loot_generated:
-                loot = obj.create_loot()
-                if loot:
-                    loot_items.append(loot)
-                obj.loot_generated = True
-        
+        create_enemy_loot(game_state)
+        create_object_loot(game_state)
+
         main_cleanup(game_state)
         update_wave_completion(game_state)
         main_draw(game_state)
