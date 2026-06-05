@@ -32,6 +32,7 @@ def main():
     player = Player()
     level = Level()
     camera = Camera()
+
     enemies = []
     weapons = [
             Weapon(900,350, "knife"),
@@ -133,8 +134,7 @@ def main():
                 if attack_rect.colliderect(enemy_rect):
                     enemy.take_damage(player.attack_damage(), player.x)
                     player.already_hit_enemy = True
-                    hit_sparks.append(HitSpark(enemy.x+enemy.width//2,
-                                        enemy.y + enemy.height//2))
+                    #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
                     break # ?? useless
             # attack breakables
             for obj in objects:
@@ -154,8 +154,7 @@ def main():
                 if projectile_rect.colliderect(enemy_rect):
                     enemy.take_damage(projectile.damage, player.x)
                     projectile.active = False
-                    hit_sparks.append(HitSpark(enemy.x+enemy.width//2,
-                                        enemy.y + enemy.height//2))
+                    #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
                     break
             # projectile hit breakable
             for obj in objects:
@@ -225,17 +224,23 @@ def update_player_weapon_interaction(player,weapons,keys):
 
 def main_cleanup(game_state):
         # remove dead enemies
-        game_state.enemies = [enemy for enemy in game_state.enemies if not enemy.is_ready_to_remove()]
+        game_state.enemies[:] = [
+            enemy for enemy in game_state.enemies
+            if not enemy.is_ready_to_remove()
+        ]
         # clean up player projectiles
-        game_state.projectiles = [p for p in game_state.projectiles if p.active]
+        game_state.projectiles[:] = [p for p in game_state.projectiles if p.active]
         # clean up enemy projectiles
-        game_state.enemy_projectiles = [p for p in game_state.enemy_projectiles if p.active]
+        game_state.enemy_projectiles[:] = [
+            p for p in game_state.enemy_projectiles
+            if p.active
+        ]
         # clean up breakables
-        game_state.objects = [obj for obj in game_state.objects if obj.hp > 0]
+        game_state.objects[:] = [obj for obj in game_state.objects if obj.hp > 0]
         # clean up loots
-        game_state.loot_items = [l for l in game_state.loot_items if l.active]
+        game_state.loot_items[:] = [l for l in game_state.loot_items if l.active]
         # clean up hit sparks
-        game_state.hit_sparks = [s for s in game_state.hit_sparks if s.active]
+        game_state.hit_sparks[:] = [s for s in game_state.hit_sparks if s.active]
 
 if __name__ == "__main__":
     main()

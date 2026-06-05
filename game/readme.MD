@@ -14,6 +14,13 @@
 ✓ Health bars
 ✓ Game Over
 
+game/systems/
+├── wave_system.py
+├── combat_system.py
+├── loot_system.py
+├── inventory_system.py
+└── projectile_system.py
+
 Enemy flow
 HP <= 0
 ↓
