@@ -61,3 +61,41 @@ def handle_player_projectile_collision(game_state):
                 obj.take_damage(projectile.damage)
                 projectile.active = False
                 break
+
+def handle_player_grab_or_throw(game_state, keys):
+    player = game_state.player
+
+    if keys[pygame.K_l]:
+        if player.grab_pressed:
+            return
+        player.grab_pressed = True
+
+        if player.grabbed_enemy:
+            player.throw_grabbed_enemy()
+            return
+        
+        for enemy in game_state.enemies:
+            if player.can_grab_enemy(enemy):
+                player.grab_enemy(enemy)
+                break
+    else:
+        player.grab_pressed = False
+
+def handle_player_thrown_enemy_collision(game_state):
+    for thrown_enemy in game_state.enemies:
+        if thrown_enemy.state != thrown_enemy.THROWN:
+            continue
+        thrown_rect = create_enemy_rect(thrown_enemy)
+        for enemy in game_state.enemies:
+            if enemy is thrown_enemy:
+                continue
+            if enemy.state == enemy.DEAD:
+                continue
+            # avoid process already hitted enemies because of thrown
+            if id(enemy) in thrown_enemy.thrown_hit_targets:
+                continue
+            
+            enemy_rect = create_enemy_rect(enemy)
+            if thrown_rect.colliderect(enemy_rect):
+                enemy.take_damage(30, thrown_enemy.x)
+                thrown_enemy.thrown_hit_targets.add(id(enemy))

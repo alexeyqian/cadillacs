@@ -76,3 +76,15 @@ Combo resets if player stops attacking
 2-hit combo: +200
 3-hit combo: +300
 5-hit combo: +500
+
+Milestone 32 — Grab & Throw System
+goal:
+Press L near enemy
+↓
+Grab enemy
+↓
+Press L again
+↓
+Throw enemy
+↓
+Thrown enemy damages other enemies

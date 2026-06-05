@@ -18,6 +18,8 @@ class Enemy:
     ATTACK = "ATTACK"
     HIT = "HIT"
     DEAD = "DEAD"
+    GRABBED = "GRABBED"
+    THROWN = "THROWN"
 
     def __init__(self, x, y, idle_config=None, walk_config=None,
                 attack_config=None, dead_config=None,
@@ -52,6 +54,11 @@ class Enemy:
         self.knockback_velocity = 0
         # enemy gets briefly white when hit by player
         self.hit_timer = 0
+        
+        # grab/throw
+        self.thrown_velocity_x = 0
+        self.thrown_timer = 0
+        self.thrown_hit_targets = set()
 
         #lane boundaries
         self.lane_top = LANE_TOP
@@ -136,6 +143,21 @@ class Enemy:
             self.DEAD, Animation(dead_frames, dead_dur))
 
     def update(self, player, enemies):
+        if self.state == self.GRABBED:
+            self.update_animation()
+            return
+        if self.state == self.THROWN:
+            self.x += self.thrown_velocity_x
+            self.thrown_velocity_x *= 0.9
+            self.thrown_timer -= 1
+            
+            if self.thrown_timer <= 0 or abs(self.thrown_velocity_x) < 1:
+                self.state = self.WALK
+                self.thrown_velocity_x = 0
+            
+            self.update_animation()
+            return
+            
         if self.state == self.DEAD:
             if not self.death_timer_started:
                 self.death_timer_started = True
@@ -330,6 +352,22 @@ class Enemy:
 
     def is_ready_to_remove(self):
         return self.state == self.DEAD and self.death_timer <= 0
+
+    def grab_me(self):
+        if self.state == self.DEAD:
+            return
+        self.state = self.GRABBED
+        self.knockback_velocity = 0
+        self.hit_timer = 0
+        
+    def throw_me(self, direction):
+        if self.state == self.DEAD:
+            return
+        
+        self.state = self.THROWN
+        self.thrown_velocity_x = 14 * direction
+        self.throw_timer = 30
+        self.thrown_hit_targets.clear()
 
     def create_loot(self):
         roll = random.randint(1, 100)

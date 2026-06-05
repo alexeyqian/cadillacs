@@ -78,6 +78,7 @@ def main():
 
         keys = pygame.key.get_pressed()
         update_player_weapon_interaction(game_state, keys)
+        handle_player_grab_or_throw(game_state, keys)
 
         update_wave_system(game_state)
         ############# update #############
@@ -117,6 +118,7 @@ def main():
 
         handle_player_attack_collision(game_state)
         handle_player_projectile_collision(game_state)
+        handle_player_thrown_enemy_collision(game_state)
 
         handle_enemy_projectile_collision(game_state)
 

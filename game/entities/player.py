@@ -20,6 +20,8 @@ class Player:
     ATTACK_3 = "ATTACK_3"
     HIT = "HIT" # hit by enemies
     DEAD = "DEAD"
+    GRAB = "GRAB"
+    THROW = "THROW"
 
     def __init__(self):
         self.x = 200
@@ -48,6 +50,11 @@ class Player:
         self.pending_projectile = None
         self.fire_pressed = False  # track K_k edge for single-shot firing
         self.drop_pressed = False  # track K_q edge for single-press drop
+        
+        # grab/throw
+        self.grabbed_enemy = None
+        self.grab_pressed = False
+        self.grab_range = 70
 
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = PLAYER_HITBOX_W
@@ -180,6 +187,15 @@ class Player:
             else:
                 self.state = self.IDLE
                 #self.current_animation = self.animations[self.IDLE]
+                
+        # keep grabbed enemy in front of player
+        if self.grabbed_enemy:
+            if self.facing_right:
+                self.grabbed_enemy.x = self.x + self.width + 5
+            else:
+                self.grabbed_enemy.x = self.x - self.grabbed_enemy.width - 5
+            
+            self.grabbed_enemy.y = self.y
 
         # world boundaries
         # cannot go left of 0
@@ -205,7 +221,7 @@ class Player:
     def draw(self, screen, camera_x):
         # camera_x is how far the camera has scrolled.
         # Subtracting it converts the player's world position->screen position
-        # playe's screen x position after camera offset
+        # player's screen x position after camera offset
         screen_x = self.x - camera_x
 
         # add depth
@@ -217,7 +233,7 @@ class Player:
         image = self.animation_manager.get_image()
         if not self.facing_right:
             image = pygame.transform.flip(image, True, False)
-        # Real sprites are often larger than gameplay hitboxes.
+        # Real sprites are often larger than gameplay hit boxes.
         image = pygame.transform.scale(image, (self.width, self.height))
         screen.blit(image, (screen_x, self.y))
 
@@ -350,7 +366,6 @@ class Player:
         self.weapon = weapon
         weapon.picked_up = True
 
-
     def drop_weapon(self):
         if self.weapon is None:
             return
@@ -374,3 +389,30 @@ class Player:
         projectile = Projectile(self.x+40, self.y+30, direction, self.weapon.damage)
         self.pending_projectile = projectile
         self.weapon.ammo -= 1
+        
+    def can_grab_enemy(self, enemy):
+        if enemy.state == enemy.DEAD:
+            return False
+        if enemy.state == enemy.GRABBED:
+            return False
+        
+        dx = abs(enemy.x - self.x)
+        dy = abs(enemy.y - self.y)
+        return dx <= self.grab_range and dy <= 40
+    
+    def grab_enemy(self, enemy):
+        self.grabbed_enemy = enemy
+        enemy.grab_me()
+        self.state = self.GRAB
+        
+    def throw_grabbed_enemy(self):
+        if self.grabbed_enemy is None:
+            return
+        
+        direction = 1
+        if not self.facing_right:
+            direction = -1
+        self.grabbed_enemy.throw_me(direction)
+        
+        self.grabbed_enemy = None
+        self.state = self.THROW

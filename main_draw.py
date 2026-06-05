@@ -167,7 +167,7 @@ def main_draw_ui(game_state):
         #continue
 
     # debug UI
-    control_text = small_font.render("Attack:J, Shoot:K, Pickup:E, Drop:Q", True, (0,0,0))
+    control_text = small_font.render("Attack:J, Shoot:K, Grab/Throw:L, Pickup:E, Drop:Q", True, (0,0,0))
     screen.blit(control_text, (20, 55))
     player_str =  f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}"
     player_text = small_font.render(player_str,True, (0,0,0))
