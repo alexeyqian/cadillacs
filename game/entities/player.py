@@ -26,9 +26,9 @@ class Player:
     def __init__(self):
         self.x = 200
         self.y = 350
-        self.width = 50
-        self.height = 80
-        self.speed = 5
+        self.width = PLAYER_W
+        self.height = PLAYER_H
+        self.speed = PLAYER_SPEED
         self.facing_right = True
 
         self.is_attacking = False
@@ -42,10 +42,10 @@ class Player:
         self.combo_timer = 0
 
         self.state = self.IDLE
-        self.max_hp = 100
+        self.max_hp = PLAYER_MAX_HP
         self.hp = self.max_hp
         self.hit_timer = 0 # hit by enemy
-        self.lives = 3
+        self.lives = PLAYER_LIVES
         self.respawn_x = self.x
         self.respawn_y = self.y
         self.respawn_timer = 0
@@ -58,14 +58,14 @@ class Player:
         # grab/throw
         self.grabbed_enemy = None
         self.grab_pressed = False
-        self.grab_range = 70
+        self.grab_range = PLAYER_GRAB_RANGE
         self.throw_timer = 0
         self.throw_duration = 14
 
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = PLAYER_HITBOX_W
-        self.attack_hitbox_h = 60
-        self.attack_hitbox_offset_y = 10
+        self.attack_hitbox_h = PLAYER_HITBOX_H
+        self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
         
         # lane boundaries
         self.lane_top = LANE_TOP

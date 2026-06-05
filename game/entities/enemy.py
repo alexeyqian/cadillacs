@@ -28,10 +28,10 @@ class Enemy:
                 fallback_frame_factory=None):
         self.x = x
         self.y = y
-        self.width = 50
-        self.height = 80
-        self.speed = 2
-        self.max_hp = 100
+        self.width = NORMAL_ENEMY_W
+        self.height = NORMAL_ENEMY_H
+        self.speed = NORMAL_ENEMY_SPEED
+        self.max_hp = NORMAL_ENEMY_MAX_HP
         self.hp = self.max_hp
         self.state = self.WALK
         self.facing_right = False
@@ -62,7 +62,7 @@ class Enemy:
         self.thrown_velocity_x = 0
         self.thrown_timer = 0
         self.thrown_hit_targets = set()
-        self.thrown_damage = 40
+        self.thrown_damage = THROWN_DAMAGE
         
         #knockdown/getup
         self.knockdown_timer = 0

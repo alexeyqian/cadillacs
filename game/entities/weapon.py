@@ -1,4 +1,5 @@
 import pygame
+from game.settings import *
 
 KNIFE_IMAGE_FILE = "game/assets/weapon/knife.png"
 
@@ -16,7 +17,7 @@ class Weapon:
         self.width = 40
         self.height = 12
 
-        self.damage = 20
+        self.damage = FIST_DAMAGE
         self.picked_up = False
         
         # cache for procedural icons
@@ -27,21 +28,21 @@ class Weapon:
 
         self.is_ranged = False
         if weapon_type == "knife":
-            self.damage = 25
+            self.damage = KNIFE_DAMAGE
             self.attack_range_bonus = 20
             self.attack_height_bonus = 0
         elif weapon_type == "bat":
-            self.damage = 30
+            self.damage = BAT_DAMAGE
             self.attack_range_bonus = 45
             self.attack_height_bonus = 10
         elif weapon_type == "pistol":
-            self.damage = 20
+            self.damage = PISTOL_DAMAGE
             self.is_ranged = True
             self.ammo = 10
             self.attack_range_bonus = 0
             self.attack_height_bonus = 0
         else:
-            self.damage = 20
+            self.damage = FIST_DAMAGE
             self.attack_range_bonus = 0
             self.attack_height_bonus = 0
 

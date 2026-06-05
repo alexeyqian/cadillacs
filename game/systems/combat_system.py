@@ -1,4 +1,5 @@
 import pygame
+from game.effects.floating_text import FloatingText
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y, enemy.width, enemy.height)
@@ -18,7 +19,9 @@ def handle_player_attack_collision(game_state):
     for enemy in enemies:
         enemy_rect = create_enemy_rect(enemy)
         if attack_rect.colliderect(enemy_rect):
-            enemy.take_damage(player.attack_damage(), player.x)
+            damage = player.attack_damage()
+            enemy.take_damage(damage, player.x)
+            game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
             player.already_hit_enemy = True
             #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
@@ -46,7 +49,9 @@ def handle_player_projectile_collision(game_state):
         for enemy in enemies:
             enemy_rect = create_enemy_rect(enemy)
             if projectile_rect.colliderect(enemy_rect):
-                enemy.take_damage(projectile.damage, player.x)
+                damage = projectile.damage
+                enemy.take_damage(damage, player.x)
+                game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,120,120)))
                 game_state.score_manager.register_hit() # for combo score
                 projectile.active = False
                 #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
@@ -94,8 +99,10 @@ def handle_player_thrown_enemy_collision(game_state):
             # avoid process already hitted enemies because of thrown
             if id(enemy) in thrown_enemy.thrown_hit_targets:
                 continue
-            
+
             enemy_rect = create_enemy_rect(enemy)
             if thrown_rect.colliderect(enemy_rect):
-                enemy.take_damage(45, thrown_enemy.x)
+                damage = enemy.thrown_damage
+                enemy.take_damage(damage, thrown_enemy.x)
+                game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,150,0)))
                 thrown_enemy.thrown_hit_targets.add(id(enemy))

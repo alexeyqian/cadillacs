@@ -15,12 +15,12 @@ class BossEnemy(Enemy):
                         walk_config=BOSS_ENEMY_WALK,
                         attack_config=BOSS_ENEMY_ATTACK)
         
-        self.max_hp = 800
+        self.max_hp = BOSS_ENEMY_MAX_HP
         self.hp = self.max_hp
-        self.width = 100
-        self.height = 120
-        self.speed = 1.5
-        self.attack_damage = 20
+        self.width = BOSS_ENEMY_W
+        self.height = BOSS_ENEMY_H
+        self.speed = BOSS_ENEMY_SPEED
+        self.attack_damage = BOSS_ENEMY_ATTACK_DAMAGE
         self.attack_range = BOSS_ENEMY_HITBOX_W
         # special attack
         self.attack_cooldown_duration = 60
