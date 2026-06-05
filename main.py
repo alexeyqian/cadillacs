@@ -165,22 +165,7 @@ def main():
                 obj.loot_generated = True
         
         main_cleanup(game_state)
-
-        # wave completion logic
-        wave = level.get_current_wave()
-        if wave and wave.started:
-            wave_finished = False
-            if isinstance(wave, SpawnWave):
-                wave_finished = wave.all_spawners_finished() and len(enemies) == 0
-            else:
-                wave_finished = len(enemies) == 0
-
-            if wave_finished:
-                wave.completed = True
-                level.current_wave += 1
-                level.camera_locked = False
-
-        ############# draw #############
+        update_wave_completion(game_state)
         main_draw(game_state)
 
         pygame.display.flip()
