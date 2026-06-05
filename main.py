@@ -18,6 +18,7 @@ from game.systems.combat_system import *
 from game.systems.continue_system import *
 from game.systems.cleanup_system import *
 from game.ui.score_manager import ScoreManager
+from game.ui.stage_clear_manager import StageClearManager
 from game.effects.floating_text import FloatingText
 from main_draw import *
 
@@ -37,6 +38,7 @@ def main():
     level = Level()
     camera = Camera()
     score_manager = ScoreManager()
+    stage_clear_manager = StageClearManager()
 
     enemies = []
     weapons = [
@@ -68,7 +70,8 @@ def main():
         loot_items=loot_items,
         hit_sparks=hit_sparks,
         score_manager=score_manager,
-        floating_texts=floating_texts
+        floating_texts=floating_texts,
+        stage_clear_manager=stage_clear_manager
     )
 
     running = True
@@ -76,6 +79,10 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if stage_clear_manager.activate and stage_clear_manager.timer <= 0:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        running = False # ??
 
         keys = pygame.key.get_pressed()
         update_player_weapon_interaction(game_state, keys)
@@ -101,6 +108,10 @@ def main():
 
         # update score manager
         score_manager.update()
+        # update stage clear manager
+        stage_clear_manager.update()
+        if stage_clear_manager.activate:
+            stage_clear_manager.apply_bonus(score_manager)
 
         # should move to player's own update() function
         # prevent escaping arena

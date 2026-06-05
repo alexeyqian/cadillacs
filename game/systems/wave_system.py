@@ -42,3 +42,6 @@ def update_wave_completion(game_state):
             wave.completed = True
             level.current_wave += 1
             level.camera_locked = False
+
+            if level.current_wave >= len(level.waves):
+                game_state.stage_clear_manager.activate(game_state.player)

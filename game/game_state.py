@@ -14,7 +14,8 @@ class GameState:
         loot_items,
         hit_sparks,
         score_manager,
-        floating_texts
+        floating_texts,
+        stage_clear_manager
     ):
         self.screen = screen
         self.clock = clock
@@ -32,6 +33,7 @@ class GameState:
         self.hit_sparks = hit_sparks
         self.score_manager = score_manager
         self.floating_texts = floating_texts
+        self.stage_clear_manager = stage_clear_manager
         
         self.continue_timer = 60
         self.continue_active = False

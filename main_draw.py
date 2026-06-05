@@ -151,6 +151,49 @@ def main_draw_ui(game_state):
     #    boss_text = big_font.render("BOSS", True, (255,50,50))
     #    screen.blit(boss_text, (SCREEN_WIDTH//2 - 120, 80))
 
+    # stage clear manager UI
+    stage_clear = game_state.stage_clear_manager
+    if stage_clear.active:
+        title = big_font.render("STAGE CLEAR", True, (255,255, 0))
+        screen.blit(title, title.get_rect(center=(SCREEN_WIDTH//2, 120)))
+
+        life_text = font.render(
+            f"Life Bonus: {stage_clear.life_bonus}",
+            True,
+            (255,255,255)
+        )
+
+        score_text = font.render(
+            f"Score Bonus: {stage_clear.score_bonus}",
+            True,
+            (255,255,255)
+        )
+
+        total_text = font.render(
+            f"TOTAL: {stage_clear.total_bonus}",
+            True,
+            (255,255,0)
+        )
+
+        screen.blit(life_text,(320,220))
+        screen.blit(score_text,(320,270))
+        screen.blit(total_text,(320,340))
+        
+        if stage_clear.timer <= 0:
+            press_text = font.render(
+                "Press ENTER",
+                True,
+                (255,255,255)
+            )
+
+            screen.blit(
+                press_text,
+                (350,420)
+            )
+
+        return
+        
+
     # WIN OR GAME OVER UI
     if level.current_wave >= len(level.waves):
         stage_clear = big_font.render("YOU WIN!", True, (0,200,0))

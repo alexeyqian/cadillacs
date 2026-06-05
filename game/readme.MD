@@ -116,3 +116,18 @@ Otherwise:
     ignore ground weapon
 
 Milestone 35 — Continue Screen / Coin System
+
+Milestone 37 — Stage Clear Bonus Screen
+Stage Clear
+Time Bonus
+Life Bonus
+Score Bonus
+Milestone 38 — Extra Life System
+5000 points -> +1 life
+20000 points -> +1 life
+Milestone 39 — Continue Credits / Arcade Coin System
+Credits: 3
+Continue consumes credits
+Milestone 40 — Enemy Wave Intro / Warning UI
+WARNING!
+BOSS APPROACHING!
