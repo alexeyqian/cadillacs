@@ -13,7 +13,8 @@ class GameState:
         objects,
         loot_items,
         hit_sparks,
-        score_manager
+        score_manager,
+        floating_texts
     ):
         self.screen = screen
         self.clock = clock
@@ -30,5 +31,6 @@ class GameState:
         self.loot_items = loot_items
         self.hit_sparks = hit_sparks
         self.score_manager = score_manager
+        self.floating_texts = floating_texts
 
         self.running = True

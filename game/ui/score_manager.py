@@ -33,5 +33,9 @@ class ScoreManager:
             self.enemy_score(enemy)
         )
 
-    def add_breakable_score(self):
-        self.add_score(50)
+    def object_score(self, obj):
+        return 50
+
+    def add_breakable_score(self, obj):
+        points = self.object_score(obj)
+        self.add_score(points)

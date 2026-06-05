@@ -17,6 +17,7 @@ from game.systems.projectile_system import *
 from game.systems.combat_system import *
 from game.systems.cleanup_system import *
 from game.ui.score_manager import ScoreManager
+from game.effects.floating_text import FloatingText
 from main_draw import *
 
 # level manages progression
@@ -50,6 +51,7 @@ def main():
     ]
     loot_items = []
     hit_sparks = []
+    floating_texts = []
 
     game_state = GameState(
         screen=screen,
@@ -64,7 +66,8 @@ def main():
         objects=objects,
         loot_items=loot_items,
         hit_sparks=hit_sparks,
-        score_manager=score_manager
+        score_manager=score_manager,
+        floating_texts=floating_texts
     )
 
     running = True
@@ -119,6 +122,10 @@ def main():
         create_enemy_loot(game_state)
         create_object_loot(game_state)
         update_loot_pickup(game_state)
+        
+        # update floating texts
+        for text in floating_texts:
+            text.update()
 
         cleanup_game_state(game_state)
         update_wave_completion(game_state)

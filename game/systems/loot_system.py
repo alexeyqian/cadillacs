@@ -1,4 +1,5 @@
 import pygame
+from game.effects.floating_text import FloatingText
 
 # create loots when enemy destroyed
 def create_enemy_loot(game_state):
@@ -13,7 +14,11 @@ def create_enemy_loot(game_state):
         loot = enemy.create_loot()
         if loot:
             loot_items.append(loot)
-        game_state.score_manager.add_enemy_kill_score(enemy)
+        
+        points = game_state.score_manager.enemy_score(enemy)
+        game_state.score_manager.add_score(points)
+        floating_text = FloatingText(enemy.x, enemy.y - 20, f"+{points}", (255, 255, 0))
+        game_state.floating_texts.append(floating_text)
         enemy.loot_generated = True
 
 # create loots when breakable objects destroyed
@@ -27,7 +32,10 @@ def create_object_loot(game_state):
             loot = obj.create_loot()
             if loot:
                 loot_items.append(loot)
-            game_state.score_manager.add_breakable_score()
+            points = game_state.score_manager.object_score(obj)
+            game_state.score_manager.add_score(points)
+            floating_text = FloatingText(obj.x, obj.y - 20, f"+{points}", (255, 255, 0))
+            game_state.floating_texts.append(floating_text)
             obj.loot_generated = True
 
 def update_loot_pickup(game_state):

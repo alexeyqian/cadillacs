@@ -21,6 +21,7 @@ def main_draw_world(game_state):
     objects = game_state.objects
     loot_items = game_state.loot_items
     hit_sparks = game_state.hit_sparks
+    floating_texts = game_state.floating_texts
 
     # draw background
     #screen.fill((120, 190, 255))
@@ -72,6 +73,9 @@ def main_draw_world(game_state):
     # draw loots
     for loot in loot_items:
         loot.draw(screen, camera.x)
+    # draw floating texts
+    for floating_text in floating_texts:
+        floating_text.draw(screen, camera.x)
 
     #level.draw_props(screen, camera.x, "front")
     level.background.draw_front(screen, camera.x)
