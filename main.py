@@ -16,6 +16,7 @@ from game.systems.inventory_system import *
 from game.systems.wave_system import *
 from game.systems.loot_system import *
 from game.systems.projectile_system import *
+from game.systems.combat_system import *
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -81,45 +82,8 @@ def main():
         ############# update #############
         main_update(game_state)
 
-        # player attack collision / combat detection
-        attack_rect = player.get_attack_rect()
-        if attack_rect and not player.already_hit_enemy:
-            # attack enemies
-            for enemy in enemies:
-                enemy_rect = create_enemy_rect(enemy)
-                if attack_rect.colliderect(enemy_rect):
-                    enemy.take_damage(player.attack_damage(), player.x)
-                    player.already_hit_enemy = True
-                    #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
-                    break # ?? useless
-            # attack breakables
-            for obj in objects:
-                if obj.destroyed:
-                    continue
-                if attack_rect.colliderect(obj.get_rect()):
-                    obj.take_damage(player.attack_damage())
-
-        # player projectile collision
-        for projectile in projectiles:
-            if not projectile.active:
-                continue
-            projectile_rect = projectile.get_rect()
-            # projectile hit enemy
-            for enemy in enemies:
-                enemy_rect = pygame.Rect(enemy.x, enemy.y, enemy.width, enemy.height)
-                if projectile_rect.colliderect(enemy_rect):
-                    enemy.take_damage(projectile.damage, player.x)
-                    projectile.active = False
-                    #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
-                    break
-            # projectile hit breakable
-            for obj in objects:
-                if obj.destroyed:
-                    continue
-                if projectile_rect.colliderect(obj.get_rect()):
-                    obj.take_damage(projectile.damage)
-                    projectile.active = False
-                    break
+        handle_player_attack_collision(game_state)
+        handle_player_projectile_collision(game_state)
 
         handle_enemy_projectile_collision(game_state)
 
