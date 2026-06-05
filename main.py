@@ -16,11 +16,8 @@ from game.systems.loot_system import *
 from game.systems.projectile_system import *
 from game.systems.combat_system import *
 from game.systems.cleanup_system import *
+from game.ui.score_manager import ScoreManager
 from main_draw import *
-
-def create_enemy_rect(enemy):
-    return pygame.Rect(enemy.x, enemy.y,
-                enemy.width, enemy.height)
 
 # level manages progression
 # camera manages view
@@ -37,6 +34,7 @@ def main():
     player = Player()
     level = Level()
     camera = Camera()
+    score_manager = ScoreManager()
 
     enemies = []
     weapons = [
@@ -65,7 +63,8 @@ def main():
         enemy_projectiles=enemy_projectiles,
         objects=objects,
         loot_items=loot_items,
-        hit_sparks=hit_sparks
+        hit_sparks=hit_sparks,
+        score_manager=score_manager
     )
 
     running = True
@@ -75,7 +74,7 @@ def main():
                 running = False
 
         keys = pygame.key.get_pressed()
-        update_player_weapon_interaction(player, weapons, keys)
+        update_player_weapon_interaction(game_state, keys)
 
         update_wave_system(game_state)
         ############# update #############

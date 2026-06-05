@@ -1,6 +1,9 @@
 import pygame
 
-def update_player_weapon_interaction(player,weapons,keys):
+def update_player_weapon_interaction(game_state, keys):
+    player = game_state.player
+    weapons = game_state.weapons
+
     if keys[pygame.K_e]:
         if player.weapon is None:
             player_rect = pygame.Rect(

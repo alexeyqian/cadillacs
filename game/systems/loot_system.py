@@ -13,6 +13,7 @@ def create_enemy_loot(game_state):
         loot = enemy.create_loot()
         if loot:
             loot_items.append(loot)
+        game_state.score_manager.add_enemy_kill_score(enemy)
         enemy.loot_generated = True
 
 # create loots when breakable objects destroyed
@@ -26,6 +27,7 @@ def create_object_loot(game_state):
             loot = obj.create_loot()
             if loot:
                 loot_items.append(loot)
+            game_state.score_manager.add_breakable_score()
             obj.loot_generated = True
 
 def update_loot_pickup(game_state):

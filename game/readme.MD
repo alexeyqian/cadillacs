@@ -38,3 +38,28 @@ Player hits enemy
 Small yellow/white hit spark appears
 ↓
 Spark disappears after a few frames
+
+Enemy kill score
+Combo score
+Boss bonus
+Stage bonus
+Total score
+
++100 normal enemy
++200 fast enemy
++300 heavy enemy
++2000 boss
+
+Combo x2
+Combo x3
+Combo x4
+
+TOP SCORE
+SCORE
+LIVES
+STAGE
+
+Enemy killed      -> score increases
+Breakable object  -> score increases
+Boss defeated     -> big bonus
+HUD shows score

@@ -87,17 +87,31 @@ def main_draw_ui(game_state):
     enemy_projectiles = game_state.enemy_projectiles
     objects = game_state.objects
     loot_items = game_state.loot_items
+    score_manager = game_state.score_manager
 
     font = pygame.font.SysFont(None, 30)
     small_font = pygame.font.SysFont(None, 20)
     big_font = pygame.font.SysFont(None, 60)
+    
+    ############### HUD ###############
+    # score
+    score_text = font.render(
+        f"SCORE {score_manager.score}",
+        True,(255, 255, 255))
+    screen.blit(score_text,(20, 5))
+
+    high_score_text = small_font.render(
+        f"HI {score_manager.high_score}",
+        True,(255, 255, 0))
+    screen.blit(high_score_text,(180, 5))
 
     # health UI
-    pygame.draw.rect(screen,(100,100,100), (20,20,200,20))
+    pygame.draw.rect(screen,(100,100,100), (20,35,200,15))
     hp_width = int(200 * (player.hp / player.max_hp))
-    pygame.draw.rect(screen, (0,255,0), (20,20,hp_width,20))
-    hp_text = font.render(f"HP: {player.hp}/{player.max_hp}", True, (0,0,0))
-    screen.blit(hp_text, (230, 20))
+    pygame.draw.rect(screen, (0,255,0), (20,35,hp_width,15))
+    hp_text = small_font.render(f"HP: {player.hp}/{player.max_hp}", True, (0,0,0))
+    screen.blit(hp_text, (230, 30))
+
     # Weapon UI
     weapon_name = ""
     ammo_str = ""
@@ -141,8 +155,8 @@ def main_draw_ui(game_state):
 
     # debug UI
     control_text = small_font.render("Attack:J, Shoot:K, Pickup:E, Drop:Q", True, (0,0,0))
-    screen.blit(control_text, (20, 50))
+    screen.blit(control_text, (20, 55))
     player_str =  f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}"
     player_text = small_font.render(player_str,True, (0,0,0))
-    screen.blit(player_text, (400, 50))
+    screen.blit(player_text, (400, 55))
     # end of debug text
