@@ -74,11 +74,10 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-        update_wave_system(game_state)
-
         keys = pygame.key.get_pressed()
         update_player_weapon_interaction(player, weapons, keys)
 
+        update_wave_system(game_state)
         ############# update #############
         # update player
         player.update()
