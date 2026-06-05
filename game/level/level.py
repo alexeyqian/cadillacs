@@ -1,4 +1,5 @@
 from game.level.background import Background
+from game.level.prop import Prop
 from game.level.wave import *
 from game.level.spawner import EnemySpawner
 
@@ -9,6 +10,31 @@ class Level:
             "game/assets/backgrounds/stage1/stage1_far.png",
             "game/assets/backgrounds/stage1/stage1_mid.png",
             "game/assets/backgrounds/stage1/stage1_front.png")
+        
+        self.props = [
+            # behind player/enemies
+            Prop(
+                600,360,
+                "game/assets/props/car_wreck.png",
+                layer="back",
+                scale=1.0
+            ),
+
+            Prop(
+                1200,330,
+                "game/assets/props/dino_bones.png",
+                layer="back",
+                scale=1.0
+            ),
+
+            # in front of player/enemies
+            Prop(
+                1800,430,
+                "game/assets/props/bush.png",
+                layer="front",
+                scale=1.0
+            ),
+        ]
 
         self.current_wave = 0
         # used by wave battles
@@ -72,3 +98,8 @@ class Level:
             return None
 
         return self.waves[self.current_wave]
+    
+    def draw_props(self, screen, camera_x, layer):
+        for prop in self.props:
+            if prop.layer == layer:
+                prop.draw(screen, camera_x)

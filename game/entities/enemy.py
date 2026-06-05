@@ -30,6 +30,8 @@ class Enemy:
         self.hp = self.max_hp
         self.state = self.WALK
         self.loot_generated = False
+        self.death_timer = 30
+        self.death_timer_started = False
 
         # within this range, enemy chases player
         # outside this range, enemy ignores player
@@ -49,7 +51,7 @@ class Enemy:
         self.knockback_velocity = 0
         # enemy gets briefly white when hit by player
         self.hit_timer = 0
-        
+
         #lane boundaries
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
@@ -114,6 +116,13 @@ class Enemy:
 
     def update(self, player, enemies):
         if self.state == self.DEAD:
+            if not self.death_timer_started:
+                self.death_timer_started = True
+            if self.death_timer > 0:
+                self.death_timer -= 1
+
+            self.update_animation()
+
             return
 
         # attack cooldown
@@ -171,6 +180,8 @@ class Enemy:
         )
 
         image = self.animation_manager.get_image()
+        if self.state == self.DEAD:
+            image.set_alpha(120) # draw dead enemy darker
         image = pygame.transform.scale(image, (self.width, self.height))
         # Center the scaled image inside the enemy bounding box so it visually aligns
         img_w, img_h = image.get_size()
@@ -266,6 +277,8 @@ class Enemy:
         if self.hp <= 0:
             self.hp = 0
             self.state = self.DEAD
+            self.death_timer = 30
+            self.death_timer_started = False
 
     def apply_knockback(self):
         if self.knockback_velocity == 0:
@@ -293,7 +306,10 @@ class Enemy:
             self.animation_manager.play(self.WALK)
 
         self.animation_manager.update()
-        
+
+    def is_ready_to_remove(self):
+        return self.state == self.DEAD and self.death_timer <= 0
+
     def create_loot(self):
         roll = random.randint(1, 100)
         if roll <= 30:
@@ -302,4 +318,3 @@ class Enemy:
             return Loot(self.x, self.y, "ammo")
 
         return None
-        
