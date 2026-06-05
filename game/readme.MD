@@ -88,3 +88,15 @@ Press L again
 Throw enemy
 ↓
 Thrown enemy damages other enemies
+
+Milestone 33 — Knockdown & Get-Up System
+Goal
+Heavy hit / thrown enemy
+↓
+Enemy falls down
+↓
+Stays down briefly
+↓
+Gets up
+↓
+Returns to battle

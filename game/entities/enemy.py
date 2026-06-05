@@ -59,6 +59,7 @@ class Enemy:
         self.thrown_velocity_x = 0
         self.thrown_timer = 0
         self.thrown_hit_targets = set()
+        self.thrown_damage = 40
 
         #lane boundaries
         self.lane_top = LANE_TOP
@@ -372,6 +373,18 @@ class Enemy:
         self.thrown_velocity_x = 14 * direction
         self.thrown_timer = 30
         self.thrown_hit_targets.clear()
+        self.take_thrown_damage(self.thrown_damage)
+
+    def take_thrown_damage(self, damage):
+        if self.state == self.DEAD:
+            return
+
+        self.hp -= damage
+        if self.hp <= 0:
+            self.hp = 0
+            self.state = self.DEAD
+            self.death_timer = 30
+            self.death_timer_started = False
 
     def create_loot(self):
         roll = random.randint(1, 100)
