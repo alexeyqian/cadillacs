@@ -27,3 +27,19 @@ def create_object_loot(game_state):
             if loot:
                 loot_items.append(loot)
             obj.loot_generated = True
+
+def update_loot_pickup(game_state):
+    player = game_state.player
+    loot_items = game_state.loot_items
+
+    player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+    for loot in loot_items:
+        if not loot.active:
+            continue
+        if player_rect.colliderect(loot.get_rect()):
+            if loot.loot_type == "health":
+                player.hp = min(player.max_hp, player.hp + 30)
+            elif loot.loot_type == "ammo":
+                if player.weapon and hasattr(player.weapon, "ammo"):
+                    player.weapon.ammo += 10
+            loot.active = False

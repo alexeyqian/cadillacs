@@ -1,5 +1,6 @@
 import pygame
 from game.settings import *
+from game.systems.projectile_system import *
 
 def main_update(game_state):
     screen = game_state.screen
@@ -16,6 +17,8 @@ def main_update(game_state):
 
     # update player
     player.update()
+    collect_player_projectiles(game_state)
+
     # should move to player's own update() function
     # prevent escaping arena
     if level.camera_locked:
@@ -29,18 +32,9 @@ def main_update(game_state):
     # update enemies
     for enemy in enemies:
         enemy.update(player, enemies)
-        if hasattr(enemy, "pending_projectile"):
-            if enemy.pending_projectile:
-                enemy_projectiles.append(enemy.pending_projectile)
-                enemy.pending_projectile = None
+        collect_enemy_projectile(game_state, enemy)
 
-    # update player projectiles
-    for projectile in projectiles:
-        projectile.update()
-
-    # update enemy projectiles
-    for projectile in enemy_projectiles:
-        projectile.update()
+    update_projectiles(game_state)
         
     # update hit sparks
     for spark in hit_sparks:

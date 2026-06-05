@@ -15,6 +15,7 @@ from game.game_state import GameState
 from game.systems.inventory_system import *
 from game.systems.wave_system import *
 from game.systems.loot_system import *
+from game.systems.projectile_system import *
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -74,26 +75,9 @@ def main():
 
         update_wave_system(game_state)
 
-        # collect player projectiles
-        if player.pending_projectile:
-            projectiles.append(player.pending_projectile)
-            player.pending_projectile = None
-
         keys = pygame.key.get_pressed()
         update_player_weapon_interaction(player, weapons, keys)
 
-        # auto pickup loot
-        player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
-        for loot in loot_items:
-            if not loot.active:
-                continue
-            if player_rect.colliderect(loot.get_rect()):
-                if loot.loot_type == "health":
-                    player.hp = min(player.max_hp, player.hp + 30)
-                elif loot.loot_type == "ammo":
-                    if player.weapon and hasattr(player.weapon, "ammo"):
-                        player.weapon.ammo += 10
-                loot.active = False
         ############# update #############
         main_update(game_state)
 
@@ -137,17 +121,14 @@ def main():
                     projectile.active = False
                     break
 
-        # enemy projectile collision
-        for projectile in enemy_projectiles:
-            if not projectile.active:
-                continue
-            player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
-            if projectile.get_rect().colliderect(player_rect):
-                player.take_damage(projectile.damage)
-                projectile.active = False
+        handle_enemy_projectile_collision(game_state)
 
+        # has to be after enemy, object destroyed
+        # and before dead enemy and broken object removed
         create_enemy_loot(game_state)
         create_object_loot(game_state)
+
+        update_loot_pickup(game_state)
 
         main_cleanup(game_state)
         update_wave_completion(game_state)
