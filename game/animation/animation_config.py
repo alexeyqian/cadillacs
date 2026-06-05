@@ -19,6 +19,20 @@ PLAYER_ATTACK = {
     "frame_count":4
 }
 
+PLAYER_GRAB = {
+    "file":"game/assets/player/player_grab.png",
+    "frame_width":80,
+    "frame_height":100,
+    "frame_count":4
+}
+
+PLAYER_THROW = {
+    "file":"game/assets/player/player_throw.png",
+    "frame_width":80,
+    "frame_height":100,
+    "frame_count":4
+}
+
 # ==========================================
 # Normal Enemy
 # ==========================================

@@ -55,6 +55,8 @@ class Player:
         self.grabbed_enemy = None
         self.grab_pressed = False
         self.grab_range = 70
+        self.throw_timer = 0
+        self.throw_duration = 14
 
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = PLAYER_HITBOX_W
@@ -96,6 +98,26 @@ class Player:
         else:
             attack_frames = create_attack_frames()
 
+        if file_exists(PLAYER_GRAB["file"]):
+            grab_frames = AssetLoader.load_animation(
+                PLAYER_GRAB["file"],
+                PLAYER_GRAB["frame_width"],
+                PLAYER_GRAB["frame_height"],
+                PLAYER_GRAB["frame_count"]
+            )
+        else:
+            grab_frames = attack_frames
+
+        if file_exists(PLAYER_THROW["file"]):
+            throw_frames = AssetLoader.load_animation(
+                PLAYER_THROW["file"],
+                PLAYER_THROW["frame_width"],
+                PLAYER_THROW["frame_height"],
+                PLAYER_THROW["frame_count"]
+            )
+        else:
+            throw_frames = attack_frames
+
         # animation manager
         self.animation_manager = AnimationManager()
         # compute frame durations (number of game frames each animation frame should last)
@@ -110,6 +132,12 @@ class Player:
             self.WALK, Animation(walk_frames, walk_dur))
         self.animation_manager.add_animation(
             self.ATTACK, Animation(attack_frames, attack_dur)
+        )
+        self.animation_manager.add_animation(
+            self.GRAB, Animation(grab_frames, attack_dur)
+        )
+        self.animation_manager.add_animation(
+            self.THROW, Animation(throw_frames, attack_dur)
         )
         self.animation_manager.add_animation(
             self.HIT, Animation(create_hit_frames(), hit_dur)
@@ -136,6 +164,9 @@ class Player:
             self.combo_timer -= 1
         else:
             self.combo_step = 0
+
+        if self.throw_timer > 0:
+            self.throw_timer -= 1
 
         # attack timer
         if self.is_attacking:
@@ -180,6 +211,10 @@ class Player:
         if self.is_attacking:
             # keep attack state and animation set by start_attack
             pass
+        elif self.throw_timer > 0:
+            self.state = self.THROW
+        elif self.grabbed_enemy:
+            self.state = self.GRAB
         else:
             if moving:
                 self.state = self.WALK
@@ -286,6 +321,10 @@ class Player:
             self.animation_manager.play(self.HIT)
         elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
             self.animation_manager.play(self.ATTACK)
+        elif self.state == self.GRAB:
+            self.animation_manager.play(self.GRAB)
+        elif self.state == self.THROW:
+            self.animation_manager.play(self.THROW)
         elif self.state == self.WALK:
             self.animation_manager.play(self.WALK)
         else:
@@ -402,7 +441,7 @@ class Player:
     
     def grab_enemy(self, enemy):
         self.grabbed_enemy = enemy
-        enemy.grab_me()
+        enemy.grabbed_by_player()
         self.state = self.GRAB
         
     def throw_grabbed_enemy(self):
@@ -412,7 +451,8 @@ class Player:
         direction = 1
         if not self.facing_right:
             direction = -1
-        self.grabbed_enemy.throw_me(direction)
+        self.grabbed_enemy.thrown_by_player(direction)
         
         self.grabbed_enemy = None
+        self.throw_timer = self.throw_duration
         self.state = self.THROW

@@ -20,6 +20,8 @@ class Enemy:
     DEAD = "DEAD"
     GRABBED = "GRABBED"
     THROWN = "THROWN"
+    KNOCKDOWN = 'KNOCKDOWN' # heavy hit or thrown cause enemy falls down briefly
+    GETUP = "GETUP" # gets up after knockdown
 
     def __init__(self, x, y, idle_config=None, walk_config=None,
                 attack_config=None, dead_config=None,
@@ -60,11 +62,16 @@ class Enemy:
         self.thrown_timer = 0
         self.thrown_hit_targets = set()
         self.thrown_damage = 40
+        
+        #knockdown/getup
+        self.knockdown_timer = 0
+        self.getup_timer = 0
 
         #lane boundaries
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
         
+        # todo: move these init process to separate function
         use_normal_dead_animation = (
             idle_config is None and
             walk_config is None and
@@ -147,15 +154,31 @@ class Enemy:
         if self.state == self.GRABBED:
             self.update_animation()
             return
+
         if self.state == self.THROWN:
             self.x += self.thrown_velocity_x
             self.thrown_velocity_x *= 0.9
             self.thrown_timer -= 1
             
             if self.thrown_timer <= 0 or abs(self.thrown_velocity_x) < 1:
-                self.state = self.WALK
+                self.state = self.KNOCKDOWN
+                self.knockdown_timer = 60
                 self.thrown_velocity_x = 0
-            
+            self.update_animation()
+            return
+
+        if self.state == self.KNOCKDOWN:
+            self.knockdown_timer -= 1
+            if self.knockdown_timer <= 0:
+                self.state = self.GETUP
+                self.getup_timer = 20
+            self.update_animation()
+            return
+        
+        if self.state == self.GETUP:
+            self.getup_timer -= 1
+            if self.getup_timer <= 0:
+                self.state = self.WALK
             self.update_animation()
             return
             
@@ -164,9 +187,7 @@ class Enemy:
                 self.death_timer_started = True
             if self.death_timer > 0:
                 self.death_timer -= 1
-
             self.update_animation()
-
             return
 
         # attack cooldown
@@ -226,7 +247,12 @@ class Enemy:
         image = self.animation_manager.get_image()
         if self.state == self.DEAD:
             image.set_alpha(120) # draw dead enemy darker
-        image = pygame.transform.scale(image, (self.width, self.height))
+        if self.state == self.KNOCKDOWN: # knockdown show enemy sideways
+            image = pygame.transform.rotate(image, 90)
+            image = pygame.transform.scale(image, (self.height, self.width))
+        else:
+            image = pygame.transform.scale(image, (self.width, self.height))
+
         # Center the scaled image inside the enemy bounding box so it visually aligns
         img_w, img_h = image.get_size()
         blit_x = screen_x + (self.width - img_w) // 2
@@ -317,6 +343,10 @@ class Enemy:
             self.knockback_velocity = 10
         else:
             self.knockback_velocity = -10
+            
+        if self.hp > 0 and self.should_knockdown_from_damage(damage):
+            self.knockdown()
+            return
 
         if self.hp <= 0:
             self.hp = 0
@@ -332,15 +362,19 @@ class Enemy:
         self.knockback_velocity *= 0.8
         if abs(self.knockback_velocity) < 0.5:
             self.knockback_velocity = 0
+            
+    def knockdown(self):
+        if self.state == self.DEAD:
+            return
+        self.state = self.KNOCKDOWN
+        self.knockdown_timer = 60
+        self.knockback_velocity = 0
+        
+    def should_knockdown_from_damage(self, damage):
+        return damage >= 40
 
     def update_animation(self):
-        if self.state == self.DEAD:
-            self.animation_manager.play(self.DEAD)
-        elif self.state == self.HIT:
-            self.animation_manager.play(self.HIT)
-        elif self.state == self.ATTACK:
-            self.animation_manager.play(self.ATTACK)
-        elif self.state == self.IDLE:
+        if self.state == self.IDLE:
             self.animation_manager.play(self.IDLE)
         elif self.state == self.WALK:
             self.animation_manager.play(self.WALK)
@@ -348,24 +382,36 @@ class Enemy:
             self.animation_manager.play(self.IDLE)
         elif self.state == self.CHASE:
             self.animation_manager.play(self.WALK)
+        elif self.state == self.ATTACK:
+            self.animation_manager.play(self.ATTACK)
+        # by player
+        elif self.state == self.HIT:
+            self.animation_manager.play(self.HIT)
         elif self.state == self.GRABBED:
             self.animation_manager.play(self.IDLE)
         elif self.state == self.THROWN:
             self.animation_manager.play(self.HIT)
+        elif self.state == self.KNOCKDOWN:
+            self.animation_manager.play(self.HIT)
+
+        elif self.state == self.GETUP:
+            self.animation_manager.play(self.IDLE)
+        elif self.state == self.DEAD:
+            self.animation_manager.play(self.DEAD)
 
         self.animation_manager.update()
 
     def is_ready_to_remove(self):
         return self.state == self.DEAD and self.death_timer <= 0
 
-    def grab_me(self):
+    def grabbed_by_player(self):
         if self.state == self.DEAD:
             return
         self.state = self.GRABBED
         self.knockback_velocity = 0
         self.hit_timer = 0
         
-    def throw_me(self, direction):
+    def thrown_by_player(self, direction):
         if self.state == self.DEAD:
             return
         

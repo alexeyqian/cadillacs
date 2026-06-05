@@ -97,5 +97,5 @@ def handle_player_thrown_enemy_collision(game_state):
             
             enemy_rect = create_enemy_rect(enemy)
             if thrown_rect.colliderect(enemy_rect):
-                enemy.take_damage(30, thrown_enemy.x)
+                enemy.take_damage(45, thrown_enemy.x)
                 thrown_enemy.thrown_hit_targets.add(id(enemy))
