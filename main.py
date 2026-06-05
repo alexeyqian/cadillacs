@@ -12,6 +12,7 @@ from main_update import *
 from main_draw import *
 from game.effects.hit_spark import HitSpark
 from game.game_state import GameState
+from game.systems.inventory_system import *
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -71,13 +72,6 @@ def main():
 
         # create/trigger wave when player reaches trigger_x
         wave = level.get_current_wave()
-        # only for SpawnWave
-        if wave and wave.started:
-            if hasattr(wave, "update"):
-                enemies.extend(wave.update())
-
-        # for normal Wave and BossWave
-        # since they dont' implement update()
         if wave and not wave.started and player.x >= wave.trigger_x:
             # start the wave and initialize pending enemies
             wave.spawn()
@@ -86,11 +80,17 @@ def main():
             level.camera_locked = True
             level.lock_x = camera.x
 
-        # if wave has started, spawn pending enemies over time
-        if wave and wave.started and hasattr(wave, "update_spawn"):
-            new_enemies = wave.update_spawn()
-            if new_enemies:
-                enemies.extend(new_enemies)
+        # spawn pending enemies over time
+        if wave and wave.started:
+            # for normal Wave and BossWave
+            if hasattr(wave, "update_spawn"):
+                new_enemies = wave.update_spawn()
+                if new_enemies:
+                    enemies.extend(new_enemies)
+            # only for SpawnWave
+            if hasattr(wave, "update"):
+                enemies.extend(wave.update())
+
         # create loots when breakable destroys
         for enemy in enemies:
             if enemy.hp > 0:
@@ -205,22 +205,6 @@ def main():
         clock.tick(FPS)
 
     pygame.quit()
-
-
-def update_player_weapon_interaction(player,weapons,keys):
-    if keys[pygame.K_e]:
-        if player.weapon is None:
-            player_rect = pygame.Rect(
-                player.x,player.y,
-                player.width,player.height)
-            for weapon in weapons:
-                if weapon.picked_up:
-                    continue
-                if player_rect.colliderect(weapon.get_rect()):
-                    player.pick_up_weapon(weapon)
-                    break
-    if keys[pygame.K_q]:
-        player.drop_weapon()
 
 def main_cleanup(game_state):
         # remove dead enemies

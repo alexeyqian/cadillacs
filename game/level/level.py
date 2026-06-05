@@ -78,9 +78,9 @@ class Level:
                     "raptor"
                 ]
             ),
-            BossWave(2300),
+            BossWave(2400),
             SpawnWave(
-                trigger_x=2400,
+                trigger_x=2500,
                 spawners=[
                     EnemySpawner(
                         2800,
