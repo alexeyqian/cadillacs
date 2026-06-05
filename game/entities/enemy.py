@@ -20,7 +20,8 @@ class Enemy:
     DEAD = "DEAD"
 
     def __init__(self, x, y, idle_config=None, walk_config=None,
-                attack_config=None, fallback_frame_factory=None):
+                attack_config=None, dead_config=None,
+                fallback_frame_factory=None):
         self.x = x
         self.y = y
         self.width = 50
@@ -56,12 +57,21 @@ class Enemy:
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
         
+        use_normal_dead_animation = (
+            idle_config is None and
+            walk_config is None and
+            attack_config is None and
+            dead_config is None
+        )
+
         if idle_config is None:
             idle_config = NORMAL_ENEMY_IDLE
         if walk_config is None:
             walk_config = NORMAL_ENEMY_WALK
         if attack_config is None:
             attack_config = NORMAL_ENEMY_ATTACK
+        if use_normal_dead_animation:
+            dead_config = NORMAL_ENEMY_DEAD
         if fallback_frame_factory is None:
             fallback_frame_factory = create_enemy_frames
 
@@ -96,6 +106,16 @@ class Enemy:
         else:
             attack_frames = fallback_frame_factory()
 
+        if dead_config and file_exists(dead_config["file"]):
+            dead_frames = AssetLoader.load_animation(
+                    dead_config["file"],
+                    dead_config["frame_width"],
+                    dead_config["frame_height"],
+                    dead_config["frame_count"]
+                )
+        else:
+            dead_frames = fallback_frame_factory()
+
         # animation manager
         self.animation_manager = AnimationManager()
         # compute frame durations to match game FPS
@@ -103,6 +123,7 @@ class Enemy:
         attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK_ENEMY))
         hit_dur = max(1, int(FPS / ANIM_FPS_HIT_ENEMY))
         idle_dur = max(1, int(FPS / ANIM_FPS_IDLE_ENEMY))
+        dead_dur = max(1, int(self.death_timer / len(dead_frames)))
         self.animation_manager.add_animation(
             self.IDLE, Animation(idle_frames, idle_dur))
         self.animation_manager.add_animation(
@@ -112,7 +133,7 @@ class Enemy:
         self.animation_manager.add_animation(
             self.HIT, Animation(fallback_frame_factory(), hit_dur))
         self.animation_manager.add_animation(
-            self.DEAD, Animation(fallback_frame_factory(), 999))
+            self.DEAD, Animation(dead_frames, dead_dur))
 
     def update(self, player, enemies):
         if self.state == self.DEAD:
