@@ -1,8 +1,19 @@
 import pygame
 from game.settings import *
 
-def main_update(screen, camera, level, player, enemies, 
-                    weapons, projectiles, enemy_projectiles, objects, loot_items):
+def main_update(game_state):
+    screen = game_state.screen
+    camera = game_state.camera
+    level = game_state.level
+    player = game_state.player
+    enemies = game_state.enemies
+    weapons = game_state.weapons
+    projectiles = game_state.projectiles
+    enemy_projectiles = game_state.enemy_projectiles
+    objects = game_state.objects
+    loot_items = game_state.loot_items
+    hit_sparks = game_state.hit_sparks
+
     # update player
     player.update()
     # should move to player's own update() function
@@ -30,6 +41,10 @@ def main_update(screen, camera, level, player, enemies,
     # update enemy projectiles
     for projectile in enemy_projectiles:
         projectile.update()
+        
+    # update hit sparks
+    for spark in hit_sparks:
+        spark.update()
 
     # update camera
     if level.camera_locked:

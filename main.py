@@ -10,6 +10,8 @@ from game.entities.loot import Loot
 from game.entities.breakable_object import BreakableObject
 from main_update import *
 from main_draw import *
+from game.effects.hit_spark import HitSpark
+from game.game_state import GameState
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y,
@@ -37,13 +39,28 @@ def main():
             Weapon(2000, 350, "pistol")]
     projectiles = []
     enemy_projectiles = []
-    # breakable objects
-    objects = [
+    objects = [ # breakable objects
         BreakableObject(1100, 360),
         BreakableObject(1800, 360),
         BreakableObject(2500, 360),
     ]
     loot_items = []
+    hit_sparks = []
+
+    game_state = GameState(
+        screen=screen,
+        clock=clock,
+        player=player,
+        level=level,
+        camera=camera,
+        enemies=enemies,
+        weapons=weapons,
+        projectiles=projectiles,
+        enemy_projectiles=enemy_projectiles,
+        objects=objects,
+        loot_items=loot_items,
+        hit_sparks=hit_sparks
+    )
 
     running = True
     while running:
@@ -105,9 +122,7 @@ def main():
                         player.weapon.ammo += 10
                 loot.active = False
         ############# update #############
-        main_update(screen, camera, level, player, enemies, 
-                    weapons, projectiles, enemy_projectiles, objects, loot_items)
-
+        main_update(game_state)
 
         # player attack collision / combat detection
         attack_rect = player.get_attack_rect()
@@ -118,6 +133,8 @@ def main():
                 if attack_rect.colliderect(enemy_rect):
                     enemy.take_damage(player.attack_damage(), player.x)
                     player.already_hit_enemy = True
+                    hit_sparks.append(HitSpark(enemy.x+enemy.width//2,
+                                        enemy.y + enemy.height//2))
                     break # ?? useless
             # attack breakables
             for obj in objects:
@@ -137,6 +154,8 @@ def main():
                 if projectile_rect.colliderect(enemy_rect):
                     enemy.take_damage(projectile.damage, player.x)
                     projectile.active = False
+                    hit_sparks.append(HitSpark(enemy.x+enemy.width//2,
+                                        enemy.y + enemy.height//2))
                     break
             # projectile hit breakable
             for obj in objects:
@@ -164,16 +183,7 @@ def main():
                     loot_items.append(loot)
                 obj.loot_generated = True
         
-        # remove dead enemies
-        enemies = [enemy for enemy in enemies if not enemy.is_ready_to_remove()]
-        # clean up player projectiles
-        projectiles = [p for p in projectiles if p.active]
-        # clean up enemy projectiles
-        enemy_projectiles = [p for p in enemy_projectiles if p.active]
-        # clean up breakables
-        objects = [obj for obj in objects if obj.hp > 0]
-        # clean up loots
-        loot_items = [l for l in loot_items if l.active]
+        main_cleanup(game_state)
 
         # wave completion logic
         wave = level.get_current_wave()
@@ -190,8 +200,7 @@ def main():
                 level.camera_locked = False
 
         ############# draw #############
-        main_draw(screen, camera, level, player, enemies, 
-                    weapons, projectiles, enemy_projectiles, objects, loot_items)
+        main_draw(game_state)
 
         pygame.display.flip()
         clock.tick(FPS)
@@ -214,6 +223,19 @@ def update_player_weapon_interaction(player,weapons,keys):
     if keys[pygame.K_q]:
         player.drop_weapon()
 
+def main_cleanup(game_state):
+        # remove dead enemies
+        game_state.enemies = [enemy for enemy in game_state.enemies if not enemy.is_ready_to_remove()]
+        # clean up player projectiles
+        game_state.projectiles = [p for p in game_state.projectiles if p.active]
+        # clean up enemy projectiles
+        game_state.enemy_projectiles = [p for p in game_state.enemy_projectiles if p.active]
+        # clean up breakables
+        game_state.objects = [obj for obj in game_state.objects if obj.hp > 0]
+        # clean up loots
+        game_state.loot_items = [l for l in game_state.loot_items if l.active]
+        # clean up hit sparks
+        game_state.hit_sparks = [s for s in game_state.hit_sparks if s.active]
 
 if __name__ == "__main__":
     main()

@@ -1,21 +1,27 @@
 import pygame
 from game.settings import *
 
-
 # draw order: 
 # far background, mid background, ground layer, decorations behind player,
 # player, enemies, objects, weapons, projectiles, foreground, decorations in front, ui
-
 # world decorations: street lamps, destroyed signs, bones, trees, dinosaur skeletons etc
-def main_draw(screen, camera, level, player, enemies, 
-                    weapons, projectiles, enemy_projectiles, objects, loot_items):
-    main_draw_world(screen, camera, level, player, enemies, 
-                    weapons, projectiles, enemy_projectiles, objects, loot_items)
-    main_draw_ui(screen, camera, level, player, enemies, 
-                    weapons, projectiles, enemy_projectiles, objects, loot_items)
+def main_draw(game_state):
+    main_draw_world(game_state)
+    main_draw_ui(game_state)
 
-def main_draw_world(screen, camera, level, player, enemies, 
-                    weapons, projectiles, enemy_projectiles, objects, loot_items):
+def main_draw_world(game_state):
+    screen = game_state.screen
+    camera = game_state.camera
+    level = game_state.level
+    player = game_state.player
+    enemies = game_state.enemies
+    weapons = game_state.weapons
+    projectiles = game_state.projectiles
+    enemy_projectiles = game_state.enemy_projectiles
+    objects = game_state.objects
+    loot_items = game_state.loot_items
+    hit_sparks = game_state.hit_sparks
+
     # draw background
     #screen.fill((120, 190, 255))
     level.background.draw_back(screen, camera.x)
@@ -57,6 +63,9 @@ def main_draw_world(screen, camera, level, player, enemies,
     # draw enemy projectiles
     for projectile in enemy_projectiles:
         projectile.draw(screen, camera.x)
+    # draw hit sparks
+    for spark in hit_sparks:
+        spark.draw(screen, camera.x)
     # draw breakables
     for obj in objects:
         obj.draw(screen, camera.x)
@@ -67,8 +76,18 @@ def main_draw_world(screen, camera, level, player, enemies,
     #level.draw_props(screen, camera.x, "front")
     level.background.draw_front(screen, camera.x)
 
-def main_draw_ui(screen, camera, level, player, enemies, 
-                    weapons, projectiles, enemy_projectiles, objects, loot_items):
+def main_draw_ui(game_state):
+    screen = game_state.screen
+    camera = game_state.camera
+    level = game_state.level
+    player = game_state.player
+    enemies = game_state.enemies
+    weapons = game_state.weapons
+    projectiles = game_state.projectiles
+    enemy_projectiles = game_state.enemy_projectiles
+    objects = game_state.objects
+    loot_items = game_state.loot_items
+
     font = pygame.font.SysFont(None, 30)
     small_font = pygame.font.SysFont(None, 20)
     big_font = pygame.font.SysFont(None, 60)
