@@ -204,7 +204,11 @@ def main_draw_ui(game_state):
     # announcement UI
     announcement = game_state.announcement_manager
     if announcement.active:
-        title = big_font.render(announcement.title,True,YELLOW_COLOR)
+        flash_color = YELLOW_COLOR
+        if announcement.title == "WARNING":
+            if(announcement.timer // 10) % 2:
+                flash_color = RED_COLOR
+        title = big_font.render(announcement.title,True,flash_color)
         screen.blit(title,title.get_rect(
                 center=(SCREEN_WIDTH // 2,140)))
         subtitle = big_font.render(announcement.subtitle,True,WHITE_COLOR)
