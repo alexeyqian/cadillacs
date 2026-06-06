@@ -2,26 +2,15 @@ import pygame
 from game.settings import *
 from game.camera import Camera
 from game.level.level import Level
-from game.level.wave import SpawnWave
 from game.entities.player import Player
-from game.entities.enemy import Enemy
 from game.entities.weapon import Weapon
-from game.entities.loot import Loot
 from game.entities.breakable_object import BreakableObject
-from game.effects.hit_spark import HitSpark
 from game.game_state import GameState
-from game.systems.inventory_system import *
-from game.systems.wave_system import *
-from game.systems.loot_system import *
-from game.systems.projectile_system import *
-from game.systems.combat_system import *
 from game.systems.continue_system import *
-from game.systems.cleanup_system import *
-from game.systems.life_reward_system import *
 from game.systems.gameplay_system import *
+from game.systems.player_input_system import *
 from game.ui.score_manager import ScoreManager
 from game.ui.stage_clear_manager import StageClearManager
-from game.effects.floating_text import FloatingText
 from main_draw import *
 
 # level manages progression
@@ -79,6 +68,7 @@ def main():
 
     running = True
     while running:
+        # 1 process events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -87,17 +77,20 @@ def main():
                 # useful for development, will remove in prod
                 if event.key == pygame.K_5:
                     game_state.credits += 1
-            if stage_clear_manager.active and stage_clear_manager.timer <= 0:
+            if (game_state.stage_clear_manager.active
+                    and game_state.stage_clear_manager.timer <= 0):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         running = False # ??
 
+        # 2 update continue
         keys = pygame.key.get_pressed()
         # player death and lives check, and related continue status
         if (player.state == player.DEAD 
             and player.lives <= 0 
             and game_state.credits > 0):
             game_state.continue_active = True
+
         update_continue_system(game_state, keys)
 
         # prevent gameplay while continue screen active
@@ -107,26 +100,17 @@ def main():
             clock.tick(FPS)
             continue
 
-        if stage_clear_manager.activate:
+        if game_state.stage_clear_manager.active:
             # update stage clear manager
-            stage_clear_manager.update()
-            stage_clear_manager.apply_bonus(score_manager)
+            game_state.stage_clear_manager.update()
+            game_state.stage_clear_manager.apply_bonus(score_manager)
+        else:
+            # 3. update player input
+            update_player_input_system(game_state, keys)
+            # 4 update gameplay
+            update_gameplay(game_state, keys)
 
-        update_player_weapon_interaction(game_state, keys)
-        handle_player_grab_or_throw(game_state, keys)
-
-        update_gameplay(game_state, keys)
-
-        # should move to player's own update() function
-        # prevent escaping arena
-        if level.camera_locked:
-            left_wall = level.lock_x
-            right_wall = level.lock_x + SCREEN_WIDTH - player.width
-            if player.x < left_wall:
-                player.x = left_wall
-            if player.x > right_wall:
-                player.x = right_wall
-
+        # 5. draw
         main_draw(game_state)
 
         pygame.display.flip()
