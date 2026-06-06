@@ -59,55 +59,76 @@ class Level:
         self.lock_x = None
         
         self.waves = [
-            # first wave
+            # Wave 1: simple warm-up, teaches arena lock.
             Wave(
-                trigger_x=800,
+                trigger_x=900,
                 enemy_types=[
-                    "normal",
                     "normal",
                     "normal"
                 ]
             ),
-            # second wave
+
+            # Wave 2: one fast enemy adds pressure without overwhelming.
             Wave(
-                trigger_x=1500,
+                trigger_x=2100,
                 enemy_types=[
                     "normal",
-                    "fast",
                     "fast"
                 ]
             ),
-            # third wave
+
+            # Wave 3: first medium mixed group.
             Wave(
-                trigger_x=4300,
+                trigger_x=3400,
+                enemy_types=[
+                    "normal",
+                    "normal",
+                    "fast"
+                ]
+            ),
+
+            # Wave 4: introduce heavy enemy with only light support.
+            Wave(
+                trigger_x=4700,
                 enemy_types=[
                     "heavy",
-                    "normal",
-                    "fast"
+                    "normal"
                 ]
             ),
-            # fourth wave: introduce the dinosaur enemy
+
+            # Wave 5: introduce dinosaurs after the player has seen heavy enemies.
             Wave(
-                trigger_x=5300,
+                trigger_x=5900,
                 enemy_types=[
                     "raptor",
                     "normal",
-                    "raptor"
+                    "fast"
                 ]
             ),
-            BossWave(6200),
+
+            # Wave 6: reinforcement wave, moderate count but delayed spawns.
             SpawnWave(
-                trigger_x=6500,
+                trigger_x=7100,
                 spawners=[
                     EnemySpawner(
-                        6800,
+                        7600,
                         600,
                         "normal",
-                        5,
+                        3,
                         120
+                    ),
+                    EnemySpawner(
+                        7900,
+                        640,
+                        "fast",
+                        2,
+                        180
                     )
                 ]
-            )
+            ),
+
+            # Wave 7: boss finale, far enough after reinforcements to recover.
+            BossWave(8600)
         ]
 
     def get_current_wave(self):
