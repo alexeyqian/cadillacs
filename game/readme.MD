@@ -157,3 +157,14 @@ resume
 Credits = 0
 ↓
 cannot continue
+
+Milestone 40 — Boss Warning & Wave Intro UI
+Walk right
+↓
+================
+WARNING !!
+================
+BOSS APPROACHING
+(screen pauses briefly)
+↓
+Boss enters

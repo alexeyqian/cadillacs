@@ -201,6 +201,16 @@ def main_draw_ui(game_state):
         #continue
         return
     
+    # announcement UI
+    announcement = game_state.announcement_manager
+    if announcement.active:
+        title = big_font.render(announcement.title,True,YELLOW_COLOR)
+        screen.blit(title,title.get_rect(
+                center=(SCREEN_WIDTH // 2,140)))
+        subtitle = big_font.render(announcement.subtitle,True,WHITE_COLOR)
+        screen.blit(subtitle,subtitle.get_rect(
+                center=(SCREEN_WIDTH // 2,210)))
+
     # Continue UI
     if game_state.continue_active:
         seconds = game_state.continue_timer // FPS

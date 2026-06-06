@@ -9,6 +9,14 @@ def update_wave_system(game_state):
     wave = level.get_current_wave()
 
     if wave and not wave.started and player.x >= wave.trigger_x:
+            # add wave warning announcement
+            if wave.__class__.__name__ == "BossWave":
+                game_state.announcement_manager.show(
+                    "WARNING", "BOSS APPROACHING", 180)
+            else:
+                game_state.announcement_manager.show(
+                    f"WAVE {game_state.level.current_wave + 1}",
+                    "GET READY", 120)
             # start the wave and initialize pending enemies
             wave.spawn()
             # lock camera only when wave actually starts

@@ -115,6 +115,9 @@ def main():
 
         # update score manager
         score_manager.update()
+        # update announcement manager
+        game_state.announcement_manager.update()
+
         # update stage clear manager
         stage_clear_manager.update()
         if stage_clear_manager.activate:

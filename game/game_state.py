@@ -1,3 +1,4 @@
+from game.ui.announcement_manager import AnnouncementManager
 class GameState:
     def __init__(
         self,
@@ -39,5 +40,7 @@ class GameState:
         self.continue_timer = 60
         self.continue_active = False
         self.continue_used = 0
+
+        self.announcement_manager = AnnouncementManager()
 
         self.running = True
