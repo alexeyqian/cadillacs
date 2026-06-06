@@ -117,7 +117,7 @@ def main_draw_ui(game_state):
     # credits
     credit_text = small_font.render(
         f"CREDITS {game_state.credits}", True, WHITE_COLOR)
-    screen.blit(credit_text, 450, 5)
+    screen.blit(credit_text, (450, 5))
     
     # combo UI
     combo = game_state.score_manager.combo_count
