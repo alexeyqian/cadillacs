@@ -1,5 +1,6 @@
 import pygame
 from game.settings import *
+from game.colors import *
 
 # draw order: 
 # far background, mid background, ground layer, decorations behind player,
@@ -98,7 +99,7 @@ def main_draw_ui(game_state):
     big_font = pygame.font.SysFont(None, 60)
     
     ############### HUD ###############
-    # score
+    # score UI
     score_text = font.render(
         f"SCORE {score_manager.score}",
         True,(255, 255, 255))
@@ -106,8 +107,13 @@ def main_draw_ui(game_state):
 
     high_score_text = small_font.render(
         f"HI {score_manager.high_score}",
-        True,(255, 255, 0))
+        True,YELLOW_COLOR)
     screen.blit(high_score_text,(180, 5))
+    # next life text
+    next_life_text = small_font.render(
+        f"NEXT LIFE {game_state.score_manager.next_extra_life_score}",
+        True, CYAN_COLOR)
+    screen.blit(next_life_text, (380, 5))
     
     # combo UI
     combo = game_state.score_manager.combo_count

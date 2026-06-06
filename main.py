@@ -17,6 +17,7 @@ from game.systems.projectile_system import *
 from game.systems.combat_system import *
 from game.systems.continue_system import *
 from game.systems.cleanup_system import *
+from game.systems.life_reward_system import *
 from game.ui.score_manager import ScoreManager
 from game.ui.stage_clear_manager import StageClearManager
 from game.effects.floating_text import FloatingText
@@ -151,7 +152,10 @@ def main():
         create_enemy_loot(game_state)
         create_object_loot(game_state)
         update_loot_pickup(game_state)
-        
+        # after all score changing systems
+        # like pickup loot, kill enemies etc.
+        update_life_reward_system(game_state)
+
         # update floating texts
         for text in floating_texts:
             text.update()

@@ -7,6 +7,9 @@ class ScoreManager:
         self.combo_timer = 0
         self.combo_timeout = 120
         
+        self.next_extra_life_score = 5000
+        self.extra_life_step = 10000
+        
     def register_hit(self):
         self.combo_count += 1
         self.combo_timer = self.combo_timeout
@@ -73,3 +76,9 @@ class ScoreManager:
     def add_breakable_score(self, obj):
         points = self.object_score(obj)
         self.add_score(points)
+        
+    def should_award_extra_life(self):
+        return self.score >= self.next_extra_life_score
+    
+    def advance_extra_life_threshold(self):
+        self.next_extra_life_score += self.extra_life_step

@@ -125,6 +125,14 @@ Score Bonus
 Milestone 38 — Extra Life System
 5000 points -> +1 life
 20000 points -> +1 life
+Reach score threshold
+↓
+Gain +1 life
+↓
+Show floating text / HUD message
+↓
+Next threshold increases
+
 Milestone 39 — Continue Credits / Arcade Coin System
 Credits: 3
 Continue consumes credits
