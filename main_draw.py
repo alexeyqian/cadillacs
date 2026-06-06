@@ -114,6 +114,10 @@ def main_draw_ui(game_state):
         f"NEXT LIFE {game_state.score_manager.next_extra_life_score}",
         True, CYAN_COLOR)
     screen.blit(next_life_text, (380, 5))
+    # credits
+    credit_text = small_font.render(
+        f"CREDITS {game_state.credits}", True, WHITE_COLOR)
+    screen.blit(credit_text, 450, 5)
     
     # combo UI
     combo = game_state.score_manager.combo_count
@@ -202,7 +206,7 @@ def main_draw_ui(game_state):
         seconds = game_state.continue_timer // FPS
         continue_text = big_font.render(f"CONTINUE? {seconds}", True, YELLOW_COLOR)
         screen.blit(continue_text, continue_text.get_rect(center=(SCREEN_WIDTH//2,SCREEN_HEIGHT//2)))
-        continue_hint_text = big_font.render(f"Press C to Continue", True, WHITE_COLOR)
+        continue_hint_text = big_font.render(f"Press C to Continue, Credits: {game_state.credits}", True, WHITE_COLOR)
         screen.blit(continue_hint_text, continue_hint_text.get_rect(center=(SCREEN_WIDTH//2,SCREEN_HEIGHT//2 + 60)))
         return
 

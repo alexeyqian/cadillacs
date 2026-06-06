@@ -139,3 +139,21 @@ Continue consumes credits
 Milestone 40 — Enemy Wave Intro / Warning UI
 WARNING!
 BOSS APPROACHING!
+
+Milestone 39 — Credits / Coin System
+goal:
+Credits: 3
+
+Player dies with 0 lives
+↓
+Continue screen appears
+
+Press C
+↓
+credits -= 1
+lives = 3
+resume
+
+Credits = 0
+↓
+cannot continue

@@ -13,6 +13,10 @@ def update_continue_system(game_state, keys):
 
     # keys = pygame.key.get_pressed()
     if keys[pygame.K_c]:
+        if game_state.credits <= 0:
+            return
+        game_state.credits -= 1
+
         player.lives = 3
         player.hp = player.max_hp
         player.state = player.IDLE

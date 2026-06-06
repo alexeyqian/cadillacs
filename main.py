@@ -80,6 +80,11 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            if event.type == pygame.KEYDOWN:
+                # insert coin as credit
+                # useful for development, will remove in prod
+                if event.key == pygame.K_5:
+                    game_state.credits += 1
             if stage_clear_manager.activate and stage_clear_manager.timer <= 0:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
@@ -96,7 +101,8 @@ def main():
 
         # player death and lives check, and related continue status
         if player.state == player.DEAD and player.lives <= 0:
-            game_state.continue_active = True
+            if game_state.credits > 0:
+                game_state.continue_active = True
         update_continue_system(game_state, keys)
         # prevent gameplay while continue screen active
         if game_state.continue_active:

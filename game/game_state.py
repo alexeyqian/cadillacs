@@ -34,7 +34,8 @@ class GameState:
         self.score_manager = score_manager
         self.floating_texts = floating_texts
         self.stage_clear_manager = stage_clear_manager
-        
+
+        self.credits = 3
         self.continue_timer = 60
         self.continue_active = False
         self.continue_used = 0
