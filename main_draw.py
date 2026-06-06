@@ -164,7 +164,7 @@ def main_draw_ui(game_state):
     # stage clear manager UI
     stage_clear = game_state.stage_clear_manager
     if stage_clear.active:
-        title = big_font.render("STAGE CLEAR", True, YELLOW_COLOR)
+        title = big_font.render("WELL DONE! (stage clear)", True, YELLOW_COLOR)
         screen.blit(title, title.get_rect(center=(SCREEN_WIDTH//2, 120)))
 
         life_text = font.render(

@@ -33,16 +33,27 @@ def main():
 
     enemies = []
     weapons = [
-            Weapon(1300,650, "knife"),
-            Weapon(3100,650, "bat"),
-            Weapon(5200, 650, "pistol")]
+            # Light melee upgrade before fast enemies appear.
+            Weapon(1500, 650, "knife"),
+            # Heavy melee upgrade before the heavy enemy wave.
+            Weapon(4050, 650, "bat"),
+            # Ranged option before raptors, reinforcements, and boss.
+            Weapon(6400, 650, "pistol")]
     projectiles = []
     enemy_projectiles = []
     objects = [ # breakable objects
-        BreakableObject(1500, 670),
-        BreakableObject(3600, 670),
-        BreakableObject(5600, 670),
-        BreakableObject(7800, 670),
+        # Early recovery after the first warm-up wave.
+        BreakableObject(1450, 670),
+        # Recovery before the first medium mixed wave.
+        BreakableObject(2850, 670),
+        # Resource point before the heavy enemy introduction.
+        BreakableObject(4200, 670),
+        # Resource point before the raptor wave.
+        BreakableObject(5550, 670),
+        # Recovery before the reinforcement wave.
+        BreakableObject(6750, 670),
+        # Final resource point before the boss.
+        BreakableObject(8150, 670),
     ]
     loot_items = []
     hit_sparks = []
