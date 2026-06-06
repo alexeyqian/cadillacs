@@ -102,7 +102,7 @@ def main_draw_ui(game_state):
     # score UI
     score_text = font.render(
         f"SCORE {score_manager.score}",
-        True,(255, 255, 255))
+        True,WHITE_COLOR)
     screen.blit(score_text,(20, 5))
 
     high_score_text = small_font.render(
@@ -121,13 +121,13 @@ def main_draw_ui(game_state):
     if combo > 1:
         combo_text = font.render(
             f"{combo} HIT COMBO x{multiplier}",
-            True,(255, 220, 0))
+            True,YELLOW_COLOR)
         screen.blit(combo_text,(20, 75))
 
     # health UI
     pygame.draw.rect(screen,(100,100,100), (20,35,200,15))
     hp_width = int(200 * (player.hp / player.max_hp))
-    pygame.draw.rect(screen, (0,255,0), (20,35,hp_width,15))
+    pygame.draw.rect(screen, GREEN_COLOR, (20,35,hp_width,15))
     hp_text = small_font.render(f"HP: {player.hp}/{player.max_hp}", True, (0,0,0))
     screen.blit(hp_text, (230, 15))
     lives_text = small_font.render(f"LIVES: {player.lives}", True, (255,255,255))
@@ -160,26 +160,20 @@ def main_draw_ui(game_state):
     # stage clear manager UI
     stage_clear = game_state.stage_clear_manager
     if stage_clear.active:
-        title = big_font.render("STAGE CLEAR", True, (255,255, 0))
+        title = big_font.render("STAGE CLEAR", True, YELLOW_COLOR)
         screen.blit(title, title.get_rect(center=(SCREEN_WIDTH//2, 120)))
 
         life_text = font.render(
             f"Life Bonus: {stage_clear.life_bonus}",
-            True,
-            (255,255,255)
-        )
+            True, WHITE_COLOR)
 
         score_text = font.render(
             f"Score Bonus: {stage_clear.score_bonus}",
-            True,
-            (255,255,255)
-        )
+            True, WHITE_COLOR)
 
         total_text = font.render(
             f"TOTAL: {stage_clear.total_bonus}",
-            True,
-            (255,255,0)
-        )
+            True,YELLOW_COLOR)
 
         screen.blit(life_text,(320,220))
         screen.blit(score_text,(320,270))
@@ -187,22 +181,15 @@ def main_draw_ui(game_state):
         
         if stage_clear.timer <= 0:
             press_text = font.render(
-                "Press ENTER",
-                True,
-                (255,255,255)
-            )
-
-            screen.blit(
-                press_text,
-                (350,420)
-            )
+                "Press ENTER",True,WHITE_COLOR)
+            screen.blit(press_text,(350,420))
 
         return
         
 
     # WIN OR GAME OVER UI
     if level.current_wave >= len(level.waves):
-        stage_clear = big_font.render("YOU WIN!", True, (0,200,0))
+        stage_clear = big_font.render("YOU WIN!", True, GREEN_COLOR)
         screen.blit(stage_clear, stage_clear.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
         #pygame.display.flip()
         #pygame.time.delay(2000)  # pause 2 seconds so player can see the message
@@ -213,20 +200,22 @@ def main_draw_ui(game_state):
     # Continue UI
     if game_state.continue_active:
         seconds = game_state.continue_timer // FPS
-        continue_text = big_font.render(f"CONTINUE? {seconds}", True, (255, 255,0))
+        continue_text = big_font.render(f"CONTINUE? {seconds}", True, YELLOW_COLOR)
         screen.blit(continue_text, continue_text.get_rect(center=(SCREEN_WIDTH//2,SCREEN_HEIGHT//2)))
-        continue_hint_text = big_font.render(f"Press C to Continue", True, (255, 255,255))
+        continue_hint_text = big_font.render(f"Press C to Continue", True, WHITE_COLOR)
         screen.blit(continue_hint_text, continue_hint_text.get_rect(center=(SCREEN_WIDTH//2,SCREEN_HEIGHT//2 + 60)))
         return
 
     if player.state == player.DEAD and player.lives <= 0:
-        game_over_text = big_font.render("GAME OVER", True, (255,0,0))
+        game_over_text = big_font.render("GAME OVER", True, RED_COLOR)
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(game_over_text, game_over_rect)
         return
 
     # debug UI
-    player_str =  f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} Combo:{player.combo_step} Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}"
-    player_text = small_font.render(player_str,True, (0,0,0))
+    player_str = (f"Player x:{int(player.x)} y:{int(player.y)} "
+                + f"State:{player.state} Combo:{player.combo_step} "
+                + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
+    player_text = small_font.render(player_str,True, BLACK_COLOR)
     screen.blit(player_text, (400, 55))
     # end of debug text

@@ -1,12 +1,14 @@
 import pygame
+
+from game.settings import *
+from game.colors import *
+from game.entities.projectile import Projectile
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
 from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.player_frames import *
-from game.settings import *
-from game.entities.projectile import Projectile
 
 # Player has: movement, animation, combat, inventory
 # pickup/drop weapons should belong to inventory system
@@ -296,11 +298,11 @@ class Player:
         if SHOW_PLAYER_RECT:
             pygame.draw.rect(screen, (0, 255, 255), (screen_x, self.y, self.width, self.height), 1)
 
-        # attack hitbox debug
+        # attack hitbox for debug
         if SHOW_PLAYER_HITBOX:
             attack_rect = self.get_attack_rect()
             if attack_rect:
-                pygame.draw.rect(screen, (255, 255, 0),
+                pygame.draw.rect(screen, YELLOW_COLOR,
                     (attack_rect.x - camera_x, attack_rect.y,
                     attack_rect.width, attack_rect.height), 1)
 
@@ -389,6 +391,7 @@ class Player:
             hit_h += self.weapon.attack_height_bonus
 
         hit_y = int(self.y + self.attack_hitbox_offset_y)
+        # do we need attack hitbox_offset_x ? no need probabily
         if self.facing_right:
             hit_x = int(self.x + self.width)
         else:
