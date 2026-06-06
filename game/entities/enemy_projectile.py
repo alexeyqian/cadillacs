@@ -1,4 +1,5 @@
 import pygame
+from game.settings import *
 
 class EnemyProjectile:
     def __init__(self, x, y, direction, damage):
@@ -7,7 +8,7 @@ class EnemyProjectile:
         self.direction = direction
         self.damage = damage
 
-        self.speed = 6
+        self.speed = PROJECTILE_SPEED * 0.7
         self.width = 16
         self.height = 16
         self.active = True

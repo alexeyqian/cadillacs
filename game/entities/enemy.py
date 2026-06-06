@@ -310,7 +310,7 @@ class Enemy:
 
         # Keep enemy inside lane
         self.y = max(self.lane_top, self.y)
-        self.y = min(self.lane_bottom, self.y)
+        self.y = min(self.lane_bottom - self.height, self.y)
 
     # enemy patrol back and forth
     def update_patrol(self):

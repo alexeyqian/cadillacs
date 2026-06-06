@@ -94,9 +94,9 @@ def main_draw_ui(game_state):
     loot_items = game_state.loot_items
     score_manager = game_state.score_manager
 
-    font = pygame.font.SysFont(None, 30)
-    small_font = pygame.font.SysFont(None, 20)
-    big_font = pygame.font.SysFont(None, 60)
+    font = pygame.font.SysFont(None, 42)
+    small_font = pygame.font.SysFont(None, 30)
+    big_font = pygame.font.SysFont(None, 90)
     
     ############### HUD ###############
     # score UI

@@ -26,8 +26,8 @@ class Player:
     THROW = "THROW"
 
     def __init__(self):
-        self.x = 200
-        self.y = 350
+        self.x = 300
+        self.y = 500
         self.width = PLAYER_W
         self.height = PLAYER_H
         self.speed = PLAYER_SPEED
@@ -244,14 +244,14 @@ class Player:
         # cannot go left of 0
         self.x = max(0, self.x)
         # cannot go right of 2950
-        self.x = min(self.x, 3000-self.width)
+        self.x = min(self.x, WORLD_WIDTH-self.width)
         # beat'em up lane limits
         # creates the illusion of depth
         # player walks on a horizontal strip, not full screen
         # cannot go above lane_top
         self.y = max(self.lane_top, self.y)
         # cannot go below lane_bottom
-        self.y = min(self.lane_bottom, self.y)
+        self.y = min(self.lane_bottom - self.height, self.y)
 
         self.update_animation()
 

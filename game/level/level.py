@@ -12,29 +12,46 @@ class Level:
             "game/assets/backgrounds/stage1/stage1_front.png")
         
         self.props = [
-            # behind player/enemies
-            Prop(
-                600,360,
-                "game/assets/props/car_wreck.png",
-                layer="back",
-                scale=1.0
-            ),
+                Prop(
+                    700,
+                    720,
+                    "game/assets/props/car_wreck.png",
+                    layer="back",
+                    scale=1.5
+                ),
 
-            Prop(
-                1200,330,
-                "game/assets/props/dino_bones.png",
-                layer="back",
-                scale=1.0
-            ),
+                Prop(
+                    2200,
+                    700,
+                    "game/assets/props/dino_bones.png",
+                    layer="back",
+                    scale=1.5
+                ),
 
-            # in front of player/enemies
-            Prop(
-                1800,430,
-                "game/assets/props/bush.png",
-                layer="front",
-                scale=1.0
-            ),
-        ]
+                Prop(
+                    3900,
+                    760,
+                    "game/assets/props/barrel_green.png",
+                    layer="front",
+                    scale=1.3
+                ),
+
+                Prop(
+                    5700,
+                    760,
+                    "game/assets/props/barrel_red.png",
+                    layer="front",
+                    scale=1.3
+                ),
+
+                Prop(
+                    7200,
+                    760,
+                    "game/assets/props/bush.png",
+                    layer="front",
+                    scale=1.4
+                ),
+            ]
 
         self.current_wave = 0
         # used by wave battles
@@ -44,7 +61,7 @@ class Level:
         self.waves = [
             # first wave
             Wave(
-                trigger_x=500,
+                trigger_x=900,
                 enemy_types=[
                     "normal",
                     "normal",
@@ -53,7 +70,7 @@ class Level:
             ),
             # second wave
             Wave(
-                trigger_x=1200,
+                trigger_x=2500,
                 enemy_types=[
                     "normal",
                     "fast",
@@ -62,7 +79,7 @@ class Level:
             ),
             # third wave
             Wave(
-                trigger_x=2000,
+                trigger_x=4300,
                 enemy_types=[
                     "heavy",
                     "normal",
@@ -71,20 +88,20 @@ class Level:
             ),
             # fourth wave: introduce the dinosaur enemy
             Wave(
-                trigger_x=2200,
+                trigger_x=5300,
                 enemy_types=[
                     "raptor",
                     "normal",
                     "raptor"
                 ]
             ),
-            BossWave(2400),
+            BossWave(6200),
             SpawnWave(
-                trigger_x=2500,
+                trigger_x=6500,
                 spawners=[
                     EnemySpawner(
-                        2800,
-                        350,
+                        6800,
+                        600,
                         "normal",
                         5,
                         120

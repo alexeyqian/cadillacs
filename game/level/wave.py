@@ -21,7 +21,7 @@ class Wave:
         self.pending_enemies = []
         for i, enemy_type in enumerate(self.enemy_types):
             # store as tuples (type, x, y)
-            self.pending_enemies.append((enemy_type, self.trigger_x + i*80, 350))
+            self.pending_enemies.append((enemy_type, self.trigger_x + 300 + i*220, 600))
 
         return []
     

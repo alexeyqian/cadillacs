@@ -43,15 +43,16 @@ def main():
 
     enemies = []
     weapons = [
-            Weapon(900,350, "knife"),
-            Weapon(1500,350, "bat"),
-            Weapon(2000, 350, "pistol")]
+            Weapon(1300,650, "knife"),
+            Weapon(3100,650, "bat"),
+            Weapon(5200, 650, "pistol")]
     projectiles = []
     enemy_projectiles = []
     objects = [ # breakable objects
-        BreakableObject(1100, 360),
-        BreakableObject(1800, 360),
-        BreakableObject(2500, 360),
+        BreakableObject(1500, 670),
+        BreakableObject(3600, 670),
+        BreakableObject(5600, 670),
+        BreakableObject(7800, 670),
     ]
     loot_items = []
     hit_sparks = []
@@ -144,12 +145,6 @@ def main():
         for spark in hit_sparks:
             spark.update()
 
-        # update camera
-        if level.camera_locked:
-            camera.update(player, level.lock_x)
-        else:
-            camera.update(player)
-
         handle_player_attack_collision(game_state)
         handle_player_projectile_collision(game_state)
         handle_player_thrown_enemy_collision(game_state)
@@ -168,6 +163,12 @@ def main():
         # update floating texts
         for text in floating_texts:
             text.update()
+
+        # update camera
+        if level.camera_locked:
+            camera.update(player, level.lock_x)
+        else:
+            camera.update(player)
 
         cleanup_game_state(game_state)
         update_wave_completion(game_state)

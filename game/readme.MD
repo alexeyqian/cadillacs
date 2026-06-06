@@ -2,6 +2,58 @@
 # Camera Calculation
 ![alt text](image.png)
 
+main loop order
+update_wave_system1. Input
+2. Game State
+3. Spawning
+4. AI
+5. Movement
+6. Combat
+7. Collision
+8. Loot
+9. Camera
+10. Animation
+11. Cleanup
+12. Draw
+while running:
+
+    process_events()
+
+    update_pause_system(game_state)
+
+    if not game_state.paused:
+
+        update_wave_system(game_state)
+        update_spawner_system(game_state)
+
+        update_player_system(game_state)
+
+        update_enemy_system(game_state)
+
+        update_projectile_system(game_state)
+
+        update_combat_system(game_state)
+
+        update_collision_system(game_state)
+
+        update_loot_system(game_state)
+
+        update_score_system(game_state)
+
+        update_life_system(game_state)
+
+        update_continue_system(game_state)
+
+        update_camera_system(game_state)
+
+        update_animation_system(game_state)
+
+        cleanup_system(game_state)
+
+    main_draw(game_state)
+
+    pygame.display.flip()
+
 ✓ Side scrolling world
 ✓ Camera
 ✓ Depth movement
