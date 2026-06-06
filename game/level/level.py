@@ -61,7 +61,7 @@ class Level:
         self.waves = [
             # first wave
             Wave(
-                trigger_x=900,
+                trigger_x=800,
                 enemy_types=[
                     "normal",
                     "normal",
@@ -70,7 +70,7 @@ class Level:
             ),
             # second wave
             Wave(
-                trigger_x=2500,
+                trigger_x=1500,
                 enemy_types=[
                     "normal",
                     "fast",

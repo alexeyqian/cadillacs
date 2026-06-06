@@ -241,9 +241,9 @@ class Player:
             self.grabbed_enemy.y = self.y
 
         # world boundaries
-        # cannot go left of 0
+        # cannot go left of window
         self.x = max(0, self.x)
-        # cannot go right of 2950
+        # cannot go right window
         self.x = min(self.x, WORLD_WIDTH-self.width)
         # beat'em up lane limits
         # creates the illusion of depth
@@ -251,7 +251,8 @@ class Player:
         # cannot go above lane_top
         self.y = max(self.lane_top, self.y)
         # cannot go below lane_bottom
-        self.y = min(self.lane_bottom - self.height, self.y)
+        # why // 2?
+        self.y = min(self.lane_bottom - self.height // 2, self.y)
 
         self.update_animation()
 
