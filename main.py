@@ -86,7 +86,7 @@ def main():
                 # useful for development, will remove in prod
                 if event.key == pygame.K_5:
                     game_state.credits += 1
-            if stage_clear_manager.activate and stage_clear_manager.timer <= 0:
+            if stage_clear_manager.active and stage_clear_manager.timer <= 0:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         running = False # ??

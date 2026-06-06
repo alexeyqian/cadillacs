@@ -1,6 +1,5 @@
-from game.entities.enemy import Enemy
-from game.entities.boss_enemy import BossEnemy
 from game.entities.enemy_factory import EnemyFactory
+from game.settings import LANE_BOTTOM, LANE_TOP, SCREEN_WIDTH
 
 class Wave:
     def __init__(self, trigger_x, enemy_types):
@@ -14,14 +13,26 @@ class Wave:
         self.spawn_timer = 0
         self.spawn_interval = 90
 
-    def spawn(self):
+    def spawn(self, camera_x=0):
         self.started = True
         # reset spawn timer so first enemy can appear immediately
         self.spawn_timer = 0
         self.pending_enemies = []
+
+        viewport_left = camera_x
+        viewport_right = camera_x + SCREEN_WIDTH
+        spawn_y = min(LANE_BOTTOM - 80, max(LANE_TOP + 80, 600))
+        start_x = viewport_left + int(SCREEN_WIDTH * 0.58)
+        spacing = 180
+        max_x = viewport_right - 220
+
         for i, enemy_type in enumerate(self.enemy_types):
             # store as tuples (type, x, y)
-            self.pending_enemies.append((enemy_type, self.trigger_x + 300 + i*220, 600))
+            x = start_x + i * spacing
+            if x > max_x:
+                x = max_x - (len(self.enemy_types) - 1 - i) * spacing
+            x = max(viewport_left + 120, min(x, max_x))
+            self.pending_enemies.append((enemy_type, x, spawn_y))
 
         return []
     
@@ -54,8 +65,15 @@ class SpawnWave:
         self.started = False
         self.completed = False
 
-    def spawn(self):
+    def spawn(self, camera_x=0):
         self.started = True
+        viewport_left = camera_x
+        viewport_right = camera_x + SCREEN_WIDTH
+        for spawner in self.spawners:
+            spawner.spawn_x = max(
+                viewport_left + 120,
+                min(spawner.spawn_x, viewport_right - 220)
+            )
         return []
 
     def update(self):
@@ -71,4 +89,3 @@ class SpawnWave:
             if not spawner.finished():
                 return False
         return True
-

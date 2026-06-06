@@ -18,7 +18,7 @@ def update_wave_system(game_state):
                     f"WAVE {game_state.level.current_wave + 1}",
                     "GET READY", 120)
             # start the wave and initialize pending enemies
-            wave.spawn()
+            wave.spawn(camera.x)
             # lock camera only when wave actually starts
             # set lock_x to current camera.x so the viewport does not jump
             level.camera_locked = True
