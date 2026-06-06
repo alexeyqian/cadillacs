@@ -18,6 +18,7 @@ from game.systems.combat_system import *
 from game.systems.continue_system import *
 from game.systems.cleanup_system import *
 from game.systems.life_reward_system import *
+from game.systems.gameplay_system import *
 from game.ui.score_manager import ScoreManager
 from game.ui.stage_clear_manager import StageClearManager
 from game.effects.floating_text import FloatingText
@@ -92,19 +93,13 @@ def main():
                         running = False # ??
 
         keys = pygame.key.get_pressed()
-        update_player_weapon_interaction(game_state, keys)
-        handle_player_grab_or_throw(game_state, keys)
-
-        update_wave_system(game_state)
-        ############# update #############
-        # update player
-        player.update()
-
         # player death and lives check, and related continue status
-        if player.state == player.DEAD and player.lives <= 0:
-            if game_state.credits > 0:
-                game_state.continue_active = True
+        if (player.state == player.DEAD 
+            and player.lives <= 0 
+            and game_state.credits > 0):
+            game_state.continue_active = True
         update_continue_system(game_state, keys)
+
         # prevent gameplay while continue screen active
         if game_state.continue_active:
             main_draw(game_state)
@@ -112,17 +107,15 @@ def main():
             clock.tick(FPS)
             continue
 
-        collect_player_projectiles(game_state)
-
-        # update score manager
-        score_manager.update()
-        # update announcement manager
-        game_state.announcement_manager.update()
-
-        # update stage clear manager
-        stage_clear_manager.update()
         if stage_clear_manager.activate:
+            # update stage clear manager
+            stage_clear_manager.update()
             stage_clear_manager.apply_bonus(score_manager)
+
+        update_player_weapon_interaction(game_state, keys)
+        handle_player_grab_or_throw(game_state, keys)
+
+        update_gameplay(game_state, keys)
 
         # should move to player's own update() function
         # prevent escaping arena
@@ -134,44 +127,6 @@ def main():
             if player.x > right_wall:
                 player.x = right_wall
 
-        # update enemies
-        for enemy in enemies:
-            enemy.update(player, enemies)
-            collect_enemy_projectile(game_state, enemy)
-
-        update_projectiles(game_state)
-            
-        # update hit sparks
-        for spark in hit_sparks:
-            spark.update()
-
-        handle_player_attack_collision(game_state)
-        handle_player_projectile_collision(game_state)
-        handle_player_thrown_enemy_collision(game_state)
-
-        handle_enemy_projectile_collision(game_state)
-
-        # has to be after enemy, object destroyed
-        # and before dead enemy and broken object removed
-        create_enemy_loot(game_state)
-        create_object_loot(game_state)
-        update_loot_pickup(game_state)
-        # after all score changing systems
-        # like pickup loot, kill enemies etc.
-        update_life_reward_system(game_state)
-
-        # update floating texts
-        for text in floating_texts:
-            text.update()
-
-        # update camera
-        if level.camera_locked:
-            camera.update(player, level.lock_x)
-        else:
-            camera.update(player)
-
-        cleanup_game_state(game_state)
-        update_wave_completion(game_state)
         main_draw(game_state)
 
         pygame.display.flip()

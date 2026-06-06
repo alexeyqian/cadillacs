@@ -12,7 +12,7 @@ from game.systems.effect_system import *
 def update_gameplay(game_state, keys):
     update_wave_system(game_state)
     game_state.player.update()
-    update_enemy_system()
+    update_enemy_system(game_state)
     collect_player_projectiles(game_state)
     update_projectiles(game_state)
 
