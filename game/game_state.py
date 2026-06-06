@@ -16,7 +16,8 @@ class GameState:
         hit_sparks,
         score_manager,
         floating_texts,
-        stage_clear_manager
+        stage_clear_manager,
+        explosions
     ):
         self.screen = screen
         self.clock = clock
@@ -42,5 +43,6 @@ class GameState:
         self.continue_used = 0
 
         self.announcement_manager = AnnouncementManager()
+        self.explosions = explosions
 
         self.running = True

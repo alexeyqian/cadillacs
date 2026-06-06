@@ -1,6 +1,7 @@
 from game.entities.enemy import Enemy
 from game.animation.animation_config import *
 from game.assets.placeholder.enemy_frames import create_raptor_frames
+from game.settings import *
 
 
 class RaptorEnemy(Enemy):
@@ -13,14 +14,14 @@ class RaptorEnemy(Enemy):
             fallback_frame_factory=create_raptor_frames
         )
 
-        self.max_hp = 120
+        self.max_hp = RAPTOR_ENEMY_MAX_HP
         self.hp = self.max_hp
-        self.width = 70
-        self.height = 60
-        self.speed = 3.5
-        self.attack_damage = 14
-        self.attack_range = 70
-        self.detect_range = 400
+        self.width = RAPTOR_ENEMY_W
+        self.height = RAPTOR_ENEMY_H
+        self.speed = RAPTOR_ENEMY_SPEED
+        self.attack_damage = RAPTOR_ENEMY_ATTACK_DAMAGE
+        self.attack_range = RAPTOR_ENEMY_ATTACK_RANGE
+        self.detect_range = RAPTOR_ENEMY_DETECT_RANGE
         self.leap_cooldown = 0
         self.leap_speed = 12
 

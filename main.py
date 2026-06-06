@@ -5,6 +5,7 @@ from game.level.level import Level
 from game.entities.player import Player
 from game.entities.weapon import Weapon
 from game.entities.breakable_object import BreakableObject
+from game.entities.explosive_barrel import ExplosiveBarrel
 from game.game_state import GameState
 from game.systems.continue_system import *
 from game.systems.gameplay_system import *
@@ -50,6 +51,7 @@ def main():
         BreakableObject(4200, 670),
         # Resource point before the raptor wave.
         BreakableObject(5550, 670),
+        ExplosiveBarrel(5550, 670),
         # Recovery before the reinforcement wave.
         BreakableObject(6750, 670),
         # Final resource point before the boss.
@@ -58,6 +60,7 @@ def main():
     loot_items = []
     hit_sparks = []
     floating_texts = []
+    explosions = []
 
     game_state = GameState(
         screen=screen,
@@ -74,7 +77,8 @@ def main():
         hit_sparks=hit_sparks,
         score_manager=score_manager,
         floating_texts=floating_texts,
-        stage_clear_manager=stage_clear_manager
+        stage_clear_manager=stage_clear_manager,
+        explosions=explosions
     )
 
     running = True

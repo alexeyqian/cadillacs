@@ -65,7 +65,7 @@ class Player:
         self.throw_duration = 14
 
         # attack hitbox settings (kept symmetric for left/right)
-        self.attack_hitbox_w = PLAYER_HITBOX_W
+        self.attack_hitbox_w = PLAYER_ATTACK_RANGE
         self.attack_hitbox_h = PLAYER_HITBOX_H
         self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
         
@@ -367,13 +367,13 @@ class Player:
             self.state = self.ATTACK_3
 
     def attack_damage(self):
-        base_damage = 10
+        base_damage = FIST_DAMAGE
         if self.state == self.ATTACK_1:
-            base_damage = 10
+            base_damage = FIST_DAMAGE
         elif self.state == self.ATTACK_2:
-            base_damage = 15
+            base_damage = FIST_DAMAGE + 4
         elif self.state == self.ATTACK_3:
-            base_damage = 20
+            base_damage = FIST_DAMAGE + 8
 
         if self.weapon and not self.weapon.is_ranged:
             base_damage += self.weapon.damage

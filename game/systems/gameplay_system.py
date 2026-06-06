@@ -9,6 +9,7 @@ from game.systems.cleanup_system import *
 from game.systems.manager_system import *
 from game.systems.effect_system import *
 from game.systems.arena_system import *
+from game.systems.explosive_system import *
 
 def update_gameplay(game_state, keys):
     update_wave_system(game_state)
@@ -22,6 +23,7 @@ def update_gameplay(game_state, keys):
     handle_player_attack_collision(game_state)
     handle_player_projectile_collision(game_state)
     handle_enemy_projectile_collision(game_state)
+    create_explosions_from_objects(game_state)
 
     create_enemy_loot(game_state)
     create_object_loot(game_state)

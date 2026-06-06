@@ -76,11 +76,11 @@ class BossEnemy(Enemy):
         if player.x < self.x:
             direction = -1
 
-        damage = 30
+        damage = 28
         if self.phase == 2:
-            damage = 45
+            damage = 38
         elif self.phase == 3:
-            damage = 60
+            damage = 48
 
         self.pending_projectile = BossProjectile(
             self.x + self.width // 2,
@@ -131,12 +131,12 @@ class BossEnemy(Enemy):
 
             if self.phase == 2:
                 self.speed += 0.5
-                self.attack_damage += 10
+                self.attack_damage += 6
                 self.attack_cooldown_duration = 45
 
             elif self.phase == 3:
                 self.speed += 1
-                self.attack_damage += 15
+                self.attack_damage += 10
                 self.attack_range += 40
                 self.attack_cooldown_duration = 35
                 self.special_attack_cooldown_duration = 120

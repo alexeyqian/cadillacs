@@ -71,6 +71,8 @@ def main_draw_world(game_state):
     # draw breakables
     for obj in objects:
         obj.draw(screen, camera.x)
+    for explosion in game_state.explosions:
+        explosion.draw(screen, camera.x)
     # draw loots
     for loot in loot_items:
         loot.draw(screen, camera.x)

@@ -19,3 +19,4 @@ def cleanup_game_state(game_state):
     game_state.hit_sparks[:] = [s for s in game_state.hit_sparks if s.active]
     # clean floating text
     game_state.floating_texts[:] = [item for item in game_state.floating_texts if item.active]
+    game_state.explosions[:] = [item for item in game_state.explosions if item.active]

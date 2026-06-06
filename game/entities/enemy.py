@@ -41,7 +41,7 @@ class Enemy:
 
         # within this range, enemy chases player
         # outside this range, enemy ignores player
-        self.detect_range = 250
+        self.detect_range = NORMAL_ENEMY_DETECT_RANGE
         # enemy remembers where it spawned
         self.spawn_x = x
         self.patrol_distance = 80
@@ -50,7 +50,7 @@ class Enemy:
         # attack players / combat
         self.attack_timer = 0 # ?
         self.attack_cooldown = 0
-        self.attack_damage = 15
+        self.attack_damage = NORMAL_ENEMY_ATTACK_DAMAGE
         self.attack_range = ENEMY_HITBOX_W
 
         # hit reaction
