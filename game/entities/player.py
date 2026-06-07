@@ -1,27 +1,21 @@
 import math
-
 import pygame
-
 from game.settings import *
 from game.colors import *
 from game.entities.projectile import Projectile
+from game.assets.placeholder.player_frames import *
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
 from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
 from game.animation.file_utils import *
-from game.assets.placeholder.player_frames import *
 
-# Player has: movement, animation, combat, inventory
-# pickup/drop weapons should belong to inventory system
 class Player:
     IDLE = "IDLE"
     WALK = "WALK"
     RUN="RUN"
     ATTACK = "ATTACK" # including 1,2,3
     RUN_ATTACK="RUN_ATTACK"
-    JUMP = "JUMP"
-    JUMP_ATTACK = "JUMP_ATTACK"
     # punch combo
     ATTACK_1 = "ATTACK_1"
     ATTACK_2 = "ATTACK_2"
@@ -39,18 +33,11 @@ class Player:
         self.speed = PLAYER_SPEED
         self.facing_right = True
 
-        self.run_speed = self.speed * 2
-        self.run_timer = 0
-        self.run_window = 15
-        self.last_left_press = 0
-        self.last_right_press = 0
         self.is_running = False
-        self.jump_pressed = False
-        self.is_jumping = False
-        self.jump_timer = 0
-        self.jump_duration = 32
-        self.jump_peak = 95
-        self.jump_offset = 0
+        self.run_speed = self.speed * 2
+        self.run_attack_damage = 35 # use scaler*normal_damage
+        self.run_attack_timer = 0
+        self.run_attack_duration = 18
 
         self.is_attacking = False
         self.attack_timer = 0
@@ -143,26 +130,6 @@ class Player:
         else:
             run_attack_frames = attack_frames
 
-        if file_exists(PLAYER_JUMP["file"]):
-            jump_frames = AssetLoader.load_animation(
-                PLAYER_JUMP["file"],
-                PLAYER_JUMP["frame_width"],
-                PLAYER_JUMP["frame_height"],
-                PLAYER_JUMP["frame_count"]
-            )
-        else:
-            jump_frames = walk_frames
-
-        if file_exists(PLAYER_JUMP_ATTACK["file"]):
-            jump_attack_frames = AssetLoader.load_animation(
-                PLAYER_JUMP_ATTACK["file"],
-                PLAYER_JUMP_ATTACK["frame_width"],
-                PLAYER_JUMP_ATTACK["frame_height"],
-                PLAYER_JUMP_ATTACK["frame_count"]
-            )
-        else:
-            jump_attack_frames = attack_frames
-
         if file_exists(PLAYER_GRAB["file"]):
             grab_frames = AssetLoader.load_animation(
                 PLAYER_GRAB["file"],
@@ -190,7 +157,6 @@ class Player:
         walk_dur = max(1, int(FPS / ANIM_FPS_WALK))
         run_dur = max(1, int(FPS / ANIM_FPS_WALK))
         attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK))
-        jump_dur = max(1, int(FPS / ANIM_FPS_ATTACK))
         hit_dur = max(1, int(FPS / ANIM_FPS_HIT))
 
         self.animation_manager.add_animation(
@@ -206,12 +172,6 @@ class Player:
             self.RUN_ATTACK, Animation(run_attack_frames, attack_dur)
         )
         self.animation_manager.add_animation(
-            self.JUMP, Animation(jump_frames, jump_dur)
-        )
-        self.animation_manager.add_animation(
-            self.JUMP_ATTACK, Animation(jump_attack_frames, attack_dur)
-        )
-        self.animation_manager.add_animation(
             self.GRAB, Animation(grab_frames, attack_dur)
         )
         self.animation_manager.add_animation(
@@ -224,139 +184,20 @@ class Player:
             self.DEAD, Animation(create_dead_frames(), 999)
         )
 
-
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x
-    # responsible for: Movement,Animation, State transitions, 
-    # Attack state, Hit state, Death state
     def update(self):
         if self.state == self.DEAD:
-            self.update_respawn()
-            self.update_animation()
+            self.update_dead_state()
             return
 
-        if self.hit_timer > 0:
-            self.hit_timer -= 1
-            if self.hit_timer == 0:
-                self.state = self.IDLE
-
-        if self.combo_timer > 0:
-            self.combo_timer -= 1
-        else:
-            self.combo_step = 0
-
-        if self.throw_timer > 0:
-            self.throw_timer -= 1
-
-        self.update_jump()
-
-        # attack timer
-        if self.is_attacking:
-            self.attack_timer -= 1
-            if self.attack_timer <= 0:
-                self.is_attacking = False
-                if self.state != self.DEAD:
-                    if self.is_jumping:
-                        self.state = self.JUMP
-                    else:
-                        self.state = self.IDLE
-            # comment out, so still can move during attacking
-            #return # skip movement while attacking
-
-        # movements
+        self.update_timers()
         keys = pygame.key.get_pressed()
-        moving = False
-        horizontal_moving = False
-        wants_run = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
-        current_speed = self.speed
-        if wants_run and (keys[pygame.K_LEFT] or keys[pygame.K_a] or keys[pygame.K_RIGHT] or keys[pygame.K_d]):
-            current_speed = self.run_speed
-            self.is_running = True
-        else:
-            self.is_running = False
-
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
-            self.x -= current_speed
-            self.facing_right = False
-            moving = True
-            horizontal_moving = True
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
-            self.x += current_speed
-            self.facing_right = True
-            moving = True
-            horizontal_moving = True
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
-            self.y -= self.speed
-            moving = True
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
-            self.y += self.speed
-            moving = True
-
-        if keys[pygame.K_SPACE]:
-            if not self.jump_pressed:
-                self.start_jump()
-                self.jump_pressed = True
-        else:
-            self.jump_pressed = False
-
-        if keys[pygame.K_j]:
-            if self.is_jumping:
-                self.start_jump_attack()
-            else:
-                self.start_attack()
-
-        # fire weapon on key-down only (prevent holding K from firing repeatedly)
-        if keys[pygame.K_k]:
-            if not self.fire_pressed:
-                self.fire_weapon()
-                self.fire_pressed = True
-        else:
-            self.fire_pressed = False
-
-        # update state (preserve attack state if attacking)
-        if self.is_attacking:
-            # keep attack state and animation set by start_attack
-            pass
-        elif self.throw_timer > 0:
-            self.state = self.THROW
-        elif self.grabbed_enemy:
-            self.state = self.GRAB
-        elif self.is_jumping:
-            self.state = self.JUMP
-        else:
-            if moving:
-                if self.is_running and horizontal_moving:
-                    self.state = self.RUN
-                else:
-                    self.state = self.WALK
-                #self.current_animation = self.animations[self.WALK]
-            else:
-                self.state = self.IDLE
-                #self.current_animation = self.animations[self.IDLE]
-                
-        # keep grabbed enemy in front of player
-        if self.grabbed_enemy:
-            if self.facing_right:
-                self.grabbed_enemy.x = self.x + self.width + 5
-            else:
-                self.grabbed_enemy.x = self.x - self.grabbed_enemy.width - 5
-            
-            self.grabbed_enemy.y = self.y
-
-        # world boundaries
-        # cannot go left of window
-        self.x = max(0, self.x)
-        # cannot go right window
-        self.x = min(self.x, WORLD_WIDTH-self.width)
-        # beat'em up lane limits
-        # creates the illusion of depth
-        # player walks on a horizontal strip, not full screen
-        # cannot go above lane_top
-        self.y = max(self.lane_top, self.y)
-        # cannot go below lane_bottom
-        # why // 2?
-        self.y = min(self.lane_bottom - self.height // 2, self.y)
-
+        moving = self.update_movement(keys)
+        self.update_action_input(keys)
+        self.update_state_after_movement(moving)
+        self.update_grabbed_enemy_position()
+        self.apply_world_bounds()
         self.update_animation()
 
     #World:   [--------------------PLAYER----]
@@ -382,7 +223,7 @@ class Player:
             image = pygame.transform.flip(image, True, False)
         # Real sprites are often larger than gameplay hit boxes.
         image = pygame.transform.scale(image, (self.width, self.height))
-        draw_y = self.y - self.jump_offset
+        draw_y = self.y
         screen.blit(image, (screen_x, draw_y))
 
         # weapon section
@@ -428,30 +269,133 @@ class Player:
         pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
 
     def update_animation(self):
-        if self.state == self.DEAD:
-            self.animation_manager.play(self.DEAD)
-        elif self.state == self.HIT:
-            self.animation_manager.play(self.HIT)
+        if self.state == self.IDLE:
+            self.animation_manager.play(self.IDLE)
+        elif self.state == self.WALK:
+            self.animation_manager.play(self.WALK)
+        elif self.state == self.RUN:
+            self.animation_manager.play(self.RUN)
+
         elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
             self.animation_manager.play(self.ATTACK)
         elif self.state == self.RUN_ATTACK:
             self.animation_manager.play(self.RUN_ATTACK)
-        elif self.state == self.JUMP_ATTACK:
-            self.animation_manager.play(self.JUMP_ATTACK)
         elif self.state == self.GRAB:
             self.animation_manager.play(self.GRAB)
         elif self.state == self.THROW:
             self.animation_manager.play(self.THROW)
-        elif self.state == self.JUMP:
-            self.animation_manager.play(self.JUMP)
-        elif self.state == self.RUN:
-            self.animation_manager.play(self.RUN)
-        elif self.state == self.WALK:
-            self.animation_manager.play(self.WALK)
+
+        elif self.state == self.HIT: # Take hit by enemy
+            self.animation_manager.play(self.HIT)
+        elif self.state == self.DEAD:
+            self.animation_manager.play(self.DEAD)
         else:
             self.animation_manager.play(self.IDLE)
 
         self.animation_manager.update()
+
+    def update_dead_state(self):
+        self.update_respawn()
+        self.update_animation()
+        
+    def update_timers(self):
+        # hit timer? hit by enemy or attack enemy?
+        if self.hit_timer > 0:
+            self.hit_timer -= 1
+            if self.hit_timer == 0:
+                self.state = self.IDLE
+
+        if self.combo_timer > 0:
+            self.combo_timer -= 1
+        else:
+            self.combo_step = 0
+
+        if self.throw_timer > 0:
+            self.throw_timer -= 1
+
+        # attack timer
+        if self.is_attacking:
+            self.attack_timer -= 1
+            if self.attack_timer <= 0:
+                self.is_attacking = False
+                if self.state != self.DEAD:
+                    self.state = self.IDLE
+            # comment out, so still can move during attacking
+            #return # skip movement while attacking
+            
+    def update_movement(self, keys):
+        moving = False
+        move_speed = self.speed
+        self.is_running = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
+        if self.is_running:
+            move_speed = self.run_speed
+
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            self.x -= move_speed
+            self.facing_right = False
+            moving = True
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.x += move_speed
+            self.facing_right = True
+            moving = True
+        if keys[pygame.K_UP] or keys[pygame.K_w]:
+            self.y -= self.speed
+            moving = True
+        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+            self.y += self.speed
+            moving = True
+
+        return moving
+
+    def update_action_input(self, keys):
+        # attacking keys
+        if keys[pygame.K_j]:
+                self.start_attack()
+
+        # fire weapon on key-down only (prevent holding K from firing repeatedly)
+        if keys[pygame.K_k]:
+            if not self.fire_pressed:
+                self.fire_weapon()
+                self.fire_pressed = True
+        else:
+            self.fire_pressed = False
+
+    def update_state_after_movement(self, moving):
+        # update state (preserve attack state if attacking)
+        if self.is_attacking:
+            pass # keep attack state and animation set by start_attack
+        elif self.throw_timer > 0:
+            self.state = self.THROW
+        elif self.grabbed_enemy:
+            self.state = self.GRAB
+        else:
+            if moving and self.is_running:
+                self.state = self.RUN
+            elif moving:
+                    self.state = self.WALK
+            else:
+                self.state = self.IDLE
+
+    def update_grabbed_enemy_position(self):
+        # keep grabbed enemy in front of player
+        if self.grabbed_enemy:
+            if self.facing_right:
+                self.grabbed_enemy.x = self.x + self.width + 5
+            else:
+                self.grabbed_enemy.x = self.x - self.grabbed_enemy.width - 5
+            self.grabbed_enemy.y = self.y
+
+    def apply_world_bounds(self):
+        # world boundaries
+        self.x = max(0, self.x) # cannot go left of window
+        self.x = min(self.x, WORLD_WIDTH-self.width) # cannot go right window
+        # beat'em up lane limitsL creates the illusion of depth
+        # player walks on a horizontal strip, not full screen
+        self.y = max(self.lane_top, self.y) # cannot go above lane_top
+        # why // 2?
+        self.y = min(self.lane_bottom - self.height // 2, self.y) # cannot go below lane_bottom
+
+    #######################
 
     def start_attack(self):
         # The current start_attack() prevents attack chaining while an attack is active:
@@ -459,11 +403,14 @@ class Player:
         if self.is_attacking:
             return
 
+        # for default walking attack
         self.is_attacking = True
         self.attack_timer = self.attack_duration
         self.already_hit_enemy = False
 
+        # for running attack
         if self.is_running:
+            self.attack_timer = self.run_attack_duration
             self.combo_timer = 0
             self.combo_step = 0
             self.state = self.RUN_ATTACK
@@ -484,38 +431,6 @@ class Player:
         else:
             self.state = self.ATTACK_3
 
-    def start_jump(self):
-        if self.is_jumping or self.state == self.DEAD:
-            return
-        self.is_jumping = True
-        self.jump_timer = self.jump_duration
-        self.jump_offset = 0
-        self.state = self.JUMP
-
-    def update_jump(self):
-        if not self.is_jumping:
-            self.jump_offset = 0
-            return
-
-        self.jump_timer -= 1
-        progress = 1.0 - (self.jump_timer / self.jump_duration)
-        self.jump_offset = int(math.sin(progress * math.pi) * self.jump_peak)
-
-        if self.jump_timer <= 0:
-            self.is_jumping = False
-            self.jump_timer = 0
-            self.jump_offset = 0
-
-    def start_jump_attack(self):
-        if self.is_attacking:
-            return
-        self.is_attacking = True
-        self.attack_timer = self.attack_duration
-        self.already_hit_enemy = False
-        self.combo_timer = 0
-        self.combo_step = 0
-        self.state = self.JUMP_ATTACK
-
     def attack_damage(self):
         base_damage = FIST_DAMAGE
         if self.state == self.ATTACK_1:
@@ -526,8 +441,6 @@ class Player:
             base_damage = FIST_DAMAGE + 8
         elif self.state == self.RUN_ATTACK:
             base_damage = FIST_DAMAGE + 6
-        elif self.state == self.JUMP_ATTACK:
-            base_damage = FIST_DAMAGE + 8
 
         if self.weapon and not self.weapon.is_ranged:
             base_damage += self.weapon.damage
@@ -535,18 +448,21 @@ class Player:
         return base_damage
 
     # hit box
-    def get_attack_rect(self): # hitbox
+    def get_attack_rect(self):
         if not self.is_attacking:
             return None
         # Use symmetric hitbox size and offsets so left/right behave identically
         hit_w = self.attack_hitbox_w
+        # giving running attack a longer hitbox
+        if self.state == self.RUN_ATTACK:
+            hit_w = self.attack_hitbox_w * 1.5
         hit_h = self.attack_hitbox_h
         if self.weapon and not self.weapon.is_ranged:
             hit_w += self.weapon.attack_range_bonus
             hit_h += self.weapon.attack_height_bonus
 
         hit_y = int(self.y + self.attack_hitbox_offset_y)
-        # do we need attack hitbox_offset_x ? no need probabily
+        # do we need attack hitbox_offset_x ? no need probably
         if self.facing_right:
             hit_x = int(self.x + self.width)
         else:
@@ -590,9 +506,6 @@ class Player:
         self.y = self.respawn_y
         self.state = self.IDLE
         self.is_attacking = False
-        self.is_jumping = False
-        self.jump_timer = 0
-        self.jump_offset = 0
         self.grabbed_enemy = None
 
     def pick_up_weapon(self, weapon):

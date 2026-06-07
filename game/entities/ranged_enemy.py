@@ -25,7 +25,7 @@ class RangedEnemy(Enemy):
             direction = 1
 
         projectile = EnemyProjectile(self.x + self.width // 2,
-                  self.y + 30, direction, self.attack_damage)
+            self.y + 30, direction, self.attack_damage)
         self.pending_projectile = projectile
         self.shoot_cooldown = 90
 

@@ -138,7 +138,7 @@ def main_draw_ui(game_state):
     screen.blit(hp_text, (230, 15))
     lives_text = small_font.render(f"LIVES: {player.lives}", True, (255,255,255))
     screen.blit(lives_text, (400, 15))
-    control_text = small_font.render("Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, (0,0,0))
+    control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, (0,0,0))
     screen.blit(control_text, (500, 15))
 
     # Weapon UI
