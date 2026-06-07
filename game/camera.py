@@ -14,11 +14,12 @@ class Camera:
             self.x = lock_x
             return
 
+        # camera follows player, tries to keep player near center of screen
         target_x = player.x - SCREEN_WIDTH // 2
         self.x = target_x
         self.x = max(0, self.x)
         self.x = min(self.x, WORLD_WIDTH - SCREEN_WIDTH)
-        
+
         if self.shake_timer > 0:
             self.shake_timer -= 1
             self.x += random.randint(-self.shake_strength, self.shake_strength)

@@ -1,3 +1,4 @@
+from game.settings import *
 from game.level.background import Background
 from game.level.prop import Prop
 from game.level.wave import *
@@ -13,40 +14,40 @@ class Level:
         
         self.props = [
                 Prop(
-                    700,
-                    720,
+                    SCREEN_WIDTH-100,
+                    LANE_BOTTOM,
                     "game/assets/props/car_wreck.png",
                     layer="back",
                     scale=1.5
                 ),
 
                 Prop(
-                    2200,
-                    700,
+                    (SCREEN_WIDTH-100)*2,
+                    LANE_BOTTOM,
                     "game/assets/props/dino_bones.png",
                     layer="back",
                     scale=1.5
                 ),
 
                 Prop(
-                    3900,
-                    760,
+                    (SCREEN_WIDTH-100)*3,
+                    LANE_BOTTOM,
                     "game/assets/props/barrel_green.png",
                     layer="front",
                     scale=1.3
                 ),
 
                 Prop(
-                    5700,
-                    760,
+                    (SCREEN_WIDTH-100)*4,
+                    LANE_BOTTOM,
                     "game/assets/props/barrel_red.png",
                     layer="front",
                     scale=1.3
                 ),
 
                 Prop(
-                    7200,
-                    760,
+                    (SCREEN_WIDTH-100)*5,
+                    LANE_BOTTOM,
                     "game/assets/props/bush.png",
                     layer="front",
                     scale=1.4
@@ -61,7 +62,7 @@ class Level:
         self.waves = [
             # Wave 1: simple warm-up, teaches arena lock.
             Wave(
-                trigger_x=900,
+                trigger_x=SCREEN_WIDTH-10,
                 enemy_types=[
                     "normal",
                     "normal"
@@ -70,7 +71,7 @@ class Level:
 
             # Wave 2: one fast enemy adds pressure without overwhelming.
             Wave(
-                trigger_x=2100,
+                trigger_x=(SCREEN_WIDTH-10)*2,
                 enemy_types=[
                     "normal",
                     "fast"
@@ -79,7 +80,7 @@ class Level:
 
             # Wave 3: first medium mixed group.
             Wave(
-                trigger_x=3400,
+                trigger_x=(SCREEN_WIDTH-10)*3,
                 enemy_types=[
                     "normal",
                     "normal",
@@ -89,7 +90,7 @@ class Level:
 
             # Wave 4: introduce heavy enemy with only light support.
             Wave(
-                trigger_x=4700,
+                trigger_x=(SCREEN_WIDTH-10)*4,
                 enemy_types=[
                     "heavy",
                     "normal"
@@ -98,7 +99,7 @@ class Level:
 
             # Wave 5: introduce dinosaurs after the player has seen heavy enemies.
             Wave(
-                trigger_x=5900,
+                trigger_x=(SCREEN_WIDTH-10)*5,
                 enemy_types=[
                     "raptor",
                     "normal",
@@ -108,18 +109,18 @@ class Level:
 
             # Wave 6: reinforcement wave, moderate count but delayed spawns.
             SpawnWave(
-                trigger_x=7100,
+                trigger_x=(SCREEN_WIDTH-10)*6,
                 spawners=[
                     EnemySpawner(
-                        7600,
-                        600,
+                        (SCREEN_WIDTH-10)*6,
+                        LANE_BOTTOM,
                         "normal",
                         3,
                         120
                     ),
                     EnemySpawner(
-                        7900,
-                        640,
+                        (SCREEN_WIDTH-10)*6+20,
+                        LANE_BOTTOM,
                         "fast",
                         2,
                         180
@@ -128,7 +129,7 @@ class Level:
             ),
 
             # Wave 7: boss finale, far enough after reinforcements to recover.
-            BossWave(8600)
+            BossWave((SCREEN_WIDTH-10)*7)
         ]
 
     def get_current_wave(self):
