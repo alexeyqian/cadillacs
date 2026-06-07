@@ -87,7 +87,7 @@ class Player:
         self.throw_duration = 14
 
         # attack hitbox settings (kept symmetric for left/right)
-        self.attack_hitbox_w = PLAYER_ATTACK_RANGE
+        self.attack_hitbox_w = PLAYER_HITBOX_W
         self.attack_hitbox_h = PLAYER_HITBOX_H
         self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
         

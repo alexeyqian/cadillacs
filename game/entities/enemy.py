@@ -50,7 +50,7 @@ class Enemy:
         # attack players / combat
         self.attack_timer = 0 # ?
         self.attack_cooldown = 0
-        self.attack_range = ENEMY_HITBOX_W # deprecated
+        self.attack_range = ENEMY_ATTACK_RANGE # Within distance_x, start attack
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = ENEMY_HITBOX_W
         self.attack_hitbox_h = ENEMY_HITBOX_H
@@ -155,85 +155,101 @@ class Enemy:
         self.animation_manager.add_animation(
             self.DEAD, Animation(dead_frames, dead_dur))
 
-    def update(self, player, enemies):
+    def update_special_states(self):
         if self.state == self.GRABBED:
             self.update_animation()
-            return
-
+            return True
         if self.state == self.THROWN:
-            if self.thrown_velocity_x > 0:
-                self.facing_right = True
-            elif self.thrown_velocity_x < 0:
-                self.facing_right = False
-            self.x += self.thrown_velocity_x
-            self.thrown_velocity_x *= 0.9
-            self.thrown_timer -= 1
-            
-            if self.thrown_timer <= 0 or abs(self.thrown_velocity_x) < 1:
-                self.state = self.KNOCKDOWN
-                self.knockdown_timer = 60
-                self.thrown_velocity_x = 0
-            self.update_animation()
-            return
-
+            self.update_thrown_state()
+            return True
         if self.state == self.KNOCKDOWN:
-            self.knockdown_timer -= 1
-            if self.knockdown_timer <= 0:
-                self.state = self.GETUP
-                self.getup_timer = 20
-            self.update_animation()
-            return
-        
+            self.update_knockdown_state()
+            return True
         if self.state == self.GETUP:
-            self.getup_timer -= 1
-            if self.getup_timer <= 0:
-                self.state = self.WALK
-            self.update_animation()
-            return
-            
+            self.update_getup_state()
+            return True
         if self.state == self.DEAD:
-            if not self.death_timer_started:
-                self.death_timer_started = True
-            if self.death_timer > 0:
-                self.death_timer -= 1
-            self.update_animation()
-            return
+            self.update_dead_state()
+            return True
 
+        return False
+
+    def update_thrown_state(self):
+        if self.thrown_velocity_x > 0:
+                self.facing_right = True
+        elif self.thrown_velocity_x < 0:
+            self.facing_right = False
+
+        self.x += self.thrown_velocity_x
+        self.thrown_velocity_x *= 0.9
+        self.thrown_timer -= 1
+        
+        if self.thrown_timer <= 0 or abs(self.thrown_velocity_x) < 1:
+            self.state = self.KNOCKDOWN
+            self.knockdown_timer = 60
+            self.thrown_velocity_x = 0
+
+        self.update_animation()
+
+    def update_knockdown_state(self):
+        self.knockdown_timer -= 1
+        if self.knockdown_timer <= 0:
+            self.state = self.GETUP
+            self.getup_timer = 20
+        self.update_animation()
+
+    def update_getup_state(self):
+        self.getup_timer -= 1
+        if self.getup_timer <= 0:
+            self.state = self.WALK
+        self.update_animation()
+
+    def update_dead_state(self):
+        if not self.death_timer_started:
+            self.death_timer_started = True
+        if self.death_timer > 0:
+            self.death_timer -= 1
+        self.update_animation()
+
+    def update_hit_state(self):
+        if self.hit_timer <= 0:
+            return False
+
+        # enemy pauses briefly when hit by player, but can still be knocked back
+        self.hit_timer -= 1
+        self.apply_knockback()
+        if self.hit_timer == 0:
+            self.state = self.WALK
+
+        return True
+
+    def update_timers(self):
         # attack cooldown
         if self.attack_cooldown > 0:
             self.attack_cooldown -= 1
-
-        # hit state
-        # enemy pauses briefly when hit by player, but can still be knocked back
-        if self.hit_timer > 0:
-            self.hit_timer -= 1
-            self.apply_knockback()
-            if self.hit_timer == 0:
-                self.state = self.WALK
-            return
-        # apply any remaining knockback
-        self.apply_knockback()
-
-        # distance to player
-        dx = player.x - self.x
-        dy = player.y - self.y
-        if dx < 0: # player at left side of enemy
+            
+    def get_player_distance(self, player):
+        if player.x < self.x: # player at left side of enemy
             dx = self.x - player.x - player.width
-        else: # player at right side of enemy
+        else:
             dx = player.x - self.x - self.width
+
+        dy = player.y - self.y
         distance_x = abs(dx)
         distance_y = abs(dy)
-
-        # state selection
-        # attack if close enough
-        if (distance_x <= self.attack_hitbox_w 
-            and distance_y <= self.attack_hitbox_h):
+        return dx, dy, distance_x, distance_y
+    
+    def choose_state(self, distance_x, distance_y):
+        # state selection, attack if close enough
+        if (distance_x <= self.attack_range 
+            and distance_y <= self.attack_range): # distance_y need to change
             self.state = self.ATTACK
         elif distance_x <= self.detect_range:
             self.state = self.CHASE
         else:
             self.state = self.PATROL
 
+    def execute_state(self, player, enemies, dx, dy):
         # execute state
         if self.state == self.PATROL:
             self.update_patrol()
@@ -241,8 +257,18 @@ class Enemy:
             self.update_walking(dx, dy)
             self.separate_from_other_enemies(enemies)
         elif self.state == self.ATTACK:
-            self.update_attack(player)
+            self.update_attack(player)             
 
+    def update(self, player, enemies):
+        if self.update_special_states():
+            return
+        self.update_timers()
+        if self.update_hit_state():
+            return
+        self.apply_knockback()
+        dx, dy, distance_x, distance_y = self.get_player_distance(player)
+        self.choose_state(distance_x, distance_y)
+        self.execute_state(player, enemies, dx, dy)
         self.apply_world_bounds()
         self.update_animation()
 
@@ -330,9 +356,6 @@ class Enemy:
         return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
     def update_walking(self, dx, dy):
-        #if dx <= 60:
-        #    return # stop near player
-
         # horizontal movement
         if dx > 0:
             self.x += self.speed
@@ -347,9 +370,9 @@ class Enemy:
             else:
                 self.y -= self.speed
 
-        # Keep enemy inside lane
-        self.y = max(self.lane_top, self.y)
-        self.y = min(self.lane_bottom - self.height, self.y)
+        # Keep enemy inside lane, already done in apply_world_bound
+        #self.y = max(self.lane_top, self.y)
+        #self.y = min(self.lane_bottom - self.height, self.y)
 
     # enemy patrol back and forth
     def update_patrol(self):
