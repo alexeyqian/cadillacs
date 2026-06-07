@@ -35,27 +35,28 @@ def main():
     enemies = []
     weapons = [
             # Light melee upgrade before fast enemies appear.
-            Weapon(1500, 650, "knife"),
+            Weapon(STAGE1_WAVE1_X - 50, SCREEN_HEIGHT-100, "knife"),
             # Heavy melee upgrade before the heavy enemy wave.
-            Weapon(4050, 650, "bat"),
+            Weapon(STAGE1_WAVE2_X - 50, SCREEN_HEIGHT-100, "bat"),
             # Ranged option before raptors, reinforcements, and boss.
-            Weapon(6400, 650, "pistol")]
+            Weapon(STAGE1_WAVE3_X - 50, SCREEN_HEIGHT-100, "pistol")]
     projectiles = []
     enemy_projectiles = []
+    # todo: move to level configs
     objects = [ # breakable objects
         # Early recovery after the first warm-up wave.
-        BreakableObject(1450, 670),
+        BreakableObject(STAGE1_WAVE1_X - 20, SCREEN_HEIGHT-10),
         # Recovery before the first medium mixed wave.
-        BreakableObject(2850, 670),
+        BreakableObject(STAGE1_WAVE1_X - 40, SCREEN_HEIGHT-10),
         # Resource point before the heavy enemy introduction.
-        BreakableObject(4200, 670),
+        BreakableObject(STAGE1_WAVE2_X - 20, SCREEN_HEIGHT-10),
         # Resource point before the raptor wave.
-        BreakableObject(5550, 670),
-        ExplosiveBarrel(5550, 670),
+        BreakableObject(STAGE1_WAVE2_X - 40, SCREEN_HEIGHT-10),
+        ExplosiveBarrel(STAGE1_WAVE2_X - 60, SCREEN_HEIGHT-10),
         # Recovery before the reinforcement wave.
-        BreakableObject(6750, 670),
+        BreakableObject(STAGE1_WAVE3_X - 20, SCREEN_HEIGHT-10),
         # Final resource point before the boss.
-        BreakableObject(8150, 670),
+        BreakableObject(STAGE1_WAVE3_X - 40, SCREEN_HEIGHT-10),
     ]
     loot_items = []
     hit_sparks = []

@@ -12,9 +12,20 @@ class Level:
             "game/assets/backgrounds/stage1/stage1_mid.png",
             "game/assets/backgrounds/stage1/stage1_front.png")
         
+        self.wave1_x = STAGE1_WAVE1_X
+        self.wave2_x = STAGE1_WAVE2_X
+        self.wave3_x = STAGE1_WAVE3_X
+        
+        self.prop1_x = self.wave1_x -100
+        self.prop2_x = self.wave1_x -100
+        self.prop3_x = self.wave2_x -100
+        self.prop4_x = self.wave2_x -100
+        self.prop5_x = self.wave3_x -100
+        
+        # front ui decorations
         self.props = [
                 Prop(
-                    SCREEN_WIDTH-100,
+                    self.prop1_x,
                     LANE_BOTTOM,
                     "game/assets/props/car_wreck.png",
                     layer="back",
@@ -22,7 +33,7 @@ class Level:
                 ),
 
                 Prop(
-                    (SCREEN_WIDTH-100)*2,
+                    self.prop2_x,
                     LANE_BOTTOM,
                     "game/assets/props/dino_bones.png",
                     layer="back",
@@ -30,7 +41,7 @@ class Level:
                 ),
 
                 Prop(
-                    (SCREEN_WIDTH-100)*3,
+                    self.prop3_x,
                     LANE_BOTTOM,
                     "game/assets/props/barrel_green.png",
                     layer="front",
@@ -38,7 +49,7 @@ class Level:
                 ),
 
                 Prop(
-                    (SCREEN_WIDTH-100)*4,
+                    self.prop4_x,
                     LANE_BOTTOM,
                     "game/assets/props/barrel_red.png",
                     layer="front",
@@ -46,7 +57,7 @@ class Level:
                 ),
 
                 Prop(
-                    (SCREEN_WIDTH-100)*5,
+                    self.prop5_x,
                     LANE_BOTTOM,
                     "game/assets/props/bush.png",
                     layer="front",
@@ -62,64 +73,41 @@ class Level:
         self.waves = [
             # Wave 1: simple warm-up, teaches arena lock.
             Wave(
-                trigger_x=SCREEN_WIDTH-10,
+                trigger_x=self.wave1_x,
                 enemy_types=[
                     "normal",
+                    "normal"
                     "normal"
                 ]
             ),
 
-            # Wave 2: one fast enemy adds pressure without overwhelming.
+            # Wave 2: first medium mixed group.
             Wave(
-                trigger_x=(SCREEN_WIDTH-10)*2,
-                enemy_types=[
-                    "normal",
-                    "fast"
-                ]
-            ),
-
-            # Wave 3: first medium mixed group.
-            Wave(
-                trigger_x=(SCREEN_WIDTH-10)*3,
+                trigger_x=self.wave2_x,
                 enemy_types=[
                     "normal",
                     "normal",
-                    "fast"
-                ]
-            ),
-
-            # Wave 4: introduce heavy enemy with only light support.
-            Wave(
-                trigger_x=(SCREEN_WIDTH-10)*4,
-                enemy_types=[
+                    "normal",
+                    "fast",
                     "heavy",
-                    "normal"
-                ]
-            ),
-
-            # Wave 5: introduce dinosaurs after the player has seen heavy enemies.
-            Wave(
-                trigger_x=(SCREEN_WIDTH-10)*5,
-                enemy_types=[
                     "raptor",
-                    "normal",
-                    "fast"
                 ]
             ),
 
-            # Wave 6: reinforcement wave, moderate count but delayed spawns.
+
+            # Wave 3: reinforcement wave, moderate count but delayed spawns.
             SpawnWave(
-                trigger_x=(SCREEN_WIDTH-10)*6,
+                trigger_x=self.wave3_x,
                 spawners=[
                     EnemySpawner(
-                        (SCREEN_WIDTH-10)*6,
+                        self.wave3_x,
                         LANE_BOTTOM,
                         "normal",
                         3,
                         120
                     ),
                     EnemySpawner(
-                        (SCREEN_WIDTH-10)*6+20,
+                        self.wave3_x+20,
                         LANE_BOTTOM,
                         "fast",
                         2,
@@ -128,8 +116,8 @@ class Level:
                 ]
             ),
 
-            # Wave 7: boss finale, far enough after reinforcements to recover.
-            BossWave((SCREEN_WIDTH-10)*7)
+            # Wave 3: boss finale
+            BossWave(self.wave3_x + 50)
         ]
 
     def get_current_wave(self):

@@ -96,31 +96,33 @@ def main_draw_ui(game_state):
     loot_items = game_state.loot_items
     score_manager = game_state.score_manager
 
-    font = pygame.font.SysFont(None, 42)
-    small_font = pygame.font.SysFont(None, 30)
-    big_font = pygame.font.SysFont(None, 90)
+    small_font = pygame.font.SysFont(None, 20)
+    font = pygame.font.SysFont(None, 30)
+    big_font = pygame.font.SysFont(None, 40)
     
     ############### HUD ###############
-    # score UI
+    # score
     score_text = font.render(
-        f"SCORE {score_manager.score}",
-        True,WHITE_COLOR)
+        f"SCORE {score_manager.score} | HI {score_manager.high_score}",True,WHITE_COLOR)
     screen.blit(score_text,(20, 5))
 
-    high_score_text = small_font.render(
-        f"HI {score_manager.high_score}",
-        True,YELLOW_COLOR)
-    screen.blit(high_score_text,(180, 5))
-    # next life text
+    # credits and lives
     next_life_text = small_font.render(
-        f"NEXT LIFE {game_state.score_manager.next_extra_life_score}",
+        f"CREDITS {game_state.credits} | LIVES: {player.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
         True, CYAN_COLOR)
-    screen.blit(next_life_text, (380, 5))
-    # credits
-    credit_text = small_font.render(
-        f"CREDITS {game_state.credits}", True, WHITE_COLOR)
-    screen.blit(credit_text, (450, 5))
-    
+    screen.blit(next_life_text, (400, 5))
+
+    # health UI
+    pygame.draw.rect(screen,(100,100,100), (20,25,200,20))
+    hp_width = int(200 * (player.hp / player.max_hp))
+    pygame.draw.rect(screen, GREEN_COLOR, (20,25,hp_width,20))
+    hp_text = font.render(f"HP: {int(player.hp)}/{player.max_hp}", True, YELLOW_COLOR)
+    screen.blit(hp_text, (230, 25))
+
+    # control
+    control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, WHITE_COLOR)
+    screen.blit(control_text, (20, 50))
+
     # combo UI
     combo = game_state.score_manager.combo_count
     multiplier = game_state.score_manager.get_multiplier()
@@ -128,18 +130,7 @@ def main_draw_ui(game_state):
         combo_text = font.render(
             f"{combo} HIT COMBO x{multiplier}",
             True,YELLOW_COLOR)
-        screen.blit(combo_text,(20, 75))
-
-    # health UI
-    pygame.draw.rect(screen,(100,100,100), (20,35,200,15))
-    hp_width = int(200 * (player.hp / player.max_hp))
-    pygame.draw.rect(screen, GREEN_COLOR, (20,35,hp_width,15))
-    hp_text = small_font.render(f"HP: {player.hp}/{player.max_hp}", True, (0,0,0))
-    screen.blit(hp_text, (230, 15))
-    lives_text = small_font.render(f"LIVES: {player.lives}", True, (255,255,255))
-    screen.blit(lives_text, (400, 15))
-    control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, (0,0,0))
-    screen.blit(control_text, (500, 15))
+        screen.blit(combo_text,(450, 25))
 
     # Weapon UI
     weapon_name = ""
@@ -148,47 +139,32 @@ def main_draw_ui(game_state):
         weapon_name = player.weapon.weapon_type
         if player.weapon.is_ranged:
             ammo_str = f" Ammo:{player.weapon.ammo}"
-        weapon_text = small_font.render(f"Weapon:{weapon_name}{ammo_str}",True,(0,0,0))
-        screen.blit(weapon_text,(500, 20))
-        
-    # enemies UI
-    #boss_alive = False
-    #boss_str = ""
-    #for enemy in enemies:
-    #    if enemy.__class__.__name__ == "BossEnemy":
-    #        boss_alive = True
-    #if boss_alive:
-    #    boss_str = "Boss Alive"
-    #if boss_alive:
-    #    boss_text = big_font.render("BOSS", True, (255,50,50))
-    #    screen.blit(boss_text, (SCREEN_WIDTH//2 - 120, 80))
+        weapon_text = font.render(f"Weapon:{weapon_name}{ammo_str}",True,YELLOW_COLOR)
+        screen.blit(weapon_text,(650, 25))
 
     # stage clear manager UI
     stage_clear = game_state.stage_clear_manager
     if stage_clear.active:
-        title = big_font.render("WELL DONE! (stage clear)", True, YELLOW_COLOR)
+        title = big_font.render("WELL DONE!", True, YELLOW_COLOR)
         screen.blit(title, title.get_rect(center=(SCREEN_WIDTH//2, 120)))
 
         life_text = font.render(
             f"Life Bonus: {stage_clear.life_bonus}",
             True, WHITE_COLOR)
-
         score_text = font.render(
             f"Score Bonus: {stage_clear.score_bonus}",
             True, WHITE_COLOR)
-
         total_text = font.render(
             f"TOTAL: {stage_clear.total_bonus}",
             True,YELLOW_COLOR)
 
-        screen.blit(life_text,(320,220))
-        screen.blit(score_text,(320,270))
-        screen.blit(total_text,(320,340))
+        screen.blit(life_text,life_text.get_rect(center=(SCREEN_WIDTH//2, 220)))
+        screen.blit(score_text,score_text.get_rect(center=(SCREEN_WIDTH//2, 270)))
+        screen.blit(total_text,total_text.get_rect(center=(SCREEN_WIDTH//2, 340)))
         
         if stage_clear.timer <= 0:
-            press_text = font.render(
-                "Press ENTER",True,WHITE_COLOR)
-            screen.blit(press_text,(350,420))
+            press_text = font.render("Press ENTER",True,WHITE_COLOR)
+            screen.blit(press_text,press_text.get_rect(center=(SCREEN_WIDTH//2, 420)))
 
         return
         
@@ -234,8 +210,8 @@ def main_draw_ui(game_state):
 
     # debug UI
     player_str = (f"Player x:{int(player.x)} y:{int(player.y)} "
-                + f"State:{player.state} Combo:{player.combo_step} "
+                + f"State:{player.state}"
                 + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
-    player_text = small_font.render(player_str,True, BLACK_COLOR)
-    screen.blit(player_text, (400, 55))
+    player_text = small_font.render(player_str,True, WHITE_COLOR)
+    screen.blit(player_text, (20, 70))
     # end of debug text
