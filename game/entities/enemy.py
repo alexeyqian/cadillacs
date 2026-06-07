@@ -262,20 +262,24 @@ class Enemy:
             self.attack_cooldown -= 1
 
     def get_player_distance(self, player):
-        if player.x < self.x: # player at left side of enemy
-            dx = self.x - player.x - player.width
-        else:
-            dx = player.x - self.x - self.width
+        enemy_center_x = self.x + self.width / 2
+        enemy_center_y = self.y + self.height / 2
 
-        dy = player.y - self.y
+        player_center_x = player.x + player.width / 2
+        player_center_y = player.y + player.height / 2
+
+        dx = player_center_x - enemy_center_x
+        dy = player_center_y - enemy_center_y
+
         distance_x = abs(dx)
         distance_y = abs(dy)
+
         return dx, dy, distance_x, distance_y
     
     def choose_state(self, distance_x, distance_y):
         # state selection, attack if close enough
         if (distance_x <= self.attack_range 
-            and distance_y <= self.attack_range): # distance_y need to change
+            and distance_y <= self.attack_hitbox_h):
             self.state = self.ATTACK
         elif distance_x <= self.detect_range:
             self.state = self.CHASE
@@ -365,8 +369,7 @@ class Enemy:
         # beat'em up lane limits creates the illusion of depth
         # player walks on a horizontal strip, not full screen
         self.y = max(self.lane_top, self.y) # cannot go above lane_top
-        # why // 2?
-        self.y = min(self.lane_bottom - self.height // 2, self.y) # cannot go below lane_bottom
+        self.y = min(self.lane_bottom, self.y) # cannot go below lane_bottom
 
     # hit box
     def get_attack_rect(self):

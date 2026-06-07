@@ -483,8 +483,7 @@ class Player:
         # beat'em up lane limitsL creates the illusion of depth
         # player walks on a horizontal strip, not full screen
         self.y = max(self.lane_top, self.y) # cannot go above lane_top
-        # why // 2?
-        self.y = min(self.lane_bottom - self.height // 2, self.y) # cannot go below lane_bottom
+        self.y = min(self.lane_bottom, self.y) # cannot go below lane_bottom
 
     #######################
 

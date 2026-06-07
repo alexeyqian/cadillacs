@@ -2,23 +2,25 @@ from game.settings import *
 
 def apply_arena_bounds(game_state):
     level = game_state.level
-    player = game_state.player
-
     if not level.camera_locked:
+        return
+    if level.lock_x is None:
         return
 
     # should move to player's own update() function
     # prevent player escaping arena
-    left_wall = level.lock_x
-    right_wall = level.lock_x + SCREEN_WIDTH # - player.width
-    clamp_entity(game_state.player, left_wall, right_wall)
+    arena_left = level.lock_x
+    arena_right = level.lock_x + SCREEN_WIDTH
+    clamp_entity(game_state.player, arena_left, arena_right)
     # prevent enemy escaping arena
     for enemy in game_state.enemies:
-        clamp_entity(enemy, left_wall, right_wall)
+        if enemy.state == enemy.DEAD:
+            continue
+        clamp_entity(enemy, arena_left, arena_right)
 
-def clamp_entity(entity, left_wall, right_wall):
-    if entity.x < left_wall:
-        entity.x = left_wall
+def clamp_entity(entity, arena_left, arena_right):
+    if entity.x < arena_left:
+        entity.x = arena_left
 
-    if entity.x + entity.width > right_wall:
-        entity.x = right_wall - entity.width
+    if entity.x + entity.width > arena_right:
+        entity.x = arena_right - entity.width
