@@ -11,12 +11,13 @@ from game.systems.effect_system import *
 from game.systems.arena_system import *
 from game.systems.explosive_system import *
 
+# do not put arena lock logic inside player, enemy, camera
+# arena system controls temporary battle boundaries
 def update_gameplay(game_state, keys):
-    update_wave_system(game_state)
+    update_wave_system(game_state) # may lock camera
     game_state.player.update()
-    apply_arena_bounds(game_state)
-
     update_enemy_system(game_state)
+    apply_arena_bounds(game_state) # clamps player/enemies if camera locked
     collect_player_projectiles(game_state)
     update_projectiles(game_state)
 
@@ -31,8 +32,10 @@ def update_gameplay(game_state, keys):
 
     update_wave_completion(game_state)
     update_life_reward_system(game_state)
-    update_camera_system(game_state)
-    
+
+    # apply arena bounds before camera update
+    update_camera_system(game_state) # camera follows player or stays locked
+
     update_effect_system(game_state)
     update_manager_system(game_state)
 

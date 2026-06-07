@@ -21,6 +21,7 @@ def update_wave_system(game_state):
             wave.spawn(camera.x)
             # lock camera only when wave actually starts
             # set lock_x to current camera.x so the viewport does not jump
+            # it only freeze camera, not stop player by itself
             level.camera_locked = True
             level.lock_x = camera.x
 

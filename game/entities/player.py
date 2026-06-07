@@ -90,7 +90,7 @@ class Player:
         self.attack_hitbox_w = PLAYER_HITBOX_W
         self.attack_hitbox_h = PLAYER_HITBOX_H
         self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
-        
+
         # lane boundaries
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
