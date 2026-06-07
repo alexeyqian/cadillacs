@@ -5,7 +5,7 @@ class AnnouncementManager:
         self.subtitle = ""
         self.timer = 0
 
-    def show(self, title, subtitle="", duration=180):
+    def show(self, title, subtitle="", duration=90):
         self.active = True
         self.title = str(title)
         self.subtitle = str(subtitle)
