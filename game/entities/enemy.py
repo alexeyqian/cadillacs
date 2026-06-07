@@ -6,7 +6,6 @@ from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.enemy_frames import *
-from game.assets.placeholder.player_frames import create_hit_frames
 from game.settings import *
 from game.entities.loot import Loot
 

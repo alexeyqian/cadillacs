@@ -1,5 +1,6 @@
 from game.effects.explosion import Explosion
 from game.effects.floating_text import FloatingText
+from game.systems.camera_effect_system import explosion_shake
 
 def create_explosions_from_objects(game_state):
     for obj in game_state.objects:
@@ -12,6 +13,7 @@ def create_explosions_from_objects(game_state):
         obj.exploded = True
         
         game_state.explosions.append(Explosion(obj.x+obj.width//2, obj.y+obj.height//2))
+        explosion_shake(game_state)
         game_state.score_manager.add_score(100)
         damage_enemies_in_radius(game_state,
             obj.x + obj.width//2, obj.y + obj.height//2, 180, 80)

@@ -220,3 +220,26 @@ BOSS APPROACHING
 (screen pauses briefly)
 ↓
 Boss enters
+
+Player movement:
+1. walk
+2. run
+->->quickly
+<-<- quickly
+Higher speed
+Different animation
+Can transition into run attack
+3. jump
+4. back jump: jump + opposite direction
+5. jump down/ jump up : jump while moving in lane
+
+Attack actions:
+Run+Attack: Mustapha performs: flying kick, sliding strike: one of the signature attacks
+
+Jump+Attack: performs: air kick, downward strike
+
+Grab combo: grab+attack+attack+attack
+Grab +attack: knee strike
+
+
+

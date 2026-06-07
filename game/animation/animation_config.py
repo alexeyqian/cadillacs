@@ -12,8 +12,36 @@ PLAYER_WALK = {
     "frame_count":6
 }
 
+PLAYER_RUN = {
+    "file":"game/assets/player/player_run.png",
+    "frame_width":80,
+    "frame_height":100,
+    "frame_count":6
+}
+
 PLAYER_ATTACK = {
     "file":"game/assets/player/player_attack.png",
+    "frame_width":80,
+    "frame_height":100,
+    "frame_count":4
+}
+
+PLAYER_RUN_ATTACK = {
+    "file":"game/assets/player/player_run_attack.png",
+    "frame_width":80,
+    "frame_height":100,
+    "frame_count":4
+}
+
+PLAYER_JUMP = {
+    "file":"game/assets/player/player_jump.png",
+    "frame_width":80,
+    "frame_height":100,
+    "frame_count":4
+}
+
+PLAYER_JUMP_ATTACK = {
+    "file":"game/assets/player/player_jump_attack.png",
     "frame_width":80,
     "frame_height":100,
     "frame_count":4

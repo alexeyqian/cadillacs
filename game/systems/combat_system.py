@@ -1,5 +1,7 @@
 import pygame
 from game.effects.floating_text import FloatingText
+from game.systems.camera_effect_system import *
+from game.entities.boss_enemy import BossEnemy
 
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y, enemy.width, enemy.height)
@@ -24,6 +26,10 @@ def handle_player_attack_collision(game_state):
             game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
             player.already_hit_enemy = True
+            if enemy.hp >0 and enemy.max_hp >= 200:
+                heavy_hit_shake(game_state)
+            if isinstance(enemies, BossEnemy):
+                boss_hit_shake(game_state)
             #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
             break # ?? useless, only can attack one enemy at a time?
 
