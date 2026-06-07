@@ -16,6 +16,8 @@ class Player:
     RUN="RUN"
     ATTACK = "ATTACK" # including 1,2,3
     RUN_ATTACK="RUN_ATTACK"
+    JUMP = "JUMP"
+    JUMP_ATTACK="JUMP_ATTACK"
     # punch combo
     ATTACK_1 = "ATTACK_1"
     ATTACK_2 = "ATTACK_2"
@@ -38,6 +40,20 @@ class Player:
         self.run_attack_damage = 35 # use scaler*normal_damage
         self.run_attack_timer = 0
         self.run_attack_duration = 18
+        
+        # jump / jump attack
+        self.is_jumping = False
+        self.jump_pressed = False
+        self.jump_attack_pressed = False
+        self.ground_y = self.y
+        self.vx = 0
+        self.vy = 0
+        self.jump_power = -20
+        self.gravity = 2
+        self.air_speed = self.speed * 1.2
+        self.air_friction = 0.92
+        self.jump_attack_damage = FIST_DAMAGE + 10
+        self.jump_attack_duration = self.run_attack_duration
 
         self.is_attacking = False
         self.attack_timer = 0
@@ -109,6 +125,16 @@ class Player:
             )
         else:
             run_frames = walk_frames
+        
+        if file_exists(PLAYER_JUMP["file"]):
+            jump_frames = AssetLoader.load_animation(
+                PLAYER_JUMP["file"],
+                PLAYER_JUMP["frame_width"],
+                PLAYER_JUMP["frame_height"],
+                PLAYER_JUMP["frame_count"]
+            )
+        else:
+            jump_frames = walk_frames
             
         if file_exists(PLAYER_ATTACK["file"]):
             attack_frames = AssetLoader.load_animation(
@@ -129,6 +155,16 @@ class Player:
             )
         else:
             run_attack_frames = attack_frames
+            
+        if file_exists(PLAYER_JUMP_ATTACK["file"]):
+            jump_attack_frames = AssetLoader.load_animation(
+                PLAYER_RUN_ATTACK["file"],
+                PLAYER_RUN_ATTACK["frame_width"],
+                PLAYER_RUN_ATTACK["frame_height"],
+                PLAYER_RUN_ATTACK["frame_count"]
+            )
+        else:
+            jump_attack_frames = attack_frames
 
         if file_exists(PLAYER_GRAB["file"]):
             grab_frames = AssetLoader.load_animation(
@@ -156,6 +192,7 @@ class Player:
         idle_dur = max(1, int(FPS / ANIM_FPS_IDLE))
         walk_dur = max(1, int(FPS / ANIM_FPS_WALK))
         run_dur = max(1, int(FPS / ANIM_FPS_WALK))
+        jump_dur = max(1, int(FPS / ANIM_FPS_WALK))
         attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK))
         hit_dur = max(1, int(FPS / ANIM_FPS_HIT))
 
@@ -166,23 +203,21 @@ class Player:
         self.animation_manager.add_animation(
             self.RUN, Animation(run_frames, run_dur))
         self.animation_manager.add_animation(
-            self.ATTACK, Animation(attack_frames, attack_dur)
-        )
+            self.JUMP, Animation(jump_frames, jump_dur))
         self.animation_manager.add_animation(
-            self.RUN_ATTACK, Animation(run_attack_frames, attack_dur)
-        )
+            self.ATTACK, Animation(attack_frames, attack_dur))
         self.animation_manager.add_animation(
-            self.GRAB, Animation(grab_frames, attack_dur)
-        )
+            self.RUN_ATTACK, Animation(run_attack_frames, attack_dur))
         self.animation_manager.add_animation(
-            self.THROW, Animation(throw_frames, attack_dur)
-        )
+            self.JUMP_ATTACK, Animation(jump_attack_frames, attack_dur))
         self.animation_manager.add_animation(
-            self.HIT, Animation(create_hit_frames(), hit_dur)
-        )
+            self.GRAB, Animation(grab_frames, attack_dur))
         self.animation_manager.add_animation(
-            self.DEAD, Animation(create_dead_frames(), 999)
-        )
+            self.THROW, Animation(throw_frames, attack_dur))
+        self.animation_manager.add_animation(
+            self.HIT, Animation(create_hit_frames(), hit_dur))
+        self.animation_manager.add_animation(
+            self.DEAD, Animation(create_dead_frames(), 999))
 
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x
@@ -195,6 +230,7 @@ class Player:
         keys = pygame.key.get_pressed()
         moving = self.update_movement(keys)
         self.update_action_input(keys)
+        self.update_jump_physics(keys)
         self.update_state_after_movement(moving)
         self.update_grabbed_enemy_position()
         self.apply_world_bounds()
@@ -275,11 +311,15 @@ class Player:
             self.animation_manager.play(self.WALK)
         elif self.state == self.RUN:
             self.animation_manager.play(self.RUN)
+        elif self.state == self.JUMP:
+            self.animation_manager.play(self.JUMP)
 
         elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
             self.animation_manager.play(self.ATTACK)
         elif self.state == self.RUN_ATTACK:
             self.animation_manager.play(self.RUN_ATTACK)
+        elif self.state == self.JUMP_ATTACK:
+            self.animation_manager.play(self.JUMP_ATTACK)
         elif self.state == self.GRAB:
             self.animation_manager.play(self.GRAB)
         elif self.state == self.THROW:
@@ -297,7 +337,7 @@ class Player:
     def update_dead_state(self):
         self.update_respawn()
         self.update_animation()
-        
+
     def update_timers(self):
         # hit timer? hit by enemy or attack enemy?
         if self.hit_timer > 0:
@@ -322,9 +362,12 @@ class Player:
                     self.state = self.IDLE
             # comment out, so still can move during attacking
             #return # skip movement while attacking
-            
+
     def update_movement(self, keys):
         moving = False
+        if self.is_jumping: # avoid double movement while jumping
+            return False
+    
         move_speed = self.speed
         self.is_running = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
         if self.is_running:
@@ -347,10 +390,52 @@ class Player:
 
         return moving
 
+    def update_jump_physics(self, keys):
+        if not self.is_jumping:
+            return
+        
+        # allow small air control
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            self.vx = -self.air_speed
+            self.facing_right = False
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.vx = self.air_speed
+            self.facing_right = True
+            
+        self.x += self.vx
+        self.y += self.vy
+        self.vx *= self.air_friction
+        self.vy += self.gravity
+
+        if self.y >= self.ground_y:
+            self.y = self.ground_y
+            self.vx = 0
+            self.vy = 0
+            self.is_jumping = False
+            self.jump_attack_pressed = False
+            
+            if self.state in [self.JUMP, self.JUMP_ATTACK]:
+                self.state = self.IDLE
+
     def update_action_input(self, keys):
+        # jump key
+        if keys[pygame.K_SPACE]:
+            if not self.jump_pressed:
+                self.start_jump(keys)
+                self.jump_pressed = True
+        else:
+            self.jump_pressed = False
+
         # attacking keys
         if keys[pygame.K_j]:
+            if self.is_jumping:
+                if not self.jump_attack_pressed:
+                    self.start_jump_attack()
+                    self.jump_attack_pressed = True
+            else:
                 self.start_attack()
+        else:
+            self.jump_attack_pressed = False
 
         # fire weapon on key-down only (prevent holding K from firing repeatedly)
         if keys[pygame.K_k]:
@@ -363,7 +448,13 @@ class Player:
     def update_state_after_movement(self, moving):
         # update state (preserve attack state if attacking)
         if self.is_attacking:
-            pass # keep attack state and animation set by start_attack
+            return
+            #pass # keep attack state and animation set by start_attack
+        if self.is_jumping:
+            if self.state != self.JUMP_ATTACK:
+                self.state = self.JUMP
+            return
+
         elif self.throw_timer > 0:
             self.state = self.THROW
         elif self.grabbed_enemy:
@@ -388,7 +479,7 @@ class Player:
     def apply_world_bounds(self):
         # world boundaries
         self.x = max(0, self.x) # cannot go left of window
-        self.x = min(self.x, SCREEN_WIDTH-self.width) # cannot go right window
+        self.x = min(self.x, WORLD_WIDTH-self.width) # cannot go right window
         # beat'em up lane limitsL creates the illusion of depth
         # player walks on a horizontal strip, not full screen
         self.y = max(self.lane_top, self.y) # cannot go above lane_top
@@ -397,6 +488,37 @@ class Player:
 
     #######################
 
+    def start_jump(self, keys):
+        if self.is_jumping:
+            return
+        if self.is_attacking:
+            return
+        if self.grabbed_enemy:
+            return
+        self.is_jumping = True
+        self.ground_y = self.y
+        self.vy = self.jump_power
+        self.vx = 0
+        
+        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+            self.vx = -self.air_speed
+            self.facing_right = False
+        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+            self.vx = self.air_speed
+            self.facing_right = True
+
+        self.state = self.JUMP
+
+    def start_jump_attack(self):
+        if not self.is_jumping:
+            return
+        if self.is_attacking:
+            return
+        self.is_attacking = True
+        self.attack_timer = self.jump_attack_duration
+        self.already_hit_enemy = False
+        self.state = self.JUMP_ATTACK
+    
     def start_attack(self):
         # The current start_attack() prevents attack chaining while an attack is active:
         # we'll replace this with an input buffer system
@@ -441,6 +563,8 @@ class Player:
             base_damage = FIST_DAMAGE + 8
         elif self.state == self.RUN_ATTACK:
             base_damage = FIST_DAMAGE + 6
+        elif self.state == self.JUMP_ATTACK:
+            base_damage = FIST_DAMAGE + 6
 
         if self.weapon and not self.weapon.is_ranged:
             base_damage += self.weapon.damage
@@ -456,6 +580,8 @@ class Player:
         # giving running attack a longer hitbox
         if self.state == self.RUN_ATTACK:
             hit_w = self.attack_hitbox_w * 1.5
+        if self.state == self.JUMP_ATTACK:
+            hit_w = self.attack_hitbox_w
         hit_h = self.attack_hitbox_h
         if self.weapon and not self.weapon.is_ranged:
             hit_w += self.weapon.attack_range_bonus

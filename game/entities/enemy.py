@@ -302,7 +302,7 @@ class Enemy:
     def apply_world_bounds(self):
         # world boundaries
         self.x = max(0, self.x) # cannot go left of window
-        self.x = min(self.x, SCREEN_WIDTH-self.width) # cannot go right window
+        self.x = min(self.x, WORLD_WIDTH-self.width) # cannot go right window
         # beat'em up lane limits creates the illusion of depth
         # player walks on a horizontal strip, not full screen
         self.y = max(self.lane_top, self.y) # cannot go above lane_top
