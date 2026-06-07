@@ -1,0 +1,3 @@
+make enemy spwan random in range instead of fix position
+
+add hurt box for player and enemies, only hit box is overlapping with hurt box then take the damage

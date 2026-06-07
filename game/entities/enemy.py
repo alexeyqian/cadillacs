@@ -7,6 +7,7 @@ from game.animation.animation_config import *
 from game.animation.file_utils import *
 from game.assets.placeholder.enemy_frames import *
 from game.settings import *
+from game.colors import *
 from game.entities.loot import Loot
 
 class Enemy:
@@ -32,7 +33,7 @@ class Enemy:
         self.speed = NORMAL_ENEMY_SPEED
         self.max_hp = NORMAL_ENEMY_MAX_HP
         self.hp = self.max_hp
-        self.state = self.WALK
+        self.state = self.IDLE
         self.facing_right = False
         self.loot_generated = False
         self.death_timer = 30
@@ -43,14 +44,18 @@ class Enemy:
         self.detect_range = NORMAL_ENEMY_DETECT_RANGE
         # enemy remembers where it spawned
         self.spawn_x = x
-        self.patrol_distance = 80
+        self.patrol_distance = NORMAL_ENEMY_DETECT_RANGE
         self.patrol_direction = 1
 
         # attack players / combat
         self.attack_timer = 0 # ?
         self.attack_cooldown = 0
+        self.attack_range = ENEMY_HITBOX_W # deprecated
+        # attack hitbox settings (kept symmetric for left/right)
+        self.attack_hitbox_w = ENEMY_HITBOX_W
+        self.attack_hitbox_h = ENEMY_HITBOX_H
+        self.attack_hitbox_offset_y = ENEMY_HITBOX_OFFSET_H
         self.attack_damage = NORMAL_ENEMY_ATTACK_DAMAGE
-        self.attack_range = ENEMY_HITBOX_W
 
         # hit reaction
         self.knockback_velocity = 0
@@ -212,12 +217,17 @@ class Enemy:
         # distance to player
         dx = player.x - self.x
         dy = player.y - self.y
+        if dx < 0: # player at left side of enemy
+            dx = self.x - player.x - player.width
+        else: # player at right side of enemy
+            dx = player.x - self.x - self.width
         distance_x = abs(dx)
         distance_y = abs(dy)
 
         # state selection
         # attack if close enough
-        if distance_x <= self.attack_range and distance_y <= self.attack_range:
+        if (distance_x <= self.attack_hitbox_w 
+            and distance_y <= self.attack_hitbox_h):
             self.state = self.ATTACK
         elif distance_x <= self.detect_range:
             self.state = self.CHASE
@@ -233,6 +243,7 @@ class Enemy:
         elif self.state == self.ATTACK:
             self.update_attack(player)
 
+        self.apply_world_bounds()
         self.update_animation()
 
     def draw(self, screen, camera_x):
@@ -240,13 +251,7 @@ class Enemy:
         # shadow
         pygame.draw.ellipse(
             screen, (50, 50, 50),
-            (
-                screen_x,
-                self.y + self.height - 10,
-                self.width,
-                12
-            )
-        )
+            (screen_x,self.y + self.height - 10,self.width,12))
 
         image = self.animation_manager.get_image()
         if self.facing_right:
@@ -267,7 +272,15 @@ class Enemy:
 
         # debug: draw enemy bounding box (world -> screen)
         if SHOW_ENEMY_RECT:
-            pygame.draw.rect(screen, (255, 0, 255), (screen_x, self.y, self.width, self.height), 2)
+            pygame.draw.rect(screen, RED_COLOR, (screen_x, self.y, self.width, self.height), 2)
+
+        # attack hitbox for debug
+        if SHOW_ENEMY_HITBOX:
+            attack_rect = self.get_attack_rect()
+            if attack_rect:
+                pygame.draw.rect(screen, YELLOW_COLOR,
+                    (attack_rect.x - camera_x, attack_rect.y,
+                    attack_rect.width, attack_rect.height), 1)
 
         # health bar background
         pygame.draw.rect(
@@ -281,13 +294,40 @@ class Enemy:
 
         # debug: draw enemy attack hitbox when attacking
         if self.state == self.ATTACK:
-            # represent attack area using attack_range centered in front of enemy
-            hit_w = int(self.attack_range)
-            hit_h = max(20, int(self.height / 2))
-            hit_y = int(self.y + 10)
-            # center attack box on enemy horizontally
-            hit_x = int(self.x + (self.width / 2) - (hit_w / 2))
-            pygame.draw.rect(screen, (255, 165, 0), (hit_x - camera_x, hit_y, hit_w, hit_h), 2)
+            attack_rect = self.get_attack_rect()
+            pygame.draw.rect(screen, YELLOW_COLOR,
+                    (attack_rect.x - camera_x, attack_rect.y,
+                    attack_rect.width, attack_rect.height), 1)
+
+    def apply_world_bounds(self):
+        # world boundaries
+        self.x = max(0, self.x) # cannot go left of window
+        self.x = min(self.x, SCREEN_WIDTH-self.width) # cannot go right window
+        # beat'em up lane limits creates the illusion of depth
+        # player walks on a horizontal strip, not full screen
+        self.y = max(self.lane_top, self.y) # cannot go above lane_top
+        # why // 2?
+        self.y = min(self.lane_bottom - self.height // 2, self.y) # cannot go below lane_bottom
+
+    # hit box
+    def get_attack_rect(self):
+        # Use symmetric hitbox size and offsets so left/right behave identically
+        hit_w = self.attack_hitbox_w
+        # giving running attack a longer hitbox
+        #if self.state == self.RUN_ATTACK:
+        #    hit_w = self.attack_hitbox_w * 1.5
+        hit_h = self.attack_hitbox_h
+        #if self.weapon and not self.weapon.is_ranged:
+        #    hit_w += self.weapon.attack_range_bonus
+        #    hit_h += self.weapon.attack_height_bonus
+
+        hit_y = int(self.y + self.attack_hitbox_offset_y)
+        # do we need attack hitbox_offset_x ? no need probably
+        if self.facing_right:
+            hit_x = int(self.x + self.width)
+        else:
+            hit_x = int(self.x - hit_w)
+        return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
     def update_walking(self, dx, dy):
         #if dx <= 60:

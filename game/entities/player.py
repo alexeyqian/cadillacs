@@ -242,7 +242,7 @@ class Player:
 
         # debug: draw player's bounding box (world -> screen)
         if SHOW_PLAYER_RECT:
-            pygame.draw.rect(screen, (0, 255, 255), (screen_x, draw_y, self.width, self.height), 1)
+            pygame.draw.rect(screen, GREEN_COLOR, (screen_x, draw_y, self.width, self.height), 1)
 
         # attack hitbox for debug
         if SHOW_PLAYER_HITBOX:
@@ -388,7 +388,7 @@ class Player:
     def apply_world_bounds(self):
         # world boundaries
         self.x = max(0, self.x) # cannot go left of window
-        self.x = min(self.x, WORLD_WIDTH-self.width) # cannot go right window
+        self.x = min(self.x, SCREEN_WIDTH-self.width) # cannot go right window
         # beat'em up lane limitsL creates the illusion of depth
         # player walks on a horizontal strip, not full screen
         self.y = max(self.lane_top, self.y) # cannot go above lane_top
