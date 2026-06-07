@@ -24,7 +24,7 @@ class Enemy:
     GETUP = "GETUP" # gets up after knockdown
 
     def __init__(self, x, y, idle_config=None, walk_config=None,
-                attack_config=None, dead_config=None,
+                attack_config=None, hit_config=None, dead_config=None,
                 fallback_frame_factory=None):
         self.x = x
         self.y = y
@@ -75,12 +75,17 @@ class Enemy:
         #lane boundaries
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
-        
-        # todo: move these init process to separate function
+
+        frames = self.load_frames()
+        self.load_animations(frames)
+
+    def load_frames(self, idle_config=None, walk_config=None, attack_config=None,
+                    hit_config=None, dead_config=None, fallback_frame_factory=None):
         use_normal_dead_animation = (
             idle_config is None and
             walk_config is None and
             attack_config is None and
+            hit_config is None and
             dead_config is None
         )
 
@@ -90,6 +95,8 @@ class Enemy:
             walk_config = NORMAL_ENEMY_WALK
         if attack_config is None:
             attack_config = NORMAL_ENEMY_ATTACK
+        if hit_config is None:
+            hit_config = NORMAL_ENEMY_IDLE
         if use_normal_dead_animation:
             dead_config = NORMAL_ENEMY_DEAD
         if fallback_frame_factory is None:
@@ -126,6 +133,16 @@ class Enemy:
         else:
             attack_frames = fallback_frame_factory()
 
+        if file_exists(hit_config["file"]):
+            hit_frames = AssetLoader.load_animation(
+                    hit_config["file"],
+                    hit_config["frame_width"],
+                    hit_config["frame_height"],
+                    hit_config["frame_count"]
+                )
+        else:
+            hit_frames = fallback_frame_factory()
+
         if dead_config and file_exists(dead_config["file"]):
             dead_frames = AssetLoader.load_animation(
                     dead_config["file"],
@@ -136,22 +153,38 @@ class Enemy:
         else:
             dead_frames = fallback_frame_factory()
 
-        # animation manager
+        return {
+            "idle": idle_frames,
+            "walk": walk_frames,
+            "attack": attack_frames,
+            "hit": hit_frames,
+            "dead": dead_frames
+        }
+
+    def load_animations(self, frames):
+        idle_frames = frames['idle']
+        walk_frames = frames['walk']
+        attack_frames = frames['attack']
+        hit_frames = frames['hit']
+        dead_frames = frames['dead']
+
         self.animation_manager = AnimationManager()
+
         # compute frame durations to match game FPS
+        idle_dur = max(1, int(FPS / ANIM_FPS_IDLE_ENEMY))
         walk_dur = max(1, int(FPS / ANIM_FPS_WALK_ENEMY))
         attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK_ENEMY))
         hit_dur = max(1, int(FPS / ANIM_FPS_HIT_ENEMY))
-        idle_dur = max(1, int(FPS / ANIM_FPS_IDLE_ENEMY))
         dead_dur = max(1, int(self.death_timer / len(dead_frames)))
+
         self.animation_manager.add_animation(
             self.IDLE, Animation(idle_frames, idle_dur))
         self.animation_manager.add_animation(
             self.WALK, Animation(walk_frames, walk_dur))
         self.animation_manager.add_animation(
             self.ATTACK, Animation(attack_frames, attack_dur))
-        self.animation_manager.add_animation(
-            self.HIT, Animation(fallback_frame_factory(), hit_dur))
+        #self.animation_manager.add_animation(
+        #    self.HIT, Animation(hit_frames(), hit_dur))
         self.animation_manager.add_animation(
             self.DEAD, Animation(dead_frames, dead_dur))
 
@@ -201,14 +234,7 @@ class Enemy:
     def update_getup_state(self):
         self.getup_timer -= 1
         if self.getup_timer <= 0:
-            self.state = self.WALK
-        self.update_animation()
-
-    def update_dead_state(self):
-        if not self.death_timer_started:
-            self.death_timer_started = True
-        if self.death_timer > 0:
-            self.death_timer -= 1
+            self.state = self.IDLE
         self.update_animation()
 
     def update_hit_state(self):
@@ -219,15 +245,22 @@ class Enemy:
         self.hit_timer -= 1
         self.apply_knockback()
         if self.hit_timer == 0:
-            self.state = self.WALK
+            self.state = self.IDLE
 
         return True
+
+    def update_dead_state(self):
+        if not self.death_timer_started:
+            self.death_timer_started = True
+        if self.death_timer > 0:
+            self.death_timer -= 1
+        self.update_animation()
 
     def update_timers(self):
         # attack cooldown
         if self.attack_cooldown > 0:
             self.attack_cooldown -= 1
-            
+
     def get_player_distance(self, player):
         if player.x < self.x: # player at left side of enemy
             dx = self.x - player.x - player.width

@@ -86,6 +86,13 @@ NORMAL_ENEMY_ATTACK = {
     "frame_count":6
 }
 
+NORMAL_ENEMY_HIT = {
+    "file":"game/assets/enemy/normal_enemy_idle.png",
+    "frame_width":64,
+    "frame_height":64,
+    "frame_count":4
+}
+
 NORMAL_ENEMY_DEAD = {
     "file":"game/assets/enemy/normal_enemy_dead.png",
     "frame_width":64,
