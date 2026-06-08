@@ -1,80 +1,78 @@
 PLAYER_IDLE = {
     "file":"game/assets/player/player_idle.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "frame_width":128,
+    "frame_height":256,
+    "frame_count":6
 }
 
 PLAYER_WALK = {
     "file":"game/assets/player/player_walk.png",
-    "frame_width":80,
-    "frame_height":100,
+    "frame_width":128,
+    "frame_height":256,
     "frame_count":6
 }
 
 PLAYER_RUN = {
     "file":"game/assets/player/player_run.png",
-    "frame_width":80,
-    "frame_height":100,
+    "frame_width":128,
+    "frame_height":256,
     "frame_count":6
 }
 
 PLAYER_ATTACK = {
     "file":"game/assets/player/player_attack.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "frame_width":192,
+    "frame_height":256,
+    "frame_count":6
 }
 
 PLAYER_RUN_ATTACK = {
     "file":"game/assets/player/player_run_attack.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "frame_width":224,
+    "frame_height":256,
+    "frame_count":6
 }
 
 PLAYER_JUMP = {
     "file":"game/assets/player/player_jump.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "frame_width":128,
+    "frame_height":256,
+    "frame_count":6
 }
 
 PLAYER_JUMP_ATTACK = {
     "file":"game/assets/player/player_jump_attack.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "frame_width":224,
+    "frame_height":256,
+    "frame_count":6
 }
 
 PLAYER_GRAB = {
     "file":"game/assets/player/player_grab.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "frame_width":176,
+    "frame_height":256,
+    "frame_count":6
 }
 
 PLAYER_THROW = {
     "file":"game/assets/player/player_throw.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "frame_width":224,
+    "frame_height":256,
+    "frame_count":6
 }
 
-# todo
 PLAYER_HIT = {
-    "file":"game/assets/player/player_throw.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "file":"game/assets/player/player_hit.png",
+    "frame_width":144,
+    "frame_height":256,
+    "frame_count":6
 }
 
-# todo
 PLAYER_DEAD = {
-    "file":"game/assets/player/player_throw.png",
-    "frame_width":80,
-    "frame_height":100,
-    "frame_count":4
+    "file":"game/assets/player/player_dead.png",
+    "frame_width":256,
+    "frame_height":128,
+    "frame_count":6
 }
 
 # ==========================================
