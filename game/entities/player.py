@@ -23,6 +23,7 @@ class Player:
     HIT = "HIT" # hit by enemies
     DEAD = "DEAD"
     GRAB = "GRAB"
+    GRAB_KNEE="GRAB_KNEE"
     THROW = "THROW"
 
     def __init__(self):
@@ -83,6 +84,9 @@ class Player:
         self.grab_range = PLAYER_GRAB_RANGE
         self.throw_timer = 0
         self.throw_duration = 14
+        self.grab_knee_timer = 0
+        self.grab_knee_duration = PLAYER_GRAB_KNEE_DURATION
+        self.grab_keen_hit_frame = PLAYER_GRAB_KNEE_HIT_FRAME
 
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = PLAYER_HITBOX_W
@@ -251,6 +255,8 @@ class Player:
             self.animation_manager.play(self.JUMP_ATTACK)
         elif self.state == self.GRAB:
             self.animation_manager.play(self.GRAB)
+        elif self.state == self.GRAB_KNEE:
+            self.animation_manager.play(self.ATTACK) # todo: KNEE_ATTACK
         elif self.state == self.THROW:
             self.animation_manager.play(self.THROW)
 
@@ -268,7 +274,7 @@ class Player:
         self.update_animation()
 
     def update_timers(self):
-        # hit timer? hit by enemy or attack enemy?
+        # TODO: hit timer? hit by enemy or attack enemy?
         if self.hit_timer > 0:
             self.hit_timer -= 1
             if self.hit_timer == 0:
@@ -281,6 +287,16 @@ class Player:
 
         if self.throw_timer > 0:
             self.throw_timer -= 1
+            
+        if self.grab_knee_timer > 0:
+            self.grab_knee_timer -= 1
+            if self.grab_knee_timer <= 0:
+                self.is_attacking = False
+                self.already_hit_enemy = False
+                if self.grabbed_enemy:
+                    self.state = self.GRAB
+                else:
+                    self.state = self.IDLE
 
         # attack timer
         if self.is_attacking:
@@ -362,7 +378,10 @@ class Player:
                     self.start_jump_attack()
                     self.jump_attack_pressed = True
             else:
-                self.start_attack()
+                if self.grabbed_enemy:
+                    self.start_grab_knee_attack()
+                else:
+                    self.start_attack()
         else:
             self.jump_attack_pressed = False
 
@@ -386,6 +405,8 @@ class Player:
 
         elif self.throw_timer > 0:
             self.state = self.THROW
+        elif self.grab_knee_timer > 0:
+            self.state = self.GRAB_KNEE
         elif self.grabbed_enemy:
             self.state = self.GRAB
         else:
@@ -481,6 +502,17 @@ class Player:
         else:
             self.state = self.ATTACK_3
 
+    def start_grab_knee_attack(self):
+        if not self.grabbed_enemy:
+            return
+        if self.is_attacking:
+            return
+        self.is_attacking = True
+        self.attack_timer = self.grab_knee_duration
+        self.grab_knee_timer = self.grab_knee_duration
+        self.already_hit_enemy = False
+        self.state = self.GRAB_KNEE
+
     def attack_damage(self):
         base_damage = FIST_DAMAGE
         if self.state == self.ATTACK_1:
@@ -493,6 +525,8 @@ class Player:
             base_damage = FIST_DAMAGE + 6
         elif self.state == self.JUMP_ATTACK:
             base_damage = FIST_DAMAGE + 6
+        elif self.state == self.GRAB_KNEE:
+            base_damage = PLAYER_GRAB_KNEE_DAMAGE
 
         if self.weapon and not self.weapon.is_ranged:
             base_damage += self.weapon.damage
@@ -510,6 +544,19 @@ class Player:
             hit_w = self.attack_hitbox_w * 1.5
         if self.state == self.JUMP_ATTACK:
             hit_w = self.attack_hitbox_w
+        if self.state == self.GRAB_KNEE:
+            hit_w = PLAYER_GRAB_KNEE_HITBOX_W
+            hit_h = PLAYER_GRAB_KNEE_HITBOX_H
+            hit_y = int(self.y + self.height * 0.35)
+
+            if self.facing_right:
+                hit_x = int(self.x + self.width * 0.65)
+            else:
+                hit_x = int(self.x - hit_w + self.width * 0.35)
+            # return directly
+            # todo: refactory here
+            return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
+
         hit_h = self.attack_hitbox_h
         if self.weapon and not self.weapon.is_ranged:
             hit_w += self.weapon.hitbox_w_bonus

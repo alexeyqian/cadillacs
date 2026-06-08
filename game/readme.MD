@@ -240,3 +240,9 @@ Jump+Attack: performs: air kick, downward strike
 
 Grab combo: grab+attack+attack+attack
 Grab +attack: knee strike
+
+knee attack
+L near enemy      -> grab enemy
+J while grabbing -> knee attack
+J again          -> knee attack again
+L while grabbing -> throw enemy

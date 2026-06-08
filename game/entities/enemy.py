@@ -485,9 +485,9 @@ class Enemy:
         elif self.state == self.GRABBED:
             self.animation_manager.play(self.IDLE)
         elif self.state == self.THROWN:
-            self.animation_manager.play(self.HIT)
+            self.animation_manager.play(self.THROWN)
         elif self.state == self.KNOCKDOWN:
-            self.animation_manager.play(self.HIT)
+            self.animation_manager.play(self.KNOCKDOWN)
 
         elif self.state == self.GETUP:
             self.animation_manager.play(self.IDLE)
@@ -516,6 +516,20 @@ class Enemy:
         self.thrown_timer = 30
         self.thrown_hit_targets.clear()
         self.take_thrown_damage(self.thrown_damage)
+
+    # this prevents knee attacks from accidentally knocking the enemy out of grab state
+    def take_grab_knee_damage(self, damage):
+        if self.state == self.DEAD:
+            return
+        self.hp -= damage
+        if self.hp <= 0:
+            self.hp = 0
+            self.state = self.DEAD
+            self.death_timer = 30
+            self.death_timer_started = False # todo: not True?
+            return
+        
+        self.state = self.GRABBED
 
     def take_thrown_damage(self, damage):
         if self.state == self.DEAD:

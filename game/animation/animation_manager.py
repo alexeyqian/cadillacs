@@ -14,7 +14,10 @@ class AnimationManager:
         if name == self.current_name:
             return
         self.current_name = name
-        self.current_animation = self.animations[name]
+        try:
+            self.current_animation = self.animations[name]
+        except: # just in case some animation doesn't exist, crashing game
+            pass
         self.current_animation.reset()
 
     def update(self):

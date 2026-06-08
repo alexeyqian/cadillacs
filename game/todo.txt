@@ -1,4 +1,8 @@
 
+re-factory weapon system.
+
+add layered animation, add weapon animation on top of player's animation
+
 make enemy more smarter and try to move around and attack from player's back
 
 make enemy spwan random in range instead of fix position

@@ -1,4 +1,5 @@
 import pygame
+from game.colors import *
 from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
 from game.entities.boss_enemy import BossEnemy
@@ -6,6 +7,7 @@ from game.entities.boss_enemy import BossEnemy
 def create_enemy_rect(enemy):
     return pygame.Rect(enemy.x, enemy.y, enemy.width, enemy.height)
 
+# todo: refactory
 def handle_player_attack_collision(game_state):
     player = game_state.player
     enemies = game_state.enemies
@@ -16,6 +18,21 @@ def handle_player_attack_collision(game_state):
         return
     if player.already_hit_enemy:
         return
+
+    if player.state == player.GRAB_KNEE:
+        enemy = player.grabbed_enemy
+        if enemy and enemy.state != enemy.DEAD:
+            damage = player.attack_damage()
+            enemy.take_grab_knee_damage(damage)
+            game_state.floating_texts.append(
+                FloatingText(enemy.x, enemy.y-10, str(damage), YELLOW_COLOR)
+            )
+            game_state.score_manager.register_hit()
+            player.already_hit_enemy = True
+            if enemy.state == enemy.DEAD:
+                player.grabbed_enemy = None
+        return
+
 
     # attack enemies
     for enemy in enemies:
