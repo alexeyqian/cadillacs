@@ -1,3 +1,4 @@
+import os
 import pygame
 from game.settings import *
 from game.camera import Camera
@@ -14,15 +15,15 @@ from game.ui.score_manager import ScoreManager
 from game.ui.stage_clear_manager import StageClearManager
 from main_draw import *
 
-# level manages progression
-# camera manages view
-# wave manages spawning
-# enemy manages AI
+os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
+#info = pygame.display.Info()
+#screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.NOFRAME)
 
 def main():
     pygame.init()
 
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    window = pygame.display.set_mode((EXTERNAL_WIDTH, EXTERNAL_HEIGHT), pygame.NOFRAME) # for monitor
+    screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT)) # for entire game area
     pygame.display.set_caption("Cadillacs and Dinosaurs")
 
     clock = pygame.time.Clock()
@@ -89,6 +90,8 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
                 # insert coin as credit
                 # useful for development, will remove in prod
                 if event.key == pygame.K_5:
@@ -129,6 +132,8 @@ def main():
         # 5. draw
         main_draw(game_state)
 
+        scaled = pygame.transform.smoothscale(screen, window.get_size())
+        window.blit(scaled, (0,0))
         pygame.display.flip()
         clock.tick(FPS)
 

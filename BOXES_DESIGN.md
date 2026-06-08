@@ -1,4 +1,81 @@
-Core boxes:
+
+# WINDOW SIZE 960X540
+SCREEN_WIDTH = 960
+SCREEN_HEIGHT = 540
+
+GROUND_TOP = 300
+GROUND_BOTTOM = 520
+GROUND_HEIGHT = GROUND_BOTTOM - GROUND_TOP  # 220
+
+LANE_COUNT = 5
+LANE_HEIGHT = GROUND_HEIGHT / LANE_COUNT  # 44 px
+lanes = [
+    322,
+    366,
+    410,
+    454,
+    498,
+]
+lane_y = GROUND_TOP + LANE_HEIGHT * lane_index + LANE_HEIGHT / 2
+
+y = 0
++--------------------------------+
+| background / buildings / sky   |
+|                                |
+|                                |
+|                                |
+y = 300  <- GROUND_TOP
++--------------------------------+
+| walkable beat'em up area       |
+|                                |
+| player feet move here          |
+|                                |
+y = 520  <- GROUND_BOTTOM
++--------------------------------+
+| small UI / screen edge margin  |
+y = 540
+
+# WINDOW SIZE 1920X1080
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
+
+PLAYER_WIDTH = 128
+PLAYER_HEIGHT = 256
+
+GROUND_TOP = 600
+GROUND_BOTTOM = 1040
+GROUND_HEIGHT = 440
+
+LANE_COUNT = 5
+LANE_HEIGHT = 88
+
+lanes = [
+    644,
+    732,
+    820,
+    908,
+    996,
+]
+lane_y = GROUND_TOP + LANE_HEIGHT * lane_index + LANE_HEIGHT / 2
+
+y = 0
++--------------------------------+
+| background / buildings / sky   |
+|                                |
+|                                |
+|                                |
+y = 600  <- GROUND_TOP
++--------------------------------+
+| walkable combat area           |
+|                                |
+| player feet move here          |
+|                                |
+y = 1040 <- GROUND_BOTTOM
++--------------------------------+
+| 40 px bottom margin            |
+y = 1080
+
+# Player Core boxes:
 
 body_rect: movement, standing position, pushing, world collision
 hurtbox: where the player can be damaged
