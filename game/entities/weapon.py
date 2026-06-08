@@ -1,5 +1,6 @@
 import pygame
 from game.settings import *
+from game.assets.asset_manager import AssetManager
 
 KNIFE_IMAGE_FILE = "game/assets/weapon/knife.png"
 
@@ -47,12 +48,7 @@ class Weapon:
             self.attack_height_bonus = 0
 
     def _load_knife_image(self):
-        try:
-            image = pygame.image.load(KNIFE_IMAGE_FILE).convert_alpha()
-        except pygame.error:
-            return None
-
-        return image
+        return AssetManager.load_image(KNIFE_IMAGE_FILE, alpha=True)
 
     def _create_knife_icon(self):
         # create a small surface with transparent background and draw a simple knife

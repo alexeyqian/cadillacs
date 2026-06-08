@@ -1,4 +1,5 @@
 import pygame
+from game.assets.asset_manager import AssetManager
 
 LOOT_IMAGE_FILES = {
     "health": "game/assets/loot/health.png",
@@ -20,10 +21,7 @@ class Loot:
         if filename is None:
             return None
 
-        try:
-            return pygame.image.load(filename).convert_alpha()
-        except pygame.error:
-            return None
+        return AssetManager.load_image(filename, alpha=True)
 
     def draw(self, screen, camera_x):
         if not self.active:

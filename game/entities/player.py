@@ -6,9 +6,7 @@ from game.assets.placeholder.player_frames import *
 from game.assets.asset_manager import AssetManager
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
-from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
-from game.animation.file_utils import *
 
 class Player:
     IDLE = "IDLE"
@@ -89,6 +87,7 @@ class Player:
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = PLAYER_HITBOX_W
         self.attack_hitbox_h = PLAYER_HITBOX_H
+        #(self.y + self.height // 2) - PLAYER_HITBOX_H//2
         self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
 
         # lane boundaries

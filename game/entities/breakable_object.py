@@ -1,9 +1,7 @@
-import pygame
 import random
-
+import pygame
+from game.assets.asset_manager import AssetManager
 from game.entities.loot import Loot
-
-BOX_IMAGE = None
 
 class BreakableObject:
     def __init__(self, x, y):
@@ -14,22 +12,20 @@ class BreakableObject:
         self.hp = 30
         self.destroyed = False
         self.loot_generated = False
+        self.box_image_file = "game/assets/objects/box.png"
     
     def draw(self, screen, camera_x):
         if self.destroyed:
             return
         screen_x = self.x - camera_x
-        # try to draw box image if available
-        global BOX_IMAGE
-        if BOX_IMAGE is None:
-            try:
-                BOX_IMAGE = pygame.image.load("game/assets/objects/box.png").convert_alpha()
-                BOX_IMAGE = pygame.transform.smoothscale(BOX_IMAGE, (self.width, self.height))
-            except Exception:
-                BOX_IMAGE = None
-        if BOX_IMAGE:
-            screen.blit(BOX_IMAGE, (screen_x, self.y))
+        
+        box_image = AssetManager.load_scaled_image(self.box_image_file,
+                        (self.width, self.height), alpha=True, smooth=True)
+
+        if box_image:
+            screen.blit(box_image, (screen_x, self.y))
             return
+
         pygame.draw.rect(screen, (150,90,40),
                 (screen_x, self.y, self.width, self.height))
 

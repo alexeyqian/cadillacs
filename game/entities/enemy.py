@@ -1,16 +1,16 @@
 import random
 import pygame
+
 from game.settings import *
 from game.colors import *
 from game.entities.loot import Loot
+
 from game.assets.placeholder.enemy_frames import *
 from game.assets.asset_manager import AssetManager
 
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
-from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
-from game.animation.file_utils import *
 
 class Enemy:
     IDLE = "IDLE"
@@ -79,7 +79,12 @@ class Enemy:
         self.lane_bottom = LANE_BOTTOM
 
         self.animation_manager = AnimationManager()
-        self.init_animations()
+        self.init_animations(idle_config=idle_config,
+                            walk_config=walk_config,
+                            attack_config=attack_config,
+                            hit_config=hit_config,
+                            dead_config=dead_config,
+                            fallback_frame_factory=fallback_frame_factory)
 
     def init_animations(self, idle_config=None, walk_config=None, attack_config=None,
                     hit_config=None, dead_config=None, fallback_frame_factory=None):
