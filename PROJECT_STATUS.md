@@ -14,9 +14,15 @@ Cadillacs & Dinosaurs
 Goals:
 
 - Easy to understand code
-- Beginner-friendly architecture
+- Easy to maintain and extend architecture
 - Modular systems
 - Maintainable codebase
+- Flexible to add new movement/action/state to player.
+- Flexible to add new movement/action/state to enemy.
+- Flexible to add all kinds of weapons into system.
+- Flexible to add all kinds of vehicles into system.
+- Player and enemy's action and timer can be modularized
+- Multiple stage design
 - Future multiplayer support
 - Future content editor support
 

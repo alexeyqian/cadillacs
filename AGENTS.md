@@ -12,7 +12,7 @@ Build a simple, easy-to-understand Cadillacs and Dinosaurs style beat'em up usin
 - Educational code over optimization
 - Step-by-step milestone-driven development
 
-The codebase should remain beginner-friendly and easy to modify.
+The codebase should easy to understand and easy to maintain.
 
 ---
 
@@ -280,8 +280,8 @@ Current generated assets:
 
 Format:
 
-- 96x96 frame size
-- 8 frames
+- 128x256 frame size
+- 6 frames
 
 ---
 

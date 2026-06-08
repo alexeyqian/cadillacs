@@ -189,10 +189,13 @@ class Player:
         image = self.animation_manager.get_image()
         if not self.facing_right:
             image = pygame.transform.flip(image, True, False)
-        # Real sprites are often larger than gameplay hit boxes.
-        image = pygame.transform.scale(image, (self.width, self.height))
-        draw_y = self.y
-        screen.blit(image, (screen_x, draw_y))
+        # Sprite frames can be wider/taller than the gameplay hit box.
+        # Keep the feet and body anchored to the player's collision rectangle.
+        sprite_x = screen_x
+        if not self.facing_right:
+            sprite_x -= max(0, image.get_width() - self.width)
+        sprite_y = self.y + self.height - image.get_height()
+        screen.blit(image, (sprite_x, sprite_y))
 
         # weapon section
         if self.weapon:
@@ -204,13 +207,13 @@ class Player:
                 weapon_x = screen_x - weapon_len
             
             pygame.draw.rect(screen, (255,255,0),
-                (weapon_x, draw_y+30,weapon_len,5))
+                (weapon_x, self.y+30,weapon_len,5))
 
         screen_x = self.x - camera_x
 
         # debug: draw player's bounding box (world -> screen)
         if SHOW_PLAYER_RECT:
-            pygame.draw.rect(screen, GREEN_COLOR, (screen_x, draw_y, self.width, self.height), 1)
+            pygame.draw.rect(screen, GREEN_COLOR, (screen_x, self.y, self.width, self.height), 1)
 
         # attack hitbox for debug
         if SHOW_PLAYER_HITBOX:
@@ -222,7 +225,7 @@ class Player:
 
         # player health bar (above player)
         hb_x = screen_x
-        hb_y = draw_y - 16
+        hb_y = self.y - 16
         hb_w = self.width
         hb_h = 8
         # background

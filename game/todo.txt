@@ -1,4 +1,9 @@
 
+how to design the background images so that it matches stage's walkable area
+
+
+multi stage design
+
 sprite_rect: visual drawing rectangle only, often bigger than the collision body because the sprite includes arms, hair, weapon swing frames, etc.
 
 feet_rect or ground_rect: tiny box near the feet for sorting depth, checking stage bounds, or deciding “same lane”
