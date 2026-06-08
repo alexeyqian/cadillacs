@@ -67,14 +67,16 @@ class AssetManager:
         frame_width = config["frame_width"]
         frame_height = config["frame_height"]
         frame_count = config["frame_count"]
-        key = (path, frame_width, frame_height, frame_count)
+        start_frame = config.get("start_frame", 0)
+        key = (path, frame_width, frame_height, frame_count, start_frame)
         if key in cls._animation_cache:
             return cls._animation_cache[key]
 
         if path and  cls.file_exists(path):
             try:
                 # frames are list of pygame.Surface
-                frames = AssetLoader.load_animation(path, frame_width, frame_height, frame_count)
+                frames = AssetLoader.load_animation(
+                    path, frame_width, frame_height, frame_count, start_frame)
             except pygame.error:
                 cls._missing_assets.add(path)
                 frames = fallback_frame_factory()

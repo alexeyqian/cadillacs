@@ -41,4 +41,20 @@ class SpriteSheet:
 
         return frames
 
+    def load_row_range(self, y, frame_width, frame_height, start_frame, frame_count):
+        frames = []
+        if frame_width <= 0:
+            return frames
+
+        max_count = self.sheet_width // frame_width
+        if max_count <= 0 or start_frame >= max_count:
+            return frames
+
+        actual_count = min(frame_count, max_count - start_frame)
+        for i in range(actual_count):
+            frame_x = (start_frame + i) * frame_width
+            frame = self.get_frame(frame_x, y, frame_width, frame_height)
+            frames.append(frame)
+
+        return frames
 
