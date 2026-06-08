@@ -5,11 +5,16 @@ class SpriteSheet:
         self.sheet = pygame.image.load(filename).convert_alpha()
         self.sheet_width, self.sheet_height = self.sheet.get_size()
 
+    # copy one rectangle area from sprite sheet into new created surface
+    # the returned surface contains single extracted frame
     def get_frame(self, x, y, width, height):
         image = pygame.Surface((width, height), pygame.SRCALPHA)
         image.blit(self.sheet, (0,0), (x, y, width, height))
         return image
+        # more performance way, return sub view, no copy
+        # return self.sheet.subsurface((x,y,width, height))
 
+    # return a list of pygame.Surfaces
     def load_row(self, y, frame_width, frame_height, frame_count):
         """
         Load a row of frames from the sprite sheet. If the requested frame_count

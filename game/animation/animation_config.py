@@ -61,6 +61,22 @@ PLAYER_THROW = {
     "frame_count":4
 }
 
+# todo
+PLAYER_HIT = {
+    "file":"game/assets/player/player_throw.png",
+    "frame_width":80,
+    "frame_height":100,
+    "frame_count":4
+}
+
+# todo
+PLAYER_DEAD = {
+    "file":"game/assets/player/player_throw.png",
+    "frame_width":80,
+    "frame_height":100,
+    "frame_count":4
+}
+
 # ==========================================
 # Normal Enemy
 # ==========================================
@@ -189,10 +205,24 @@ BOSS_ENEMY_ATTACK = {
 # Animation target FPS (how many animation frames per real second)
 # Tune these to control perceived animation speed; values are in frames-per-second
 # for player
+
+# TODO: use ai to re-set these values
 ANIM_FPS_IDLE = 6
 ANIM_FPS_WALK = 12
+# TODO
+ANIM_FPS_RUN = 12
+# TODO
+ANIM_FPS_JUMP = 12
 ANIM_FPS_ATTACK = 10
+# TODO
+ANIM_FPS_RUN_ATTACK=10
+# TODO
+ANIM_FPS_JUMP_ATTACK=10
+ANIM_FPS_GRAB=10
+ANIM_FPS_THROW=10
+
 ANIM_FPS_HIT = 8
+ANIM_FPS_DEAD = 999
 # for enemy
 ANIM_FPS_IDLE_ENEMY = 6
 ANIM_FPS_WALK_ENEMY = 12

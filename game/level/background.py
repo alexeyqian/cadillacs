@@ -1,5 +1,5 @@
 import pygame
-
+from game.assets.asset_manager import AssetManager
 
 class Background:
     def __init__(
@@ -8,9 +8,9 @@ class Background:
         mid_file,
         front_file
     ):
-        self.far = pygame.image.load(far_file).convert()
-        self.mid = pygame.image.load(mid_file).convert_alpha()
-        self.front = pygame.image.load(front_file).convert_alpha()
+        self.far = AssetManager.load_image(far_file, alpha=False)
+        self.mid = AssetManager.load_image(mid_file, alpha=True)
+        self.front = AssetManager.load_image(front_file, alpha=True)
 
     def draw_layer(
         self,

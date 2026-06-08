@@ -1,7 +1,9 @@
 import pygame
+from game.settings import *
+from game.colors import *
 
 def make_frame(body_color, head_color, leg_offset):
-    image = pygame.Surface((50,80), pygame.SRCALPHA)
+    image = pygame.Surface((PLAYER_W, PLAYER_H), pygame.SRCALPHA)
     # head
     pygame.draw.circle(image, head_color, (25,12),10)
     # body
@@ -9,7 +11,7 @@ def make_frame(body_color, head_color, leg_offset):
     # legs
     pygame.draw.rect(image, body_color, (12,52,8,20+leg_offset))
     pygame.draw.rect(image, body_color, (30,52,8,20-leg_offset))
-    
+
     return image
 
 def create_idle_frames():
@@ -21,6 +23,12 @@ def create_walk_frames():
         make_frame((220,40,40),(255,220,180),-5),
     ]
 
+def create_run_frames():
+    return create_walk_frames() # todo: later
+    
+def create_jump_frames():
+    return create_walk_frames() # todo: later
+
 def create_attack_frames():
     frame1 = make_frame((225,120,0),(255,220,180),0)
     pygame.draw.rect(frame1, (255,255,0),(40,30,10,5))
@@ -30,22 +38,23 @@ def create_attack_frames():
 
     return [frame1, frame2]
 
+def create_run_attack_frames():
+    return create_attack_frames() # todo: later
+
+def create_jump_attack_frames():
+    return create_attack_frames() # todo: later
+
+def create_grab_frames():
+    return create_attack_frames() # todo: later
+
+def create_throw_frames():
+    return create_attack_frames() # todo: later
+
 def create_hit_frames():
-    return [
-        make_frame((225,225,225),(255,225,225),0)
-    ]
-    
+    return [make_frame(WHITE_COLOR,WHITE_COLOR,0)]
+
 def create_dead_frames():
-    image = pygame.Surface(
-        (80,50),
-        pygame.SRCALPHA
-    )
-
-    pygame.draw.rect(
-        image,
-        (80,80,80),
-        (0,20,60,20)
-    )
-
+    image = pygame.Surface((PLAYER_H,PLAYER_W),pygame.SRCALPHA)
+    pygame.draw.rect(image,(80,80,80),(0,20,60,20))
     return [image]
 

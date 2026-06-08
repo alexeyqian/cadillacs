@@ -1,9 +1,9 @@
-import math
 import pygame
 from game.settings import *
 from game.colors import *
 from game.entities.projectile import Projectile
 from game.assets.placeholder.player_frames import *
+from game.assets.asset_manager import AssetManager
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
 from game.animation.asset_loader import AssetLoader
@@ -95,106 +95,36 @@ class Player:
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
         
-        # load frames
-        if file_exists(PLAYER_IDLE["file"]):
-            idle_frames = AssetLoader.load_animation(
-                PLAYER_IDLE["file"],
-                PLAYER_IDLE["frame_width"],
-                PLAYER_IDLE["frame_height"],
-                PLAYER_IDLE["frame_count"]
-            )
-        else:
-            idle_frames = create_idle_frames()
-
-        if file_exists(PLAYER_WALK["file"]):
-            walk_frames = AssetLoader.load_animation(
-                PLAYER_WALK["file"],
-                PLAYER_WALK["frame_width"],
-                PLAYER_WALK["frame_height"],
-                PLAYER_WALK["frame_count"]
-            )
-        else:
-            walk_frames = create_walk_frames()
-
-        if file_exists(PLAYER_RUN["file"]):
-            run_frames = AssetLoader.load_animation(
-                PLAYER_RUN["file"],
-                PLAYER_RUN["frame_width"],
-                PLAYER_RUN["frame_height"],
-                PLAYER_RUN["frame_count"]
-            )
-        else:
-            run_frames = walk_frames
-        
-        if file_exists(PLAYER_JUMP["file"]):
-            jump_frames = AssetLoader.load_animation(
-                PLAYER_JUMP["file"],
-                PLAYER_JUMP["frame_width"],
-                PLAYER_JUMP["frame_height"],
-                PLAYER_JUMP["frame_count"]
-            )
-        else:
-            jump_frames = walk_frames
-            
-        if file_exists(PLAYER_ATTACK["file"]):
-            attack_frames = AssetLoader.load_animation(
-                PLAYER_ATTACK["file"],
-                PLAYER_ATTACK["frame_width"],
-                PLAYER_ATTACK["frame_height"],
-                PLAYER_ATTACK["frame_count"]
-            )
-        else:
-            attack_frames = create_attack_frames()
-
-        if file_exists(PLAYER_RUN_ATTACK["file"]):
-            run_attack_frames = AssetLoader.load_animation(
-                PLAYER_RUN_ATTACK["file"],
-                PLAYER_RUN_ATTACK["frame_width"],
-                PLAYER_RUN_ATTACK["frame_height"],
-                PLAYER_RUN_ATTACK["frame_count"]
-            )
-        else:
-            run_attack_frames = attack_frames
-            
-        if file_exists(PLAYER_JUMP_ATTACK["file"]):
-            jump_attack_frames = AssetLoader.load_animation(
-                PLAYER_RUN_ATTACK["file"],
-                PLAYER_RUN_ATTACK["frame_width"],
-                PLAYER_RUN_ATTACK["frame_height"],
-                PLAYER_RUN_ATTACK["frame_count"]
-            )
-        else:
-            jump_attack_frames = attack_frames
-
-        if file_exists(PLAYER_GRAB["file"]):
-            grab_frames = AssetLoader.load_animation(
-                PLAYER_GRAB["file"],
-                PLAYER_GRAB["frame_width"],
-                PLAYER_GRAB["frame_height"],
-                PLAYER_GRAB["frame_count"]
-            )
-        else:
-            grab_frames = attack_frames
-
-        if file_exists(PLAYER_THROW["file"]):
-            throw_frames = AssetLoader.load_animation(
-                PLAYER_THROW["file"],
-                PLAYER_THROW["frame_width"],
-                PLAYER_THROW["frame_height"],
-                PLAYER_THROW["frame_count"]
-            )
-        else:
-            throw_frames = attack_frames
-
-        # animation manager
         self.animation_manager = AnimationManager()
+        self.init_animations()
+        
+    def init_animations(self):
+        # load frames
+        idle_frames = AssetManager.load_animation(PLAYER_IDLE, create_idle_frames)
+        walk_frames = AssetManager.load_animation(PLAYER_WALK, create_walk_frames)
+        run_frames = AssetManager.load_animation(PLAYER_RUN, create_run_frames)
+        jump_frames = AssetManager.load_animation(PLAYER_JUMP, create_jump_frames)
+        attack_frames = AssetManager.load_animation(PLAYER_ATTACK, create_attack_frames)
+        run_attack_frames = AssetManager.load_animation(PLAYER_RUN_ATTACK, create_run_attack_frames)
+        jump_attack_frames = AssetManager.load_animation(PLAYER_JUMP_ATTACK, create_jump_attack_frames)
+        grab_frames = AssetManager.load_animation(PLAYER_GRAB, create_grab_frames)
+        throw_frames = AssetManager.load_animation(PLAYER_THROW, create_throw_frames)
+
+        hit_frames = AssetManager.load_animation(PLAYER_HIT, create_hit_frames)
+        dead_frames = AssetManager.load_animation(PLAYER_DEAD, create_dead_frames)
+
         # compute frame durations (number of game frames each animation frame should last)
         idle_dur = max(1, int(FPS / ANIM_FPS_IDLE))
         walk_dur = max(1, int(FPS / ANIM_FPS_WALK))
         run_dur = max(1, int(FPS / ANIM_FPS_WALK))
         jump_dur = max(1, int(FPS / ANIM_FPS_WALK))
         attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK))
+        run_attack_dur = max(1, int(FPS / ANIM_FPS_RUN_ATTACK))
+        jump_attack_dur = max(1, int(FPS / ANIM_FPS_JUMP_ATTACK))
+        grab_dur = max(1, int(FPS / ANIM_FPS_GRAB))
+        throw_dur = max(1, int(FPS / ANIM_FPS_THROW))
         hit_dur = max(1, int(FPS / ANIM_FPS_HIT))
+        dead_dur = max(1, int(FPS / ANIM_FPS_DEAD))
 
         self.animation_manager.add_animation(
             self.IDLE, Animation(idle_frames, idle_dur))
@@ -207,17 +137,17 @@ class Player:
         self.animation_manager.add_animation(
             self.ATTACK, Animation(attack_frames, attack_dur))
         self.animation_manager.add_animation(
-            self.RUN_ATTACK, Animation(run_attack_frames, attack_dur))
+            self.RUN_ATTACK, Animation(run_attack_frames, run_attack_dur))
         self.animation_manager.add_animation(
-            self.JUMP_ATTACK, Animation(jump_attack_frames, attack_dur))
+            self.JUMP_ATTACK, Animation(jump_attack_frames, jump_attack_dur))
         self.animation_manager.add_animation(
-            self.GRAB, Animation(grab_frames, attack_dur))
+            self.GRAB, Animation(grab_frames, grab_dur))
         self.animation_manager.add_animation(
-            self.THROW, Animation(throw_frames, attack_dur))
+            self.THROW, Animation(throw_frames, throw_dur))
         self.animation_manager.add_animation(
-            self.HIT, Animation(create_hit_frames(), hit_dur))
+            self.HIT, Animation(hit_frames, hit_dur))
         self.animation_manager.add_animation(
-            self.DEAD, Animation(create_dead_frames(), 999))
+            self.DEAD, Animation(dead_frames, dead_dur))
 
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x

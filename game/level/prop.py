@@ -1,12 +1,12 @@
 import pygame
-
+from game.assets.asset_manager import AssetManager
 
 class Prop:
     def __init__(self,x,y,image_file,layer="back",scale=1.0):
         self.x = x
         self.y = y
         self.layer = layer
-        self.image = pygame.image.load(image_file).convert_alpha()
+        self.image = AssetManager.load_image(image_file, alpha=True)
 
         if scale != 1.0:
             w = int(self.image.get_width() * scale)
