@@ -1,14 +1,16 @@
 import random
 import pygame
+from game.settings import *
+from game.colors import *
+from game.entities.loot import Loot
+from game.assets.placeholder.enemy_frames import *
+from game.assets.asset_manager import AssetManager
+
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
 from game.animation.asset_loader import AssetLoader
 from game.animation.animation_config import *
 from game.animation.file_utils import *
-from game.assets.placeholder.enemy_frames import *
-from game.settings import *
-from game.colors import *
-from game.entities.loot import Loot
 
 class Enemy:
     IDLE = "IDLE"
@@ -76,10 +78,10 @@ class Enemy:
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
 
-        frames = self.load_frames()
-        self.load_animations(frames)
+        self.animation_manager = AnimationManager()
+        self.init_animations()
 
-    def load_frames(self, idle_config=None, walk_config=None, attack_config=None,
+    def init_animations(self, idle_config=None, walk_config=None, attack_config=None,
                     hit_config=None, dead_config=None, fallback_frame_factory=None):
         use_normal_dead_animation = (
             idle_config is None and
@@ -103,73 +105,13 @@ class Enemy:
             fallback_frame_factory = create_enemy_frames
 
         # assets loader
-        if file_exists(idle_config["file"]):
-            idle_frames = AssetLoader.load_animation(
-                    idle_config["file"],
-                    idle_config["frame_width"],
-                    idle_config["frame_height"],
-                    idle_config["frame_count"]
-                )
-        else:
-            idle_frames = fallback_frame_factory()
-
-        if file_exists(walk_config["file"]):
-            walk_frames = AssetLoader.load_animation(
-                    walk_config["file"],
-                    walk_config["frame_width"],
-                    walk_config["frame_height"],
-                    walk_config["frame_count"]
-                )
-        else:
-            walk_frames = fallback_frame_factory()
-
-        if file_exists(attack_config["file"]):
-            attack_frames = AssetLoader.load_animation(
-                    attack_config["file"],
-                    attack_config["frame_width"],
-                    attack_config["frame_height"],
-                    attack_config["frame_count"]
-                )
-        else:
-            attack_frames = fallback_frame_factory()
-
-        if file_exists(hit_config["file"]):
-            hit_frames = AssetLoader.load_animation(
-                    hit_config["file"],
-                    hit_config["frame_width"],
-                    hit_config["frame_height"],
-                    hit_config["frame_count"]
-                )
-        else:
-            hit_frames = fallback_frame_factory()
-
-        if dead_config and file_exists(dead_config["file"]):
-            dead_frames = AssetLoader.load_animation(
-                    dead_config["file"],
-                    dead_config["frame_width"],
-                    dead_config["frame_height"],
-                    dead_config["frame_count"]
-                )
-        else:
-            dead_frames = fallback_frame_factory()
-
-        return {
-            "idle": idle_frames,
-            "walk": walk_frames,
-            "attack": attack_frames,
-            "hit": hit_frames,
-            "dead": dead_frames
-        }
-
-    def load_animations(self, frames):
-        idle_frames = frames['idle']
-        walk_frames = frames['walk']
-        attack_frames = frames['attack']
-        hit_frames = frames['hit']
-        dead_frames = frames['dead']
-
-        self.animation_manager = AnimationManager()
-
+        idle_frames = AssetManager.load_animation(idle_config, fallback_frame_factory)
+        walk_frames = AssetManager.load_animation(walk_config, fallback_frame_factory)
+        # todo: chase frames
+        attack_frames = AssetManager.load_animation(attack_config, fallback_frame_factory)
+        hit_frames = AssetManager.load_animation(hit_config, fallback_frame_factory)
+        dead_frames = AssetManager.load_animation(dead_config, fallback_frame_factory)
+        
         # compute frame durations to match game FPS
         idle_dur = max(1, int(FPS / ANIM_FPS_IDLE_ENEMY))
         walk_dur = max(1, int(FPS / ANIM_FPS_WALK_ENEMY))
@@ -181,6 +123,7 @@ class Enemy:
             self.IDLE, Animation(idle_frames, idle_dur))
         self.animation_manager.add_animation(
             self.WALK, Animation(walk_frames, walk_dur))
+        # add chase
         self.animation_manager.add_animation(
             self.ATTACK, Animation(attack_frames, attack_dur))
         #self.animation_manager.add_animation(
@@ -320,6 +263,7 @@ class Enemy:
         if self.facing_right:
             image = pygame.transform.flip(image, True, False)
         if self.state == self.DEAD:
+            image = self.animation_manager.get_image().copy()
             image.set_alpha(120) # draw dead enemy darker
         if self.state == self.KNOCKDOWN: # knockdown show enemy sideways
             image = pygame.transform.rotate(image, 90)
