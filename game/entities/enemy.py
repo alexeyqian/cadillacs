@@ -338,8 +338,8 @@ class Enemy:
         #    hit_w = self.attack_hitbox_w * 1.5
         hit_h = self.attack_hitbox_h
         #if self.weapon and not self.weapon.is_ranged:
-        #    hit_w += self.weapon.attack_range_bonus
-        #    hit_h += self.weapon.attack_height_bonus
+        #    hit_w += self.weapon.hitbox_w_bonus
+        #    hit_h += self.weapon.hitbox_h_bonus
 
         hit_y = int(self.y + self.attack_hitbox_offset_y)
         # do we need attack hitbox_offset_x ? no need probably

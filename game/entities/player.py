@@ -195,7 +195,7 @@ class Player:
         if self.weapon:
             weapon_len = 20
             if not self.weapon.is_ranged:
-                weapon_len += self.weapon.attack_range_bonus
+                weapon_len += self.weapon.hitbox_w_bonus
             weapon_x = screen_x + self.width
             if not self.facing_right:
                 weapon_x = screen_x - weapon_len
@@ -512,8 +512,8 @@ class Player:
             hit_w = self.attack_hitbox_w
         hit_h = self.attack_hitbox_h
         if self.weapon and not self.weapon.is_ranged:
-            hit_w += self.weapon.attack_range_bonus
-            hit_h += self.weapon.attack_height_bonus
+            hit_w += self.weapon.hitbox_w_bonus
+            hit_h += self.weapon.hitbox_h_bonus
 
         hit_y = int(self.y + self.attack_hitbox_offset_y)
         # do we need attack hitbox_offset_x ? no need probably
@@ -525,6 +525,11 @@ class Player:
 
     def take_damage(self, damage):
         if self.state == self.DEAD:
+            return
+
+        try:
+            damage = float(damage)
+        except (TypeError, ValueError):
             return
 
         self.hp -= damage
