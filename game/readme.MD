@@ -240,10 +240,3 @@ Jump+Attack: performs: air kick, downward strike
 
 Grab combo: grab+attack+attack+attack
 Grab +attack: knee strike
-
-
-
-Raptor enemy:
-Raptor enemy is a fast dinosaur, it has idle, patrol, chase, jump, attack and jump attack states, please generate a sprite sheet with frames include above all states, each frame size should be width: 80 and height: 160.
-Please reference to original game: cadillacs and dinosaurs for design.
-Please generate the spritesheet image inside assets/enemy folder, the spritesheet should be png file, all frames in one row.
