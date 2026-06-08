@@ -1,7 +1,9 @@
 import pygame
+from game.settings import *
+from game.colors import *
+
 from game.entities.enemy import Enemy
 from game.entities.boss_projectile import BossProjectile
-from game.settings import *
 from game.animation.animation_config import *
 
 # boss phase system
@@ -14,15 +16,15 @@ class BossEnemy(Enemy):
         super().__init__(x,y,
                         walk_config=BOSS_ENEMY_WALK,
                         attack_config=BOSS_ENEMY_ATTACK)
-        
+
         self.max_hp = BOSS_ENEMY_MAX_HP
         self.hp = self.max_hp
         self.width = BOSS_ENEMY_W
         self.height = BOSS_ENEMY_H
         self.speed = BOSS_ENEMY_SPEED
         self.attack_damage = BOSS_ENEMY_ATTACK_DAMAGE
-        self.attack_range = BOSS_ENEMY_HITBOX_W
-        # special attack
+
+        # properties special to boss enemy
         self.attack_cooldown_duration = 60
         self.special_attack_cooldown_duration = 300
         self.special_attack_cooldown = self.special_attack_cooldown_duration
@@ -35,13 +37,12 @@ class BossEnemy(Enemy):
 
         if self.state == self.DEAD:
             return
+        if self.state == self.HIT:
+            return
 
         self.update_phase()
         if self.phase_message_timer > 0:
             self.phase_message_timer -= 1
-
-        if self.state == self.HIT:
-            return
 
         if self.special_attack_cooldown > 0:
             self.special_attack_cooldown -= 1
@@ -76,20 +77,39 @@ class BossEnemy(Enemy):
         if player.x < self.x:
             direction = -1
 
-        damage = 28
+        damage = self.attack_damage
         if self.phase == 2:
-            damage = 38
+            damage *= 2
         elif self.phase == 3:
-            damage = 48
+            damage *= 3
 
-        self.pending_projectile = BossProjectile(
-            self.x + self.width // 2,
-            self.y + 40,
-            direction,
-            damage
-        )
+        self.pending_projectile = BossProjectile(self.x + self.width // 2, self.y + 40,
+            direction, self.speed * 2, damage)
 
     def update_attack(self, player):
+        self.facing_right = player.x > self.x
+        self.attack_timer += 1
+
+        active_start = self.attack_windup
+        active_end = self.attack_windup + self.attack_active
+
+        is_active_frame = active_start <= self.attack_timer < active_end
+
+        if is_active_frame and not self.attack_has_hit:
+            attack_rect = self.get_attack_rect()
+            player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+
+            if attack_rect.colliderect(player_rect):
+                player.take_damage(self.attack_damage)
+                self.attack_has_hit = True
+
+        if self.attack_timer >= self.attack_total_duration:
+            self.state = self.IDLE
+            self.attack_timer = 0
+            self.attack_has_hit = False
+            self.attack_cooldown = self.attack_cooldown_duration
+
+    def update_attack_old(self, player):
         if self.attack_cooldown > 0:
             return
 
@@ -137,7 +157,7 @@ class BossEnemy(Enemy):
             elif self.phase == 3:
                 self.speed += 1
                 self.attack_damage += 10
-                self.attack_range += 40
+                self.attack_hitbox_w += 40
                 self.attack_cooldown_duration = 35
                 self.special_attack_cooldown_duration = 120
                 self.special_attack_cooldown = min(

@@ -14,8 +14,8 @@ from game.animation.animation_config import *
 
 class Enemy:
     IDLE = "IDLE"
-    PATROL = "PATROL"
-    WALK = "WALK" # will remove in future
+    WALK = "WALK"
+    PATROL = "PATROL" # ai decisions
     CHASE = "CHASE"
     ATTACK = "ATTACK"
     HIT = "HIT"
@@ -30,10 +30,10 @@ class Enemy:
                 fallback_frame_factory=None):
         self.x = x
         self.y = y
-        self.width = NORMAL_ENEMY_W
-        self.height = NORMAL_ENEMY_H
-        self.speed = NORMAL_ENEMY_SPEED
-        self.max_hp = NORMAL_ENEMY_MAX_HP
+        self.width = ENEMY_W
+        self.height = ENEMY_H
+        self.speed = ENEMY_SPEED
+        self.max_hp = ENEMY_MAX_HP
         self.hp = self.max_hp
         self.state = self.IDLE
         self.facing_right = False
@@ -43,21 +43,26 @@ class Enemy:
 
         # within this range, enemy chases player
         # outside this range, enemy ignores player
-        self.detect_range = NORMAL_ENEMY_DETECT_RANGE
+        self.detect_range = ENEMY_DETECT_RANGE
         # enemy remembers where it spawned
         self.spawn_x = x
-        self.patrol_distance = NORMAL_ENEMY_DETECT_RANGE
+        self.patrol_distance = ENEMY_DETECT_RANGE
         self.patrol_direction = 1
 
         # attack players / combat
-        self.attack_timer = 0 # ?
-        self.attack_cooldown = 0
-        self.attack_range = ENEMY_ATTACK_RANGE # Within distance_x, start attack
         # attack hitbox settings (kept symmetric for left/right)
         self.attack_hitbox_w = ENEMY_HITBOX_W
         self.attack_hitbox_h = ENEMY_HITBOX_H
-        self.attack_hitbox_offset_y = ENEMY_HITBOX_OFFSET_H
-        self.attack_damage = NORMAL_ENEMY_ATTACK_DAMAGE
+        self.attack_hitbox_offset_y = ENEMY_HITBOX_OFFSET_Y
+        self.attack_damage = ENEMY_ATTACK_DAMAGE
+
+        self.attack_timer = 0 # ?
+        self.attack_has_hit = False
+        self.attack_cooldown = 0
+        self.attack_windup = ENEMY_ATTACK_WINDUP
+        self.attack_active = ENEMY_ATTACK_ACTIVE
+        self.attack_recovery = ENEMY_ATTACK_RECOVERY
+        self.attack_total_duration = (self.attack_windup + self.attack_active + self.attack_recovery)
 
         # hit reaction
         self.knockback_velocity = 0
@@ -225,8 +230,12 @@ class Enemy:
         return dx, dy, distance_x, distance_y
     
     def choose_state(self, distance_x, distance_y):
+        if self.state == self.ATTACK:
+            return
+
         # state selection, attack if close enough
-        if (distance_x <= self.attack_range 
+        if (self.attack_cooldown <= 0
+            and distance_x <= self.attack_hitbox_w
             and distance_y <= self.attack_hitbox_h):
             self.state = self.ATTACK
         elif distance_x <= self.detect_range:
@@ -242,7 +251,7 @@ class Enemy:
             self.update_walking(dx, dy)
             self.separate_from_other_enemies(enemies)
         elif self.state == self.ATTACK:
-            self.update_attack(player)             
+            self.update_attack(player)
 
     def update(self, player, enemies):
         if self.update_special_states():
@@ -384,7 +393,32 @@ class Enemy:
                 else:
                     self.x += 1
 
+    def start_attack(self):
+        self.state = self.ATTACK
+        self.attack_timer = 0
+        self.attack_has_hit = False
+
     def update_attack(self, player):
+        self.facing_right = player.x > self.x
+        self.attack_timer += 1
+        
+        active_start = self.attack_windup
+        active_end = self.attack_windup + self.attack_active
+        is_active_frame = active_start <= self.attack_timer < active_end
+        if is_active_frame and not self.attack_has_hit:
+            attack_rect = self.get_attack_rect()
+            player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+            if attack_rect.colliderect(player_rect):
+                player.take_damage(self.attack_damage)
+                self.attack_has_hit = True
+        
+        if self.attack_timer >= self.attack_total_duration:
+            self.state = self.IDLE
+            self.attack_timer = 0
+            self.attack_has_hit = False
+            self.attack_cooldown = ENEMY_ATTACK_COOLDOWN
+        
+    def update_attack_old(self, player):
         if self.attack_cooldown > 0:
             return
         self.facing_right = player.x > self.x

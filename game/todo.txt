@@ -1,3 +1,12 @@
 make enemy spwan random in range instead of fix position
 
 add hurt box for player and enemies, only hit box is overlapping with hurt box then take the damage
+
+# todo: where the character can receive damage
+PLAYER_HURTBOX_W=PLAYER_W*0.6
+PLAYER_HURTBOX_H=PLAYER_W*0.8
+# player hurt box x offset and y offset?
+
+# not used yet: player collision box: around center of feet
+PLAYER_COLLISION_W=PLAYER_W*0.5
+PLAYER_COLLISION_H=PLAYER_H*0.2

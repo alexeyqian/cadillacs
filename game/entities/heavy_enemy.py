@@ -14,4 +14,3 @@ class HeavyEnemy(Enemy):
         self.hp = self.max_hp
         self.speed = HEAVY_ENEMY_SPEED
         self.attack_damage = HEAVY_ENEMY_ATTACK_DAMAGE
-        self.detect_range = HEAVY_ENEMY_DETECT_RANGE
