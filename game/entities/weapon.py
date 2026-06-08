@@ -15,12 +15,12 @@ class Weapon:
         self.y = y
         self.weapon_type = weapon_type
 
-        self.width = 40
+        self.width = PLAYER_W*0.6
         self.height = 12
 
         self.damage = FIST_DAMAGE
         self.picked_up = False
-        
+
         # cache for procedural icons
         self._knife_image = None
         self._icon_knife = None
@@ -29,23 +29,26 @@ class Weapon:
 
         self.is_ranged = False
         if weapon_type == "knife":
+            self.width = PLAYER_W*0.5
             self.damage = KNIFE_DAMAGE
-            self.attack_range_bonus = 20
-            self.attack_height_bonus = 0
+            self.hitbox_w_bonus = 20
+            self.hitbox_h_bonus = 0
         elif weapon_type == "bat":
+            self.width = PLAYER_W
             self.damage = BAT_DAMAGE
-            self.attack_range_bonus = 45
-            self.attack_height_bonus = 10
+            self.hitbox_w_bonus = 45
+            self.hitbox_h_bonus = 10
         elif weapon_type == "pistol":
+            self.width = PLAYER_W
             self.damage = PISTOL_DAMAGE
             self.is_ranged = True
             self.ammo = 10
-            self.attack_range_bonus = 0
-            self.attack_height_bonus = 0
+            self.hitbox_w_bonus = 0
+            self.hitbox_h_bonus = 0
         else:
             self.damage = FIST_DAMAGE
-            self.attack_range_bonus = 0
-            self.attack_height_bonus = 0
+            self.hitbox_w_bonus = 0
+            self.hitbox_h_bonus = 0
 
     def _load_knife_image(self):
         return AssetManager.load_image(KNIFE_IMAGE_FILE, alpha=True)
