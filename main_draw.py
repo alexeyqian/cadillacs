@@ -89,39 +89,34 @@ def main_draw_ui(game_state):
     level = game_state.level
     player = game_state.player
     enemies = game_state.enemies
-    weapons = game_state.weapons
-    projectiles = game_state.projectiles
-    enemy_projectiles = game_state.enemy_projectiles
-    objects = game_state.objects
-    loot_items = game_state.loot_items
     score_manager = game_state.score_manager
 
-    small_font = pygame.font.SysFont(None, 20)
-    font = pygame.font.SysFont(None, 30)
-    big_font = pygame.font.SysFont(None, 40)
-    
+    small_font = pygame.font.SysFont(None, int(UI_FONT_SIZE*0.8))
+    font = pygame.font.SysFont(None, UI_FONT_SIZE)
+    big_font = pygame.font.SysFont(None, int(UI_FONT_SIZE*1.2))
+
     ############### HUD ###############
     # score
     score_text = font.render(
-        f"SCORE {score_manager.score} | HI {score_manager.high_score}",True,WHITE_COLOR)
-    screen.blit(score_text,(20, 5))
+        f"SCORE {score_manager.score} | HI {score_manager.high_score}",True,BLACK_COLOR)
+    screen.blit(score_text,(UI_FIRST_X, UI_FIRST_Y))
 
     # credits and lives
     next_life_text = small_font.render(
         f"CREDITS {game_state.credits} | LIVES: {player.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
-        True, CYAN_COLOR)
-    screen.blit(next_life_text, (400, 5))
+        True, BLACK_COLOR)
+    screen.blit(next_life_text, (400, UI_FIRST_Y))
 
     # health UI
-    pygame.draw.rect(screen,(100,100,100), (20,25,200,20))
+    pygame.draw.rect(screen,(100,100,100), (UI_FIRST_X,UI_FIRST_Y+UI_LINE_HEIGHT,200,20))
     hp_width = int(200 * (player.hp / player.max_hp))
-    pygame.draw.rect(screen, GREEN_COLOR, (20,25,hp_width,20))
-    hp_text = font.render(f"HP: {int(player.hp)}/{player.max_hp}", True, YELLOW_COLOR)
-    screen.blit(hp_text, (230, 25))
+    pygame.draw.rect(screen, GREEN_COLOR, (UI_FIRST_X,UI_FIRST_Y+UI_LINE_HEIGHT,hp_width,20))
+    hp_text = font.render(f"HP: {int(player.hp)}/{player.max_hp}", True, BLACK_COLOR)
+    screen.blit(hp_text, (240, UI_FIRST_Y+UI_LINE_HEIGHT))
 
     # control
-    control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, WHITE_COLOR)
-    screen.blit(control_text, (20, 50))
+    control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, BLACK_COLOR)
+    screen.blit(control_text, (UI_FIRST_X + 450, UI_FIRST_Y+UI_LINE_HEIGHT))
 
     # combo UI
     combo = game_state.score_manager.combo_count
@@ -129,8 +124,8 @@ def main_draw_ui(game_state):
     if combo > 1:
         combo_text = font.render(
             f"{combo} HIT COMBO x{multiplier}",
-            True,YELLOW_COLOR)
-        screen.blit(combo_text,(450, 25))
+            True,BLACK_COLOR)
+        screen.blit(combo_text,(450, UI_FIRST_Y))
 
     # Weapon UI
     weapon_name = ""
@@ -139,8 +134,8 @@ def main_draw_ui(game_state):
         weapon_name = player.weapon.weapon_type
         if player.weapon.is_ranged:
             ammo_str = f" Ammo:{player.weapon.ammo}"
-        weapon_text = font.render(f"Weapon:{weapon_name}{ammo_str}",True,YELLOW_COLOR)
-        screen.blit(weapon_text,(650, 25))
+        weapon_text = font.render(f"Weapon:{weapon_name}{ammo_str}",True,BLACK_COLOR)
+        screen.blit(weapon_text,(650, UI_FIRST_Y))
 
     # stage clear manager UI
     stage_clear = game_state.stage_clear_manager
@@ -161,13 +156,21 @@ def main_draw_ui(game_state):
         screen.blit(life_text,life_text.get_rect(center=(SCREEN_WIDTH//2, 220)))
         screen.blit(score_text,score_text.get_rect(center=(SCREEN_WIDTH//2, 270)))
         screen.blit(total_text,total_text.get_rect(center=(SCREEN_WIDTH//2, 340)))
-        
+
         if stage_clear.timer <= 0:
             press_text = font.render("Press ENTER",True,WHITE_COLOR)
             screen.blit(press_text,press_text.get_rect(center=(SCREEN_WIDTH//2, 420)))
 
         return
-        
+
+    # debug UI
+    player_str = (f"Player x:{int(player.x)} y:{int(player.y)} "
+                + f"State:{player.state}"
+                + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
+    player_text = small_font.render(player_str,True, BLACK_COLOR)
+    screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y+2*UI_LINE_HEIGHT))
+    # end of debug text
+
 
     # WIN OR GAME OVER UI
     if level.current_wave >= len(level.waves):
@@ -207,11 +210,3 @@ def main_draw_ui(game_state):
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(game_over_text, game_over_rect)
         return
-
-    # debug UI
-    player_str = (f"Player x:{int(player.x)} y:{int(player.y)} "
-                + f"State:{player.state}"
-                + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
-    player_text = small_font.render(player_str,True, WHITE_COLOR)
-    screen.blit(player_text, (20, 70))
-    # end of debug text

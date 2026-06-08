@@ -17,13 +17,15 @@ from main_draw import *
 
 os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
 #info = pygame.display.Info()
-#screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.NOFRAME)
 
 def main():
     pygame.init()
 
-    window = pygame.display.set_mode((EXTERNAL_WIDTH, EXTERNAL_HEIGHT), pygame.NOFRAME) # for monitor
-    screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT)) # for entire game area
+    # internal screen mode for production, not used yet
+    #window = pygame.display.set_mode((EXTERNAL_WIDTH, EXTERNAL_HEIGHT), pygame.NOFRAME) # for monitor
+    #screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT)) # for entire game area
+
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.NOFRAME)
     pygame.display.set_caption("Cadillacs and Dinosaurs")
 
     clock = pygame.time.Clock()
@@ -132,8 +134,10 @@ def main():
         # 5. draw
         main_draw(game_state)
 
-        scaled = pygame.transform.smoothscale(screen, window.get_size())
-        window.blit(scaled, (0,0))
+        # internal screen mode for production, not used yet
+        #scaled = pygame.transform.smoothscale(screen, window.get_size())
+        #window.blit(scaled, (0,0))
+
         pygame.display.flip()
         clock.tick(FPS)
 
