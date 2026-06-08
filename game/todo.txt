@@ -1,4 +1,10 @@
 
+sprite_rect: visual drawing rectangle only, often bigger than the collision body because the sprite includes arms, hair, weapon swing frames, etc.
+
+feet_rect or ground_rect: tiny box near the feet for sorting depth, checking stage bounds, or deciding “same lane”
+
+how to design hurtbox, does it in middle of body box or align with player's body box right or left edge?
+
 re-factory weapon system.
 
 add layered animation, add weapon animation on top of player's animation

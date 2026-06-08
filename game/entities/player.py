@@ -7,7 +7,6 @@ from game.assets.asset_manager import AssetManager
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
 from game.animation.animation_config import *
-
 class Player:
     IDLE = "IDLE"
     WALK = "WALK"
