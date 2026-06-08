@@ -178,7 +178,7 @@ RAPTOR_ENEMY_WALK = {
 }
 
 RAPTOR_ENEMY_ATTACK = {
-    "file":"game/assets/enemy/raptor_enemy_walk.png",
+    "file":"game/assets/enemy/raptor_enemy_attack.png",
     "frame_width":70,
     "frame_height":60,
     "frame_count":4

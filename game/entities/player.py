@@ -586,7 +586,7 @@ class Player:
         direction = 1
         if not self.facing_right:
             direction = -1
-        projectile = Projectile(self.x+40, self.y+30, direction, self.weapon.damage)
+        projectile = Projectile(self.x+40, self.y+30, direction, PROJECTILE_SPEED, self.weapon.damage)
         self.pending_projectile = projectile
         self.weapon.ammo -= 1
         

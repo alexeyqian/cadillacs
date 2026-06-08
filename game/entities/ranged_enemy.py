@@ -20,21 +20,14 @@ class RangedEnemy(Enemy):
             self.state = self.IDLE
             return
 
-        self.facing_right = player.x > self.x
+        #self.facing_right = player.x > self.x
         self.attack_timer += 1
-
-        active_start = self.attack_windup
-
-        if self.attack_timer == active_start and not self.attack_has_hit:
+        if (self.attack_timer == self.attack_windup
+            and not self.attack_has_hit):
             direction = 1 if player.x > self.x else -1
 
-            projectile = EnemyProjectile(
-                self.x + self.width // 2,
-                self.y + 30,
-                direction,
-                self.attack_damage
-            )
-
+            projectile = EnemyProjectile(self.x + self.width // 2, self.y + 30,
+                                        direction, PROJECTILE_SPEED*0.7 self.attack_damage)
             self.pending_projectile = projectile
             self.attack_has_hit = True
 
