@@ -278,10 +278,6 @@ class Enemy:
 
     def draw(self, screen, camera_x):
         screen_x = self.x - camera_x
-        # shadow
-        pygame.draw.ellipse(
-            screen, (50, 50, 50),
-            (screen_x,self.y + self.height - 10,self.width,12))
 
         image = self.animation_manager.get_image()
         if self.facing_right:
@@ -301,9 +297,20 @@ class Enemy:
         blit_y = self.y + (self.height - img_h) // 2
         screen.blit(image, (blit_x, blit_y))
 
-        # debug: draw enemy bounding box (world -> screen)
         if SHOW_ENEMY_RECT:
-            pygame.draw.rect(screen, RED_COLOR, (screen_x, self.y, self.width, self.height), 2)
+            body_rect = self.get_logical_rect()
+            hurt_rect = self.get_hurt_rect()
+            collision_rect = self.get_collision_rect()
+
+            pygame.draw.rect(screen,GREEN_COLOR,
+                (body_rect.x - camera_x, body_rect.y,
+                body_rect.width, body_rect.height), 1)
+            pygame.draw.rect(screen,(255, 80, 80),
+                (hurt_rect.x - camera_x, hurt_rect.y,
+                hurt_rect.width, hurt_rect.height), 1)
+            pygame.draw.rect(screen, (80, 180, 255),
+                (collision_rect.x - camera_x, collision_rect.y,
+                collision_rect.width, collision_rect.height), 1)
 
         # attack hitbox for debug
         if SHOW_ENEMY_HITBOX:
@@ -322,13 +329,6 @@ class Enemy:
         pygame.draw.rect(
             screen, (255, 0, 0),
             (screen_x, self.y - 12, hp_width, 6))
-
-        # debug: draw enemy attack hitbox when attacking
-        if self.state == self.ATTACK:
-            attack_rect = self.get_attack_rect()
-            pygame.draw.rect(screen, YELLOW_COLOR,
-                    (attack_rect.x - camera_x, attack_rect.y,
-                    attack_rect.width, attack_rect.height), 1)
 
     def apply_world_bounds(self):
         # world boundaries

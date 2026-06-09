@@ -1,5 +1,7 @@
 
 
+improve combat system, make enemy more intelligent
+
 
 how to design game level and assets pack, what tools to use?
 
