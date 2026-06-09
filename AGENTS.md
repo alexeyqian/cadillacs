@@ -35,7 +35,6 @@ Responsibilities:
 
 Key helper functions:
 
-- create_enemy_rect()
 - update_player_weapon_interaction()
 - main_draw()
 - main_draw_world()

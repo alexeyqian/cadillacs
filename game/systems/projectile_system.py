@@ -25,18 +25,12 @@ def update_projectiles(game_state):
 
 def handle_enemy_projectile_collision(game_state):
     player = game_state.player
-
-    player_rect = pygame.Rect(
-        player.x,
-        player.y,
-        player.width,
-        player.height
-    )
+    player_hurt_rect = player.get_hurt_rect()
 
     for projectile in game_state.enemy_projectiles:
         if not projectile.active:
             continue
 
-        if projectile.get_rect().colliderect(player_rect):
+        if projectile.get_rect().colliderect(player_hurt_rect):
             player.take_damage(projectile.damage)
             projectile.active = False

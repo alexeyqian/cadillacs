@@ -30,8 +30,23 @@ class Enemy:
                 fallback_frame_factory=None):
         self.x = x
         self.y = y
+        ###### boxes ######
+        # logical box
         self.width = ENEMY_W
         self.height = ENEMY_H
+        #collision box
+        self.collision_box_w = ENEMY_COLLISION_W
+        self.collision_box_h = ENEMY_COLLISION_H
+        # hurt box
+        self.hurtbox_w = ENEMY_HURTBOX_W
+        self.hurtbox_h = ENEMY_HURTBOX_H
+        self.hurtbox_offset_x = ENEMY_HURTBOX_OFFSET_X
+        self.hurtbox_offset_y = ENEMY_HURTBOX_OFFSET_Y
+        # attack box
+        self.attack_hitbox_w = ENEMY_HITBOX_W
+        self.attack_hitbox_h = ENEMY_HITBOX_H
+        self.attack_hitbox_offset_y = ENEMY_HITBOX_OFFSET_Y
+
         self.speed = ENEMY_SPEED
         self.max_hp = ENEMY_MAX_HP
         self.hp = self.max_hp
@@ -49,11 +64,6 @@ class Enemy:
         self.patrol_distance = ENEMY_DETECT_RANGE
         self.patrol_direction = 1
 
-        # attack players / combat
-        # attack hitbox settings (kept symmetric for left/right)
-        self.attack_hitbox_w = ENEMY_HITBOX_W
-        self.attack_hitbox_h = ENEMY_HITBOX_H
-        self.attack_hitbox_offset_y = ENEMY_HITBOX_OFFSET_Y
         self.attack_damage = ENEMY_ATTACK_DAMAGE
 
         self.attack_timer = 0 # ?
@@ -329,6 +339,30 @@ class Enemy:
         self.y = max(self.lane_top, self.y) # cannot go above lane_top
         self.y = min(self.lane_bottom, self.y) # cannot go below lane_bottom
 
+    # body rect
+    def get_logical_rect(self):
+        return pygame.Rect(
+            int(self.x),
+            int(self.y),
+            int(self.width),
+            int(self.height)
+        )
+
+    def get_hurt_rect(self):
+        return pygame.Rect(
+            int(self.x+self.hurtbox_offset_x),
+            int(self.y+self.hurtbox_offset_y),
+            int(self.hurtbox_w),int(self.hurtbox_h))
+
+    # on bottom center
+    def get_collision_rect(self):
+        return pygame.Rect(
+            int(self.x+(self.width-self.collision_box_w)/2),
+            int(self.y+self.height-self.collision_box_h),
+            int(self.collision_box_w),
+            int(self.collision_box_h)
+        )
+
     # hit box
     def get_attack_rect(self):
         # Use symmetric hitbox size and offsets so left/right behave identically
@@ -407,8 +441,8 @@ class Enemy:
         is_active_frame = active_start <= self.attack_timer < active_end
         if is_active_frame and not self.attack_has_hit:
             attack_rect = self.get_attack_rect()
-            player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
-            if attack_rect.colliderect(player_rect):
+            player_hurt_rect = player.get_hurt_rect()
+            if attack_rect.colliderect(player_hurt_rect):
                 player.take_damage(self.attack_damage)
                 self.attack_has_hit = True
         

@@ -97,9 +97,9 @@ class BossEnemy(Enemy):
 
         if is_active_frame and not self.attack_has_hit:
             attack_rect = self.get_attack_rect()
-            player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+            player_hurt_rect = player.get_hurt_rect()
 
-            if attack_rect.colliderect(player_rect):
+            if attack_rect.colliderect(player_hurt_rect):
                 player.take_damage(self.attack_damage)
                 self.attack_has_hit = True
 

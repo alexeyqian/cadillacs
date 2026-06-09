@@ -42,25 +42,32 @@ RAPTOR_ENEMY_H=ENEMY_H * 0.8
 BOSS_ENEMY_W=ENEMY_W * 2
 BOSS_ENEMY_H=ENEMY_H * 2
 
-######## player collision and hurt boxes ########
-# what is diff between body and collision?
-# collision box on feet?
+######## collision, hurt and hit/attack boxes ########
+# collision box is centered on bottom
 PLAYER_COLLISION_W = PLAYER_W * 0.5
 PLAYER_COLLISION_H = PLAYER_H * 0.2
 
+# hurt box is inside logical box
 PLAYER_HURTBOX_W = PLAYER_W * 0.6
 PLAYER_HURTBOX_H = PLAYER_H * 0.6
 PLAYER_HURTBOX_OFFSET_X = PLAYER_W * 0.2
 PLAYER_HURTBOX_OFFSET_Y = PLAYER_H * 0.1
 
-######## hit and hurt boxes ########
-PLAYER_HITBOX_W=PLAYER_W*0.7
-PLAYER_HITBOX_H=PLAYER_H*0.6
+ENEMY_COLLISION_W = ENEMY_W * 0.5
+ENEMY_COLLISION_H = ENEMY_H * 0.2
+
+ENEMY_HURTBOX_W = ENEMY_W * 0.6
+ENEMY_HURTBOX_H = ENEMY_H * 0.6
+ENEMY_HURTBOX_OFFSET_X = ENEMY_W * 0.2
+ENEMY_HURTBOX_OFFSET_Y = ENEMY_H * 0.1
+
+PLAYER_HITBOX_W=PLAYER_W*0.4
+PLAYER_HITBOX_H=PLAYER_H*0.5
 PLAYER_HITBOX_OFFSET_Y=PLAYER_H*0.2
 # todo: add different attack hit boxes
 
-ENEMY_HITBOX_W=ENEMY_W*0.7
-ENEMY_HITBOX_H=ENEMY_H*0.6
+ENEMY_HITBOX_W=ENEMY_W*0.4
+ENEMY_HITBOX_H=ENEMY_H*0.5
 ENEMY_HITBOX_OFFSET_Y=ENEMY_H*0.2
 
 ######## hp max ########

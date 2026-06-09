@@ -20,8 +20,9 @@ def create_explosions_from_objects(game_state):
 
 def damage_enemies_in_radius(game_state, x, y, radius, damage):
     for enemy in game_state.enemies:
-        dx = (enemy.x + enemy.width // 2) - x
-        dy = (enemy.y + enemy.height // 2) - y
+        enemy_hurt_rect = enemy.get_hurt_rect()
+        dx = (enemy_hurt_rect.x + enemy_hurt_rect.width // 2) - x
+        dy = (enemy_hurt_rect.y + enemy_hurt_rect.height // 2) - y
         distance_sq = dx*dx + dy*dy
         if distance_sq <= radius*radius:
             enemy.take_damage(damage, x)

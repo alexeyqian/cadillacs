@@ -28,8 +28,23 @@ class Player:
     def __init__(self):
         self.x = 300
         self.y = 500
+        # boxes
+        # logical box
         self.width = PLAYER_W
         self.height = PLAYER_H
+        #collision box
+        self.collision_box_w = PLAYER_COLLISION_W
+        self.collision_box_h = PLAYER_COLLISION_H
+        # hurt box
+        self.hurtbox_w = PLAYER_HURTBOX_W
+        self.hurtbox_h = PLAYER_HURTBOX_H
+        self.hurtbox_offset_x = PLAYER_HURTBOX_OFFSET_X
+        self.hurtbox_offset_y = PLAYER_HURTBOX_OFFSET_Y
+        # attack box
+        self.attack_hitbox_w = PLAYER_HITBOX_W
+        self.attack_hitbox_h = PLAYER_HITBOX_H
+        self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
+
         self.speed = PLAYER_SPEED
         self.facing_right = True
 
@@ -86,12 +101,6 @@ class Player:
         self.grab_knee_timer = 0
         self.grab_knee_duration = PLAYER_GRAB_KNEE_DURATION
         self.grab_keen_hit_frame = PLAYER_GRAB_KNEE_HIT_FRAME
-
-        # attack hitbox settings (kept symmetric for left/right)
-        self.attack_hitbox_w = PLAYER_HITBOX_W
-        self.attack_hitbox_h = PLAYER_HITBOX_H
-        #(self.y + self.height // 2) - PLAYER_HITBOX_H//2
-        self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
 
         # lane boundaries
         self.lane_top = LANE_TOP
@@ -217,15 +226,16 @@ class Player:
         # yellow = attack hitbox
         # debug: draw player's bounding box (world -> screen)
         if SHOW_PLAYER_RECT:
-            body_rect = pygame.Rect(screen_x, self.y, self.width, self.height)
+            body_rect = self.get_logical_rect()
             hurt_rect = self.get_hurt_rect()
             collision_rect = self.get_collision_rect()
 
-            pygame.draw.rect(screen, GREEN_COLOR, body_rect, 1)
+            pygame.draw.rect(screen,GREEN_COLOR,
+                (body_rect.x - camera_x, body_rect.y,
+                body_rect.width, body_rect.height), 1)
             pygame.draw.rect(screen,(255, 80, 80),
                 (hurt_rect.x - camera_x, hurt_rect.y,
                 hurt_rect.width, hurt_rect.height), 1)
-
             pygame.draw.rect(screen, (80, 180, 255),
                 (collision_rect.x - camera_x, collision_rect.y,
                 collision_rect.width, collision_rect.height), 1)
@@ -254,26 +264,67 @@ class Player:
         hp_w = int(hb_w * fill_ratio)
         pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
 
+    # body rect
+    def get_logical_rect(self):
+        return pygame.Rect(
+            int(self.x),
+            int(self.y),
+            int(self.width),
+            int(self.height)
+        )
+
     def get_hurt_rect(self):
         return pygame.Rect(
-            int(self.x+PLAYER_HURTBOX_OFFSET_X),
-            int(self.y+PLAYER_HURTBOX_OFFSET_Y),
-            int(PLAYER_HURTBOX_W),
-            int(PLAYER_HURTBOX_H)
-        )
-    
+            int(self.x+self.hurtbox_offset_x),
+            int(self.y+self.hurtbox_offset_y),
+            int(self.hurtbox_w),
+            int(self.hurtbox_h))
+
     # on bottom center
     def get_collision_rect(self):
         return pygame.Rect(
-            int(self.x+(self.width-PLAYER_COLLISION_W)/2),
-            int(self.y+self.height-PLAYER_COLLISION_H),
-            int(PLAYER_COLLISION_W),
-            int(PLAYER_COLLISION_H)
+            int(self.x+(self.width-self.collision_box_w)/2),
+            int(self.y+self.height-self.collision_box_h),
+            int(self.collision_box_w),
+            int(self.collision_box_h)
         )
-        
-    # todo:
-    def get_hitbox_rect(self):
-        pass
+
+    # hit box
+    def get_attack_rect(self):
+        if not self.is_attacking:
+            return None
+        # Use symmetric hitbox size and offsets so left/right behave identically
+        hit_w = self.attack_hitbox_w
+        # giving running attack a longer hitbox
+        if self.state == self.RUN_ATTACK:
+            hit_w = self.attack_hitbox_w * 1.5
+        if self.state == self.JUMP_ATTACK:
+            hit_w = self.attack_hitbox_w
+        if self.state == self.GRAB_KNEE:
+            hit_w = PLAYER_GRAB_KNEE_HITBOX_W
+            hit_h = PLAYER_GRAB_KNEE_HITBOX_H
+            hit_y = int(self.y + self.height * 0.35)
+
+            if self.facing_right:
+                hit_x = int(self.x + self.width * 0.65)
+            else:
+                hit_x = int(self.x - hit_w + self.width * 0.35)
+            # return directly
+            # todo: refactory here
+            return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
+
+        hit_h = self.attack_hitbox_h
+        if self.weapon and not self.weapon.is_ranged:
+            hit_w += self.weapon.hitbox_w_bonus
+            hit_h += self.weapon.hitbox_h_bonus
+
+        hit_y = int(self.y + self.attack_hitbox_offset_y)
+        # do we need attack hitbox_offset_x ? no need probably
+        if self.facing_right:
+            hit_x = int(self.x + self.width)
+        else:
+            hit_x = int(self.x - hit_w)
+        return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
     def update_animation(self):
         if self.state == self.IDLE:
@@ -570,43 +621,6 @@ class Player:
             base_damage += self.weapon.damage
 
         return base_damage
-
-    # hit box
-    def get_attack_rect(self):
-        if not self.is_attacking:
-            return None
-        # Use symmetric hitbox size and offsets so left/right behave identically
-        hit_w = self.attack_hitbox_w
-        # giving running attack a longer hitbox
-        if self.state == self.RUN_ATTACK:
-            hit_w = self.attack_hitbox_w * 1.5
-        if self.state == self.JUMP_ATTACK:
-            hit_w = self.attack_hitbox_w
-        if self.state == self.GRAB_KNEE:
-            hit_w = PLAYER_GRAB_KNEE_HITBOX_W
-            hit_h = PLAYER_GRAB_KNEE_HITBOX_H
-            hit_y = int(self.y + self.height * 0.35)
-
-            if self.facing_right:
-                hit_x = int(self.x + self.width * 0.65)
-            else:
-                hit_x = int(self.x - hit_w + self.width * 0.35)
-            # return directly
-            # todo: refactory here
-            return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
-
-        hit_h = self.attack_hitbox_h
-        if self.weapon and not self.weapon.is_ranged:
-            hit_w += self.weapon.hitbox_w_bonus
-            hit_h += self.weapon.hitbox_h_bonus
-
-        hit_y = int(self.y + self.attack_hitbox_offset_y)
-        # do we need attack hitbox_offset_x ? no need probably
-        if self.facing_right:
-            hit_x = int(self.x + self.width)
-        else:
-            hit_x = int(self.x - hit_w)
-        return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
     def take_damage(self, damage):
         if self.state == self.DEAD:

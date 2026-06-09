@@ -4,9 +4,6 @@ from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
 from game.entities.boss_enemy import BossEnemy
 
-def create_enemy_rect(enemy):
-    return pygame.Rect(enemy.x, enemy.y, enemy.width, enemy.height)
-
 # todo: refactory
 def handle_player_attack_collision(game_state):
     player = game_state.player
@@ -36,8 +33,8 @@ def handle_player_attack_collision(game_state):
 
     # attack enemies
     for enemy in enemies:
-        enemy_rect = create_enemy_rect(enemy)
-        if attack_rect.colliderect(enemy_rect):
+        enemy_hurt_rect = enemy.get_hurt_rect()
+        if attack_rect.colliderect(enemy_hurt_rect):
             damage = player.attack_damage()
             enemy.take_damage(damage, player.x)
             game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,80,80)))
@@ -70,8 +67,8 @@ def handle_player_projectile_collision(game_state):
         projectile_rect = projectile.get_rect()
         # projectile hit enemy
         for enemy in enemies:
-            enemy_rect = create_enemy_rect(enemy)
-            if projectile_rect.colliderect(enemy_rect):
+            enemy_hurt_rect = enemy.get_hurt_rect()
+            if projectile_rect.colliderect(enemy_hurt_rect):
                 damage = projectile.damage
                 enemy.take_damage(damage, player.x)
                 game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,120,120)))
@@ -113,7 +110,7 @@ def handle_player_thrown_enemy_collision(game_state):
     for thrown_enemy in game_state.enemies:
         if thrown_enemy.state != thrown_enemy.THROWN:
             continue
-        thrown_rect = create_enemy_rect(thrown_enemy)
+        thrown_rect = thrown_enemy.get_logical_rect()
         for enemy in game_state.enemies:
             if enemy is thrown_enemy:
                 continue
@@ -123,8 +120,8 @@ def handle_player_thrown_enemy_collision(game_state):
             if id(enemy) in thrown_enemy.thrown_hit_targets:
                 continue
 
-            enemy_rect = create_enemy_rect(enemy)
-            if thrown_rect.colliderect(enemy_rect):
+            enemy_hurt_rect = enemy.get_hurt_rect()
+            if thrown_rect.colliderect(enemy_hurt_rect):
                 damage = enemy.thrown_damage
                 enemy.take_damage(damage, thrown_enemy.x)
                 game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,150,0)))
