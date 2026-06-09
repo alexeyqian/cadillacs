@@ -235,6 +235,7 @@ class Player:
             body_rect = self.get_logical_rect()
             hurt_rect = self.get_hurt_rect()
             collision_rect = self.get_collision_rect()
+            attack_rect = self.get_attack_rect()
 
             pygame.draw.rect(screen,GREEN_COLOR,
                 (body_rect.x - camera_x, body_rect.y,
@@ -246,9 +247,6 @@ class Player:
                 (collision_rect.x - camera_x, collision_rect.y,
                 collision_rect.width, collision_rect.height), 1)
 
-        # attack hitbox for debug
-        if SHOW_PLAYER_HITBOX:
-            attack_rect = self.get_attack_rect()
             if attack_rect:
                 pygame.draw.rect(screen, YELLOW_COLOR,
                     (attack_rect.x - camera_x, attack_rect.y,
