@@ -189,7 +189,7 @@ class Player:
         image = self.animation_manager.get_image()
         if not self.facing_right:
             image = pygame.transform.flip(image, True, False)
-        # Sprite frames can be wider/taller than the gameplay hit box.
+        # Sprite frames can be wider/taller than the gameplay body box.
         # Keep the feet and body anchored to the player's collision rectangle.
         sprite_x = screen_x
         if not self.facing_right:
@@ -211,9 +211,24 @@ class Player:
 
         screen_x = self.x - camera_x
 
+        # green = logical body
+        # red = hurt box
+        # blue = collision box
+        # yellow = attack hitbox
         # debug: draw player's bounding box (world -> screen)
         if SHOW_PLAYER_RECT:
-            pygame.draw.rect(screen, GREEN_COLOR, (screen_x, self.y, self.width, self.height), 1)
+            body_rect = pygame.Rect(screen_x, self.y, self.width, self.height)
+            hurt_rect = self.get_hurt_rect()
+            collision_rect = self.get_collision_rect()
+
+            pygame.draw.rect(screen, GREEN_COLOR, body_rect, 1)
+            pygame.draw.rect(screen,(255, 80, 80),
+                (hurt_rect.x - camera_x, hurt_rect.y,
+                hurt_rect.width, hurt_rect.height), 1)
+
+            pygame.draw.rect(screen, (80, 180, 255),
+                (collision_rect.x - camera_x, collision_rect.y,
+                collision_rect.width, collision_rect.height), 1)
 
         # attack hitbox for debug
         if SHOW_PLAYER_HITBOX:
@@ -238,6 +253,27 @@ class Player:
             fill_ratio = 0
         hp_w = int(hb_w * fill_ratio)
         pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
+
+    def get_hurt_rect(self):
+        return pygame.Rect(
+            int(self.x+PLAYER_HURTBOX_OFFSET_X),
+            int(self.y+PLAYER_HURTBOX_OFFSET_Y),
+            int(PLAYER_HURTBOX_W),
+            int(PLAYER_HURTBOX_H)
+        )
+    
+    # on bottom center
+    def get_collision_rect(self):
+        return pygame.Rect(
+            int(self.x+(self.width-PLAYER_COLLISION_W)/2),
+            int(self.y+self.height-PLAYER_COLLISION_H),
+            int(PLAYER_COLLISION_W),
+            int(PLAYER_COLLISION_H)
+        )
+        
+    # todo:
+    def get_hitbox_rect(self):
+        pass
 
     def update_animation(self):
         if self.state == self.IDLE:
