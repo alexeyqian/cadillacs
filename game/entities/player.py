@@ -49,7 +49,13 @@ class Player:
         self.facing_right = True
 
         self.is_running = False
-        self.run_speed = self.speed * 2
+        self.run_speed = PLAYER_RUN_SPEED
+        self.run_active = False
+        self.run_direction = 0
+        self.run_tap_timer = 0
+        self.run_tap_window = max(1, int(RUN_DOUBLE_TAP_TIME * FPS))
+        self.left_pressed = False
+        self.right_pressed = False
         self.run_attack_damage = 35 # use scaler*normal_damage
         self.run_attack_timer = 0
         self.run_attack_duration = 18
@@ -376,6 +382,9 @@ class Player:
 
         if self.throw_timer > 0:
             self.throw_timer -= 1
+
+        if self.run_tap_timer > 0:
+            self.run_tap_timer -= 1
             
         if self.grab_knee_timer > 0:
             self.grab_knee_timer -= 1
@@ -401,28 +410,69 @@ class Player:
         moving = False
         if self.is_jumping: # avoid double movement while jumping
             return False
-    
-        move_speed = self.speed
-        self.is_running = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
-        if self.is_running:
-            move_speed = self.run_speed
 
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        left_down = keys[pygame.K_LEFT] or keys[pygame.K_a]
+        right_down = keys[pygame.K_RIGHT] or keys[pygame.K_d]
+        up_down = keys[pygame.K_UP] or keys[pygame.K_w]
+        down_down = keys[pygame.K_DOWN] or keys[pygame.K_s]
+        shift_down = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
+
+        horizontal_direction = 0
+        if left_down and not right_down:
+            horizontal_direction = -1
+        elif right_down and not left_down:
+            horizontal_direction = 1
+
+        self.update_run_input(left_down, right_down, horizontal_direction)
+        self.is_running = horizontal_direction != 0 and (
+            shift_down or self.run_active)
+
+        move_speed = self.run_speed if self.is_running else self.speed
+
+        if left_down:
             self.x -= move_speed
             self.facing_right = False
             moving = True
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        if right_down:
             self.x += move_speed
             self.facing_right = True
             moving = True
-        if keys[pygame.K_UP] or keys[pygame.K_w]:
+        if up_down:
             self.y -= self.speed
             moving = True
-        if keys[pygame.K_DOWN] or keys[pygame.K_s]:
+        if down_down:
             self.y += self.speed
             moving = True
 
         return moving
+
+    def update_run_input(self, left_down, right_down, horizontal_direction):
+        if horizontal_direction == 0:
+            self.run_active = False
+            self.left_pressed = left_down
+            self.right_pressed = right_down
+            return
+
+        left_just_pressed = left_down and not self.left_pressed
+        right_just_pressed = right_down and not self.right_pressed
+
+        if left_just_pressed:
+            self.check_run_double_tap(-1)
+        elif right_just_pressed:
+            self.check_run_double_tap(1)
+
+        if self.run_active and self.run_direction != horizontal_direction:
+            self.run_active = False
+
+        self.left_pressed = left_down
+        self.right_pressed = right_down
+
+    def check_run_double_tap(self, direction):
+        if self.run_direction == direction and self.run_tap_timer > 0:
+            self.run_active = True
+
+        self.run_direction = direction
+        self.run_tap_timer = self.run_tap_window
 
     def update_jump_physics(self, keys):
         if not self.is_jumping:
