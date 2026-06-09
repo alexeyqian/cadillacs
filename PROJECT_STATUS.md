@@ -1,214 +1,251 @@
-# Cadillacs & Dinosaurs Pygame Project
-## Current Project Status
+# PROJECT_STATUS.md
 
-Last Updated: 2026-06-08
+## Project
 
----
+Cadillacs & Dinosaurs Inspired Beat-em-up
 
-# Project Vision
+Engine: Python + Pygame
 
-Create a modern educational recreation inspired by the classic arcade beat-em-up:
+Current Development Stage:
+Core Gameplay Vertical Slice
 
-Cadillacs & Dinosaurs
-
-Goals:
-
-- Easy to understand code
-- Easy to maintain and extend architecture
-- Modular systems
-- Maintainable codebase
-- Flexible to add new movement/action/state to player.
-- Flexible to add new movement/action/state to enemy.
-- Flexible to add all kinds of weapons into system.
-- Flexible to add all kinds of vehicles into system.
-- Player and enemy's action and timer can be modularized
-- Multiple stage design
-- Future multiplayer support
-- Future content editor support
-
-Target Platform:
-
-- Python 3.x
-- Pygame
-- Windows
-- macOS
-- Linux
+Last Updated:
+2026-06-09
 
 ---
 
-# Completed Milestones
+# Overall Progress
 
-## Milestone 1
-Project Setup
+Estimated Completion: 35%
 
-Status: COMPLETE
+The project has moved beyond prototype stage and now contains a playable combat loop with:
+
+* Camera system
+* Arena lock system
+* Wave progression
+* Multiple enemy types
+* Boss battle
+* Weapon system
+* Grab system
+* Throw system
+* Running attacks
+* Jump attacks
+* Projectile weapons
+* Modular gameplay architecture
+
+---
+
+# Architecture Status
+
+Completed
+
+* GameState architecture
+* Main loop refactor
+* Rendering system extraction
+* Gameplay system extraction
+* Arena system
+* Combat system
+* Wave system
+* Cleanup system
+* Loot system
+* Projectile system
+
+Current architecture is stable and suitable for future expansion.
+
+---
+
+# Player Systems
+
+Completed
+
+* Walking
+* Running
+* Double-tap run detection
+* Jumping
+* Air movement
+* Jump attack
+* 3-hit combo
+* Grab enemy
+* Throw enemy
+* Grab knee attack
+* Weapon pickup
+* Auto weapon pickup
+* Pistol firing
+* Lives
+* Death
+* Respawn
+
+Planned
+
+* Escape move
+* Recovery roll
+* Weapon throw
+* Advanced grab combos
+* Special attacks
+
+---
+
+# Enemy Systems
+
+Completed
+
+* Patrol
+* Chase
+* Attack
+* Hit reaction
+* Knockback
+* Grabbed state
+* Thrown state
+* Knockdown
+* Get-up
+* Death
+* Separation behavior
+
+Enemy Types
+
+* Normal Enemy
+* Fast Enemy
+* Heavy Enemy
+* Ranged Enemy
+* Raptor Enemy
+* Boss Enemy
+
+Planned
+
+* Improved group AI
+* Flanking behavior
+* Attack coordination
+* Better boss phases
+
+---
+
+# Weapons
+
+Completed
+
+* Knife
+* Bat
+* Pistol
+
+Planned
+
+* Weapon throw
+* Weapon durability
+* Additional weapon types
+
+---
+
+# Combat Status
+
+Completed
+
+* Combo attacks
+* Running attacks
+* Jump attacks
+* Grab system
+* Throw system
+* Grab knee attack
+
+Recently Designed
+
+* Separate body box
+* Separate hurtbox
+* Separate collision box
+* Separate attack hitboxes
+
+Planned
+
+* Attack windup frames
+* Active attack frames
+* Recovery frames
+* Better enemy timing
+* Animation-driven hit frames
+
+---
+
+# Visual Systems
+
+Completed
+
+* Animation manager
+* Sprite sheet support
+* Asset loading framework
+
+Planned
+
+* Asset manager integration
+* Larger attack animation frames
+* Attack frame offsets
+* Weapon-specific animations
+* Hit sparks
+* Camera shake
+
+---
+
+# World Systems
+
+Completed
+
+* Stage scrolling
+* Camera follow
+* Arena lock
+* Multi-wave progression
+* Boss wave
+* Props
+
+Planned
+
+* Stage hazards
+* Multiple stages
+* Branching paths
+
+---
+
+# Save / Progression
+
+Not Started
+
+Planned
+
+* Save game
+* Continue system
+* Stage unlocks
+* High score system
+
+---
+
+# Networking
+
+Future
+
+* Local co-op first
+* Networking only after core gameplay is complete
+
+---
+
+# Current Priority
+
+1. Player animation sizing refactor
+2. Hurtbox / hitbox refactor
+3. Enemy attack timing improvements
+4. Weapon throw
+5. Enemy animation loading refactor
+6. Scene system
+
+---
+
+# Current Stable Baseline
+
+Milestone 45 Complete
 
 Implemented:
 
-- Game loop
-- Window creation
-- Settings module
-- Basic project structure
+* Asset Manager
+* Grab Combo
+* Knee Attack
 
----
+Milestone 46 (Escape Move)
 
-## Milestone 2
-Player Movement
+Status: Deferred
 
-Status: COMPLETE
-
-Implemented:
-
-- 8-direction movement
-- Lane movement
-- Screen clamping
-- Basic animation support
-
----
-
-## Milestone 3
-Camera System
-
-Status: COMPLETE
-
-Implemented:
-
-- Side scrolling camera
-- World coordinates
-- Screen coordinates
-- Camera follow player
-
----
-
-## Milestone 4
-Enemy Foundation
-
-Status: COMPLETE
-
-Implemented:
-
-- Enemy spawning
-- Enemy movement
-- Enemy state machine
-- Chase behavior
-
-Recent fixes:
-
-- Enemy leaving arena bug fixed
-- Enemy chase direction bug fixed
-
----
-
-## Milestone 5
-Wave System
-
-Status: COMPLETE
-
-Implemented:
-
-- Wave definitions
-- Enemy spawn control
-- Wave completion detection
-- Camera lock zones
-
----
-
-# Current Development Stage
-
-Current Milestone:
-
-Asset Pipeline & Animation Framework
-
-Status:
-
-IN PROGRESS
-
-Goals:
-
-- Sprite sheet loader
-- Animation definitions
-- Animation player
-- Asset organization
-- Asset naming conventions
-
----
-
-# Existing Systems
-
-## Core
-
-- Game Loop
-- Settings
-- State Management
-
-## World
-
-- Camera
-- World Bounds
-- Arena Lock
-
-## Player
-
-- Movement
-- Collision
-- State Machine
-
-## Enemy
-
-- Chase AI
-- State Machine
-- Wave Integration
-
-## Combat
-
-Partial Implementation
-
-Planned Expansion:
-
-- Attack system
-- Hit detection
-- Combo system
-- Grab system
-- Knockdown system
-
----
-
-# Known Issues
-
-Minor:
-
-- Enemy crowding behavior needs improvement
-- Enemy spacing needs tuning
-
-Future:
-
-- Combat balance tuning
-- Animation timing tuning
-
----
-
-# Next Immediate Goal
-
-Implement:
-
-Animation Framework
-
-Required Features:
-
-- SpriteSheet class
-- Animation class
-- AnimationSet class
-- Animation state switching
-- Frame timing support
-
----
-
-# Long-Term Goals
-
-- Full arcade combat
-- Boss battles
-- Weapons
-- Pickups
-- Save system
-- Character select
-- Online multiplayer
+Will revisit after combat refactor.

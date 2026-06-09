@@ -1,193 +1,229 @@
-# Cadillacs & Dinosaurs Pygame
-## Development Roadmap
+# ROADMAP.md
+
+## Phase 1 - Core Combat Foundation
+
+Status: Complete
+
+### Milestone 1-20
+
+* Basic game loop
+* Camera
+* Player movement
+* Enemy movement
+* Collision
+* Animation framework
+* Stage scrolling
+
+Completed
 
 ---
 
-# Phase 1
-Core Foundation
+## Phase 2 - Playable Beat-em-up
 
-Status: COMPLETE
+Status: Complete
 
-- Project setup
-- Settings
-- Camera
-- World scrolling
-- Player movement
-- Enemy movement
-- Wave system
+### Milestone 21-35
 
----
+* Combo attacks
+* Weapon system
+* Grab system
+* Throw system
+* Enemy states
+* Wave progression
+* Boss framework
 
-# Phase 2
-Asset Pipeline
-
-Status: IN PROGRESS
-
-Goals:
-
-- Sprite sheets
-- Animation system
-- Asset loading
-- Asset caching
-- Character animation framework
-
-Deliverables:
-
-- SpriteSheet
-- Animation
-- AnimationSet
-- AssetManager
+Completed
 
 ---
 
-# Phase 3
-Combat Foundation
+## Phase 3 - Architecture Refactor
 
-Goals:
+Status: Complete
 
-- Attack states
-- Hitboxes
-- Hurtboxes
-- Damage
-- Hit stun
+### Milestone 36-43
 
-Deliverables:
+* GameState architecture
+* System extraction
+* Main loop cleanup
+* Arena system
+* Gameplay system
+* Combat system separation
 
-- Punch
-- Kick
-- Running attack
-- Jump attack
+Completed
 
 ---
 
-# Phase 4
-Enemy Combat AI
+## Phase 4 - Combat Expansion
 
-Goals:
+Status: In Progress
 
-- Windup
-- Active attack
-- Recovery
+### Milestone 44
 
-Deliverables:
+Asset Manager
 
-- Attack decision logic
-- Attack cooldown
-- Enemy spacing
-- Group behavior
+Status: Complete
 
----
+### Milestone 45
 
-# Phase 5
-Advanced Combat
+Grab Combo + Knee Attack
 
-Goals:
+Status: Complete
 
-- Combo chains
-- Grab system
-- Throws
-- Knockdowns
+### Milestone 46
 
-Deliverables:
+Escape Move
 
-- 3-hit combo
-- Grab state machine
-- Throw physics
+Status: Deferred
 
----
+Reason:
 
-# Phase 6
-Weapons
+Player state machine needs additional cleanup before adding another action state.
 
-Goals:
+### Milestone 47
 
-- Weapon pickup
-- Weapon attacks
-- Weapon durability
+Weapon Throw
 
-Deliverables:
+Status: Next
 
-- Knife
-- Club
-- Rifle
+Goals
 
----
+* Throw held weapon
+* Weapon projectile physics
+* Weapon damage on impact
+* Weapon drop after throw
 
-# Phase 7
-Enemy Expansion
+### Milestone 48
 
-Goals:
+Recovery Roll
 
-- Multiple enemy classes
+Goals
 
-Deliverables:
+* Quick recovery from knockdown
+* Temporary invulnerability
+* Player skill expression
 
-- Normal enemy
-- Fast enemy
-- Heavy enemy
-- Boss enemy
+### Milestone 49
 
----
+Enemy Animation Loading Refactor
 
-# Phase 8
-Stages
+Goals
 
-Goals:
+* Unified enemy animation loading
+* Cleaner configuration system
+* Asset manager integration
 
-- Stage editor support
+### Milestone 50
 
-Deliverables:
+Scene System
 
-- Stage 1
-- Stage 2
-- Stage 3
+Goals
+
+* Menu scene
+* Gameplay scene
+* Game over scene
+* Stage clear scene
 
 ---
 
-# Phase 9
-UI
+## Phase 5 - Combat Polish
 
-Goals:
+Planned
 
-- HUD
-- Health bars
-- Lives
-- Score
+### Combat Timing
 
----
+* Windup frames
+* Active frames
+* Recovery frames
 
-# Phase 10
-Save System
+### Hitbox Refactor
 
-Goals:
+* Separate body box
+* Separate collision box
+* Separate hurtbox
+* Weapon-specific attack boxes
 
-- Progress saving
-- High scores
-- Unlocks
+### Visual Improvements
 
----
+* Larger attack frames
+* Attack offsets
+* Better animation alignment
 
-# Phase 11
-Polish
+### Effects
 
-Goals:
-
-- Effects
-- Particles
-- Audio
-- Balance
+* Hit sparks
+* Camera shake
+* Impact effects
+* Screen flash
 
 ---
 
-# Phase 12
-Multiplayer
+## Phase 6 - Content Expansion
 
-Goals:
+Planned
 
-- Online co-op
+### New Enemies
 
-Deliverables:
+* Advanced raptors
+* Shield enemy
+* Heavy mutant
+* Mini-bosses
 
-- Client prediction
-- State synchronization
-- Rollback experiments
+### New Weapons
+
+* Shotgun
+* Rifle
+* Grenade
+* Spear
+
+### New Stages
+
+* City
+* Jungle
+* Laboratory
+* Mine
+
+---
+
+## Phase 7 - Production Features
+
+Planned
+
+### Save System
+
+* Save progress
+* Continue system
+* Unlocks
+
+### Level Editor
+
+* Enemy placement
+* Wave editing
+* Prop placement
+
+### Testing
+
+* Balance pass
+* Performance pass
+* Bug fixing
+
+---
+
+## Phase 8 - Release Preparation
+
+Future
+
+### Local Co-op
+
+* Two players
+* Shared camera
+
+### Optional Networking
+
+* Online co-op
+* Synchronization layer
+
+### Release
+
+* Windows
+* macOS
+* Linux

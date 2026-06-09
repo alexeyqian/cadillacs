@@ -44,6 +44,8 @@ def main_draw_world(game_state):
     #    )
 
     # depth sorting
+    # Depth Sorting: Characters need to scale in size and dynamically re-order in front of 
+    # or behind background props based on their Y-axis position.
     # Classic beat'em-up games draw lower objects later.
     # other wise, may render incorrectly.
     # higher y draw later, appears closer to camera

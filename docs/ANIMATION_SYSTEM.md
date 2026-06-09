@@ -1,714 +1,794 @@
-# Animation System
+# ANIMATION_REFACTOR.md
 
-Cadillacs & Dinosaurs Pygame Project
+## Purpose
 
-Version: 1.0
+This document defines the current animation, visual frame, collision box, hurtbox, and hitbox design for the Cadillacs & Dinosaurs inspired Pygame beat-em-up.
 
-Last Updated: 2026-06-08
-
----
-
-# Purpose
-
-This document defines the animation system architecture for the Pygame beat-em-up project.
-
-The goal is to make animation:
-
-* Easy to understand
-* Easy to debug
-* Easy to expand
-* Data-driven where practical
-* Ready for combat timing integration
+This document is based on the latest `settings.py`.
 
 ---
 
-# Design Goals
+# Current Resolution Baseline
 
-The animation system should support:
+The game now uses a full HD internal game area.
 
-* Idle animation
-* Walk animation
-* Run animation
-* Jump animation
-* Attack animation
-* Hurt animation
-* Knockdown animation
-* Death animation
-* Enemy attack windup / active / recovery
-* Animation events such as hit frames
+```python
+EXTERNAL_WIDTH = 1920
+EXTERNAL_HEIGHT = 1080
 
-The system should avoid:
-
-* Hardcoded frame indices inside gameplay code
-* Loading images inside update loops
-* Duplicated animation logic between player and enemy
-
----
-
-# Core Classes
-
-Recommended classes:
-
-```text
-SpriteSheet
-Animation
-AnimationPlayer
-AnimationSet
-AssetManager
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
 ```
 
----
-
-# Class Responsibilities
-
-## SpriteSheet
-
-Responsible for:
-
-* Holding one loaded sprite sheet image
-* Extracting frames from the sheet
-* Returning individual frame surfaces
-
-Should not handle:
-
-* Animation timing
-* Entity state
-* Combat logic
+The internal game area and external display size currently match.
 
 ---
 
-## Animation
+# Core Size Principle
 
-Responsible for:
+`PLAYER_W` and `PLAYER_H` are the logical player body size.
 
-* List of frames
-* Frame duration
-* Loop setting
-* Optional animation events
-
-Should not handle:
-
-* Drawing position
-* Movement
-* Combat decisions
-
----
-
-## AnimationPlayer
-
-Responsible for:
-
-* Current animation
-* Current frame index
-* Timer
-* Loop handling
-* Detecting animation finished
-* Triggering animation events
-
-Should not handle:
-
-* Entity AI
-* Player input
-* Damage calculation
-
----
-
-## AnimationSet
-
-Responsible for:
-
-* Storing animations by name
-
-Example:
-
-```text
-idle
-walk
-run
-punch1
-punch2
-hurt
-knockdown
-dead
-```
-
----
-
-## AssetManager
-
-Responsible for:
-
-* Loading images once
-* Loading JSON once
-* Caching resources
-* Returning shared assets
-
----
-
-# Suggested File Layout
-
-```text
-src/
-├── animation.py
-├── spritesheet.py
-├── asset_manager.py
-```
-
-or:
-
-```text
-src/core/
-├── animation.py
-├── spritesheet.py
-├── asset_manager.py
-```
-
----
-
-# Asset Layout
-
-```text
-assets/
-├── characters/
-│   └── jack/
-│       ├── spritesheet.png
-│       └── animations.json
-│
-├── enemies/
-│   └── punk/
-│       ├── spritesheet.png
-│       └── animations.json
-```
-
----
-
-# Animation JSON Example
-
-```json
-{
-  "frame_width": 80,
-  "frame_height": 160,
-
-  "animations": {
-    "idle": {
-      "frames": [0, 1, 2, 3],
-      "fps": 8,
-      "loop": true
-    },
-
-    "walk": {
-      "frames": [4, 5, 6, 7, 8, 9],
-      "fps": 12,
-      "loop": true
-    },
-
-    "punch1": {
-      "frames": [10, 11, 12, 13],
-      "fps": 15,
-      "loop": false,
-      "events": {
-        "2": ["hit"]
-      }
-    }
-  }
-}
-```
-
----
-
-# Frame Indexing Rule
-
-Frames are indexed left to right, top to bottom.
-
-Example:
-
-```text
-0  1  2  3
-4  5  6  7
-8  9  10 11
-```
-
----
-
-# Animation Timing
-
-Use FPS-based timing.
-
-Example:
-
-```text
-animation fps = 12
-game fps = 60
+```python
+PLAYER_W = 128
+PLAYER_H = 256
 ```
 
 This means:
 
 ```text
-60 / 12 = 5
+Player logical body box = 128 x 256
 ```
 
-Each animation frame lasts 5 game frames.
+Important:
+
+```text
+PLAYER_W and PLAYER_H are not always the visible sprite size.
+They are the logical body anchor size.
+```
+
+Attack animations, weapon animations, and extended arm/weapon frames may be wider than the logical body box.
 
 ---
 
-# Recommended Animation Speeds
+# Feet Alignment Rule
 
-## Player
+Feet alignment is the most important animation rule.
 
-```text
-idle: 6-8 fps
-walk: 10-12 fps
-run: 14-16 fps
-punch: 14-18 fps
-kick: 12-16 fps
-hurt: 10-12 fps
-knockdown: 8-10 fps
-```
+All animation frames should keep the player’s feet on the same baseline.
 
-## Enemy
+This applies to:
 
-```text
-idle: 4-6 fps
-walk: 8-10 fps
-attack_windup: 8-12 fps
-attack_active: 12-16 fps
-attack_recovery: 8-12 fps
-hurt: 10-12 fps
-dead: 6-8 fps
-```
+* Idle
+* Walk
+* Run
+* Attack
+* Hit
+* Grab
+* Throw
+* Jump landing frames
+* Weapon animations
+
+The player should be anchored by feet, not by image center.
+
+The logical player box is used for anchoring, while the visible body may leave margin inside the logical box.
 
 ---
 
-# Entity State to Animation Mapping
+# Lane / Ground Area
 
-Each entity state should map to an animation name.
-
-Example:
+Current lane setup:
 
 ```python
-STATE_TO_ANIMATION = {
-    "idle": "idle",
-    "walk": "walk",
-    "run": "run",
-    "punch": "punch1",
-    "hurt": "hurt",
-    "knockdown": "knockdown",
-    "dead": "dead",
-}
+LANE_TOP = 600 - PLAYER_H
+LANE_BOTTOM = 1040 - PLAYER_H
 ```
 
-Gameplay code changes state.
+With:
 
-Animation system plays the matching animation.
+```python
+PLAYER_H = 256
+```
 
----
-
-# Player Animation States
-
-Recommended player states:
+This gives:
 
 ```text
-idle
-walk
-run
-jump
-fall
-land
-punch1
-punch2
-punch3
-kick
-running_attack
-hurt
-knockdown
-getup
-dead
+LANE_TOP = 344
+LANE_BOTTOM = 784
 ```
 
----
+The player’s `y` position represents the top of the logical body box.
 
-# Enemy Animation States
-
-Recommended enemy states:
+So the actual visible feet position is approximately:
 
 ```text
-idle
-walk
-chase
-attack_windup
-attack_active
-attack_recovery
-hurt
-knockdown
-getup
-dead
+player.y + PLAYER_H
 ```
 
 ---
 
-# Combat Animation Events
+# Player Box Types
 
-Animations may contain events.
+The player should use separate boxes:
 
-Example:
+1. Logical Body Box
+2. Collision Box
+3. Hurtbox
+4. Attack Hitbox
+5. Visual Frame
 
-```json
-"punch1": {
-  "frames": [10, 11, 12, 13],
-  "fps": 15,
-  "loop": false,
-  "events": {
-    "2": ["hit"]
-  }
-}
+These boxes should not be treated as the same thing.
+
+---
+
+# Logical Body Box
+
+Purpose:
+
+```text
+Base coordinate system.
+Anchoring reference.
+Default body size.
+```
+
+Current size:
+
+```python
+PLAYER_W = 128
+PLAYER_H = 256
+```
+
+Result:
+
+```text
+128 x 256
+```
+
+Debug color recommendation:
+
+```text
+Green
+```
+
+---
+
+# Collision Box
+
+Purpose:
+
+```text
+Feet/body blocking.
+Arena movement.
+Enemy separation.
+```
+
+Current settings:
+
+```python
+PLAYER_COLLISION_W = PLAYER_W * 0.5
+PLAYER_COLLISION_H = PLAYER_H * 0.2
+```
+
+Result:
+
+```text
+64 x 51
+```
+
+Collision box should be centered at the bottom of the logical body box.
+
+Recommended function:
+
+```python
+def get_collision_rect(self):
+    return pygame.Rect(
+        int(self.x + (self.width - PLAYER_COLLISION_W) / 2),
+        int(self.y + self.height - PLAYER_COLLISION_H),
+        int(PLAYER_COLLISION_W),
+        int(PLAYER_COLLISION_H),
+    )
+```
+
+Debug color recommendation:
+
+```text
+Blue
+```
+
+---
+
+# Hurtbox
+
+Purpose:
+
+```text
+Where the player can receive damage.
+```
+
+Current settings:
+
+```python
+PLAYER_HURTBOX_W = PLAYER_W * 0.6
+PLAYER_HURTBOX_H = PLAYER_H * 0.6
+PLAYER_HURTBOX_OFFSET_X = PLAYER_W * 0.2
+PLAYER_HURTBOX_OFFSET_Y = PLAYER_H * 0.1
+```
+
+Result:
+
+```text
+Width  = 76
+Height = 153
+Offset X = 25
+Offset Y = 25
+```
+
+Recommended function:
+
+```python
+def get_hurt_rect(self):
+    return pygame.Rect(
+        int(self.x + PLAYER_HURTBOX_OFFSET_X),
+        int(self.y + PLAYER_HURTBOX_OFFSET_Y),
+        int(PLAYER_HURTBOX_W),
+        int(PLAYER_HURTBOX_H),
+    )
+```
+
+Debug color recommendation:
+
+```text
+Red
+```
+
+---
+
+# Player Default Hitbox
+
+Current generic player hitbox:
+
+```python
+PLAYER_HITBOX_W = PLAYER_W * 0.4
+PLAYER_HITBOX_H = PLAYER_H * 0.5
+PLAYER_HITBOX_OFFSET_Y = PLAYER_H * 0.2
+```
+
+Result:
+
+```text
+Width  = 51
+Height = 128
+Offset Y = 51
+```
+
+This is currently a generic placeholder.
+
+Future direction:
+
+```text
+Replace this generic hitbox with attack-specific hitboxes.
+```
+
+Examples:
+
+* Fist attack hitbox
+* Knee attack hitbox
+* Jump attack hitbox
+* Knife hitbox
+* Bat hitbox
+* Pistol muzzle position
+
+---
+
+# Grab Knee Hitbox
+
+Current grab knee values:
+
+```python
+PLAYER_GRAB_KNEE_HITBOX_W = PLAYER_W * 0.6
+PLAYER_GRAB_KNEE_HITBOX_H = PLAYER_H * 0.45
+```
+
+Result:
+
+```text
+Width  = 76
+Height = 115
+```
+
+Grab knee timing:
+
+```python
+PLAYER_GRAB_KNEE_DURATION = 14
+PLAYER_GRAB_KNEE_HIT_FRAME = 6
 ```
 
 Meaning:
 
-When animation reaches local frame index 2, trigger hit detection.
-
----
-
-# Supported Event Types
-
-Initial event types:
-
 ```text
-hit
-footstep
-attack_start
-attack_end
-invulnerable_start
-invulnerable_end
-sound
-effect
+Total duration = 14 frames
+Damage frame   = frame 6
 ```
 
-Start simple.
-
-First implementation only needs:
+At 60 FPS:
 
 ```text
-hit
+Duration ≈ 0.23 seconds
+Hit frame ≈ 0.10 seconds after start
 ```
 
 ---
 
-# Enemy Windup / Active / Recovery
+# Enemy Box Baseline
 
-Enemy combat can be animation-driven.
-
-Recommended mapping:
-
-```text
-attack_windup   -> warning animation
-attack_active   -> damaging animation
-attack_recovery -> punishable animation
-```
-
-Example timing:
-
-```text
-windup: 20 frames
-active: 10 frames
-recovery: 25 frames
-```
-
-The enemy should only create a damaging hitbox during:
-
-```text
-attack_active
-```
-
----
-
-# AnimationPlayer Behavior
-
-Required methods:
+Enemy base size now follows player base size.
 
 ```python
-play(name, reset=True)
-update()
-get_current_frame()
-is_finished()
-consume_events()
+ENEMY_W = PLAYER_W
+ENEMY_H = PLAYER_H
+```
+
+Result:
+
+```text
+Normal enemy = 128 x 256
+```
+
+Enemy variants:
+
+```python
+FAST_ENEMY_W = ENEMY_W * 0.8
+FAST_ENEMY_H = ENEMY_H * 0.8
+
+HEAVY_ENEMY_W = ENEMY_W * 1.3
+HEAVY_ENEMY_H = ENEMY_H * 1.3
+
+RAPTOR_ENEMY_W = ENEMY_W * 0.8
+RAPTOR_ENEMY_H = ENEMY_H * 0.8
+
+BOSS_ENEMY_W = ENEMY_W * 2
+BOSS_ENEMY_H = ENEMY_H * 2
+```
+
+Result:
+
+```text
+Fast enemy   = 102 x 204
+Heavy enemy  = 166 x 332
+Raptor enemy = 102 x 204
+Boss enemy   = 256 x 512
 ```
 
 ---
 
-# play(name, reset=True)
+# Enemy Collision Box
 
-Behavior:
-
-* If animation is already playing, do nothing
-* If animation changes, switch to new animation
-* Reset frame index when reset is true
-
----
-
-# update()
-
-Behavior:
-
-* Advance timer
-* Change frame when enough time passed
-* Loop if animation loops
-* Stop on final frame if animation does not loop
-* Collect events for current frame
-
----
-
-# get_current_frame()
-
-Returns:
+Current settings:
 
 ```python
-pygame.Surface
+ENEMY_COLLISION_W = ENEMY_W * 0.5
+ENEMY_COLLISION_H = ENEMY_H * 0.2
 ```
 
-The current frame image.
+For normal enemy:
+
+```text
+64 x 51
+```
+
+Like the player, enemy collision should be centered on the bottom of the logical body box.
 
 ---
 
-# is_finished()
+# Enemy Hurtbox
 
-Returns true when:
-
-* Current animation is non-looping
-* Final frame has completed
-
-Useful for:
-
-* Returning from punch to idle
-* Returning from hurt to chase
-* Returning from recovery to chase
-
----
-
-# consume_events()
-
-Returns and clears animation events.
-
-Example:
+Current settings:
 
 ```python
-events = animation_player.consume_events()
+ENEMY_HURTBOX_W = ENEMY_W * 0.6
+ENEMY_HURTBOX_H = ENEMY_H * 0.6
+ENEMY_HURTBOX_OFFSET_X = ENEMY_W * 0.2
+ENEMY_HURTBOX_OFFSET_Y = ENEMY_H * 0.1
+```
 
-if "hit" in events:
-    perform_hit_check()
+For normal enemy:
+
+```text
+Width  = 76
+Height = 153
+Offset X = 25
+Offset Y = 25
+```
+
+---
+
+# Enemy Hitbox
+
+Current generic enemy attack hitbox:
+
+```python
+ENEMY_HITBOX_W = ENEMY_W * 0.4
+ENEMY_HITBOX_H = ENEMY_H * 0.5
+ENEMY_HITBOX_OFFSET_Y = ENEMY_H * 0.2
+```
+
+For normal enemy:
+
+```text
+Width  = 51
+Height = 128
+Offset Y = 51
+```
+
+This is also a placeholder.
+
+Future direction:
+
+```text
+Different enemy types should have different attack hitboxes.
+```
+
+---
+
+# Player Visual Frame Sizes
+
+Visual frame size is independent of logical body size.
+
+The logical body remains:
+
+```text
+128 x 256
+```
+
+But attack frames can be wider.
+
+---
+
+## Idle Frame
+
+```python
+PLAYER_IDLE_FRAME_W = PLAYER_W
+PLAYER_IDLE_FRAME_H = PLAYER_H
+```
+
+Result:
+
+```text
+128 x 256
+```
+
+---
+
+## Fist Attack Frame
+
+```python
+PLAYER_FIST_FRAME_W = PLAYER_W * 1.5
+PLAYER_FIST_FRAME_H = PLAYER_H
+```
+
+Result:
+
+```text
+192 x 256
+```
+
+Purpose:
+
+```text
+Allows arm and fist to extend outside the logical body box.
+```
+
+---
+
+## Knee Attack Frame
+
+```python
+PLAYER_KNEE_FRAME_W = PLAYER_W * 1.3
+PLAYER_KNEE_FRAME_H = PLAYER_H
+```
+
+Result:
+
+```text
+166 x 256
+```
+
+Purpose:
+
+```text
+Allows forward body/knee extension.
+```
+
+---
+
+## Jump Attack Frame
+
+```python
+PLAYER_JUMP_ATTACK_FRAME_W = PLAYER_W * 1.4
+PLAYER_JUMP_ATTACK_FRAME_H = PLAYER_H
+```
+
+Result:
+
+```text
+179 x 256
+```
+
+Purpose:
+
+```text
+Allows air attack extension.
+```
+
+---
+
+## Knife Frame
+
+```python
+PLAYER_KNIFE_FRAME_W = PLAYER_W * 1.55
+PLAYER_KNIFE_FRAME_H = PLAYER_H
+```
+
+Result:
+
+```text
+198 x 256
+```
+
+Purpose:
+
+```text
+Allows arm and knife extension.
+```
+
+---
+
+## Bat Frame
+
+```python
+PLAYER_BAT_FRAME_W = PLAYER_W * 1.9
+PLAYER_BAT_FRAME_H = PLAYER_H
+```
+
+Result:
+
+```text
+243 x 256
+```
+
+Purpose:
+
+```text
+Allows full bat swing extension.
+```
+
+---
+
+## Pistol Frame
+
+```python
+PLAYER_PISTOL_FRAME_W = PLAYER_W * 1.45
+PLAYER_PISTOL_FRAME_H = PLAYER_H
+```
+
+Result:
+
+```text
+185 x 256
+```
+
+Purpose:
+
+```text
+Allows extended pistol arm pose.
 ```
 
 ---
 
 # Drawing Rule
 
-Entity controls position.
+When facing right:
 
-Animation controls image.
+```text
+Draw visual frame from player.x.
+Extra width extends to the right.
+```
+
+When facing left:
+
+```text
+Shift draw_x left by the extra visual width.
+Extra width extends to the left.
+```
+
+Recommended logic:
+
+```python
+def get_visual_draw_x(self, camera_x, visual_w):
+    screen_x = self.x - camera_x
+
+    if self.facing_right:
+        return screen_x
+
+    extra_w = visual_w - self.width
+    return screen_x - extra_w
+```
+
+This keeps the logical body stable while allowing the animation to extend forward.
+
+---
+
+# Recommended Attack-Specific Hitboxes
+
+The current `settings.py` still has a generic player hitbox.
+
+Recommended next step is to add attack-specific hitboxes.
+
+Suggested values based on the new `PLAYER_W = 128`, `PLAYER_H = 256` baseline:
+
+```python
+PLAYER_FIST_HITBOX_W = PLAYER_W * 0.65
+PLAYER_FIST_HITBOX_H = PLAYER_H * 0.22
+PLAYER_FIST_HITBOX_OFFSET_Y = PLAYER_H * 0.33
+
+PLAYER_COMBO2_HITBOX_W = PLAYER_W * 0.72
+PLAYER_COMBO2_HITBOX_H = PLAYER_H * 0.24
+PLAYER_COMBO2_HITBOX_OFFSET_Y = PLAYER_H * 0.32
+
+PLAYER_COMBO3_HITBOX_W = PLAYER_W * 0.85
+PLAYER_COMBO3_HITBOX_H = PLAYER_H * 0.26
+PLAYER_COMBO3_HITBOX_OFFSET_Y = PLAYER_H * 0.31
+
+PLAYER_JUMP_ATTACK_HITBOX_W = PLAYER_W * 0.8
+PLAYER_JUMP_ATTACK_HITBOX_H = PLAYER_H * 0.35
+PLAYER_JUMP_ATTACK_HITBOX_OFFSET_Y = PLAYER_H * 0.42
+
+PLAYER_RUNNING_ATTACK_HITBOX_W = PLAYER_W * 1.05
+PLAYER_RUNNING_ATTACK_HITBOX_H = PLAYER_H * 0.28
+PLAYER_RUNNING_ATTACK_HITBOX_OFFSET_Y = PLAYER_H * 0.38
+
+PLAYER_KNIFE_HITBOX_W = PLAYER_W * 0.95
+PLAYER_KNIFE_HITBOX_H = PLAYER_H * 0.22
+PLAYER_KNIFE_HITBOX_OFFSET_Y = PLAYER_H * 0.34
+
+PLAYER_BAT_HITBOX_W = PLAYER_W * 1.35
+PLAYER_BAT_HITBOX_H = PLAYER_H * 0.26
+PLAYER_BAT_HITBOX_OFFSET_Y = PLAYER_H * 0.32
+
+PLAYER_PISTOL_MUZZLE_OFFSET_X = PLAYER_W * 0.8
+PLAYER_PISTOL_MUZZLE_OFFSET_Y = PLAYER_H * 0.28
+```
+
+With current size, this gives approximately:
+
+```text
+Fist hitbox:          83 x 56
+Combo 2 hitbox:       92 x 61
+Combo 3 hitbox:       108 x 66
+Jump attack hitbox:   102 x 89
+Running hitbox:       134 x 71
+Knife hitbox:         121 x 56
+Bat hitbox:           172 x 66
+```
+
+---
+
+# Enemy Attack Timing
+
+Current enemy timing:
+
+```python
+ENEMY_ATTACK_WINDUP = 20
+ENEMY_ATTACK_ACTIVE = 8
+ENEMY_ATTACK_RECOVERY = 25
+ENEMY_ATTACK_COOLDOWN = 45
+```
+
+At 60 FPS:
+
+```text
+Windup   = 0.33 sec
+Active   = 0.13 sec
+Recovery = 0.42 sec
+Cooldown = 0.75 sec
+```
+
+Enemy attack should follow:
+
+```text
+Windup -> Active -> Recovery -> Cooldown
+```
+
+Enemy damage should only happen during active frames.
+
+---
+
+# Animation Event Direction
+
+Future animation system should support frame events.
 
 Example:
 
-```python
-image = self.animation_player.get_current_frame()
-screen.blit(image, (screen_x, screen_y))
-```
-
----
-
-# Flipping Rule
-
-Do not store duplicate left and right frames.
-
-Store one direction.
-
-Use:
-
-```python
-pygame.transform.flip(image, True, False)
-```
-
-when facing left.
-
----
-
-# Performance Rule
-
-Do not flip every frame repeatedly if performance becomes an issue.
-
-Future optimization:
-
-* Cache flipped frames
-
-For now:
-
-* Simple runtime flip is acceptable
-
----
-
-# Minimal First Implementation
-
-First version should implement:
-
-1. SpriteSheet frame extraction
-2. Animation class
-3. AnimationPlayer class
-4. Manual animation definitions in Python
-5. Player idle / walk switching
-
-Do not start with full JSON loading unless needed.
-
----
-
-# Second Implementation
-
-Add:
-
-1. JSON animation loading
-2. Animation events
-3. Enemy animation support
-4. Attack animation support
-
----
-
-# Third Implementation
-
-Add:
-
-1. Sound events
-2. Effect events
-3. Footstep events
-4. Cached flipped frames
-
----
-
-# Debug Tools
-
-Recommended debug display:
-
 ```text
-Current state
-Current animation
-Current frame index
-Animation finished
-Triggered events
+Frame 0-5:
+startup / windup
+
+Frame 6-9:
+enable hitbox
+
+Frame 10+:
+recovery
+
+Frame 14:
+allow combo cancel
 ```
 
-This helps debug combat timing.
-
----
-
-# Common Bugs
-
-## Bug 1
-
-Animation restarts every frame.
-
-Cause:
+Future structure:
 
 ```python
-play("walk")
-```
-
-called every update with reset true.
-
-Fix:
-
-Only reset if animation name changed.
-
----
-
-## Bug 2
-
-Attack never finishes.
-
-Cause:
-
-Non-looping animation finish state not checked.
-
-Fix:
-
-Use:
-
-```python
-if animation_player.is_finished():
-    state = "idle"
+animation_events = {
+    "attack_1": {
+        6: ["enable_hitbox"],
+        10: ["disable_hitbox"],
+        14: ["allow_combo"],
+    }
+}
 ```
 
 ---
 
-## Bug 3
+# Asset Production Rules
 
-Hit triggers multiple times.
-
-Cause:
-
-Same frame event checked repeatedly.
-
-Fix:
-
-Events should be consumed once.
-
----
-
-## Bug 4
-
-Image loads repeatedly.
-
-Cause:
-
-Loading inside update or draw.
-
-Fix:
-
-Load once through AssetManager.
-
----
-
-# Integration With Combat
-
-Combat should ask animation:
+For player sprites:
 
 ```text
-Did hit event happen?
+Logical body reference = 128 x 256
 ```
 
-Combat should not ask:
+Idle/walk/run frames:
 
 ```text
-Is current frame index 2?
+128 x 256
 ```
 
-This keeps combat independent from exact frame numbers.
+Attack frames may be wider:
+
+```text
+Fist:  192 x 256
+Knee:  166 x 256
+Jump:  179 x 256
+Knife: 198 x 256
+Bat:   243 x 256
+Pistol:185 x 256
+```
+
+All frames must preserve foot baseline alignment.
 
 ---
 
-# Integration With Enemy AI
+# Debug Drawing Standard
 
-Enemy AI controls state:
-
-```text
-chase
-attack_windup
-attack_active
-attack_recovery
-```
-
-Animation system displays matching animation.
-
-Combat system enables hitbox only during:
+Recommended debug colors:
 
 ```text
-attack_active
+Green  = logical body box
+Blue   = collision box
+Red    = hurtbox
+Yellow = attack hitbox
+Purple = visual frame bounds
 ```
 
 ---
 
-# Final Design Principle
+# Current Status
 
-Gameplay chooses what the character is doing.
+Approved baseline.
 
-Animation shows what the character is doing.
+Based on latest `settings.py`.
 
-Combat reacts to animation events.
+Last updated:
 
-These systems should stay separate.
+```text
+2026-06-09
+```
+
+This document should guide the next player animation, hitbox, hurtbox, and visual frame refactor work.
