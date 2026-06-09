@@ -1,0 +1,122 @@
+A good way to think about it is:
+
+Episode = a chapter
+Stage = one playable scene inside that chapter
+Wave = combat events inside a stage
+
+for example:
+Episode 1
+  Stage 1: rooftop / exterior walkway
+  Stage 2: mansion hallway
+  Stage 3: vertical building approach / transition scene
+  Stage 4: ruined exterior arena
+Episode 2
+  Stage 1
+  Stage 2
+  ...
+
+The player does not move directly from “wave 3” to “episode 2”. Instead:
+finish wave -> finish stage -> load next stage
+finish last stage in episode -> load next episode
+
+Best Practice Structure
+Use data-driven definitions instead of hardcoding stage transitions in main.py.
+
+Conceptually, each stage should have a definition like:
+
+Stage:
+  name
+  background image
+  world width
+  world height
+  player start position
+  walkable area
+  camera behavior
+  enemy waves
+  exit trigger
+  next stage
+
+  Then each episode is just an ordered list of stages:
+  Episode:
+  title
+  stages:
+    stage_1
+    stage_2
+    stage_3
+    stage_4
+
+Your game loop should only care about the current stage. When that stage is complete, a StageManager or LevelManager loads the next one.
+
+Stage Completion
+A stage usually ends in one of three ways:
+
+Player reaches the right edge
+Good for walking transition stages.
+
+Player defeats all waves
+Good for arena fights.
+
+Player reaches an exit trigger after combat
+Best for beat’em ups.
+
+for example:
+Stage 1:
+  player walks right
+  camera locks
+  enemies spawn
+  player defeats enemies
+  camera unlocks
+  player walks to exit
+  load Stage 2
+
+############# 
+
+EPISODE 1
+Episode 1: City Ruins
+
+Stage 1:
+  Rooftop approach
+  Light enemies
+  Player exits right
+
+Stage 2:
+  Interior hallway
+  Mixed enemy wave
+  Arena lock in middle
+  Exit right after enemies defeated
+
+Stage 3:
+  Building transition
+  Short non-combat or small ambush
+  Mostly atmosphere
+  Exit to ruined street
+
+Stage 4:
+  Ruined exterior arena
+  Heavy enemies or boss
+  Episode ends after victory
+
+That gives the episode a nice rhythm:
+outside -> inside -> transition -> final arena
+
+Clean Design Rule
+Keep these systems separate:
+EpisodeManager:
+  knows which episode and stage comes next
+
+Stage:
+  knows background, walkable area, spawn points, exits
+
+Wave:
+  knows which enemies appear and when
+
+Camera:
+  follows player inside current stage rules
+
+Main loop:
+  updates current stage, player, enemies, camera, rendering
+
+The best practice is: main.py should not know the whole episode structure. It should only ask:
+current_stage.update()
+if current_stage.is_complete:
+    load_next_stage()
