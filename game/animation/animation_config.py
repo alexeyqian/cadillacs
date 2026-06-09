@@ -23,7 +23,7 @@ PLAYER_ATTACK = {
     "file":"game/assets/player/player_attack.png",
     "frame_width":192,
     "frame_height":256,
-    "frame_count":6
+    "frame_count":2
 }
 
 PLAYER_RUN_ATTACK = {

@@ -120,3 +120,14 @@ Punch frame:
  Do not make PLAYER_W bigger just because the fist extends.
 
 The most important distinction: do not let the sprite size become the gameplay size. In beat’em ups, sprites are often visually big and expressive, but collision should stay smaller and predictable.
+
+
+Logic Box vs Sprite Frame
+Do not make the logic box equal to the whole visible sprite canvas unless your game is very simple.
+
+Better separation:
+sprite frame: 128x256
+logical body box: movement/position anchor
+collision box: feet/lane collision
+hurt box: damageable body area
+attack box: active punch/kick area

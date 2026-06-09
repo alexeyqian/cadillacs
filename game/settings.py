@@ -5,7 +5,17 @@ EXTERNAL_HEIGHT=1080
 # internal window width: for entire game area
 SCREEN_WIDTH=1920
 SCREEN_HEIGHT=1080
-# player logical body: PLAYER_BODY_W
+
+# Important: feet alignment matters most.anchor by feet, not by image center.
+# Across idle, walk, attack, hit, etc., 
+# the player’s feet should land on the same baseline. 
+# For example:
+# PLAYER_SPRITE_BASELINE_Y = 232
+# frame baseline y = 232 inside the 256 px frame
+# the player feet should land on center of collision box
+# player logical box, mostly for anchoring
+# visible idle body should be smaller, 
+# leave margin between visible body and logical player box
 PLAYER_W=128
 PLAYER_H=256
 # walkable area height
