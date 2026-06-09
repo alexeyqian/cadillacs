@@ -28,9 +28,9 @@ PLAYER_ATTACK = {
 
 PLAYER_RUN_ATTACK = {
     "file":"game/assets/player/player_run_attack.png",
-    "frame_width":224,
+    "frame_width":256,
     "frame_height":256,
-    "frame_count":6
+    "frame_count":2
 }
 
 PLAYER_JUMP = {
