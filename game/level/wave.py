@@ -65,15 +65,17 @@ class SpawnWave:
         self.started = False
         self.completed = False
 
-    def spawn(self, camera_x=0):
+    def spawn(self, camera_x=0, lane_top=LANE_TOP, lane_bottom=LANE_BOTTOM):
         self.started = True
         viewport_left = camera_x
         viewport_right = camera_x + SCREEN_WIDTH
+        spawn_y = max(lane_top, min(lane_bottom, lane_bottom - 80))
         for spawner in self.spawners:
             spawner.spawn_x = max(
                 viewport_left + 120,
                 min(spawner.spawn_x, viewport_right - 220)
             )
+            spawner.spawn_y = spawn_y
         return []
 
     def update(self):
