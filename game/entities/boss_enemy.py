@@ -22,6 +22,7 @@ class BossEnemy(Enemy):
         self.width = BOSS_ENEMY_W
         self.height = BOSS_ENEMY_H
         self.speed = BOSS_ENEMY_SPEED
+        self.attack_hitbox_w = ENEMY_HITBOX_W*2
         self.attack_damage = BOSS_ENEMY_ATTACK_DAMAGE
 
         # properties special to boss enemy

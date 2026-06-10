@@ -6,6 +6,20 @@ EXTERNAL_HEIGHT=1080
 SCREEN_WIDTH=1920
 SCREEN_HEIGHT=1080
 
+# Classical Proportions (Artistic & Anatomical)
+# Width-to-height ratio: 1:4 ratio
+# Biacromial width: 46.25 cm
+# Head height units: 2 full heads wide
+# height: 185 cm, shoulder: 46.25cm
+# height: 182 cm, shoulder: 45.5cm
+# height: 180 cm, shoulder: 45cm
+
+# PLAYER_NAKED_HEIGHT=182
+# PLAYER_NAKED_WIDTH=46
+
+# PLAYER_IDLE_FRAME_H=190
+# PLAYER_IDLE_FRAME_W=50
+
 # Important: feet alignment matters most.anchor by feet, not by image center.
 # Across idle, walk, attack, hit, etc., 
 # the player’s feet should land on the same baseline. 
@@ -16,8 +30,8 @@ SCREEN_HEIGHT=1080
 # player logical box, mostly for anchoring
 # visible idle body should be smaller, 
 # leave margin between visible body and logical player box
-PLAYER_W=128
-PLAYER_H=256
+PLAYER_W=int(128)
+PLAYER_H=int(256)
 # walkable area height
 # todo: rename to GROUD_TOP and GROUND_BOTTOM
 LANE_TOP=600-PLAYER_H
@@ -53,41 +67,41 @@ BOSS_ENEMY_H=ENEMY_H * 2
 
 ######## collision, hurt and hit/attack boxes ########
 # collision box is centered on bottom
-PLAYER_COLLISION_W = PLAYER_W * 0.5
-PLAYER_COLLISION_H = PLAYER_H * 0.2
+PLAYER_COLLISION_W = int(PLAYER_W * 0.5)
+PLAYER_COLLISION_H = int(PLAYER_H * 0.2)
 
 # hurt box is inside logical box
-PLAYER_HURTBOX_W = PLAYER_W * 0.6
-PLAYER_HURTBOX_H = PLAYER_H * 0.6
-PLAYER_HURTBOX_OFFSET_X = PLAYER_W * 0.2
-PLAYER_HURTBOX_OFFSET_Y = PLAYER_H * 0.1
+PLAYER_HURTBOX_W = int(PLAYER_W * 0.6)
+PLAYER_HURTBOX_H = int(PLAYER_H * 0.6)
+PLAYER_HURTBOX_OFFSET_X = int(PLAYER_W * 0.2)
+PLAYER_HURTBOX_OFFSET_Y = int(PLAYER_H * 0.1)
 
-ENEMY_COLLISION_W = ENEMY_W * 0.5
-ENEMY_COLLISION_H = ENEMY_H * 0.2
+ENEMY_COLLISION_W = int(ENEMY_W * 0.5)
+ENEMY_COLLISION_H = int(ENEMY_H * 0.2)
 
-ENEMY_HURTBOX_W = ENEMY_W * 0.6
-ENEMY_HURTBOX_H = ENEMY_H * 0.6
-ENEMY_HURTBOX_OFFSET_X = ENEMY_W * 0.2
-ENEMY_HURTBOX_OFFSET_Y = ENEMY_H * 0.1
+ENEMY_HURTBOX_W = int(ENEMY_W * 0.6)
+ENEMY_HURTBOX_H = int(ENEMY_H * 0.6)
+ENEMY_HURTBOX_OFFSET_X = int(ENEMY_W * 0.2)
+ENEMY_HURTBOX_OFFSET_Y = int(ENEMY_H * 0.1)
 
-PLAYER_HITBOX_W=PLAYER_W*0.4
-PLAYER_HITBOX_H=PLAYER_H*0.5
-PLAYER_HITBOX_OFFSET_Y=PLAYER_H*0.2
+PLAYER_HITBOX_W=int(PLAYER_W*0.4)
+PLAYER_HITBOX_H=int(PLAYER_H*0.5)
+PLAYER_HITBOX_OFFSET_Y=int(PLAYER_H*0.2)
 # todo: add different attack hit boxes
 
-ENEMY_HITBOX_W=ENEMY_W*0.4
-ENEMY_HITBOX_H=ENEMY_H*0.5
-ENEMY_HITBOX_OFFSET_Y=ENEMY_H*0.2
+ENEMY_HITBOX_W=int(ENEMY_W*0.4)
+ENEMY_HITBOX_H=int(ENEMY_H*0.5)
+ENEMY_HITBOX_OFFSET_Y=int(ENEMY_H*0.2)
 
 ######## hp max ########
 PLAYER_MAX_HP=100
 ENEMY_MAX_HP=PLAYER_MAX_HP
-FAST_ENEMY_MAX_HP=ENEMY_MAX_HP*1.2
-HEAVY_ENEMY_MAX_HP=ENEMY_MAX_HP*1.5
+FAST_ENEMY_MAX_HP=int(ENEMY_MAX_HP*1.2)
+HEAVY_ENEMY_MAX_HP=int(ENEMY_MAX_HP*1.5)
 # enemy projectile
-RANGED_ENEMY_MAX_HP=ENEMY_MAX_HP*1.2
-RAPTOR_ENEMY_MAX_HP=ENEMY_MAX_HP*1.2
-BOSS_ENEMY_MAX_HP=ENEMY_MAX_HP*5
+RANGED_ENEMY_MAX_HP=int(ENEMY_MAX_HP*1.2)
+RAPTOR_ENEMY_MAX_HP=int(ENEMY_MAX_HP*1.2)
+BOSS_ENEMY_MAX_HP=int(ENEMY_MAX_HP*5)
 
 ######## speed ########
 PLAYER_SPEED=6
