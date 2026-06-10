@@ -8,8 +8,51 @@ EPISODE_1_STAGES = [
         "player_start": (160, 620),
         "lane_top": 470,
         "lane_bottom": 800,
-        "wave_positions": [900, 1800, 2700],
-        "boss_position": None,
+        "waves": [
+            {
+                "kind": "normal",
+                "trigger_x": 900,
+                "enemy_types": ["normal", "normal", "normal"],
+            },
+            {
+                "kind": "normal",
+                "trigger_x": 1800,
+                "enemy_types": ["normal", "fast", "heavy"],
+            },
+            {
+                "kind": "spawn",
+                "trigger_x": 2700,
+                "spawners": [
+                    {
+                        "enemy_type": "normal",
+                        "x": 2700,
+                        "y": 760,
+                        "total_count": 3,
+                        "spawn_delay": 120,
+                    },
+                    {
+                        "enemy_type": "fast",
+                        "x": 2760,
+                        "y": 760,
+                        "total_count": 2,
+                        "spawn_delay": 180,
+                    },
+                ],
+            },
+        ],
+
+        "weapons": [
+            {"type": "knife", "x": 850, "y": 980},
+            {"type": "bat", "x": 1750, "y": 980},
+            {"type": "pistol", "x": 2650, "y": 980},
+        ],
+
+        "objects": [
+            {"kind": "breakable", "x": 880, "y": 1030},
+            {"kind": "breakable", "x": 1780, "y": 1030},
+            {"kind": "barrel", "x": 1740, "y": 1030},
+            {"kind": "breakable", "x": 2680, "y": 1030},
+        ],
         "completion": "clear_waves_then_exit",
         # Stage 1 rooftop, exit near far right door/edge
         "exit_rect": (3150, 470, 160, 360)
@@ -23,8 +66,51 @@ EPISODE_1_STAGES = [
         "player_start": (160, 720),
         "lane_top": 650,
         "lane_bottom": 850,
-        "wave_positions": [900, 1800, 2700],
-        "boss_position": None,
+        "waves": [
+            {
+                "kind": "normal",
+                "trigger_x": 900,
+                "enemy_types": ["normal", "normal", "normal"],
+            },
+            {
+                "kind": "normal",
+                "trigger_x": 1800,
+                "enemy_types": ["normal", "fast", "heavy"],
+            },
+            {
+                "kind": "spawn",
+                "trigger_x": 2700,
+                "spawners": [
+                    {
+                        "enemy_type": "normal",
+                        "x": 2700,
+                        "y": 760,
+                        "total_count": 3,
+                        "spawn_delay": 120,
+                    },
+                    {
+                        "enemy_type": "fast",
+                        "x": 2760,
+                        "y": 760,
+                        "total_count": 2,
+                        "spawn_delay": 180,
+                    },
+                ],
+            },
+        ],
+
+        "weapons": [
+            {"type": "knife", "x": 850, "y": 980},
+            {"type": "bat", "x": 1750, "y": 980},
+            {"type": "pistol", "x": 2650, "y": 980},
+        ],
+
+        "objects": [
+            {"kind": "breakable", "x": 880, "y": 1030},
+            {"kind": "breakable", "x": 1780, "y": 1030},
+            {"kind": "barrel", "x": 1740, "y": 1030},
+            {"kind": "breakable", "x": 2680, "y": 1030},
+        ],
         "completion": "clear_waves_then_exit",
         # Stage 2 hallway, exit near right staircase/edge
         "exit_rect": (2950, 650, 150, 260)
@@ -38,8 +124,9 @@ EPISODE_1_STAGES = [
         "player_start": (120, 790),
         "lane_top": 760,
         "lane_bottom": 900,
-        "wave_positions": [],
-        "boss_position": None,
+        "waves": [],
+        "weapons": [],
+        "objects": [],
         "completion": "reach_exit",
         # Stage 3 transition, exit near right edge
         "exit_rect": (520, 760, 120, 180),
@@ -53,10 +140,37 @@ EPISODE_1_STAGES = [
         "player_start": (160, 720),
         "lane_top": 620,
         "lane_bottom": 900,
-        "wave_positions": [900, 1700],
-        "boss_position": 2700,
-        "completion": "clear_waves_then_exit",
-        # Stage 4 arena, exit near far right after boss
-        "exit_rect": (2920, 620, 140, 300),
-    },
+        "waves": [
+            {
+                "kind": "normal",
+                "trigger_x": 900,
+                "enemy_types": ["normal", "fast", "normal"],
+            },
+            {
+                "kind": "normal",
+                "trigger_x": 1700,
+                "enemy_types": ["heavy", "fast", "raptor"],
+            },
+            {
+                "kind": "boss",
+                "trigger_x": 2700,
+            },
+        ],
+
+        "weapons": [
+            {"type": "knife", "x": 850, "y": 980},
+            {"type": "bat", "x": 1750, "y": 980},
+            {"type": "pistol", "x": 2650, "y": 980},
+        ],
+
+        "objects": [
+            {"kind": "breakable", "x": 880, "y": 1030},
+            {"kind": "breakable", "x": 1780, "y": 1030},
+            {"kind": "barrel", "x": 1740, "y": 1030},
+            {"kind": "breakable", "x": 2680, "y": 1030},
+        ],
+            "completion": "clear_waves_then_exit",
+            # Stage 4 arena, exit near far right after boss
+            "exit_rect": (2920, 620, 140, 300),
+        },
 ]

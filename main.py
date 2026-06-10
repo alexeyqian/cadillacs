@@ -21,35 +21,34 @@ os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
 #info = pygame.display.Info()
 
 def create_stage_weapons(stage_data):
-    wave_positions = stage_data["wave_positions"]
-    if len(wave_positions) == 0:
-        return []
     weapons = []
-    if len(wave_positions) >= 1:
-        weapons.append(Weapon(wave_positions[0] - 50, SCREEN_HEIGHT - 100, "knife"))
 
-    if len(wave_positions) >= 2:
-        weapons.append(Weapon(wave_positions[1] - 50, SCREEN_HEIGHT - 100, "bat"))
-
-    if len(wave_positions) >= 3:
-        weapons.append(Weapon(wave_positions[2] - 50, SCREEN_HEIGHT - 100, "pistol"))
+    for weapon_config in stage_data["weapons"]:
+        weapons.append(Weapon(
+            weapon_config["x"],
+            weapon_config["y"],
+            weapon_config["type"]
+        ))
 
     return weapons
 
 def create_stage_objects(stage_data):
-    wave_positions = stage_data["wave_positions"]
-
-    if len(wave_positions) == 0:
-        return []
-
     objects = []
 
-    for wave_x in wave_positions:
-        objects.append(BreakableObject(wave_x - 20, SCREEN_HEIGHT - 10))
-        objects.append(BreakableObject(wave_x - 40, SCREEN_HEIGHT - 10))
+    for object_config in stage_data["objects"]:
+        kind = object_config["kind"]
 
-    if len(wave_positions) >= 2:
-        objects.append(ExplosiveBarrel(wave_positions[1] - 60, SCREEN_HEIGHT - 10))
+        if kind == "breakable":
+            objects.append(BreakableObject(
+                object_config["x"],
+                object_config["y"]
+            ))
+
+        elif kind == "barrel":
+            objects.append(ExplosiveBarrel(
+                object_config["x"],
+                object_config["y"]
+            ))
 
     return objects
 

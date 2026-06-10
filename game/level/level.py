@@ -14,8 +14,7 @@ class Level:
         self.lane_top = stage_data["lane_top"]
         self.lane_bottom = stage_data["lane_bottom"]
         self.background = Background(stage_data["background"])
-        self.wave_positions = stage_data["wave_positions"]
-        self.boss_position = stage_data["boss_position"]
+        self.wave_configs = stage_data["waves"]
         self.exit_rect = stage_data["exit_rect"]
         self.completion = stage_data["completion"]
 
@@ -26,29 +25,36 @@ class Level:
 
         self.waves = []
 
-        if len(self.wave_positions) >= 1:
-            self.waves.append(Wave(
-                trigger_x=self.wave_positions[0],
-                enemy_types=["normal", "normal", "normal"]
-            ))
+        for wave_config in self.wave_configs:
+            kind = wave_config["kind"]
 
-        if len(self.wave_positions) >= 2:
-            self.waves.append(Wave(
-                trigger_x=self.wave_positions[1],
-                enemy_types=["normal", "normal", "fast", "heavy"]
-            ))
+            if kind == "normal":
+                self.waves.append(Wave(
+                    trigger_x=wave_config["trigger_x"],
+                    enemy_types=wave_config["enemy_types"]
+                ))
 
-        if len(self.wave_positions) >= 3:
-            self.waves.append(SpawnWave(
-                trigger_x=self.wave_positions[2],
-                spawners=[
-                    EnemySpawner(self.wave_positions[2], self.lane_bottom, "normal", 3, 120),
-                    EnemySpawner(self.wave_positions[2], self.lane_bottom, "fast", 2, 180),
-                ]
-            ))
+            elif kind == "spawn":
+                spawners = []
+                for spawner_config in wave_config["spawners"]:
+                    spawners.append(EnemySpawner(
+                        spawner_config["x"],
+                        spawner_config["y"],
+                        spawner_config["enemy_type"],
+                        spawner_config["total_count"],
+                        spawner_config["spawn_delay"]
+                    ))
 
-        if self.boss_position:
-            self.waves.append(BossWave(self.boss_position))
+                self.waves.append(SpawnWave(
+                    trigger_x=wave_config["trigger_x"],
+                    spawners=spawners
+                ))
+
+            elif kind == "boss":
+                self.waves.append(BossWave(
+                    trigger_x=wave_config["trigger_x"]
+                ))
+
 
         #self.prop1_x = self.e1s1_wave1_x -100
         #self.prop2_x = self.e1s1_wave2_x -100
