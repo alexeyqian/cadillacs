@@ -16,7 +16,11 @@ from game.systems.explosive_system import *
 def update_gameplay(game_state, keys):
     update_wave_system(game_state) # may lock camera
     game_state.player.update()
+    # moved from player.py
+    game_state.player.apply_world_bounds(game_state.level.world_width,
+        game_state.level.lane_top, game_state.level.lane_bottom)
     update_enemy_system(game_state)
+    # TODO: check if this is dup with apply_world_bounds function in enemy
     apply_arena_bounds(game_state) # clamps player/enemies if camera locked
     collect_player_projectiles(game_state)
     update_projectiles(game_state)

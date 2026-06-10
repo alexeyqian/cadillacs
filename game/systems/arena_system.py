@@ -1,5 +1,6 @@
 from game.settings import *
 
+# TODO: use level world_width aware
 def apply_arena_bounds(game_state):
     level = game_state.level
     if not level.camera_locked:

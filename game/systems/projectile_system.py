@@ -17,11 +17,11 @@ def collect_enemy_projectile(game_state, enemy):
 def update_projectiles(game_state):
     # update player projectiles
     for projectile in game_state.projectiles:
-        projectile.update()
+        projectile.update(game_state.level.world_width)
 
     # update enemy projectiles
     for projectile in game_state.enemy_projectiles:
-        projectile.update()
+        projectile.update(game_state.level.world_width)
 
 def handle_enemy_projectile_collision(game_state):
     player = game_state.player

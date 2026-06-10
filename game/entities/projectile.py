@@ -12,11 +12,11 @@ class Projectile:
         self.damage = damage
         self.active = True
 
-    def update(self):
+    def update(self, world_width=WORLD_WIDTH):
         self.x += self.speed * self.direction
         if self.x < -100:
             self.active = False
-        if self.x > WORLD_WIDTH:
+        if self.x > world_width:
             self.active = False
 
     def draw(self, screen, camera_x):

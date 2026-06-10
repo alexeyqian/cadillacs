@@ -273,7 +273,7 @@ class Enemy:
         dx, dy, distance_x, distance_y = self.get_player_distance(player)
         self.choose_state(distance_x, distance_y)
         self.execute_state(player, enemies, dx, dy)
-        self.apply_world_bounds()
+        #self.apply_world_bounds()
         self.update_animation()
 
     def draw(self, screen, camera_x):
@@ -312,8 +312,6 @@ class Enemy:
                 (collision_rect.x - camera_x, collision_rect.y,
                 collision_rect.width, collision_rect.height), 1)
 
-        # attack hitbox for debug
-        if SHOW_ENEMY_HITBOX:
             attack_rect = self.get_attack_rect()
             if attack_rect:
                 pygame.draw.rect(screen, YELLOW_COLOR,
@@ -330,14 +328,22 @@ class Enemy:
             screen, (255, 0, 0),
             (screen_x, self.y - 12, hp_width, 6))
 
-    def apply_world_bounds(self):
+    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
+        # todo: remove these lines of temp code
+        if world_width is None:
+            world_width = WORLD_WIDTH
+        if lane_top is None:
+            lane_top = self.lane_top
+        if lane_bottom is None:
+            lane_bottom = self.lane_bottom
+
         # world boundaries
         self.x = max(0, self.x) # cannot go left of window
-        self.x = min(self.x, WORLD_WIDTH-self.width) # cannot go right window
+        self.x = min(self.x, world_width - self.width) # cannot go right window
         # beat'em up lane limits creates the illusion of depth
         # player walks on a horizontal strip, not full screen
-        self.y = max(self.lane_top, self.y) # cannot go above lane_top
-        self.y = min(self.lane_bottom, self.y) # cannot go below lane_bottom
+        self.y = max(lane_top, self.y) # cannot go above lane_top
+        self.y = min(lane_bottom, self.y) # cannot go below lane_bottom
 
     # body rect
     def get_logical_rect(self):

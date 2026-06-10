@@ -13,7 +13,7 @@ class Wave:
         self.spawn_timer = 0
         self.spawn_interval = 90
 
-    def spawn(self, camera_x=0):
+    def spawn(self, camera_x=0, lane_top=LANE_TOP, lane_bottom=LANE_BOTTOM):
         self.started = True
         # reset spawn timer so first enemy can appear immediately
         self.spawn_timer = 0
@@ -21,7 +21,7 @@ class Wave:
 
         viewport_left = camera_x
         viewport_right = camera_x + SCREEN_WIDTH
-        spawn_y = min(LANE_BOTTOM - 80, max(LANE_TOP + 80, 600))
+        spawn_y = min(lane_bottom - 80, max(lane_top + 80, 600))
         start_x = viewport_left + int(SCREEN_WIDTH * 0.58)
         spacing = 180
         max_x = viewport_right - 220

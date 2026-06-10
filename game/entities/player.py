@@ -180,7 +180,7 @@ class Player:
         self.update_jump_physics(keys)
         self.update_state_after_movement(moving)
         self.update_grabbed_enemy_position()
-        self.apply_world_bounds()
+        #self.apply_world_bounds() # moved to gameplay_system.py
         self.update_animation()
 
     #World:   [--------------------PLAYER----]
@@ -563,14 +563,21 @@ class Player:
                 self.grabbed_enemy.x = self.x - self.grabbed_enemy.width - 5
             self.grabbed_enemy.y = self.y
 
-    def apply_world_bounds(self):
+    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
+        if world_width is None:
+            world_width = WORLD_WIDTH
+        if lane_top is None:
+            lane_top = self.lane_top
+        if lane_bottom is None:
+            lane_bottom = self.lane_bottom
+
         # world boundaries
         self.x = max(0, self.x) # cannot go left of window
-        self.x = min(self.x, WORLD_WIDTH-self.width) # cannot go right window
+        self.x = min(self.x, world_width - self.width) # cannot go right window
         # beat'em up lane limitsL creates the illusion of depth
         # player walks on a horizontal strip, not full screen
-        self.y = max(self.lane_top, self.y) # cannot go above lane_top
-        self.y = min(self.lane_bottom, self.y) # cannot go below lane_bottom
+        self.y = max(lane_top, self.y) # cannot go above lane_top
+        self.y = min(lane_bottom, self.y) # cannot go below lane_bottom
 
     #######################
 

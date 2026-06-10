@@ -139,6 +139,14 @@ def main_draw_ui(game_state):
         weapon_text = font.render(f"Weapon:{weapon_name}{ammo_str}",True,BLACK_COLOR)
         screen.blit(weapon_text,(650, UI_FIRST_Y))
 
+    # debug UI
+    player_str = (f"State: {level.stage_name} Camera x:{int(camera.x)} "
+                f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} "
+                f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
+    player_text = small_font.render(player_str,True, BLACK_COLOR)
+    screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y+2*UI_LINE_HEIGHT))
+    # end of debug text
+
     # stage clear manager UI
     stage_clear = game_state.stage_clear_manager
     if stage_clear.active:
@@ -164,14 +172,6 @@ def main_draw_ui(game_state):
             screen.blit(press_text,press_text.get_rect(center=(SCREEN_WIDTH//2, 420)))
 
         return
-
-    # debug UI
-    player_str = (f"Player x:{int(player.x)} y:{int(player.y)} "
-                + f"State:{player.state}"
-                + f"Camera x:{int(camera.x)} Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
-    player_text = small_font.render(player_str,True, BLACK_COLOR)
-    screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y+2*UI_LINE_HEIGHT))
-    # end of debug text
 
 
     # WIN OR GAME OVER UI

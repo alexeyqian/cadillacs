@@ -5,4 +5,9 @@ def update_enemy_system(game_state):
 
     for enemy in game_state.enemies:
         enemy.update(player, game_state.enemies)
+        enemy.apply_world_bounds(
+            game_state.level.world_width,
+            game_state.level.lane_top,
+            game_state.level.lane_bottom
+        )
         collect_enemy_projectile(game_state, enemy)

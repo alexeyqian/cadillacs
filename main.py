@@ -63,6 +63,8 @@ def load_stage(game_state, stage_data):
     game_state.player.y = start_y
     game_state.player.respawn_x = start_x
     game_state.player.respawn_y = start_y
+    game_state.player.lane_top = stage_data["lane_top"] #todo: remove
+    game_state.player.lane_bottom = stage_data["lane_bottom"] #todo: remove
     game_state.player.state = game_state.player.IDLE
     game_state.player.facing_right = True
 
