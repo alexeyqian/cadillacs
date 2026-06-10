@@ -4,6 +4,6 @@ def update_camera_system(game_state):
     player = game_state.player
     
     if level.camera_locked:
-        camera.update(player, level.lock_x)
+        camera.update(player, level.world_width, level.lock_x)
     else:
-        camera.update(player)
+        camera.update(player, level.world_width)

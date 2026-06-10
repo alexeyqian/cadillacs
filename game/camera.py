@@ -8,7 +8,7 @@ class Camera:
         self.shake_strength = 0
 
     # Runs every frame to keep the camera centered on the player.
-    def update(self, player, lock_x = None):
+    def update(self, player, world_width, lock_x = None):
         # for arena lock support
         if lock_x is not None:
             self.x = lock_x
@@ -18,7 +18,7 @@ class Camera:
         target_x = player.x - SCREEN_WIDTH // 2
         self.x = target_x
         self.x = max(0, self.x)
-        self.x = min(self.x, WORLD_WIDTH - SCREEN_WIDTH)
+        self.x = min(self.x, world_width - SCREEN_WIDTH)
 
         if self.shake_timer > 0:
             self.shake_timer -= 1

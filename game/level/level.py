@@ -6,15 +6,28 @@ from game.level.spawner import EnemySpawner
 
 # background image, far layer, ground layer foreground layer
 class Level:
-    def __init__(self):
-        self.background = Background(
-            "game/assets/backgrounds/stage1/stage1_far.png",
-            "game/assets/backgrounds/stage1/stage1_mid.png",
-            "game/assets/backgrounds/stage1/stage1_front.png")
+    def __init__(self, stage_data):
+        self.stage_id = stage_data["id"]
+        self.stage_name = stage_data["name"]
+        self.world_width = stage_data["world_width"]
+        self.world_height = stage_data["world_height"]
+        self.lane_top = stage_data["lane_top"]
+        self.lane_bottom = stage_data["lane_bottom"]
+        single_background = stage_data["background"]
+        self.background = Background(single_background, single_background)
         
-        self.wave1_x = STAGE1_WAVE1_X
-        self.wave2_x = STAGE1_WAVE2_X
-        self.wave3_x = STAGE1_WAVE3_X
+        self.wave1_x = stage_data["wave_positions"][0]
+        self.wave2_x = stage_data["wave_positions"][1]
+        self.wave3_x = stage_data["wave_positions"][2]
+        
+        #self.background = Background(
+        #    "game/assets/backgrounds/stage1/stage1_far.png",
+        #    "game/assets/backgrounds/stage1/stage1_mid.png",
+        #    "game/assets/backgrounds/stage1/stage1_front.png")
+
+        #self.wave1_x = STAGE1_WAVE1_X
+        #self.wave2_x = STAGE1_WAVE2_X
+        #self.wave3_x = STAGE1_WAVE3_X
         
         self.prop1_x = self.wave1_x -100
         self.prop2_x = self.wave1_x -100

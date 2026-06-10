@@ -13,6 +13,7 @@ from game.systems.gameplay_system import *
 from game.systems.player_input_system import *
 from game.ui.score_manager import ScoreManager
 from game.ui.stage_clear_manager import StageClearManager
+from game.level.stage_config import EPISODE_1_STAGES
 from main_draw import *
 
 os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
@@ -30,7 +31,7 @@ def main():
 
     clock = pygame.time.Clock()
     player = Player()
-    level = Level()
+    level = Level(EPISODE_1_STAGES[0])
     camera = Camera()
     score_manager = ScoreManager()
     stage_clear_manager = StageClearManager()

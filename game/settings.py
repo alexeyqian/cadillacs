@@ -19,6 +19,7 @@ SCREEN_HEIGHT=1080
 
 # PLAYER_IDLE_FRAME_H=190
 # PLAYER_IDLE_FRAME_W=50
+# 
 
 # Important: feet alignment matters most.anchor by feet, not by image center.
 # Across idle, walk, attack, hit, etc., 
@@ -67,14 +68,14 @@ BOSS_ENEMY_H=ENEMY_H * 2
 
 ######## collision, hurt and hit/attack boxes ########
 # collision box is centered on bottom
-PLAYER_COLLISION_W = int(PLAYER_W * 0.5)
-PLAYER_COLLISION_H = int(PLAYER_H * 0.2)
+PLAYER_COLLISION_W = int(PLAYER_W * 0.70)
+PLAYER_COLLISION_H = int(PLAYER_H * 0.15)
 
 # hurt box is inside logical box
-PLAYER_HURTBOX_W = int(PLAYER_W * 0.6)
-PLAYER_HURTBOX_H = int(PLAYER_H * 0.6)
-PLAYER_HURTBOX_OFFSET_X = int(PLAYER_W * 0.2)
-PLAYER_HURTBOX_OFFSET_Y = int(PLAYER_H * 0.1)
+PLAYER_HURTBOX_W = int(PLAYER_W * 0.7)
+PLAYER_HURTBOX_H = int(PLAYER_H * 0.7)
+PLAYER_HURTBOX_OFFSET_X = int(PLAYER_W * 0.20)
+PLAYER_HURTBOX_OFFSET_Y = int(PLAYER_H * 0.05)
 
 ENEMY_COLLISION_W = int(ENEMY_W * 0.5)
 ENEMY_COLLISION_H = int(ENEMY_H * 0.2)
@@ -101,7 +102,7 @@ HEAVY_ENEMY_MAX_HP=int(ENEMY_MAX_HP*1.5)
 # enemy projectile
 RANGED_ENEMY_MAX_HP=int(ENEMY_MAX_HP*1.2)
 RAPTOR_ENEMY_MAX_HP=int(ENEMY_MAX_HP*1.2)
-BOSS_ENEMY_MAX_HP=int(ENEMY_MAX_HP*5)
+BOSS_ENEMY_MAX_HP=int(ENEMY_MAX_HP*10)
 
 ######## speed ########
 PLAYER_SPEED=6
