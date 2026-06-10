@@ -21,7 +21,7 @@ EPISODE_1_STAGES = [
             },
             {
                 "kind": "spawn",
-                "trigger_x": 2700,
+                "trigger_x": 2500,
                 "spawners": [
                     {
                         "enemy_type": "normal",
@@ -79,7 +79,7 @@ EPISODE_1_STAGES = [
             },
             {
                 "kind": "spawn",
-                "trigger_x": 2700,
+                "trigger_x": 2500,
                 "spawners": [
                     {
                         "enemy_type": "normal",
@@ -153,7 +153,7 @@ EPISODE_1_STAGES = [
             },
             {
                 "kind": "boss",
-                "trigger_x": 2700,
+                "trigger_x": 2500,
             },
         ],
 

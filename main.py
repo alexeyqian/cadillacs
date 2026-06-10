@@ -88,6 +88,14 @@ def load_stage(game_state, stage_data):
 
     game_state.announcement_manager.active = False
 
+def advance_to_next_stage(game_state):
+    next_stage_data = game_state.stage_manager.advance_stage()
+    if next_stage_data:
+        load_stage(game_state, next_stage_data)
+        return True
+
+    return False
+
 def main():
     pygame.init()
 
@@ -150,14 +158,6 @@ def main():
                 # todo: insert coin as credit, only use for dev
                 if event.key == pygame.K_5:
                     game_state.credits += 1
-                if event.key == pygame.K_RETURN:
-                    if(game_state.stage_clear_manager.active and
-                        game_state.stage_clear_manager.timer <= 0):
-                        next_stage_data = game_state.stage_manager.advance_stage()
-                        if next_stage_data:
-                            load_stage(game_state, next_stage_data)
-                        else:
-                            running = False # ? game over or last episode win
 
         # 2 update continue
         keys = pygame.key.get_pressed()
@@ -180,6 +180,8 @@ def main():
             # update stage clear manager
             game_state.stage_clear_manager.update()
             game_state.stage_clear_manager.apply_bonus(score_manager)
+            if game_state.stage_clear_manager.timer <= 0:
+                running = advance_to_next_stage(game_state)
         else:
             # 3. update player input
             update_player_input_system(game_state, keys)

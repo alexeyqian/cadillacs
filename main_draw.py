@@ -164,6 +164,12 @@ def main_draw_ui(game_state):
     # stage clear manager UI
     stage_clear = game_state.stage_clear_manager
     if stage_clear.active:
+        if game_state.stage_manager.has_next_stage():
+            next_text = big_font.render("GO TO NEXT", True, YELLOW_COLOR)
+            screen.blit(next_text, next_text.get_rect(
+                center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
+            return
+
         title = big_font.render("WELL DONE!", True, YELLOW_COLOR)
         screen.blit(title, title.get_rect(center=(SCREEN_WIDTH//2, 120)))
 
@@ -180,10 +186,6 @@ def main_draw_ui(game_state):
         screen.blit(life_text,life_text.get_rect(center=(SCREEN_WIDTH//2, 220)))
         screen.blit(score_text,score_text.get_rect(center=(SCREEN_WIDTH//2, 270)))
         screen.blit(total_text,total_text.get_rect(center=(SCREEN_WIDTH//2, 340)))
-
-        if stage_clear.timer <= 0:
-            press_text = font.render("Press ENTER",True,WHITE_COLOR)
-            screen.blit(press_text,press_text.get_rect(center=(SCREEN_WIDTH//2, 420)))
 
         return
 
