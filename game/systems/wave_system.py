@@ -69,6 +69,7 @@ def update_wave_completion(game_state):
             wave.completed = True
             level.current_wave += 1
             level.camera_locked = False
+            level.lock_x = None
 
             all_waves_done = level.current_wave >= len(level.waves)
             if all_waves_done and player_is_in_exit_rect(game_state.player, level.exit_rect):

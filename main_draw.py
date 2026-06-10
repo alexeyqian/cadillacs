@@ -180,12 +180,9 @@ def main_draw_ui(game_state):
 
     # WIN OR GAME OVER UI
     if level.current_wave >= len(level.waves):
-        stage_clear = big_font.render("YOU WIN!", True, GREEN_COLOR)
-        screen.blit(stage_clear, stage_clear.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
-        #pygame.display.flip()
-        #pygame.time.delay(2000)  # pause 2 seconds so player can see the message
-        #running = False
-        #continue
+        exit_hint = big_font.render("GO TO EXIT", True, GREEN_COLOR)
+        screen.blit(exit_hint, exit_hint.get_rect(
+            center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2)))
         return
     
     # announcement UI
