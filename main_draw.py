@@ -206,14 +206,21 @@ def main_draw_ui(game_state):
                 flash_color = RED_COLOR
         title = big_font.render(announcement.title,True,flash_color)
         subtitle = big_font.render(announcement.subtitle,True,WHITE_COLOR)
+        title_bounds = title.get_bounding_rect()
+        subtitle_bounds = subtitle.get_bounding_rect()
+        center_x = screen.get_width() // 2
         gap = 18
-        total_height = title.get_height() + gap + subtitle.get_height()
-        start_y = (SCREEN_HEIGHT - total_height) // 2
-        screen.blit(title, title.get_rect(
-            center=(SCREEN_WIDTH // 2, start_y + title.get_height() // 2)))
-        screen.blit(subtitle, subtitle.get_rect(
-            center=(SCREEN_WIDTH // 2, start_y + title.get_height()
-                    + gap + subtitle.get_height() // 2)))
+        total_height = title_bounds.height + gap + subtitle_bounds.height
+        start_y = (screen.get_height() - total_height) // 2
+
+        title_x = center_x - title_bounds.width // 2 - title_bounds.x
+        title_y = start_y - title_bounds.y
+        subtitle_x = center_x - subtitle_bounds.width // 2 - subtitle_bounds.x
+        subtitle_y = (start_y + title_bounds.height
+                    + gap - subtitle_bounds.y)
+
+        screen.blit(title, (title_x, title_y))
+        screen.blit(subtitle, (subtitle_x, subtitle_y))
 
     # Continue UI
     if game_state.continue_active:
