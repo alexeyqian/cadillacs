@@ -1,10 +1,18 @@
 import pygame
 from game.level.wave import SpawnWave
+from game.settings import SCREEN_WIDTH
 
 def player_is_in_exit_rect(player, exit_rect):
     exit_area = pygame.Rect(exit_rect)
     player_feet = player.get_collision_rect()
     return exit_area.colliderect(player_feet)
+
+def get_player_trigger_x(player):
+    return player.get_collision_rect().right
+
+def get_camera_lock_x(camera_x, level):
+    max_lock_x = max(0, level.world_width - SCREEN_WIDTH)
+    return max(0, min(camera_x, max_lock_x))
 
 # simple rune for normal stages
 # if level has no waves and player reaches right side of stage:
@@ -32,7 +40,9 @@ def update_wave_system(game_state):
         return
 
     # add wave warning announcement before distance 300
-    if wave and not wave.started and player.x + 300 >= wave.trigger_x:
+    player_trigger_x = get_player_trigger_x(player)
+
+    if wave and not wave.started and player_trigger_x + 300 >= wave.trigger_x:
         if wave.__class__.__name__ == "BossWave":
             game_state.announcement_manager.show(
                 "WARNING", "BOSS APPROACHING", 120)
@@ -41,14 +51,14 @@ def update_wave_system(game_state):
                 f"WAVE {game_state.level.current_wave + 1}",
                 "GET READY", 90)
 
-    if wave and not wave.started and player.x >= wave.trigger_x:
+    if wave and not wave.started and player_trigger_x >= wave.trigger_x:
             # start the wave and initialize pending enemies
             wave.spawn(camera.x, level.lane_top, level.lane_bottom)
             # lock camera only when wave actually starts
             # set lock_x to current camera.x so the viewport does not jump
             # it only freeze camera, not stop player by itself
             level.camera_locked = True
-            level.lock_x = camera.x
+            level.lock_x = get_camera_lock_x(camera.x, level)
 
     if wave and wave.started:
         # for normal Wave and BossWave
