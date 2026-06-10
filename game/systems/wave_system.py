@@ -8,9 +8,15 @@ def update_wave_system(game_state):
     player = game_state.player
     camera = game_state.camera
     enemies = game_state.enemies
+    
+    if len(level.waves) == 0: # for transition stage
+        exit_x = level.world_width - 180
+        if player.x >= exit_x:
+            game_state.state_clear_manager.activate(player)
+        return
 
     wave = level.get_current_wave()
-    
+
     # add wave warning announcement before distance 300
     if wave and not wave.started and player.x + 300 >= wave.trigger_x:
         if wave.__class__.__name__ == "BossWave":
