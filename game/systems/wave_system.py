@@ -1,5 +1,8 @@
 from game.level.wave import SpawnWave
 
+# simple rune for normal stages
+# if level has no waves and player reaches right side of stage:
+#    activate stage clear
 def update_wave_system(game_state):
     level = game_state.level
     player = game_state.player
@@ -54,5 +57,8 @@ def update_wave_completion(game_state):
             level.current_wave += 1
             level.camera_locked = False
 
-            if level.current_wave >= len(level.waves):
+            exit_x = level.world_width - 180
+            #if len(level.waves) == 0 and player.x >= exit_x:
+            if level.current_wave >= len(level.waves) and game_state.player.x >= exit_x:
                 game_state.stage_clear_manager.activate(game_state.player)
+        

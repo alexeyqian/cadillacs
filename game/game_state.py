@@ -5,8 +5,10 @@ class GameState:
         screen,
         clock,
         player,
+        stage_manager,
         level,
         camera,
+        
         enemies,
         weapons,
         projectiles,
@@ -23,6 +25,7 @@ class GameState:
         self.clock = clock
 
         self.player = player
+        self.stage_manager = stage_manager
         self.level = level
         self.camera = camera
 

@@ -13,11 +13,15 @@ from game.systems.gameplay_system import *
 from game.systems.player_input_system import *
 from game.ui.score_manager import ScoreManager
 from game.ui.stage_clear_manager import StageClearManager
+from game.level.stage_manager import StageManager
 from game.level.stage_config import EPISODE_1_STAGES
 from main_draw import *
 
 os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
 #info = pygame.display.Info()
+
+def load_stage(game_state, stage_data):
+    pass
 
 def main():
     pygame.init()
@@ -31,8 +35,10 @@ def main():
 
     clock = pygame.time.Clock()
     player = Player()
-    level = Level(EPISODE_1_STAGES[0])
+    stage_manager = StageManager(EPISODE_1_STAGES)
+    level = Level(stage_manager.get_current_stage())
     camera = Camera()
+    
     score_manager = ScoreManager()
     stage_clear_manager = StageClearManager()
 
@@ -71,6 +77,7 @@ def main():
         screen=screen,
         clock=clock,
         player=player,
+        stage_manager=stage_manager,
         level=level,
         camera=camera,
         enemies=enemies,
@@ -88,22 +95,24 @@ def main():
 
     running = True
     while running:
-        # 1 process events
+        # 1 handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-                # insert coin as credit
-                # useful for development, will remove in prod
+                # todo: insert coin as credit, only use for dev
                 if event.key == pygame.K_5:
                     game_state.credits += 1
-            if (game_state.stage_clear_manager.active
-                    and game_state.stage_clear_manager.timer <= 0):
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        running = False # ??
+                if event.key == pygame.K_RETURN:
+                    if(game_state.stage_clear_manager.active and
+                        game_state.stage_clear_manager.timer <= 0):
+                        next_stage_data = game_state.stage_manager.advance_stage()
+                        if next_stage_data:
+                            load_stage(game_state, next_stage_data)
+                        else:
+                            running = False # ? game over or last episode win
 
         # 2 update continue
         keys = pygame.key.get_pressed()

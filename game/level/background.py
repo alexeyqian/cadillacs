@@ -2,7 +2,7 @@ import pygame
 from game.assets.asset_manager import AssetManager
 
 class Background:
-    def __init__(self,far_file, mid_file, front_file = None):
+    def __init__(self,far_file, mid_file = None, front_file = None):
         self.far = AssetManager.load_image(far_file, alpha=False)
         self.mid = AssetManager.load_image(mid_file, alpha=True)
         self.front = AssetManager.load_image(front_file, alpha=True)

@@ -14,11 +14,11 @@ SCREEN_HEIGHT=1080
 # height: 182 cm, shoulder: 45.5cm
 # height: 180 cm, shoulder: 45cm
 
-# PLAYER_NAKED_HEIGHT=182
-# PLAYER_NAKED_WIDTH=46
+# PLAYER_NAKED_HEIGHT=185
+# PLAYER_NAKED_WIDTH=47
 
-# PLAYER_IDLE_FRAME_H=190
-# PLAYER_IDLE_FRAME_W=50
+# PLAYER_IDLE_FRAME_H=185
+# PLAYER_IDLE_FRAME_W=47
 # 
 
 # Important: feet alignment matters most.anchor by feet, not by image center.

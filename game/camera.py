@@ -18,7 +18,11 @@ class Camera:
         target_x = player.x - SCREEN_WIDTH // 2
         self.x = target_x
         self.x = max(0, self.x)
-        self.x = min(self.x, world_width - SCREEN_WIDTH)
+        
+        #self.x = min(self.x, world_width - SCREEN_WIDTH)
+        # This matters because Stage 3 is only 652 wide, smaller than SCREEN_WIDTH
+        max_scroll = max(0, world_width - SCREEN_WIDTH)
+        self.x = min(self.x, max_scroll)
 
         if self.shake_timer > 0:
             self.shake_timer -= 1

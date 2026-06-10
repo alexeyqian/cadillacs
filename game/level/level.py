@@ -13,12 +13,14 @@ class Level:
         self.world_height = stage_data["world_height"]
         self.lane_top = stage_data["lane_top"]
         self.lane_bottom = stage_data["lane_bottom"]
-        single_background = stage_data["background"]
-        self.background = Background(single_background, single_background)
+        self.background = Background(stage_data["background"])
         
-        self.wave1_x = stage_data["wave_positions"][0]
-        self.wave2_x = stage_data["wave_positions"][1]
-        self.wave3_x = stage_data["wave_positions"][2]
+        self.e1s1_wave1_x = stage_data["wave_positions"][0]
+        self.e1s1_wave2_x = stage_data["wave_positions"][1]
+        self.e1s1_wave3_x = stage_data["wave_positions"][2]
+
+        self.e1s2_wave1_x = stage_data["wave_positions"][0]
+        self.e1s2_wave2_x = stage_data["wave_positions"][1]
         
         #self.background = Background(
         #    "game/assets/backgrounds/stage1/stage1_far.png",
@@ -29,11 +31,11 @@ class Level:
         #self.wave2_x = STAGE1_WAVE2_X
         #self.wave3_x = STAGE1_WAVE3_X
         
-        self.prop1_x = self.wave1_x -100
-        self.prop2_x = self.wave1_x -100
-        self.prop3_x = self.wave2_x -100
-        self.prop4_x = self.wave2_x -100
-        self.prop5_x = self.wave3_x -100
+        self.prop1_x = self.e1s1_wave1_x -100
+        self.prop2_x = self.e1s1_wave2_x -100
+        self.prop3_x = self.e1s1_wave3_x -100
+        self.prop4_x = self.e1s2_wave1_x -100
+        self.prop5_x = self.e1s2_wave2_x -100
         
         # front ui decorations
         self.props = [
@@ -84,53 +86,18 @@ class Level:
         self.lock_x = None
         
         self.waves = [
-            # Wave 1: simple warm-up, teaches arena lock.
-            Wave(
-                trigger_x=self.wave1_x,
-                enemy_types=[
-                    "normal",
-                    "normal"
-                    "normal"
-                ]
-            ),
-
-            # Wave 2: first medium mixed group.
-            Wave(
-                trigger_x=self.wave2_x,
-                enemy_types=[
-                    "normal",
-                    "normal",
-                    "normal",
-                    "fast",
-                    "heavy",
-                    "raptor",
-                ]
-            ),
-
-
-            # Wave 3: reinforcement wave, moderate count but delayed spawns.
+            Wave(trigger_x=self.e1s1_wave1_x,
+                enemy_types=["normal","normal""normal"]),
+            Wave(trigger_x=self.e1s1_wave2_x,
+                enemy_types=["normal","normal","fast"]),
             SpawnWave(
-                trigger_x=self.wave3_x,
-                spawners=[
-                    EnemySpawner(
-                        self.wave3_x,
-                        LANE_BOTTOM,
-                        "normal",
-                        3,
-                        120
-                    ),
-                    EnemySpawner(
-                        self.wave3_x+20,
-                        LANE_BOTTOM,
-                        "fast",
-                        2,
-                        180
-                    )
-                ]
-            ),
+                trigger_x=self.e1s1_wave3_x,
+                spawners=[EnemySpawner(self.e1s1_wave3_x, LANE_BOTTOM, "normal" ,3, 120),
+                    EnemySpawner(self.e1s1_wave3_x, LANE_BOTTOM, "fast", 2, 180)]),
 
-            # Wave 3: boss finale
-            BossWave(self.wave3_x + 50)
+            Wave(trigger_x=self.e1s2_wave1_x,
+                enemy_types=["normal", "normal", "fast", "heavy", "raptor"]),
+            BossWave(self.e1s2_wave2_x)
         ]
 
     def get_current_wave(self):
