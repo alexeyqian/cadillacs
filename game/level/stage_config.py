@@ -9,6 +9,7 @@ EPISODE_1_STAGES = [
         "lane_top": 470,
         "lane_bottom": 800,
         "wave_positions": [900, 1800, 2700],
+        "boss_position": None,
         "completion": "clear_waves_then_exit",
     },
     {
@@ -20,7 +21,8 @@ EPISODE_1_STAGES = [
         "player_start": (160, 720),
         "lane_top": 650,
         "lane_bottom": 850,
-        "wave_positions": [900, 1800],
+        "wave_positions": [900, 1800, 2700],
+        "boss_position": None,
         "completion": "clear_waves_then_exit",
     },
     {
@@ -33,6 +35,7 @@ EPISODE_1_STAGES = [
         "lane_top": 760,
         "lane_bottom": 900,
         "wave_positions": [],
+        "boss_position": None,
         "completion": "reach_exit",
     },
     {
@@ -44,7 +47,8 @@ EPISODE_1_STAGES = [
         "player_start": (160, 720),
         "lane_top": 620,
         "lane_bottom": 900,
-        "wave_positions": [900, 1700, 2400],
+        "wave_positions": [900, 1700],
+        "boss_position": 2700,
         "completion": "clear_waves_then_exit",
     },
 ]

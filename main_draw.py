@@ -27,7 +27,7 @@ def main_draw_world(game_state):
     # draw background
     #screen.fill((120, 190, 255))
     level.background.draw_back(screen, camera.x)
-    level.draw_props(screen, camera.x, "back")
+    #level.draw_props(screen, camera.x, "back")
     # ground
     #pygame.draw.rect(screen, (80, 180, 80),# green
     #                (0, LANE_TOP, SCREEN_WIDTH, 

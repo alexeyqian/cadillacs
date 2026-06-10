@@ -20,8 +20,72 @@ from main_draw import *
 os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
 #info = pygame.display.Info()
 
+def create_stage_weapons(stage_data):
+    wave_positions = stage_data["wave_positions"]
+    if len(wave_positions) == 0:
+        return []
+    weapons = []
+    if len(wave_positions) >= 1:
+        weapons.append(Weapon(wave_positions[0] - 50, SCREEN_HEIGHT - 100, "knife"))
+
+    if len(wave_positions) >= 2:
+        weapons.append(Weapon(wave_positions[1] - 50, SCREEN_HEIGHT - 100, "bat"))
+
+    if len(wave_positions) >= 3:
+        weapons.append(Weapon(wave_positions[2] - 50, SCREEN_HEIGHT - 100, "pistol"))
+
+    return weapons
+
+def create_stage_objects(stage_data):
+    wave_positions = stage_data["wave_positions"]
+
+    if len(wave_positions) == 0:
+        return []
+
+    objects = []
+
+    for wave_x in wave_positions:
+        objects.append(BreakableObject(wave_x - 20, SCREEN_HEIGHT - 10))
+        objects.append(BreakableObject(wave_x - 40, SCREEN_HEIGHT - 10))
+
+    if len(wave_positions) >= 2:
+        objects.append(ExplosiveBarrel(wave_positions[1] - 60, SCREEN_HEIGHT - 10))
+
+    return objects
+
 def load_stage(game_state, stage_data):
-    pass
+    game_state.level = Level(stage_data)
+
+    # Do not create a new Player. Keep the same player so lives, score, 
+    # and weapon behavior can be decided intentionally later.
+    start_x, start_y = stage_data["player_start"]
+    game_state.player.x = start_x
+    game_state.player.y = start_y
+    game_state.player.respawn_x = start_x
+    game_state.player.respawn_y = start_y
+    game_state.player.state = game_state.player.IDLE
+    game_state.player.facing_right = True
+
+    game_state.camera.x = 0
+
+    game_state.enemies.clear()
+    game_state.weapons.clear()
+    game_state.projectiles.clear()
+    game_state.enemy_projectiles.clear()
+    game_state.objects.clear()
+    game_state.loot_items.clear()
+    game_state.hit_sparks.clear()
+    game_state.floating_texts.clear()
+    game_state.explosions.clear()
+
+    game_state.weapons.extend(create_stage_weapons(stage_data))
+    game_state.objects.extend(create_stage_objects(stage_data))
+
+    game_state.stage_clear_manager.active = False
+    game_state.stage_clear_manager.timer = 0
+    game_state.stage_clear_manager.bonus_applied = False
+
+    game_state.announcement_manager.active = False
 
 def main():
     pygame.init()
@@ -43,31 +107,11 @@ def main():
     stage_clear_manager = StageClearManager()
 
     enemies = []
-    weapons = [
-            # Light melee upgrade before fast enemies appear.
-            Weapon(STAGE1_WAVE1_X - 50, SCREEN_HEIGHT-100, "knife"),
-            # Heavy melee upgrade before the heavy enemy wave.
-            Weapon(STAGE1_WAVE2_X - 50, SCREEN_HEIGHT-100, "bat"),
-            # Ranged option before raptors, reinforcements, and boss.
-            Weapon(STAGE1_WAVE3_X - 50, SCREEN_HEIGHT-100, "pistol")]
+    weapons = create_stage_weapons(stage_manager.get_current_stage())
+
     projectiles = []
     enemy_projectiles = []
-    # todo: move to level configs
-    objects = [ # breakable objects
-        # Early recovery after the first warm-up wave.
-        BreakableObject(STAGE1_WAVE1_X - 20, SCREEN_HEIGHT-10),
-        # Recovery before the first medium mixed wave.
-        BreakableObject(STAGE1_WAVE1_X - 40, SCREEN_HEIGHT-10),
-        # Resource point before the heavy enemy introduction.
-        BreakableObject(STAGE1_WAVE2_X - 20, SCREEN_HEIGHT-10),
-        # Resource point before the raptor wave.
-        BreakableObject(STAGE1_WAVE2_X - 40, SCREEN_HEIGHT-10),
-        ExplosiveBarrel(STAGE1_WAVE2_X - 60, SCREEN_HEIGHT-10),
-        # Recovery before the reinforcement wave.
-        BreakableObject(STAGE1_WAVE3_X - 20, SCREEN_HEIGHT-10),
-        # Final resource point before the boss.
-        BreakableObject(STAGE1_WAVE3_X - 40, SCREEN_HEIGHT-10),
-    ]
+    objects = create_stage_objects(stage_manager.get_current_stage())
     loot_items = []
     hit_sparks = []
     floating_texts = []

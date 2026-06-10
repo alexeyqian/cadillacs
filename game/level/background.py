@@ -4,8 +4,8 @@ from game.assets.asset_manager import AssetManager
 class Background:
     def __init__(self,far_file, mid_file = None, front_file = None):
         self.far = AssetManager.load_image(far_file, alpha=False)
-        self.mid = AssetManager.load_image(mid_file, alpha=True)
-        self.front = AssetManager.load_image(front_file, alpha=True)
+        self.mid = AssetManager.load_image(mid_file, alpha=True) if mid_file else None
+        self.front = AssetManager.load_image(front_file, alpha=True) if front_file else None
 
     def draw_layer(self,screen,image,camera_x,scroll_speed, offset_y=0):
         image_width = image.get_width()
