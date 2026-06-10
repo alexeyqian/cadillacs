@@ -1,4 +1,10 @@
+import pygame
 from game.level.wave import SpawnWave
+
+def player_is_in_exit_rect(player, exit_rect):
+    exit_area = pygame.Rect(exit_rect)
+    player_feet = player.get_collision_rect()
+    return exit_area.colliderect(player_feet)
 
 # simple rune for normal stages
 # if level has no waves and player reaches right side of stage:
@@ -10,9 +16,10 @@ def update_wave_system(game_state):
     enemies = game_state.enemies
     
     if len(level.waves) == 0: # for transition stage
-        exit_x = level.world_width - 180
-        if player.x >= exit_x:
-            game_state.state_clear_manager.activate(player)
+        if (player_is_in_exit_rect(player, level.exit_rect)
+            and not game_state.stage_clear_manager.active):
+            game_state.stage_clear_manager.activate(player)
+
         return
 
     wave = level.get_current_wave()
@@ -63,8 +70,11 @@ def update_wave_completion(game_state):
             level.current_wave += 1
             level.camera_locked = False
 
-            exit_x = level.world_width - 180
-            #if len(level.waves) == 0 and player.x >= exit_x:
-            if level.current_wave >= len(level.waves) and game_state.player.x >= exit_x:
-                game_state.stage_clear_manager.activate(game_state.player)
-        
+            all_waves_done = level.current_wave >= len(level.waves)
+            if all_waves_done and player_is_in_exit_rect(game_state.player, level.exit_rect):
+                if not game_state.stage_clear_manager.active:
+                    game_state.stage_clear_manager.activate(game_state.player)
+
+            #exit_x = level.world_width - 180
+            #if level.current_wave >= len(level.waves) and game_state.player.x >= exit_x:
+            #    game_state.stage_clear_manager.activate(game_state.player)

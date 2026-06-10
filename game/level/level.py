@@ -16,6 +16,8 @@ class Level:
         self.background = Background(stage_data["background"])
         self.wave_positions = stage_data["wave_positions"]
         self.boss_position = stage_data["boss_position"]
+        self.exit_rect = stage_data["exit_rect"]
+        self.completion = stage_data["completion"]
 
         self.current_wave = 0
         # used by wave battles

@@ -28,6 +28,10 @@ def main_draw_world(game_state):
     #screen.fill((120, 190, 255))
     level.background.draw_back(screen, camera.x)
     #level.draw_props(screen, camera.x, "back")
+    exit_rect = pygame.Rect(level.exit_rect)
+    if exit_rect and SHOW_EXIT_RECT:
+        pygame.draw.rect(screen, YELLOW_COLOR, 
+            (exit_rect.x - camera.x, exit_rect.y, exit_rect.width, exit_rect.height), 3)
     # ground
     #pygame.draw.rect(screen, (80, 180, 80),# green
     #                (0, LANE_TOP, SCREEN_WIDTH, 
