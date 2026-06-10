@@ -28,10 +28,6 @@ def main_draw_world(game_state):
     #screen.fill((120, 190, 255))
     level.background.draw_back(screen, camera.x)
     #level.draw_props(screen, camera.x, "back")
-    exit_rect = pygame.Rect(level.exit_rect)
-    if exit_rect and SHOW_EXIT_RECT:
-        pygame.draw.rect(screen, YELLOW_COLOR, 
-            (exit_rect.x - camera.x, exit_rect.y, exit_rect.width, exit_rect.height), 3)
     # ground
     #pygame.draw.rect(screen, (80, 180, 80),# green
     #                (0, LANE_TOP, SCREEN_WIDTH, 
@@ -88,6 +84,20 @@ def main_draw_world(game_state):
 
     #level.draw_props(screen, camera.x, "front")
     level.background.draw_front(screen, camera.x)
+    draw_exit_rect(screen, camera, level)
+
+def draw_exit_rect(screen, camera, level):
+    if not SHOW_EXIT_RECT:
+        return
+
+    exit_rect = pygame.Rect(level.exit_rect)
+    screen_rect = pygame.Rect(
+        exit_rect.x - camera.x,
+        exit_rect.y,
+        exit_rect.width,
+        exit_rect.height
+    )
+    pygame.draw.rect(screen, YELLOW_COLOR, screen_rect, 6)
 
 def main_draw_ui(game_state):
     screen = game_state.screen
@@ -193,11 +203,9 @@ def main_draw_ui(game_state):
             if(announcement.timer // 10) % 2:
                 flash_color = RED_COLOR
         title = big_font.render(announcement.title,True,flash_color)
-        screen.blit(title,title.get_rect(
-                center=(SCREEN_WIDTH // 2,140)))
+        screen.blit(title,title.get_rect(center=(SCREEN_WIDTH // 2, 140)))
         subtitle = big_font.render(announcement.subtitle,True,WHITE_COLOR)
-        screen.blit(subtitle,subtitle.get_rect(
-                center=(SCREEN_WIDTH // 2,210)))
+        screen.blit(subtitle,subtitle.get_rect(center=(SCREEN_WIDTH // 2, 210)))
 
     # Continue UI
     if game_state.continue_active:

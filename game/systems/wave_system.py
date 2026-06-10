@@ -23,6 +23,13 @@ def update_wave_system(game_state):
         return
 
     wave = level.get_current_wave()
+    if wave is None:
+        level.camera_locked = False
+        level.lock_x = None
+        if (player_is_in_exit_rect(player, level.exit_rect)
+            and not game_state.stage_clear_manager.active):
+            game_state.stage_clear_manager.activate(player)
+        return
 
     # add wave warning announcement before distance 300
     if wave and not wave.started and player.x + 300 >= wave.trigger_x:
