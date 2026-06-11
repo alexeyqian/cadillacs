@@ -48,20 +48,20 @@ EPISODE_1_STAGES = [
         ],
 
         "weapons": [
-            {"type": "knife", "x": 850, "y": 980},
-            {"type": "bat", "x": 1750, "y": 980},
-            {"type": "pistol", "x": 2260, "y": 980},
+            {"type": "knife", "x": 850, "y": 760},
+            {"type": "bat", "x": 1750, "y": 760},
+            {"type": "pistol", "x": 2260, "y": 760},
         ],
 
         "objects": [
-            {"kind": "breakable", "x": 880, "y": 1030},
-            {"kind": "breakable", "x": 1780, "y": 1030},
-            {"kind": "barrel", "x": 1740, "y": 1030},
-            {"kind": "breakable", "x": 2320, "y": 1030},
+            {"kind": "breakable", "x": 880, "y": 760},
+            {"kind": "breakable", "x": 1780, "y": 760},
+            {"kind": "barrel", "x": 1740, "y": 760},
+            {"kind": "breakable", "x": 2320, "y": 760},
         ],
         "completion": "clear_waves_then_exit",
         # Stage 1 rooftop, exit near far right door/edge
-        "exit_rect": (3150, 470, 160, 500)
+        "exit_rect": (3000, 470, 160, 500)
     },
     {
         "id": "episode_1_stage_2_hallway",
@@ -112,20 +112,20 @@ EPISODE_1_STAGES = [
         ],
 
         "weapons": [
-            {"type": "knife", "x": 850, "y": 980},
-            {"type": "bat", "x": 1750, "y": 980},
-            {"type": "pistol", "x": 2220, "y": 980},
+            {"type": "knife", "x": 850, "y": 760},
+            {"type": "bat", "x": 1750, "y": 760},
+            {"type": "pistol", "x": 2220, "y": 760},
         ],
 
         "objects": [
-            {"kind": "breakable", "x": 880, "y": 1030},
-            {"kind": "breakable", "x": 1780, "y": 1030},
-            {"kind": "barrel", "x": 1740, "y": 1030},
-            {"kind": "breakable", "x": 2280, "y": 1030},
+            {"kind": "breakable", "x": 880, "y": 760},
+            {"kind": "breakable", "x": 1780, "y": 760},
+            {"kind": "barrel", "x": 1740, "y": 760},
+            {"kind": "breakable", "x": 2280, "y": 760},
         ],
         "completion": "clear_waves_then_exit",
         # Stage 2 hallway, exit near right staircase/edge
-        "exit_rect": (2950, 650, 150, 420)
+        "exit_rect": (2500, 650, 150, 420)
     },
     {
         "id": "episode_1_stage_3_transition",
@@ -182,19 +182,19 @@ EPISODE_1_STAGES = [
         ],
 
         "weapons": [
-            {"type": "knife", "x": 850, "y": 980},
-            {"type": "bat", "x": 1750, "y": 980},
-            {"type": "pistol", "x": 2220, "y": 980},
+            {"type": "knife", "x": 850, "y": 760},
+            {"type": "bat", "x": 1750, "y": 760},
+            {"type": "pistol", "x": 2220, "y": 760},
         ],
 
         "objects": [
-            {"kind": "breakable", "x": 880, "y": 1030},
-            {"kind": "breakable", "x": 1780, "y": 1030},
-            {"kind": "barrel", "x": 1740, "y": 1030},
-            {"kind": "breakable", "x": 2280, "y": 1030},
+            {"kind": "breakable", "x": 880, "y": 760},
+            {"kind": "breakable", "x": 1780, "y": 760},
+            {"kind": "barrel", "x": 1740, "y": 760},
+            {"kind": "breakable", "x": 2280, "y": 760},
         ],
         "completion": "clear_waves_then_exit",
         # Stage 4 arena, exit near far right after boss
-        "exit_rect": (2920, 620, 140, 460),
+        "exit_rect": (2500, 620, 140, 460),
     },
 ]

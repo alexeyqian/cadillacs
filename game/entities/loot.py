@@ -1,4 +1,5 @@
 import pygame
+from game.colors import *
 from game.assets.asset_manager import AssetManager
 
 LOOT_IMAGE_FILES = {
@@ -26,7 +27,8 @@ class Loot:
     def draw(self, screen, camera_x):
         if not self.active:
             return
-        screen_x = self.x - camera_x
+        screen_x = self.get_left() - camera_x
+        screen_y = self.get_top()
         if self.image is None:
             self.image = self.load_image()
 
@@ -35,18 +37,24 @@ class Loot:
                 self.image,
                 (self.width, self.height)
             )
-            screen.blit(image, (screen_x, self.y))
+            screen.blit(image, (screen_x, screen_y))
             return
 
         if self.loot_type == "health":
-            color = (0,255,0)
+            color = GREEN_COLOR
         elif self.loot_type == "ammo":
-            color = (255,255,0)
+            color = YELLOW_COLOR
         else:
-            color = (255,255,255)
+            color = WHITE_COLOR
 
         # draw loot at screen coordinates
-        pygame.draw.rect(screen, color, (screen_x, self.y, self.width, self.height))
+        pygame.draw.rect(screen, color, (screen_x, screen_y, self.width, self.height))
+
+    def get_left(self):
+        return self.x - self.width // 2
+    
+    def get_top(self):
+        return self.y - self.height
 
     def get_rect(self):
-        return pygame.Rect(self.x, self.y, self.width, self.height)
+        return pygame.Rect(self.get_left(), self.get_top(), self.width, self.height)

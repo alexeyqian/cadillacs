@@ -11,12 +11,13 @@ def create_explosions_from_objects(game_state):
         if obj.exploded:
             continue
         obj.exploded = True
-        
-        game_state.explosions.append(Explosion(obj.x+obj.width//2, obj.y+obj.height//2))
+
+        obj_rect = obj.get_rect()
+        game_state.explosions.append(Explosion(obj_rect.centerx, obj_rect.centery))
         explosion_shake(game_state)
         game_state.score_manager.add_score(100)
         damage_enemies_in_radius(game_state,
-            obj.x + obj.width//2, obj.y + obj.height//2, 180, 80)
+            obj_rect.centerx, obj_rect.centery, 180, 80)
 
 def damage_enemies_in_radius(game_state, x, y, radius, damage):
     for enemy in game_state.enemies:

@@ -50,7 +50,6 @@ class BreakableObject:
             return Loot(self.x, self.y, "health")
         elif roll <= 80:
             return Loot(self.x, self.y, "ammo")
-        
-        # return None
-        return Loot(self.x - 30, self.y - 60, "health")
+
+        return Loot(self.x, self.y, "health")
 

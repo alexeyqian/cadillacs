@@ -117,7 +117,9 @@ class Weapon:
         if self.picked_up:
             return
 
-        screen_x = self.x - camera_x
+        screen_x = self.get_left() - camera_x
+        screen_y = self.get_top()
+
         if self.weapon_type == "knife":
             if self._knife_image is None:
                 self._knife_image = self._load_knife_image()
@@ -131,29 +133,33 @@ class Weapon:
                 # Fallback if the image file is missing or cannot be loaded.
                 if self._icon_knife is None:
                     self._icon_knife = self._create_knife_icon()
-                icon = pygame.transform.scale(
-                    self._icon_knife,
-                    (self.width * 2, self.height * 2)
-                )
-            icon_x = screen_x - (icon.get_width() - self.width) // 2
-            icon_y = self.y - (icon.get_height() - self.height) // 2
-            screen.blit(icon, (icon_x, icon_y))
+                    icon = pygame.transform.scale(self._icon_knife,
+                        (self.width * 2, self.height * 2))
+                    icon_x = self.x - camera_x - icon.get_width() // 2
+                    icon_y = self.y - icon.get_height()
+                screen.blit(icon, (icon_x, icon_y))
         elif self.weapon_type == "bat":
             if self._icon_bat is None:
                 self._icon_bat = self._create_bat_icon()
             icon = pygame.transform.scale(self._icon_bat, (self.width * 2, self.height * 2))
-            icon_x = screen_x - (icon.get_width() - self.width) // 2
-            icon_y = self.y - (icon.get_height() - self.height) // 2
+            icon_x = self.x - camera_x - icon.get_width() // 2
+            icon_y = self.y - icon.get_height()
             screen.blit(icon, (icon_x, icon_y))
         else:
             # pistol or other ranged; draw procedural pistol icon
             if self._icon_pistol is None:
                 self._icon_pistol = self._create_pistol_icon()
             icon = pygame.transform.scale(self._icon_pistol, (self.width * 2, self.height * 2))
-            icon_x = screen_x - (icon.get_width() - self.width) // 2
-            icon_y = self.y - (icon.get_height() - self.height) // 2
+            icon_x = self.x - camera_x - icon.get_width() // 2
+            icon_y = self.y - icon.get_height()
             screen.blit(icon, (icon_x, icon_y))
 
+    def get_left(self):
+        return self.x - self.width // 2
+
+    def get_top(self):
+        return self.y - self.height
+
     def get_rect(self):
-        return pygame.Rect(self.x,self.y,self.width, self.height)
+        return pygame.Rect(self.get_left(),self.get_top(),self.width, self.height)
 
