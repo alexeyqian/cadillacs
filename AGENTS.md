@@ -9,10 +9,15 @@ Build a simple, easy-to-understand Cadillacs and Dinosaurs style beat'em up usin
 - Python
 - PyGame
 - macOS compatible
-- Educational code over optimization
+- Make code easy to understand and modularized for easy to maintain
+- Make code well organized
 - Step-by-step milestone-driven development
+- Enemy types should be easy to expand.
+- Weapon types should be easy to expand.
+- Should support choose different players
+- Should support level editing in future
 
-The codebase should easy to understand and easy to maintain.
+The codebase should easy to understand and easy to maintain. 
 
 ---
 

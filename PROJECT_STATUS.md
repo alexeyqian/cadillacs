@@ -7,18 +7,20 @@ Cadillacs & Dinosaurs Inspired Beat-em-up
 Engine: Python + Pygame
 
 Current Development Stage:
-Core Gameplay Vertical Slice
+Core Gameplay Vertical Slice + Stage Progression Foundation
 
 Last Updated:
-2026-06-09
+2026-06-11
 
 ---
 
 # Overall Progress
 
-Estimated Completion: 35%
+Estimated Completion: 42%
 
-The project has moved beyond prototype stage and now contains a playable combat loop with:
+The project now has a playable beat-em-up loop and the foundation for multiple stages within an episode.
+
+Implemented gameplay includes:
 
 * Camera system
 * Arena lock system
@@ -31,7 +33,10 @@ The project has moved beyond prototype stage and now contains a playable combat 
 * Running attacks
 * Jump attacks
 * Projectile weapons
-* Modular gameplay architecture
+* Loot and breakable objects
+* Continue/lives foundation
+* Stage clear flow
+* Multi-stage episode foundation
 
 ---
 
@@ -49,8 +54,58 @@ Completed
 * Cleanup system
 * Loot system
 * Projectile system
+* StageManager foundation
+* Data-driven stage configuration
+* Stage-specific background, waves, weapons, objects, exits, and walkable areas
 
-Current architecture is stable and suitable for future expansion.
+Current architecture is stable for incremental expansion.
+
+Important current direction:
+
+* `Level` represents the currently loaded stage.
+* `StageManager` controls which stage is active.
+* `stage_config.py` defines stage data.
+* `main.py` owns runtime stage loading/reset through `load_stage()`.
+* Future episode support should build on top of the current stage manager instead of replacing it.
+
+---
+
+# Episode / Stage System
+
+Recently Added
+
+* Episode 1 stage list in `stage_config.py`
+* StageManager with current-stage tracking and stage advancement
+* Stage loading/reset helper
+* Stage-specific world width and height
+* Stage-specific player start position
+* Stage-specific wave configuration
+* Stage-specific weapons and breakable objects
+* Stage-specific exit rectangles
+* Stage-specific walkable polygons
+* Dynamic camera world-width clamp
+* Stage clear -> press Enter -> next stage flow
+
+Episode 1 Current Stages
+
+* Stage 1: Rooftop Approach
+* Stage 2: Mansion Hallway
+* Stage 3: Ruined Building transition
+* Stage 4: Ruined Arena
+
+Background Decision
+
+* Stage backgrounds should be at least `SCREEN_WIDTH` wide.
+* Avoid narrow playable backgrounds.
+* If source art is narrow, expand/regenerate it to full-screen width or wider.
+* This keeps rendering simple: one camera, one world coordinate system, no special centering branch.
+
+Planned
+
+* EpisodeManager above StageManager
+* Episode clear flow
+* Stage intro title card
+* Optional stage transition scenes
 
 ---
 
@@ -74,6 +129,8 @@ Completed
 * Lives
 * Death
 * Respawn
+* Stage-aware world/lane bounds
+* Walkable polygon boundary check
 
 Planned
 
@@ -100,6 +157,8 @@ Completed
 * Get-up
 * Death
 * Separation behavior
+* Stage-aware world/lane bounds
+* Walkable polygon boundary check
 
 Enemy Types
 
@@ -126,6 +185,7 @@ Completed
 * Knife
 * Bat
 * Pistol
+* Stage-configured weapon placement
 
 Planned
 
@@ -145,9 +205,6 @@ Completed
 * Grab system
 * Throw system
 * Grab knee attack
-
-Recently Designed
-
 * Separate body box
 * Separate hurtbox
 * Separate collision box
@@ -170,15 +227,20 @@ Completed
 * Animation manager
 * Sprite sheet support
 * Asset loading framework
+* Generated Episode 1 background art
+* Stage-specific single-image backgrounds
+* Debug exit rectangle drawing
+* Debug walkable polygon drawing
 
 Planned
 
-* Asset manager integration
+* More stage background cleanup
+* Props/foreground layering per stage
 * Larger attack animation frames
 * Attack frame offsets
 * Weapon-specific animations
-* Hit sparks
-* Camera shake
+* Hit sparks polish
+* Camera shake polish
 
 ---
 
@@ -191,26 +253,35 @@ Completed
 * Arena lock
 * Multi-wave progression
 * Boss wave
-* Props
+* Props foundation
+* Multiple stages
+* Stage exits via `exit_rect`
+* Walkable areas via polygon data
+* Stage-specific content config
 
 Planned
 
 * Stage hazards
-* Multiple stages
+* Episode system
 * Branching paths
+* Stage intro and episode clear screens
 
 ---
 
 # Save / Progression
 
-Not Started
+Partially Started
+
+* Continue/lives foundation exists.
+* Score and high score manager exist.
+* Stage progression foundation exists.
 
 Planned
 
 * Save game
-* Continue system
 * Stage unlocks
-* High score system
+* Episode unlocks
+* Persistent high score
 
 ---
 
@@ -225,27 +296,31 @@ Future
 
 # Current Priority
 
-1. Player animation sizing refactor
-2. Hurtbox / hitbox refactor
-3. Enemy attack timing improvements
-4. Weapon throw
-5. Enemy animation loading refactor
-6. Scene system
+1. Finish Episode 1 stage flow testing
+2. Regenerate/expand Stage 3 to full-screen width or wider
+3. Tune walkable polygons and exit rectangles
+4. Move/tune per-stage enemy waves and pickups
+5. Add EpisodeManager
+6. Add stage intro / episode clear presentation
+7. Continue combat expansion: weapon throw, recovery roll, boss phases
 
 ---
 
 # Current Stable Baseline
 
-Milestone 45 Complete
+Latest Baseline:
+Multi-stage Episode 1 foundation
 
 Implemented:
 
-* Asset Manager
-* Grab Combo
-* Knee Attack
+* StageManager
+* Data-driven `stage_config.py`
+* Runtime `load_stage()` flow
+* Stage-specific waves, pickups, objects, exits, and walkable areas
+* Generated Episode 1 background assets
 
-Milestone 46 (Escape Move)
+Milestone 46 Escape Move:
+Deferred
 
-Status: Deferred
-
-Will revisit after combat refactor.
+Reason:
+Player state machine and stage progression work have higher priority before adding another action state.
