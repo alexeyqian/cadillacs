@@ -159,6 +159,13 @@ def main_draw_ui(game_state):
                 f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
     player_text = small_font.render(player_str,True, BLACK_COLOR)
     screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y+2*UI_LINE_HEIGHT))
+    
+    if level.walkable_polygon:
+        points = []
+        for x, y in level.walkable_polygon:
+            points.append((x - camera.x, y))
+
+        pygame.draw.polygon(screen, GREEN_COLOR, points, 2)
     # end of debug text
 
     # stage clear manager UI

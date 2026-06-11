@@ -1,4 +1,5 @@
 
+# todo: use bottom center as feet point in future
 
 improve combat system, make enemy more intelligent
 

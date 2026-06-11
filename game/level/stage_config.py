@@ -8,6 +8,12 @@ EPISODE_1_STAGES = [
         "player_start": (160, 620),
         "lane_top": 470,
         "lane_bottom": 800,
+        "walkable_polygon": [
+            (0, 520),
+            (3338, 470),
+            (3338, 800),
+            (0, 820),
+        ],
         "waves": [
             {
                 "kind": "normal",
@@ -21,18 +27,18 @@ EPISODE_1_STAGES = [
             },
             {
                 "kind": "spawn",
-                "trigger_x": 2700,
+                "trigger_x": 2300,
                 "spawners": [
                     {
                         "enemy_type": "normal",
-                        "x": 2700,
+                        "x": 2380,
                         "y": 760,
                         "total_count": 3,
                         "spawn_delay": 120,
                     },
                     {
                         "enemy_type": "fast",
-                        "x": 2760,
+                        "x": 2460,
                         "y": 760,
                         "total_count": 2,
                         "spawn_delay": 180,
@@ -44,14 +50,14 @@ EPISODE_1_STAGES = [
         "weapons": [
             {"type": "knife", "x": 850, "y": 980},
             {"type": "bat", "x": 1750, "y": 980},
-            {"type": "pistol", "x": 2650, "y": 980},
+            {"type": "pistol", "x": 2260, "y": 980},
         ],
 
         "objects": [
             {"kind": "breakable", "x": 880, "y": 1030},
             {"kind": "breakable", "x": 1780, "y": 1030},
             {"kind": "barrel", "x": 1740, "y": 1030},
-            {"kind": "breakable", "x": 2680, "y": 1030},
+            {"kind": "breakable", "x": 2320, "y": 1030},
         ],
         "completion": "clear_waves_then_exit",
         # Stage 1 rooftop, exit near far right door/edge
@@ -66,6 +72,12 @@ EPISODE_1_STAGES = [
         "player_start": (160, 720),
         "lane_top": 650,
         "lane_bottom": 850,
+        "walkable_polygon": [
+            (0, 650),
+            (3132, 650),
+            (3132, 850),
+            (0, 850),
+        ],
         "waves": [
             {
                 "kind": "normal",
@@ -79,18 +91,18 @@ EPISODE_1_STAGES = [
             },
             {
                 "kind": "spawn",
-                "trigger_x": 2700,
+                "trigger_x": 2250,
                 "spawners": [
                     {
                         "enemy_type": "normal",
-                        "x": 2700,
+                        "x": 2320,
                         "y": 760,
                         "total_count": 3,
                         "spawn_delay": 120,
                     },
                     {
                         "enemy_type": "fast",
-                        "x": 2760,
+                        "x": 2400,
                         "y": 760,
                         "total_count": 2,
                         "spawn_delay": 180,
@@ -102,14 +114,14 @@ EPISODE_1_STAGES = [
         "weapons": [
             {"type": "knife", "x": 850, "y": 980},
             {"type": "bat", "x": 1750, "y": 980},
-            {"type": "pistol", "x": 2650, "y": 980},
+            {"type": "pistol", "x": 2220, "y": 980},
         ],
 
         "objects": [
             {"kind": "breakable", "x": 880, "y": 1030},
             {"kind": "breakable", "x": 1780, "y": 1030},
             {"kind": "barrel", "x": 1740, "y": 1030},
-            {"kind": "breakable", "x": 2680, "y": 1030},
+            {"kind": "breakable", "x": 2280, "y": 1030},
         ],
         "completion": "clear_waves_then_exit",
         # Stage 2 hallway, exit near right staircase/edge
@@ -124,6 +136,12 @@ EPISODE_1_STAGES = [
         "player_start": (120, 790),
         "lane_top": 760,
         "lane_bottom": 900,
+        "walkable_polygon": [
+            (0, 760),
+            (652, 760),
+            (652, 900),
+            (0, 900),
+        ],
         "waves": [],
         "weapons": [],
         "objects": [],
@@ -140,6 +158,12 @@ EPISODE_1_STAGES = [
         "player_start": (160, 720),
         "lane_top": 620,
         "lane_bottom": 900,
+        "walkable_polygon": [
+            (0, 650),
+            (3086, 620),
+            (3086, 900),
+            (0, 900),
+        ],
         "waves": [
             {
                 "kind": "normal",
@@ -153,21 +177,21 @@ EPISODE_1_STAGES = [
             },
             {
                 "kind": "boss",
-                "trigger_x": 2700,
+                "trigger_x": 2250,
             },
         ],
 
         "weapons": [
             {"type": "knife", "x": 850, "y": 980},
             {"type": "bat", "x": 1750, "y": 980},
-            {"type": "pistol", "x": 2650, "y": 980},
+            {"type": "pistol", "x": 2220, "y": 980},
         ],
 
         "objects": [
             {"kind": "breakable", "x": 880, "y": 1030},
             {"kind": "breakable", "x": 1780, "y": 1030},
             {"kind": "barrel", "x": 1740, "y": 1030},
-            {"kind": "breakable", "x": 2680, "y": 1030},
+            {"kind": "breakable", "x": 2280, "y": 1030},
         ],
         "completion": "clear_waves_then_exit",
         # Stage 4 arena, exit near far right after boss
