@@ -43,7 +43,8 @@ def update_loot_pickup(game_state):
     player = game_state.player
     loot_items = game_state.loot_items
 
-    player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+    # inflate for easy to pickup
+    player_rect = player.get_collision_rect().inflate(40, 40)
     for loot in loot_items:
         if not loot.active:
             continue

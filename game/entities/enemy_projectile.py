@@ -4,6 +4,7 @@ from game.colors import *
 
 class EnemyProjectile:
     def __init__(self, x, y, direction, speed, damage):
+        # x, y means center of the object rect
         self.x = x
         self.y = y
         self.width = 16
@@ -26,5 +27,7 @@ class EnemyProjectile:
             (int(self.x-camera_x), int(self.y)), 8)
 
     def get_rect(self):
-        return pygame.Rect(self.x, self.y, self.width, self.height)
+        return pygame.Rect(
+            self.x-self.width//2, self.y-self.height//2, 
+            self.width, self.height)
 

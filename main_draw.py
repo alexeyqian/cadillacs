@@ -154,8 +154,9 @@ def main_draw_ui(game_state):
         screen.blit(weapon_text,(650, UI_FIRST_Y))
 
     # debug UI
+    player_feet_x, player_feet_y = player.get_logical_rect().midbottom
     player_str = (f"State: {level.stage_name} Camera x:{int(camera.x)} "
-                f"Player x:{int(player.x)} y:{int(player.y)} State:{player.state} "
+                f"Player feet x:{int(player_feet_x)} y:{int(player_feet_y)} State:{player.state} "
                 f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
     player_text = small_font.render(player_str,True, BLACK_COLOR)
     screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y+2*UI_LINE_HEIGHT))

@@ -21,8 +21,9 @@ def handle_player_attack_collision(game_state):
         if enemy and enemy.state != enemy.DEAD:
             damage = player.attack_damage()
             enemy.take_grab_knee_damage(damage)
+            enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(
-                FloatingText(enemy.x, enemy.y-10, str(damage), YELLOW_COLOR)
+                FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), YELLOW_COLOR)
             )
             game_state.score_manager.register_hit()
             player.already_hit_enemy = True
@@ -37,14 +38,16 @@ def handle_player_attack_collision(game_state):
         if attack_rect.colliderect(enemy_hurt_rect):
             damage = player.attack_damage()
             enemy.take_damage(damage, player.x)
-            game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,80,80)))
+            enemy_rect = enemy.get_logical_rect()
+            game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
             player.already_hit_enemy = True
             if enemy.hp >0 and enemy.max_hp >= 200:
                 heavy_hit_shake(game_state)
             if isinstance(enemies, BossEnemy):
                 boss_hit_shake(game_state)
-            #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
+            enemy_rect = enemy.get_hurt_rect()
+            #hit_sparks.append(HitSpark(enemy_rect.centerx,enemy_rect.centery))
             break # ?? useless, only can attack one enemy at a time?
 
     # attack breakables
@@ -71,7 +74,8 @@ def handle_player_projectile_collision(game_state):
             if projectile_rect.colliderect(enemy_hurt_rect):
                 damage = projectile.damage
                 enemy.take_damage(damage, player.x)
-                game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,120,120)))
+                enemy_rect = enemy.get_logical_rect()
+                game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,120,120)))
                 game_state.score_manager.register_hit() # for combo score
                 projectile.active = False
                 #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
@@ -124,5 +128,6 @@ def handle_player_thrown_enemy_collision(game_state):
             if thrown_rect.colliderect(enemy_hurt_rect):
                 damage = enemy.thrown_damage
                 enemy.take_damage(damage, thrown_enemy.x)
-                game_state.floating_texts.append(FloatingText(enemy.x, enemy.y-10, str(damage), (255,150,0)))
+                enemy_rect = enemy.get_logical_rect()
+                game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,150,0)))
                 thrown_enemy.thrown_hit_targets.add(id(enemy))

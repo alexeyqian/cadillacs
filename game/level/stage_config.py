@@ -7,12 +7,12 @@ EPISODE_1_STAGES = [
         "world_height": 1080,
         "player_start": (160, 620),
         "lane_top": 520,
-        "lane_bottom": 900,
+        "lane_bottom": 820,
         "walkable_polygon": [
             (0, 520),
             (3338, 520),
-            (3338, 900),
-            (0, 900),
+            (3338, 820),
+            (0, 820),
         ],
         "waves": [
             {

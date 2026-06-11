@@ -246,3 +246,7 @@ L near enemy      -> grab enemy
 J while grabbing -> knee attack
 J again          -> knee attack again
 L while grabbing -> throw enemy
+
+So do not force everything into bottom-center. Instead, make projectile/effect constructors clear and fix spawn positions.
+Player/enemy/object/weapon/loot = bottom-center world position
+Projectile/effect/floating text = point or top-left effect position

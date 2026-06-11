@@ -766,7 +766,7 @@ class Player:
             direction = -1
         
         muzzle_x = self.x + (40 if self.facing_right else -40)
-        muzzle_y = self.get_top() + 90
+        muzzle_y = self.get_top() + 105
         projectile = Projectile(muzzle_x, muzzle_y, direction, PROJECTILE_SPEED, self.weapon.damage)
         self.pending_projectile = projectile
         self.weapon.ammo -= 1
