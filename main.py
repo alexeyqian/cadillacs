@@ -62,6 +62,10 @@ def load_stage(game_state, stage_data):
     game_state.player.y = start_y
     game_state.player.respawn_x = start_x
     game_state.player.respawn_y = start_y
+    game_state.player.ground_y = start_y
+    game_state.player.is_jumping = False
+    game_state.player.vx = 0
+    game_state.player.vy = 0
     game_state.player.lane_top = stage_data["lane_top"] #todo: remove
     game_state.player.lane_bottom = stage_data["lane_bottom"] #todo: remove
     game_state.player.state = game_state.player.IDLE
@@ -145,6 +149,7 @@ def main():
         stage_clear_manager=stage_clear_manager,
         explosions=explosions
     )
+    load_stage(game_state, stage_manager.get_current_stage())
 
     running = True
     while running:

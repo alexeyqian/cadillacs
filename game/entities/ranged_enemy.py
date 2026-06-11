@@ -26,7 +26,7 @@ class RangedEnemy(Enemy):
             and not self.attack_has_hit):
             direction = 1 if player.x > self.x else -1
 
-            projectile = EnemyProjectile(self.x + self.width // 2, self.y + 30,
+            projectile = EnemyProjectile(self.x, self.get_top()+90,
                                         direction, PROJECTILE_SPEED*0.7, self.attack_damage)
             self.pending_projectile = projectile
             self.attack_has_hit = True

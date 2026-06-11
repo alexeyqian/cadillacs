@@ -225,14 +225,8 @@ class Enemy:
             self.attack_cooldown -= 1
 
     def get_player_distance(self, player):
-        enemy_center_x = self.x + self.width / 2
-        enemy_center_y = self.y + self.height / 2
-
-        player_center_x = player.x + player.width / 2
-        player_center_y = player.y + player.height / 2
-
-        dx = player_center_x - enemy_center_x
-        dy = player_center_y - enemy_center_y
+        dx = player.x - self.x
+        dy = player.y - self.y
 
         distance_x = abs(dx)
         distance_y = abs(dy)

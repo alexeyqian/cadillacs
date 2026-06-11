@@ -12,8 +12,9 @@ def update_camera_system(game_state):
         keep_player_inside_camera_view(player, camera)
 
 def keep_player_inside_camera_view(player, camera):
-    left_limit = camera.x
-    right_limit = camera.x + SCREEN_WIDTH - player.width - PLAYER_SCREEN_EDGE_MARGIN
+    half_w = player.width // 2
+    left_limit = camera.x + half_w + PLAYER_SCREEN_EDGE_MARGIN
+    right_limit = camera.x + SCREEN_WIDTH - half_w - PLAYER_SCREEN_EDGE_MARGIN
 
     if player.x < left_limit:
         player.x = left_limit

@@ -5,14 +5,14 @@ EPISODE_1_STAGES = [
         "background": "assets/backgrounds/episode_1/episode_1_stage_1_rooftop.png",
         "world_width": 3338,
         "world_height": 1080,
-        "player_start": (100, 500),
-        "lane_top": 470,
-        "lane_bottom": 800,
+        "player_start": (160, 620),
+        "lane_top": 520,
+        "lane_bottom": 900,
         "walkable_polygon": [
             (0, 520),
-            (3338, 470),
-            (3338, 800),
-            (0, 820),
+            (3338, 520),
+            (3338, 900),
+            (0, 900),
         ],
         "waves": [
             {
@@ -71,12 +71,12 @@ EPISODE_1_STAGES = [
         "world_height": 1080,
         "player_start": (160, 720),
         "lane_top": 650,
-        "lane_bottom": 850,
+        "lane_bottom": 1080,
         "walkable_polygon": [
             (0, 650),
             (3132, 650),
-            (3132, 850),
-            (0, 850),
+            (3132, 1080),
+            (0, 1080),
         ],
         "waves": [
             {
@@ -135,12 +135,12 @@ EPISODE_1_STAGES = [
         "world_height": 1080,
         "player_start": (120, 790),
         "lane_top": 760,
-        "lane_bottom": 900,
+        "lane_bottom": 1080,
         "walkable_polygon": [
             (0, 760),
             (652, 760),
-            (652, 900),
-            (0, 900),
+            (652, 1080),
+            (0, 1080),
         ],
         "waves": [],
         "weapons": [],
@@ -157,12 +157,12 @@ EPISODE_1_STAGES = [
         "world_height": 1080,
         "player_start": (160, 720),
         "lane_top": 620,
-        "lane_bottom": 900,
+        "lane_bottom": 1080,
         "walkable_polygon": [
-            (0, 650),
+            (0, 620),
             (3086, 620),
-            (3086, 900),
-            (0, 900),
+            (3086, 1080),
+            (0, 1080),
         ],
         "waves": [
             {

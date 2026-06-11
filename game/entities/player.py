@@ -570,10 +570,11 @@ class Player:
     def update_grabbed_enemy_position(self):
         # keep grabbed enemy in front of player
         if self.grabbed_enemy:
+            grab_offset = (self.width + self.grabbed_enemy.width) / 2 + 5
             if self.facing_right:
-                self.grabbed_enemy.x = self.x + self.width + 5
+                self.grabbed_enemy.x = self.x + grab_offset
             else:
-                self.grabbed_enemy.x = self.x - self.grabbed_enemy.width - 5
+                self.grabbed_enemy.x = self.x - grab_offset
             self.grabbed_enemy.y = self.y
 
     def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
@@ -731,6 +732,10 @@ class Player:
         self.hp = self.max_hp
         self.x = self.respawn_x
         self.y = self.respawn_y
+        self.ground_y = self.respawn_y
+        self.vx = 0
+        self.vy = 0
+        self.is_jumping = False
         self.state = self.IDLE
         self.is_attacking = False
         self.grabbed_enemy = None
@@ -759,7 +764,10 @@ class Player:
         direction = 1
         if not self.facing_right:
             direction = -1
-        projectile = Projectile(self.x+40, self.y+30, direction, PROJECTILE_SPEED, self.weapon.damage)
+        
+        muzzle_x = self.x + (40 if self.facing_right else -40)
+        muzzle_y = self.get_top() + 90
+        projectile = Projectile(muzzle_x, muzzle_y, direction, PROJECTILE_SPEED, self.weapon.damage)
         self.pending_projectile = projectile
         self.weapon.ammo -= 1
         

@@ -84,7 +84,7 @@ class BossEnemy(Enemy):
         elif self.phase == 3:
             damage *= 3
 
-        self.pending_projectile = BossProjectile(self.x + self.width // 2, self.y + 40,
+        self.pending_projectile = BossProjectile(self.x, self.get_top()+120,
             direction, self.speed * 2, damage)
 
     def update_attack(self, player):

@@ -1,6 +1,5 @@
 from game.settings import *
 
-# TODO: use level world_width aware
 def apply_arena_bounds(game_state):
     level = game_state.level
     if not level.camera_locked:
@@ -20,8 +19,9 @@ def apply_arena_bounds(game_state):
         clamp_entity(enemy, arena_left, arena_right)
 
 def clamp_entity(entity, arena_left, arena_right):
-    if entity.x < arena_left:
-        entity.x = arena_left
+    half_w = entity.width // 2
+    if entity.x - half_w < arena_left:
+        entity.x = arena_left + half_w
 
-    if entity.x + entity.width > arena_right:
-        entity.x = arena_right - entity.width
+    if entity.x + half_w > arena_right:
+        entity.x = arena_right - half_w
