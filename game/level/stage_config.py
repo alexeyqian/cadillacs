@@ -61,7 +61,7 @@ EPISODE_1_STAGES = [
         ],
         "completion": "clear_waves_then_exit",
         # Stage 1 rooftop, exit near far right door/edge
-        "exit_rect": (3000, 470, 160, 500)
+        "exit_rect": (2700, 340, 100, 260)
     },
     {
         "id": "episode_1_stage_2_hallway",
@@ -125,7 +125,7 @@ EPISODE_1_STAGES = [
         ],
         "completion": "clear_waves_then_exit",
         # Stage 2 hallway, exit near right staircase/edge
-        "exit_rect": (2500, 650, 150, 420)
+        "exit_rect": (2800, 650, 150, 420)
     },
     {
         "id": "episode_1_stage_3_transition",
@@ -147,7 +147,7 @@ EPISODE_1_STAGES = [
         "objects": [],
         "completion": "reach_exit",
         # Stage 3 transition, exit near right edge
-        "exit_rect": (520, 760, 120, 320),
+        "exit_rect": (900, 760, 120, 320),
     },
     {
         "id": "episode_1_stage_4_ruined_arena",

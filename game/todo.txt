@@ -1,5 +1,6 @@
 
-# todo: use bottom center as feet point in future
+
+spawn enemies randomly around a range of circle of the trigger point, not fixed place
 
 improve combat system, make enemy more intelligent
 

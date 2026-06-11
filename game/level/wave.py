@@ -21,7 +21,8 @@ class Wave:
 
         viewport_left = camera_x
         viewport_right = camera_x + SCREEN_WIDTH
-        spawn_y = min(lane_bottom - 80, max(lane_top + 80, 600))
+        # todo: use level walkable polygon
+        spawn_y = lane_bottom - 40
         start_x = viewport_left + int(SCREEN_WIDTH * 0.58)
         spacing = 180
         max_x = viewport_right - 220

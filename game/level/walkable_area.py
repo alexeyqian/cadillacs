@@ -14,7 +14,6 @@ def point_in_polygon(point, polygon):
         j = i
     return inside
 
-# todo: use bottom center as feet point in future
 def entity_feet_point(entity):
     return entity.x, entity.y
 
