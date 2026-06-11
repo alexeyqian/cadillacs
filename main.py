@@ -20,6 +20,30 @@ from main_draw import *
 os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
 #info = pygame.display.Info()
 
+def get_window_size():
+    display_info = pygame.display.Info()
+    display_w = display_info.current_w or EXTERNAL_WIDTH
+    display_h = display_info.current_h or EXTERNAL_HEIGHT
+
+    max_window_w = min(EXTERNAL_WIDTH, display_w)
+    max_window_h = min(EXTERNAL_HEIGHT, display_h)
+    scale = min(max_window_w / SCREEN_WIDTH, max_window_h / SCREEN_HEIGHT)
+    scale = min(1.0, scale)
+
+    return (
+        max(1, int(SCREEN_WIDTH * scale)),
+        max(1, int(SCREEN_HEIGHT * scale))
+    )
+
+def present_screen(screen, window):
+    if screen.get_size() == window.get_size():
+        window.blit(screen, (0, 0))
+    else:
+        scaled = pygame.transform.smoothscale(screen, window.get_size())
+        window.blit(scaled, (0, 0))
+
+    pygame.display.flip()
+
 def create_stage_weapons(stage_data):
     weapons = []
 
@@ -103,11 +127,10 @@ def advance_to_next_stage(game_state):
 def main():
     pygame.init()
 
-    # internal screen mode for production, not used yet
-    #window = pygame.display.set_mode((EXTERNAL_WIDTH, EXTERNAL_HEIGHT), pygame.NOFRAME) # for monitor
-    #screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT)) # for entire game area
-
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.NOFRAME)
+    # Keep game logic/rendering in the 1920x1080 world coordinate system,
+    # then scale the final frame to the actual display-sized window.
+    window = pygame.display.set_mode(get_window_size(), pygame.NOFRAME)
+    screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Cadillacs and Dinosaurs")
 
     clock = pygame.time.Clock()
@@ -177,7 +200,7 @@ def main():
         # prevent gameplay while continue screen active
         if game_state.continue_active:
             main_draw(game_state)
-            pygame.display.flip()
+            present_screen(screen, window)
             clock.tick(FPS)
             continue
 
@@ -196,11 +219,7 @@ def main():
         # 5. draw
         main_draw(game_state)
 
-        # internal screen mode for production, not used yet
-        #scaled = pygame.transform.smoothscale(screen, window.get_size())
-        #window.blit(scaled, (0,0))
-
-        pygame.display.flip()
+        present_screen(screen, window)
         clock.tick(FPS)
 
     pygame.quit()
