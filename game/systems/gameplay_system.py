@@ -10,7 +10,6 @@ from game.systems.manager_system import *
 from game.systems.effect_system import *
 from game.systems.arena_system import *
 from game.systems.explosive_system import *
-from game.level.walkable_area import *
 
 # do not put arena lock logic inside player, enemy, camera
 # arena system controls temporary battle boundaries
@@ -23,9 +22,6 @@ def update_gameplay(game_state, keys):
     # moved from player.py
     game_state.player.apply_world_bounds(game_state.level.world_width,
         game_state.level.lane_top, game_state.level.lane_bottom)
-    if not entity_is_inside_walkable_area(game_state.player, game_state.level):
-        game_state.player.x = old_x
-        game_state.player.y = old_y
     update_enemy_system(game_state)
     # TODO: check if this is dup with apply_world_bounds function in enemy
     apply_arena_bounds(game_state) # clamps player/enemies if camera locked

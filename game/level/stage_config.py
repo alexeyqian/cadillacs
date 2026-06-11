@@ -8,12 +8,6 @@ EPISODE_1_STAGES = [
         "player_start": (160, 620),
         "lane_top": 520,
         "lane_bottom": 820,
-        "walkable_polygon": [
-            (0, 520),
-            (3338, 520),
-            (3338, 820),
-            (0, 820),
-        ],
         "waves": [
             {
                 "kind": "normal",
@@ -27,18 +21,18 @@ EPISODE_1_STAGES = [
             },
             {
                 "kind": "spawn",
-                "trigger_x": 2300,
+                "trigger_x": 2700,
                 "spawners": [
                     {
                         "enemy_type": "normal",
-                        "x": 2380,
+                        "x": 2780,
                         "y": 760,
                         "total_count": 3,
                         "spawn_delay": 120,
                     },
                     {
                         "enemy_type": "fast",
-                        "x": 2460,
+                        "x": 2760,
                         "y": 760,
                         "total_count": 2,
                         "spawn_delay": 180,
@@ -72,12 +66,6 @@ EPISODE_1_STAGES = [
         "player_start": (160, 720),
         "lane_top": 650,
         "lane_bottom": 1080,
-        "walkable_polygon": [
-            (0, 650),
-            (3132, 650),
-            (3132, 1080),
-            (0, 1080),
-        ],
         "waves": [
             {
                 "kind": "normal",
@@ -136,12 +124,6 @@ EPISODE_1_STAGES = [
         "player_start": (120, 790),
         "lane_top": 760,
         "lane_bottom": 1080,
-        "walkable_polygon": [
-            (0, 760),
-            (652, 760),
-            (652, 1080),
-            (0, 1080),
-        ],
         "waves": [],
         "weapons": [],
         "objects": [],
@@ -158,12 +140,6 @@ EPISODE_1_STAGES = [
         "player_start": (160, 720),
         "lane_top": 620,
         "lane_bottom": 1080,
-        "walkable_polygon": [
-            (0, 620),
-            (3086, 620),
-            (3086, 1080),
-            (0, 1080),
-        ],
         "waves": [
             {
                 "kind": "normal",

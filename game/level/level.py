@@ -13,7 +13,6 @@ class Level:
         self.world_height = stage_data["world_height"]
         self.lane_top = stage_data["lane_top"]
         self.lane_bottom = stage_data["lane_bottom"]
-        self.walkable_polygon = stage_data.get("walkable_polygon")
         self.background = Background(stage_data["background"])
         self.wave_configs = stage_data["waves"]
         self.exit_rect = stage_data["exit_rect"]

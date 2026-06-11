@@ -182,26 +182,6 @@ Goals
 * Support transition stages with no waves
 * Support combat stages that require all waves complete before exit
 
-### Milestone 54
-
-Walkable Areas
-
-Status: Complete / Tuning Needed
-
-Goals
-
-* Add `walkable_polygon` per stage
-* Keep `lane_top/lane_bottom` as simple fallback and spawn guidance
-* Use player/enemy feet/collision rect for walkable tests
-* Add debug polygon drawing
-
-Tuning Needed
-
-* Rooftop angled floor
-* Arena combat floor
-* Hallway carpet/floor band
-* Transition sidewalk once the background is expanded
-
 ---
 
 ## Phase 6 - Stage Polish
