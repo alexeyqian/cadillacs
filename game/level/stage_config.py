@@ -5,7 +5,7 @@ EPISODE_1_STAGES = [
         "background": "assets/backgrounds/episode_1/episode_1_stage_1_rooftop.png",
         "world_width": 3338,
         "world_height": 1080,
-        "player_start": (160, 620),
+        "player_start": (100, 500),
         "lane_top": 470,
         "lane_bottom": 800,
         "walkable_polygon": [

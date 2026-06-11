@@ -193,7 +193,10 @@ class Player:
         # camera_x is how far the camera has scrolled.
         # Subtracting it converts the player's world position->screen position
         # player's screen x position after camera offset
+        # bottom-center screen x:
         screen_x = self.x - camera_x
+        body_left = self.get_left()
+        screen_left = body_left - camera_x
 
         # add depth
         # Now moving up/down looks more like a beat'em-up character walking in depth.
@@ -206,10 +209,10 @@ class Player:
             image = pygame.transform.flip(image, True, False)
         # Sprite frames can be wider/taller than the gameplay body box.
         # Keep the feet and body anchored to the player's collision rectangle.
-        sprite_x = screen_x
+        sprite_x = screen_left
         if not self.facing_right:
             sprite_x -= max(0, image.get_width() - self.width)
-        sprite_y = self.y + self.height - image.get_height()
+        sprite_y = self.y - image.get_height()
         screen.blit(image, (sprite_x, sprite_y))
 
         # weapon section
@@ -253,8 +256,8 @@ class Player:
                     attack_rect.width, attack_rect.height), 1)
 
         # player health bar (above player)
-        hb_x = screen_x
-        hb_y = self.y - 16
+        hb_x = screen_left
+        hb_y = self.get_top() - 16
         hb_w = self.width
         hb_h = 8
         # background
@@ -268,27 +271,35 @@ class Player:
         hp_w = int(hb_w * fill_ratio)
         pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
 
-    # body rect
+    def get_left(self):
+        return int(self.x - self.width / 2)
+
+    def get_top(self):
+        return self.y - self.height
+    
+    def get_right(self):
+        return int(self.x + self.width / 2)
+    
+    def get_bottom(self):
+        return self.y
+
     def get_logical_rect(self):
         return pygame.Rect(
-            int(self.x),
-            int(self.y),
-            int(self.width),
-            int(self.height)
-        )
+            self.get_left(),self.get_top(),
+            self.width,self.height)
 
     def get_hurt_rect(self):
         return pygame.Rect(
-            int(self.x+self.hurtbox_offset_x),
-            int(self.y+self.hurtbox_offset_y),
+            int(self.get_left() + self.hurtbox_offset_x),
+            int(self.get_top() + self.hurtbox_offset_y),
             int(self.hurtbox_w),
             int(self.hurtbox_h))
 
     # on bottom center
     def get_collision_rect(self):
         return pygame.Rect(
-            int(self.x+(self.width-self.collision_box_w)/2),
-            int(self.y+self.height-self.collision_box_h),
+            int(self.x - self.collision_box_w/2),
+            int(self.y - self.collision_box_h),
             int(self.collision_box_w),
             int(self.collision_box_h)
         )
@@ -297,6 +308,10 @@ class Player:
     def get_attack_rect(self):
         if not self.is_attacking:
             return None
+
+        body_left = self.get_left()
+        body_top = self.get_top()
+
         # Use symmetric hitbox size and offsets so left/right behave identically
         hit_w = self.attack_hitbox_w
         # giving running attack a longer hitbox
@@ -307,14 +322,13 @@ class Player:
         if self.state == self.GRAB_KNEE:
             hit_w = PLAYER_GRAB_KNEE_HITBOX_W
             hit_h = PLAYER_GRAB_KNEE_HITBOX_H
-            hit_y = int(self.y + self.height * 0.35)
-
+            hit_y = int(self.get_top() + self.height*0.35)
+            # tune this hardcode 0.35 and 0.15 later
             if self.facing_right:
-                hit_x = int(self.x + self.width * 0.65)
+                hit_x = int(self.x + self.width*0.15)
             else:
-                hit_x = int(self.x - hit_w + self.width * 0.35)
-            # return directly
-            # todo: refactory here
+                hit_x = int(self.x - hit_w - self.width*0.15)
+
             return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
         hit_h = self.attack_hitbox_h
@@ -322,12 +336,11 @@ class Player:
             hit_w += self.weapon.hitbox_w_bonus
             hit_h += self.weapon.hitbox_h_bonus
 
-        hit_y = int(self.y + self.attack_hitbox_offset_y)
-        # do we need attack hitbox_offset_x ? no need probably
+        hit_y = body_top + self.attack_hitbox_offset_y
         if self.facing_right:
-            hit_x = int(self.x + self.width)
+            hit_x = int(self.x + self.width/2)
         else:
-            hit_x = int(self.x - hit_w)
+            hit_x = int(self.x - self.width/2 - hit_w)
         return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
     def update_animation(self):
@@ -572,8 +585,9 @@ class Player:
             lane_bottom = self.lane_bottom
 
         # world boundaries
-        self.x = max(0, self.x) # cannot go left of window
-        self.x = min(self.x, world_width - self.width) # cannot go right window
+        half_w = int(self.width / 2)
+        self.x = max(half_w, self.x) # cannot go left of window
+        self.x = min(self.x, world_width - half_w) # cannot go right window
         # beat'em up lane limitsL creates the illusion of depth
         # player walks on a horizontal strip, not full screen
         self.y = max(lane_top, self.y) # cannot go above lane_top

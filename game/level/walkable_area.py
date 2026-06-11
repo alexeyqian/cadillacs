@@ -16,9 +16,7 @@ def point_in_polygon(point, polygon):
 
 # todo: use bottom center as feet point in future
 def entity_feet_point(entity):
-    collision_rect = entity.get_collision_rect()
-    # todo: use collision_rect.y not centery
-    return collision_rect.centerx, collision_rect.centery
+    return entity.x, entity.y
 
 def entity_is_inside_walkable_area(entity, level):
     if not level.walkable_polygon:

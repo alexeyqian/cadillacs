@@ -278,6 +278,7 @@ class Enemy:
 
     def draw(self, screen, camera_x):
         screen_x = self.x - camera_x
+        screen_left = self.get_left() - camera_x
 
         image = self.animation_manager.get_image()
         if self.facing_right:
@@ -293,8 +294,8 @@ class Enemy:
 
         # Center the scaled image inside the enemy bounding box so it visually aligns
         img_w, img_h = image.get_size()
-        blit_x = screen_x + (self.width - img_w) // 2
-        blit_y = self.y + (self.height - img_h) // 2
+        blit_x = screen_left + (self.width - img_w) // 2
+        blit_y = self.y - img_h
         screen.blit(image, (blit_x, blit_y))
 
         if SHOW_ENEMY_RECT:
@@ -319,14 +320,17 @@ class Enemy:
                     attack_rect.width, attack_rect.height), 1)
 
         # health bar background
+        hp_width = int(50 * (self.hp / self.max_hp))
+        hp_height = 12
+        # todo: fix hardcode 50 and 6 here
         pygame.draw.rect(
             screen, (120, 120, 120),
-            (screen_x, self.y - 12, 50, 6))
+            (screen_left, self.get_top() - hp_height, 50, 6))
         # health bar
-        hp_width = int(50 * (self.hp / self.max_hp))
+        
         pygame.draw.rect(
             screen, (255, 0, 0),
-            (screen_x, self.y - 12, hp_width, 6))
+            (screen_left, self.get_top() - hp_height, hp_width, 6))
 
     def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
         # todo: remove these lines of temp code
@@ -338,39 +342,56 @@ class Enemy:
             lane_bottom = self.lane_bottom
 
         # world boundaries
-        self.x = max(0, self.x) # cannot go left of window
-        self.x = min(self.x, world_width - self.width) # cannot go right window
+        half_w = self.width // 2
+        self.x = max(half_w, self.x) # cannot go left of window
+        self.x = min(self.x, world_width - half_w) # cannot go right window
         # beat'em up lane limits creates the illusion of depth
         # player walks on a horizontal strip, not full screen
         self.y = max(lane_top, self.y) # cannot go above lane_top
         self.y = min(lane_bottom, self.y) # cannot go below lane_bottom
 
+    def get_left(self):
+        return int(self.x - self.width / 2)
+
+    def get_top(self):
+        return self.y - self.height
+
+    def get_right(self):
+        return int(self.x + self.width / 2)
+
+    def get_bottom(self):
+        return self.y
+
     # body rect
     def get_logical_rect(self):
         return pygame.Rect(
-            int(self.x),
-            int(self.y),
+            int(self.get_left()),
+            int(self.get_top()),
             int(self.width),
             int(self.height)
         )
 
     def get_hurt_rect(self):
         return pygame.Rect(
-            int(self.x+self.hurtbox_offset_x),
-            int(self.y+self.hurtbox_offset_y),
-            int(self.hurtbox_w),int(self.hurtbox_h))
+            int(self.get_left() + self.hurtbox_offset_x),
+            int(self.get_top() + self.hurtbox_offset_y),
+            int(self.hurtbox_w),
+            int(self.hurtbox_h))
 
     # on bottom center
     def get_collision_rect(self):
         return pygame.Rect(
-            int(self.x+(self.width-self.collision_box_w)/2),
-            int(self.y+self.height-self.collision_box_h),
+            int(self.x - self.collision_box_w/2),
+            int(self.y - self.collision_box_h),
             int(self.collision_box_w),
             int(self.collision_box_h)
         )
 
     # hit box
     def get_attack_rect(self):
+        body_left = self.get_left()
+        body_top = self.get_top()
+
         # Use symmetric hitbox size and offsets so left/right behave identically
         hit_w = self.attack_hitbox_w
         # giving running attack a longer hitbox
@@ -381,12 +402,12 @@ class Enemy:
         #    hit_w += self.weapon.hitbox_w_bonus
         #    hit_h += self.weapon.hitbox_h_bonus
 
-        hit_y = int(self.y + self.attack_hitbox_offset_y)
-        # do we need attack hitbox_offset_x ? no need probably
+        hit_y = body_top + self.attack_hitbox_offset_y
         if self.facing_right:
-            hit_x = int(self.x + self.width)
+            hit_x = int(self.x + self.width/2)
         else:
-            hit_x = int(self.x - hit_w)
+            hit_x = int(self.x - self.width/2 - hit_w)
+
         return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
     def update_walking(self, dx, dy):

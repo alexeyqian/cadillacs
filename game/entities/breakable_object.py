@@ -17,20 +17,26 @@ class BreakableObject:
     def draw(self, screen, camera_x):
         if self.destroyed:
             return
-        screen_x = self.x - camera_x
-        
+        screen_x = self.get_left() - camera_x
+        screen_y = self.get_top()
         box_image = AssetManager.load_scaled_image(self.box_image_file,
                         (self.width, self.height), alpha=True, smooth=True)
 
         if box_image:
-            screen.blit(box_image, (screen_x, self.y))
+            screen.blit(box_image, (screen_x, screen_y))
             return
 
         pygame.draw.rect(screen, (150,90,40),
-                (screen_x, self.y, self.width, self.height))
+                (screen_x, screen_y, self.width, self.height))
+
+    def get_left(self):
+        return self.x - self.width / 2
+
+    def get_top(self):
+        return self.y - self.height
 
     def get_rect(self):
-        return pygame.Rect(self.x, self.y, self.width, self.height)
+        return pygame.Rect(self.get_left(), self.get_top(), self.width, self.height)
 
     def take_damage(self, damage):
         self.hp -= damage
@@ -46,5 +52,5 @@ class BreakableObject:
             return Loot(self.x, self.y, "ammo")
         
         # return None
-        return Loot(self.x, self.y, "health")
+        return Loot(self.x - 30, self.y - 60, "health")
 
