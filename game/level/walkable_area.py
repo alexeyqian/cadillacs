@@ -1,7 +1,7 @@
 def point_in_polygon(point, polygon):
     x, y = point
     inside = False
-    j = len(ploygon) -1
+    j = len(polygon) -1
     for i in range(len(polygon)):
         xi, yi = polygon[i]
         xj, yj = polygon[j]
