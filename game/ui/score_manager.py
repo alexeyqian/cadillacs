@@ -47,6 +47,9 @@ class ScoreManager:
             self.high_score = self.score
     
     def enemy_score(self, enemy):
+        if hasattr(enemy, "score_points"):
+            return enemy.score_points
+
         name = enemy.__class__.__name__
         if name == "FastEnemy":
             return 200

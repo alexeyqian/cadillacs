@@ -27,9 +27,12 @@ class Enemy:
 
     def __init__(self, x, y, idle_config=None, walk_config=None,
                 attack_config=None, hit_config=None, dead_config=None,
-                fallback_frame_factory=None):
+                fallback_frame_factory=None, enemy_config=None):
         self.x = x
         self.y = y
+        self.enemy_id = "normal"
+        self.display_name = "Enemy"
+        self.score_points = 100
         ###### boxes ######
         # logical box
         self.width = ENEMY_W
@@ -69,6 +72,7 @@ class Enemy:
         self.attack_timer = 0 # ?
         self.attack_has_hit = False
         self.attack_cooldown = 0
+        self.attack_cooldown_duration = ENEMY_ATTACK_COOLDOWN
         self.attack_windup = ENEMY_ATTACK_WINDUP
         self.attack_active = ENEMY_ATTACK_ACTIVE
         self.attack_recovery = ENEMY_ATTACK_RECOVERY
@@ -93,6 +97,12 @@ class Enemy:
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
 
+        if enemy_config is not None:
+            self.apply_enemy_config(enemy_config)
+            idle_config = enemy_config.idle_config
+            walk_config = enemy_config.walk_config
+            attack_config = enemy_config.attack_config
+
         self.animation_manager = AnimationManager()
         self.init_animations(idle_config=idle_config,
                             walk_config=walk_config,
@@ -100,6 +110,29 @@ class Enemy:
                             hit_config=hit_config,
                             dead_config=dead_config,
                             fallback_frame_factory=fallback_frame_factory)
+
+    def apply_enemy_config(self, config):
+        self.enemy_id = config.enemy_id
+        self.display_name = config.display_name
+        self.score_points = config.score_points
+        self.width = int(config.width)
+        self.height = int(config.height)
+        self.max_hp = config.max_hp
+        self.hp = self.max_hp
+        self.speed = config.speed
+        self.attack_damage = config.attack_damage
+        self.detect_range = config.detect_range
+        self.attack_cooldown_duration = config.attack_cooldown
+
+        self.collision_box_w = int(self.width * 0.5)
+        self.collision_box_h = int(self.height * 0.2)
+        self.hurtbox_w = int(self.width * 0.6)
+        self.hurtbox_h = int(self.height * 0.6)
+        self.hurtbox_offset_x = int(self.width * 0.2)
+        self.hurtbox_offset_y = int(self.height * 0.1)
+        self.attack_hitbox_w = int(ENEMY_HITBOX_W * config.attack_range_multiplier)
+        self.attack_hitbox_h = int(self.height * 0.5)
+        self.attack_hitbox_offset_y = int(self.height * 0.2)
 
     def init_animations(self, idle_config=None, walk_config=None, attack_config=None,
                     hit_config=None, dead_config=None, fallback_frame_factory=None):
@@ -471,7 +504,7 @@ class Enemy:
             self.state = self.IDLE
             self.attack_timer = 0
             self.attack_has_hit = False
-            self.attack_cooldown = ENEMY_ATTACK_COOLDOWN
+            self.attack_cooldown = self.attack_cooldown_duration
         
     def update_attack_old(self, player):
         if self.attack_cooldown > 0:

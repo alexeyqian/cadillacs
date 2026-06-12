@@ -1,22 +1,32 @@
-from game.entities.enemy import Enemy
-from game.entities.fast_enemy import FastEnemy
+from game.entities.basic_melee_enemy import BasicMeleeEnemy
+from game.entities.enemy_config import get_enemy_config
+from game.entities.fast_enemy import FastEnemy, FastSmallEnemy
 from game.entities.heavy_enemy import HeavyEnemy
 from game.entities.ranged_enemy import RangedEnemy
 from game.entities.boss_enemy import BossEnemy
 from game.entities.raptor_enemy import RaptorEnemy
+from game.entities.weapon_enemy import WeaponEnemy
 
 class EnemyFactory:
     @staticmethod
     def create_enemy(enemy_type, x, y):
-        if enemy_type == "fast":
-            return FastEnemy(x, y)
-        if enemy_type == "heavy":
-            return HeavyEnemy(x, y)
-        if enemy_type == "ranged":
-            return RangedEnemy(x, y)
-        if enemy_type == "raptor":
-            return RaptorEnemy(x, y)
         if enemy_type == "boss":
             return BossEnemy(x, y)
-        
-        return Enemy(x, y)
+        if enemy_type == "raptor":
+            return RaptorEnemy(x, y)
+
+        config = get_enemy_config(enemy_type)
+        if config.archetype == "basic_melee":
+            return BasicMeleeEnemy(x, y, enemy_type)
+        if config.archetype == "fast_small":
+            if enemy_type == "fast":
+                return FastEnemy(x, y)
+            return FastSmallEnemy(x, y, enemy_type)
+        if config.archetype == "weapon":
+            return WeaponEnemy(x, y, enemy_type)
+        if config.archetype == "heavy":
+            return HeavyEnemy(x, y, enemy_type)
+        if config.archetype == "ranged":
+            return RangedEnemy(x, y, enemy_type)
+
+        return BasicMeleeEnemy(x, y, "normal")

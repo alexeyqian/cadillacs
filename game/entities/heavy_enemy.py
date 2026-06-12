@@ -1,16 +1,16 @@
-from game.entities.enemy import Enemy
-from game.animation.animation_config import *
-from game.settings import *
+from game.entities.basic_melee_enemy import BasicMeleeEnemy
 
-class HeavyEnemy(Enemy):
-    def __init__(self, x, y):
-        super().__init__(x, y, 
-                        idle_config=HEAVY_ENEMY_IDLE,
-                        walk_config=HEAVY_ENEMY_WALK,
-                        attack_config=HEAVY_ENEMY_ATTACK)
-        self.width = HEAVY_ENEMY_W
-        self.height = HEAVY_ENEMY_H
-        self.max_hp = HEAVY_ENEMY_MAX_HP
-        self.hp = self.max_hp
-        self.speed = HEAVY_ENEMY_SPEED
-        self.attack_damage = HEAVY_ENEMY_ATTACK_DAMAGE
+
+class HeavyEnemy(BasicMeleeEnemy):
+    def __init__(self, x, y, enemy_type="heavy"):
+        super().__init__(x, y, enemy_type)
+
+        self.attack_windup = 26
+        self.attack_active = 10
+        self.attack_recovery = 34
+        self.attack_total_duration = (
+            self.attack_windup + self.attack_active + self.attack_recovery
+        )
+
+    def should_knockdown_from_damage(self, damage):
+        return damage >= 55

@@ -1,14 +1,11 @@
 from game.entities.enemy import Enemy
+from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_projectile import EnemyProjectile
 from game.settings import *
 
 class RangedEnemy(Enemy):
-    def __init__(self, x, y):
-        super().__init__(x, y)
-
-        self.max_hp = RANGED_ENEMY_MAX_HP
-        self.hp = self.max_hp
-        self.attack_damage = RANGED_ENEMY_ATTACK_DAMAGE
+    def __init__(self, x, y, enemy_type="ranged"):
+        super().__init__(x, y, enemy_config=get_enemy_config(enemy_type))
         
         # properties special to ranged enemy
         self.pending_projectile = None
