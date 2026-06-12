@@ -117,6 +117,96 @@ MUSTAPHA_ANIMATIONS = {
             },
         ]
     },
+    "run": {
+        "file": "assets/player/mustapha_run.png",
+        "frames_count": 9,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 142, 153),
+                "offset": (-55, -153),
+                "hurt_rect": (55, 35, 70, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (142, 0, 180, 153),
+                "offset": (-55, -153),
+                "hurt_rect": (90, 10, 70, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (322, 0, 140, 153),
+                "offset": (-50, -153),
+                "hurt_rect": (60, 0, 70, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (462, 0, 148, 153),
+                "offset": (-60, -153),
+                "hurt_rect": (70, 0, 70, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (610, 0, 156, 153),
+                "offset": (-64, -153),
+                "hurt_rect": (80, 0, 70, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (766, 0, 142, 153),
+                "offset": (-20, -153),
+                "hurt_rect": (45, 0, 70, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (908, 0, 159, 153),
+                "offset": (-60, -153),
+                "hurt_rect": (70, 0, 70, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (1067, 0, 172, 153),
+                "offset": (-70, -153),
+                "hurt_rect": (80, 0, 70, 90),
+                "attack_rect": None
+            }
+        ]
+    },
+    "hit": {
+        "file": "assets/player/mustapha_hit.png",
+        "frames_count": 2,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 120, 160),
+                "offset": (-60, -160),
+                "hurt_rect": (0, 0, 45, 110),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (120, 0, 126, 160),
+                "offset": (-70, -160),
+                "hurt_rect": (35, 0, 45, 110),
+                "attack_rect": None
+            }
+        ]
+    },
+    "dead": {
+        "file": "assets/player/mustapha_dead.png",
+        "frames_count": 2,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 221, 87),
+                "offset": (-100, -87),
+                "hurt_rect": (0, 0, 110, 45),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (221, 0, 220, 87),
+                "offset": (-100, -87),
+                "hurt_rect": (0, 60, 110, 45),
+                "attack_rect": None
+            }
+        ]
+    },
     "attack": {
         "file": "assets/player/mustapha_attack.png",
         "frames_count": 2,
@@ -134,5 +224,113 @@ MUSTAPHA_ANIMATIONS = {
                 "attack_rect": (140, 20, 50, 20)
             }
         ]
-    }
+    },
+    "run_attack": {
+        "file": "assets/player/mustapha_run_attack.png",
+        "frames_count": 2,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 120, 92),
+                "offset": (-60, -150),
+                "hurt_rect": (0, 0, 120, 92),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (120, 0, 223, 92),
+                "offset": (-110, -150),
+                "hurt_rect": (0, 20, 110, 45),
+                "attack_rect": (130, 40, 80, 40)
+            }
+        ]
+    },
+    "jump": {
+        "file": "assets/player/mustapha_jump.png",
+        "frames_count": 4,
+        "frames": [
+            {#77,93,96,77
+                "frame_rect": (0, 0, 77, 211),
+                "offset": (-40, -211),
+                "hurt_rect": (40, 0, 45, 110),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (77, 0, 93, 211),
+                "offset": (-40, -211),
+                "hurt_rect": (0, 0, 45, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (170, 0, 96, 211),
+                "offset": (-40, -211),
+                "hurt_rect": (0, 0, 45, 50),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (266, 0, 77, 211),
+                "offset": (-40, -211),
+                "hurt_rect": (0, 0, 45, 90),
+                "attack_rect": None
+            }
+        ]
+    },
+    "jump_attack": {
+        "file": "assets/player/mustapha_run_attack.png",
+        "frames_count": 2,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 120, 92),
+                "offset": (-60, -150),
+                "hurt_rect": (0, 0, 120, 92),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (120, 0, 223, 92),
+                "offset": (-110, -150),
+                "hurt_rect": (0, 20, 110, 45),
+                "attack_rect": (130, 40, 80, 40)
+            }
+        ]
+    },
+    "grab": {
+        "file": "assets/player/mustapha_grap.png",
+        "frames_count": 1,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 123, 162),
+                "offset": (-40, -162),
+                "hurt_rect": (20, 0, 45, 110),
+                "attack_rect": None
+            }
+        ]
+    },
+    "throw": {
+        "file": "assets/player/mustapha_throw.png",
+        "frames_count": 1,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 153, 162),
+                "offset": (-40, -162),
+                "hurt_rect": (20, 0, 45, 110),
+                "attack_rect": None
+            }
+        ]
+    },
+    "grab_knee": {
+        "file": "assets/player/mustapha_grab_knew.png",
+        "frames_count": 2,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 123, 165),
+                "offset": (-40, -165),
+                "hurt_rect": (0, 0, 45, 110),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (123, 0, 88, 165),
+                "offset": (-35, -165),
+                "hurt_rect": (0, 10, 45, 110),
+                "attack_rect": (60, 70, 30, 30),
+            }
+        ]
+    },
 }
