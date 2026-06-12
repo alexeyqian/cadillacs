@@ -182,7 +182,8 @@ class Player:
     def load_mustapha_animation(self, animation_key):
         config = MUSTAPHA_ANIMATIONS.get(animation_key)
         if not config:
-            return []
+            # return []
+            raise ValueError(f"Missing player animation data: {animation_key}")
 
         sheet = pygame.image.load(config["file"]).convert_alpha()
         frames = []
@@ -210,7 +211,7 @@ class Player:
         attack_frames = self.load_mustapha_animation("attack")
         run_attack_frames = self.load_mustapha_animation("run_attack")
         jump_attack_frames = self.load_mustapha_animation("jump_attack")
-        grab_frames = self.load_mustapha_animation("grap")
+        grab_frames = self.load_mustapha_animation("grab")
         throw_frames = self.load_mustapha_animation("throw")
         grab_knee_frames = self.load_mustapha_animation("grab_knee")
         hit_frames = self.load_mustapha_animation("hit")
@@ -313,24 +314,24 @@ class Player:
             image = pygame.transform.flip(image, True, False)
         
         frame = self.get_current_player_frame()
-        if frame: # for new frame system
-            offset_x, offset_y = frame.offset
-            offset_x *= scale
-            offset_y *= scale
-            if self.facing_right:
-                sprite_world_x = self.x + offset_x
-            else:
-                sprite_world_x = self.x - image.get_width() - offset_x
-            sprite_y = self.y + offset_y
-            screen.blit(image, (sprite_world_x - camera_x, sprite_y))
+        #if frame: # for new frame system
+        offset_x, offset_y = frame.offset
+        offset_x *= scale
+        offset_y *= scale
+        if self.facing_right:
+            sprite_world_x = self.x + offset_x
         else:
+            sprite_world_x = self.x - image.get_width() - offset_x
+        sprite_y = self.y + offset_y
+        screen.blit(image, (sprite_world_x - camera_x, sprite_y))
+        #else:
             # Sprite frames can be wider/taller than the gameplay body box.
             # Keep the feet and body anchored to the player's collision rectangle.
-            sprite_x = screen_left
-            if not self.facing_right:
-                sprite_x -= max(0, image.get_width() - self.width)
-            sprite_y = self.y - image.get_height()
-            screen.blit(image, (sprite_x, sprite_y))
+        #    sprite_x = screen_left
+        #    if not self.facing_right:
+        #        sprite_x -= max(0, image.get_width() - self.width)
+        #    sprite_y = self.y - image.get_height()
+        #    screen.blit(image, (sprite_x, sprite_y))
 
         # weapon section
         if self.weapon:
@@ -409,34 +410,33 @@ class Player:
         scale = self.sprite_scale
         frame = self.get_current_player_frame()
         # new for frame-aware logic
-        if frame and frame.hurt_rect:
-            local_x, local_y, w, h = frame.hurt_rect
-            offset_x, offset_y = frame.offset
-            frame_w = frame.image.get_width()
-            
-            # scale
-            local_x *= scale
-            local_y *= scale
-            w *= scale
-            h *= scale
-            offset_x *= scale
-            offset_y *= scale
-            frame_w *= scale
-            if self.facing_right:
-                world_x = self.x + offset_x + local_x
-            else:
-                mirrored_x = frame_w - local_x - w
-                world_x = self.x - frame_w - offset_x + mirrored_x
+        local_x, local_y, w, h = frame.hurt_rect
+        offset_x, offset_y = frame.offset
+        frame_w = frame.image.get_width()
 
-            world_y = self.y + offset_y + local_y
-            return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
+        # scale
+        local_x *= scale
+        local_y *= scale
+        w *= scale
+        h *= scale
+        offset_x *= scale
+        offset_y *= scale
+        frame_w *= scale
+        if self.facing_right:
+            world_x = self.x + offset_x + local_x
+        else:
+            mirrored_x = frame_w - local_x - w
+            world_x = self.x - frame_w - offset_x + mirrored_x
+
+        world_y = self.y + offset_y + local_y
+        return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
 
         # fallback to old logic
-        return pygame.Rect(
-            int(self.get_left() + self.hurtbox_offset_x),
-            int(self.get_top() + self.hurtbox_offset_y),
-            int(self.hurtbox_w),
-            int(self.hurtbox_h))
+        #return pygame.Rect(
+        #    int(self.get_left() + self.hurtbox_offset_x),
+        #    int(self.get_top() + self.hurtbox_offset_y),
+        #    int(self.hurtbox_w),
+        #    int(self.hurtbox_h))
 
     # on bottom center
     def get_collision_rect(self):
@@ -472,36 +472,37 @@ class Player:
         body_left = self.get_left()
         body_top = self.get_top()
 
+        # OLD LOGIC
         # Use symmetric hitbox size and offsets so left/right behave identically
-        hit_w = self.attack_hitbox_w
+        #hit_w = self.attack_hitbox_w
         # giving running attack a longer hitbox
-        if self.state == self.RUN_ATTACK:
-            hit_w = self.attack_hitbox_w * 1.5
-        if self.state == self.JUMP_ATTACK:
-            hit_w = self.attack_hitbox_w
-        if self.state == self.GRAB_KNEE:
-            hit_w = PLAYER_GRAB_KNEE_HITBOX_W
-            hit_h = PLAYER_GRAB_KNEE_HITBOX_H
-            hit_y = int(self.get_top() + self.height*0.35)
-            # tune this hardcode 0.35 and 0.15 later
-            if self.facing_right:
-                hit_x = int(self.x + self.width*0.15)
-            else:
-                hit_x = int(self.x - hit_w - self.width*0.15)
+        #if self.state == self.RUN_ATTACK:
+        #    hit_w = self.attack_hitbox_w * 1.5
+        #if self.state == self.JUMP_ATTACK:
+        #    hit_w = self.attack_hitbox_w
+        #if self.state == self.GRAB_KNEE:
+        #    hit_w = PLAYER_GRAB_KNEE_HITBOX_W
+        #    hit_h = PLAYER_GRAB_KNEE_HITBOX_H
+        #    hit_y = int(self.get_top() + self.height*0.35)
+        #    # tune this hardcode 0.35 and 0.15 later
+        #    if self.facing_right:
+        #        hit_x = int(self.x + self.width*0.15)
+        #    else:
+        #        hit_x = int(self.x - hit_w - self.width*0.15)
 
-            return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
+        #    return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
-        hit_h = self.attack_hitbox_h
-        if self.weapon and not self.weapon.is_ranged:
-            hit_w += self.weapon.hitbox_w_bonus
-            hit_h += self.weapon.hitbox_h_bonus
+        #hit_h = self.attack_hitbox_h
+        #if self.weapon and not self.weapon.is_ranged:
+        #    hit_w += self.weapon.hitbox_w_bonus
+        #    hit_h += self.weapon.hitbox_h_bonus
 
-        hit_y = body_top + self.attack_hitbox_offset_y
-        if self.facing_right:
-            hit_x = int(self.x + self.width/2)
-        else:
-            hit_x = int(self.x - self.width/2 - hit_w)
-        return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
+        #hit_y = body_top + self.attack_hitbox_offset_y
+        #if self.facing_right:
+        #    hit_x = int(self.x + self.width/2)
+        #else:
+        #    hit_x = int(self.x - self.width/2 - hit_w)
+        #return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
 
     def update_animation(self):
         if self.state == self.IDLE:

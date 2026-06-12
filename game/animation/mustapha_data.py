@@ -292,7 +292,7 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
     "grab": {
-        "file": "assets/player/mustapha_grap.png",
+        "file": "assets/player/mustapha_grab.png",
         "frames_count": 1,
         "frames": [
             {
@@ -316,7 +316,7 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
     "grab_knee": {
-        "file": "assets/player/mustapha_grab_knew.png",
+        "file": "assets/player/mustapha_grab_knee.png",
         "frames_count": 2,
         "frames": [
             {
