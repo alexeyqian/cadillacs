@@ -131,7 +131,7 @@ MUSTAPHA_ANIMATIONS = {
                 "frame_rect": (111, 0, 193, 168),
                 "offset": (-110, -168),
                 "hurt_rect": (116, 0, 45, 110),
-                "attack_rect": (200, 20, 50, 20)
+                "attack_rect": (140, 20, 50, 20)
             }
         ]
     }

@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 import pygame
 from game.settings import *
 from game.colors import *
@@ -14,8 +15,8 @@ from game.animation.mustapha_data import MUSTAPHA_ANIMATIONS
 class PlayerFrame:
     image: pygame.Surface
     offset: tuple
-    hurt_rect: tuple | None
-    attack_rect: tuple | None
+    hurt_rect: tuple
+    attack_rect: Optional[tuple]
 
 class PlayerFrameAnimation:
     def __init__(self, frames, frame_duration=8):
@@ -67,6 +68,7 @@ class Player:
         # logical box
         self.width = PLAYER_W
         self.height = PLAYER_H
+        self.sprite_scale = 2
         #collision box
         self.collision_box_w = PLAYER_COLLISION_W
         self.collision_box_h = PLAYER_COLLISION_H
@@ -150,6 +152,13 @@ class Player:
         self.animation_manager = AnimationManager()
         self.init_animations()
     
+    def get_current_player_frame(self):
+        animation = self.animation_manager.current_animation
+        # only used for new per-frame metadata
+        if hasattr(animation, "get_frame_data"):
+            return animation.get_frame_data()
+        return None
+    
     def load_mustapha_animation(self, animation_key):
         config = MUSTAPHA_ANIMATIONS.get(animation_key)
         if not config:
@@ -175,11 +184,14 @@ class Player:
 
     def init_animations(self):
         # load frames
-        idle_frames = AssetManager.load_animation(PLAYER_IDLE, create_idle_frames)
-        walk_frames = AssetManager.load_animation(PLAYER_WALK, create_walk_frames)
+        idle_frames = self.load_mustapha_animation("idle")
+        #AssetManager.load_animation(PLAYER_IDLE, create_idle_frames)
+        walk_frames = self.load_mustapha_animation("walk") 
+        #AssetManager.load_animation(PLAYER_WALK, create_walk_frames)
         run_frames = AssetManager.load_animation(PLAYER_RUN, create_run_frames)
         jump_frames = AssetManager.load_animation(PLAYER_JUMP, create_jump_frames)
-        attack_frames = AssetManager.load_animation(PLAYER_ATTACK, create_attack_frames)
+        attack_frames = self.load_mustapha_animation("attack")
+        #AssetManager.load_animation(PLAYER_ATTACK, create_attack_frames)
         run_attack_frames = AssetManager.load_animation(PLAYER_RUN_ATTACK, create_run_attack_frames)
         jump_attack_frames = AssetManager.load_animation(PLAYER_JUMP_ATTACK, create_jump_attack_frames)
         grab_frames = AssetManager.load_animation(PLAYER_GRAB, create_grab_frames)
@@ -202,15 +214,15 @@ class Player:
         dead_dur = max(1, int(FPS / ANIM_FPS_DEAD))
 
         self.animation_manager.add_animation(
-            self.IDLE, Animation(idle_frames, idle_dur))
+            self.IDLE, PlayerFrameAnimation(idle_frames, idle_dur))
         self.animation_manager.add_animation(
-            self.WALK, Animation(walk_frames, walk_dur))
+            self.WALK, PlayerFrameAnimation(walk_frames, walk_dur))
         self.animation_manager.add_animation(
             self.RUN, Animation(run_frames, run_dur))
         self.animation_manager.add_animation(
             self.JUMP, Animation(jump_frames, jump_dur))
         self.animation_manager.add_animation(
-            self.ATTACK, Animation(attack_frames, attack_dur))
+            self.ATTACK, PlayerFrameAnimation(attack_frames, attack_dur))
         self.animation_manager.add_animation(
             self.RUN_ATTACK, Animation(run_attack_frames, run_attack_dur))
         self.animation_manager.add_animation(
@@ -263,15 +275,30 @@ class Player:
         # end of depth
 
         image = self.animation_manager.get_image()
+        scale = self.sprite_scale
+        image = pygame.transform.scale(image, (image.get_width()*scale, image.get_height()*scale))
         if not self.facing_right:
             image = pygame.transform.flip(image, True, False)
-        # Sprite frames can be wider/taller than the gameplay body box.
-        # Keep the feet and body anchored to the player's collision rectangle.
-        sprite_x = screen_left
-        if not self.facing_right:
-            sprite_x -= max(0, image.get_width() - self.width)
-        sprite_y = self.y - image.get_height()
-        screen.blit(image, (sprite_x, sprite_y))
+        
+        frame = self.get_current_player_frame()
+        if frame: # for new frame system
+            offset_x, offset_y = frame.offset
+            offset_x *= scale
+            offset_y *= scale
+            if self.facing_right:
+                sprite_world_x = self.x + offset_x
+            else:
+                sprite_world_x = self.x - image.get_width() - offset_x
+            sprite_y = self.y + offset_y
+            screen.blit(image, (sprite_world_x - camera_x, sprite_y))
+        else:
+            # Sprite frames can be wider/taller than the gameplay body box.
+            # Keep the feet and body anchored to the player's collision rectangle.
+            sprite_x = screen_left
+            if not self.facing_right:
+                sprite_x -= max(0, image.get_width() - self.width)
+            sprite_y = self.y - image.get_height()
+            screen.blit(image, (sprite_x, sprite_y))
 
         # weapon section
         if self.weapon:
@@ -347,6 +374,32 @@ class Player:
             self.width,self.height)
 
     def get_hurt_rect(self):
+        scale = self.sprite_scale
+        frame = self.get_current_player_frame()
+        # new for frame-aware logic
+        if frame and frame.hurt_rect:
+            local_x, local_y, w, h = frame.hurt_rect
+            offset_x, offset_y = frame.offset
+            frame_w = frame.image.get_width()
+            
+            # scale
+            local_x *= scale
+            local_y *= scale
+            w *= scale
+            h *= scale
+            offset_x *= scale
+            offset_y *= scale
+            frame_w *= scale
+            if self.facing_right:
+                world_x = self.x + offset_x + local_x
+            else:
+                mirrored_x = frame_w - local_x - 2
+                world_x = self.x - frame_w - offset_x + mirrored_x
+
+            world_y = self.y + offset_y + local_y
+            return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
+
+        # fallback to old logic
         return pygame.Rect(
             int(self.get_left() + self.hurtbox_offset_x),
             int(self.get_top() + self.hurtbox_offset_y),
@@ -366,7 +419,24 @@ class Player:
     def get_attack_rect(self):
         if not self.is_attacking:
             return None
+        
+        # for new per-frame logic
+        frame = self.get_current_player_frame()
+        if frame and frame.attack_rect:
+            local_x, local_y, w, h = frame.attack_rect
+            offset_x, offset_y = frame.offset
+            frame_w = frame.image.get_width()
 
+            if self.facing_right:
+                world_x = self.x + offset_x + local_x
+            else:
+                mirrored_x = frame_w - local_x - w
+                world_x = self.x - frame_w - offset_x + mirrored_x
+
+            world_y = self.y + offset_y + local_y
+            return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
+
+        # fallback for old logic
         body_left = self.get_left()
         body_top = self.get_top()
 
