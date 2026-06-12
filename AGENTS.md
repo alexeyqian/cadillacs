@@ -390,3 +390,12 @@ Current baseline files to preserve during refactors:
 - wave.py
 
 New changes should be incremental and milestone-based.
+
+Some notes:
+The Rule of Thumb for Beat 'Em UpsStandard Punches/Kicks: Wrap the red hitbox around the striking point (the fist or the boot) + 10 to 15 pixels of the forearm/shin to ensure a clean visual overlap. Keep the shoulder and elbow as a vulnerable green hurtbox.Large Weapon Swings (Knives/Pipes): Wrap the hitbox around the entire length of the active blade or metal pipe, plus the fist holding it. The weapon itself is an object, so it should be completely dangerous from base to tip.Body Slams / Clotheslines: If the character throws their entire body weight forward (like a shoulder tackle), then you can expand a single massive hitbox across their entire chest and upper arm, because their whole mass is acting as the weapon.
+
+A counter-hit check is a combat programming routine that detects when a character is struck while they are in the middle of executing their own attack animation.When Mustapha punches forward, his arm extends. If an enemy strikes his extended arm hurtbox before Mustapha's fist hitbox can touch the enemy, the engine registers a "Counter-Hit." This instantly interrupts Mustapha's punch, cancels his attack frame, and knocks him into a hit-stun state.
+
+When two opposing attack hitboxes collide at the exact same frame before either one touches a vulnerable body hurtbox, it causes a phenomenon known as a Clash, Parry, or Trade.Depending on how competitive or realistic you want your beat 'em up to be, modern and classic 2D games handle this intersection using one of three design rules:
+
+Method 1: The Weapon Deflection / Parry (The Arcade Standard)This is the most satisfying and professional approach. If a bare fist hits a steel knife or another fist directly, the weapons cancel each other out. Neither character takes damage to their health bars, but both are forced into a brief visual recoil animation.What happens: Both hitboxes bounce off each other. A unique metal-clinking spark or block effect flashes.The Gameplay Benefit: It rewards the player for precise timing. Instead of getting sliced by a knife, their punch acts as a shield, neutralizing the enemy's threat.
