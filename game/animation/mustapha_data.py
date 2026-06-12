@@ -63,8 +63,8 @@ MUSTAPHA_ANIMATIONS = {
             },
             {
                 "frame_rect": (110,0,116,170),
-                "offset": (-170, -170),
-                "hurt_rect": (140, 0, 45, 110),
+                "offset": (-70, -170),
+                "hurt_rect": (40, 0, 45, 110),
                 "attack_rect": None
             },
             {

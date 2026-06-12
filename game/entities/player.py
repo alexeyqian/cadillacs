@@ -177,7 +177,7 @@ class Player:
                 image=image,
                 offset=frame_config["offset"],
                 hurt_rect=frame_config.get("hurt_rect"),
-                attack_rect=frame_config.get("attack_rec"),
+                attack_rect=frame_config.get("attack_rect"),
             ))
 
         return frames
@@ -212,6 +212,9 @@ class Player:
         throw_dur = max(1, int(FPS / ANIM_FPS_THROW))
         hit_dur = max(1, int(FPS / ANIM_FPS_HIT))
         dead_dur = max(1, int(FPS / ANIM_FPS_DEAD))
+
+        # make duration exact
+        self.attack_duration = len(attack_frames) * attack_dur
 
         self.animation_manager.add_animation(
             self.IDLE, PlayerFrameAnimation(idle_frames, idle_dur))
@@ -393,7 +396,7 @@ class Player:
             if self.facing_right:
                 world_x = self.x + offset_x + local_x
             else:
-                mirrored_x = frame_w - local_x - 2
+                mirrored_x = frame_w - local_x - w
                 world_x = self.x - frame_w - offset_x + mirrored_x
 
             world_y = self.y + offset_y + local_y
