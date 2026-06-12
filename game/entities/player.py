@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 import pygame
 from game.settings import *
 from game.colors import *
@@ -7,6 +8,40 @@ from game.assets.asset_manager import AssetManager
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
 from game.animation.animation_config import *
+from game.animation.mustapha_data import MUSTAPHA_ANIMATIONS
+
+@dataclass
+class PlayerFrame:
+    image: pygame.Surface
+    offset: tuple
+    hurt_rect: tuple | None
+    attack_rect: tuple | None
+
+class PlayerFrameAnimation:
+    def __init__(self, frames, frame_duration=8):
+        self.frames = frames
+        self.frame_duration = frame_duration
+        self.current_frame = 0
+        self.timer = 0
+
+    def update(self):
+        self.timer += 1
+        if self.timer >= self.frame_duration:
+            self.timer = 0
+            self.current_frame += 1
+            if self.current_frame >= len(self.frames):
+                self.current_frame = 0
+
+    def get_image(self):
+        return self.frames[self.current_frame].image
+
+    def get_frame_data(self):
+        return self.frames[self.current_frame]
+
+    def reset(self):
+        self.current_frame = 0
+        self.timer = 0
+
 class Player:
     IDLE = "IDLE"
     WALK = "WALK"
@@ -114,7 +149,30 @@ class Player:
         
         self.animation_manager = AnimationManager()
         self.init_animations()
-        
+    
+    def load_mustapha_animation(self, animation_key):
+        config = MUSTAPHA_ANIMATIONS.get(animation_key)
+        if not config:
+            return []
+
+        sheet = pygame.image.load(config["file"]).convert_alpha()
+        frames = []
+
+        for frame_config in config["frames"]:
+            frame_x, frame_y, frame_w, frame_h = frame_config["frame_rect"]
+
+            image = pygame.Surface((frame_w, frame_h), pygame.SRCALPHA)
+            image.blit(sheet, (0, 0), (frame_x, frame_y, frame_w, frame_h))
+
+            frames.append(PlayerFrame(
+                image=image,
+                offset=frame_config["offset"],
+                hurt_rect=frame_config.get("hurt_rect"),
+                attack_rect=frame_config.get("attack_rec"),
+            ))
+
+        return frames
+
     def init_animations(self):
         # load frames
         idle_frames = AssetManager.load_animation(PLAYER_IDLE, create_idle_frames)
