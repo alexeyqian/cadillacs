@@ -250,3 +250,37 @@ L while grabbing -> throw enemy
 So do not force everything into bottom-center. Instead, make projectile/effect constructors clear and fix spawn positions.
 Player/enemy/object/weapon/loot = bottom-center world position
 Projectile/effect/floating text = point or top-left effect position
+
+TODO:
+for FPS=60, what is best practice for animations:
+How many frames should use for idle, walk, running, jumping, fist attack, leg attach, grab and throw animations?
+How to set Animation target FPS (how many animation frames per real second) how to Tune these to control perceived animation speed; values are in frames-per-second for player
+
+
+How to find anchor point in player animation frames:
+A good guideline is: pick the animation anchor by what is physically supporting or driving the body in that frame. Then set offset_x so that anchor pixel lands on player.x. For each frame, ask: What point on this pose should remain stable in world space?
+Idle: 
+anchor: midpoint between both feet
+Walk: 
+anchor: the foot currently carrying weight.For walk cycles, the planted foot changes over time.
+left foot planted -> anchor left foot
+right foot planted -> anchor right foot
+both feet touching -> midpoint
+But for a simple beat ’em up, you can also use the midpoint between feet for all walk frames. It is easier and often looks stable enough.
+Run
+Anchor: support foot during contact frames.
+For airborne run frames, use pelvis/body center projected down to floor.
+
+Punch / Standing Attack
+Anchor: rear planted foot or midpoint under hips.
+Usually best:
+startup -> midpoint under hips
+active punch -> rear planted foot
+recovery -> midpoint under hips
+
+Jump
+Anchor: body center / hips, not feet, while airborne.
+takeoff -> feet/floor contact
+airborne -> pelvis center projected down
+landing -> feet/floor contact
+On takeoff and landing frames:
