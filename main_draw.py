@@ -85,6 +85,7 @@ def main_draw_world(game_state):
     #level.draw_props(screen, camera.x, "front")
     level.background.draw_front(screen, camera.x)
     draw_exit_rect(screen, camera, level)
+    draw_player_debug_boxes(screen, camera, player)
 
 def draw_exit_rect(screen, camera, level):
     if not SHOW_EXIT_RECT:
@@ -253,3 +254,54 @@ def main_draw_ui(game_state):
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(game_over_text, game_over_rect)
         return
+    
+def draw_player_debug_boxes(screen, camera, player):
+    if not SHOW_PLAYER_RECT:
+        return
+
+    body_rect = player.get_logical_rect()
+    hurt_rect = player.get_hurt_rect()
+    collision_rect = player.get_collision_rect()
+    attack_rect = player.get_attack_rect()
+
+    # green = old logical body / gameplay reference
+    pygame.draw.rect(screen, GREEN_COLOR, (
+        body_rect.x - camera.x,
+        body_rect.y,
+        body_rect.width,
+        body_rect.height
+    ), 1)
+
+    # red = current animation frame hurt box
+    if hurt_rect and hurt_rect.width > 0 and hurt_rect.height > 0:
+        pygame.draw.rect(screen, RED_COLOR, (
+            hurt_rect.x - camera.x,
+            hurt_rect.y,
+            hurt_rect.width,
+            hurt_rect.height
+        ), 2)
+
+    # blue = collision / feet box
+    pygame.draw.rect(screen, (80, 180, 255), (
+        collision_rect.x - camera.x,
+        collision_rect.y,
+        collision_rect.width,
+        collision_rect.height
+    ), 1)
+
+    # yellow = current animation frame attack box
+    if attack_rect and attack_rect.width > 0 and attack_rect.height > 0:
+        pygame.draw.rect(screen, YELLOW_COLOR, (
+            attack_rect.x - camera.x,
+            attack_rect.y,
+            attack_rect.width,
+            attack_rect.height
+        ), 2)
+
+    # small feet anchor marker
+    pygame.draw.circle(
+        screen,
+        WHITE_COLOR,
+        (int(player.x - camera.x), int(player.y)),
+        3
+    )

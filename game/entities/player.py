@@ -347,32 +347,6 @@ class Player:
 
         screen_x = self.x - camera_x
 
-        # green = logical body
-        # red = hurt box
-        # blue = collision box
-        # yellow = attack hitbox
-        # debug: draw player's bounding box (world -> screen)
-        if SHOW_PLAYER_RECT:
-            body_rect = self.get_logical_rect()
-            hurt_rect = self.get_hurt_rect()
-            collision_rect = self.get_collision_rect()
-            attack_rect = self.get_attack_rect()
-
-            pygame.draw.rect(screen,GREEN_COLOR,
-                (body_rect.x - camera_x, body_rect.y,
-                body_rect.width, body_rect.height), 1)
-            pygame.draw.rect(screen,(255, 80, 80),
-                (hurt_rect.x - camera_x, hurt_rect.y,
-                hurt_rect.width, hurt_rect.height), 1)
-            pygame.draw.rect(screen, (80, 180, 255),
-                (collision_rect.x - camera_x, collision_rect.y,
-                collision_rect.width, collision_rect.height), 1)
-
-            if attack_rect:
-                pygame.draw.rect(screen, YELLOW_COLOR,
-                    (attack_rect.x - camera_x, attack_rect.y,
-                    attack_rect.width, attack_rect.height), 1)
-
         # player health bar (above player)
         hb_x = screen_left
         hb_y = self.get_top() - 16
@@ -390,21 +364,50 @@ class Player:
         pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
 
     def get_left(self):
-        return int(self.x - self.width / 2)
+        return self.get_frame_rect().left
 
     def get_top(self):
-        return self.y - self.height
+        return self.get_frame_rect().top
     
     def get_right(self):
-        return int(self.x + self.width / 2)
+        return self.get_frame_rect().right
     
     def get_bottom(self):
-        return self.y
+        return self.get_frame_rect().bottom
 
-    def get_logical_rect(self):
+    def get_frame_rect(self):
+        frame = self.get_current_player_frame()
+        if not frame:
+            raise ValueError(f"Missing player frame data for {self.state}")
+
+        scale = self.sprite_scale
+        offset_x, offset_y = frame.offset
+
+        frame_w = frame.image.get_width() * scale
+        frame_h = frame.image.get_height() * scale
+        offset_x *= scale
+        offset_y *= scale
+
+        if self.facing_right:
+            world_x = self.x + offset_x
+        else:
+            world_x = self.x - frame_w - offset_x
+
+        world_y = self.y + offset_y
+
         return pygame.Rect(
-            self.get_left(),self.get_top(),
-            self.width,self.height)
+            int(world_x),
+            int(world_y),
+            int(frame_w),
+            int(frame_h)
+        )
+
+    # TODO: deprecated
+    def get_logical_rect(self):
+        return self.get_frame_rect()
+        #return pygame.Rect(
+        #    self.get_left(),self.get_top(),
+        #    self.width,self.height)
 
     def get_hurt_rect(self):
         scale = self.sprite_scale
@@ -455,9 +458,18 @@ class Player:
         # for new per-frame logic
         frame = self.get_current_player_frame()
         if frame and frame.attack_rect:
+            scale = self.sprite_scale
             local_x, local_y, w, h = frame.attack_rect
             offset_x, offset_y = frame.offset
             frame_w = frame.image.get_width()
+
+            local_x *= scale
+            local_y *= scale
+            w *= scale
+            h *= scale
+            offset_x *= scale
+            offset_y *= scale
+            frame_w *= scale
 
             if self.facing_right:
                 world_x = self.x + offset_x + local_x
