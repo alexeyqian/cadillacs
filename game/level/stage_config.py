@@ -12,13 +12,67 @@ EPISODE_1_STAGES = [
             {
                 "kind": "normal",
                 "trigger_x": 900,
-                "enemy_types": ["ferris", "ferris", "ferris"],
+                "spawns": [
+                    {
+                        "enemy_type": "ferris",
+                        "side": "right",
+                        "delay_min": 30,
+                        "delay_max": 70,
+                        "y_min": 700,
+                        "y_max": 790,
+                    },
+                    {
+                        "enemy_type": "ferris",
+                        "side": "right",
+                        "delay_min": 60,
+                        "delay_max": 100,
+                        "y_min": 610,
+                        "y_max": 720,
+                    },
+                    {
+                        "enemy_type": "ferris",
+                        "side": "left",
+                        "delay_min": 90,
+                        "delay_max": 140,
+                        "y_min": 680,
+                        "y_max": 800,
+                    },
+                ],
             },
+
             {
                 "kind": "normal",
-                "trigger_x": 1800,
-                "enemy_types": ["ferris", "gneiss", "black_elmer"],
+                "trigger_x": 2100,
+                "max_active": 3,
+                "spawns": [
+                    {
+                        "enemy_type": "ferris",
+                        "side": "right",
+                        "delay_min": 40,
+                        "delay_max": 80,
+                        "y_min": 690,
+                        "y_max": 800,
+                    },
+                    {
+                        "enemy_type": "gneiss",
+                        "side": "left",
+                        "delay_min": 80,
+                        "delay_max": 130,
+                        "y_min": 610,
+                        "y_max": 730,
+                    },
+                    {
+                        "enemy_type": "black_elmer",
+                        "side": "right",
+                        "delay_min": 140,
+                        "delay_max": 210,
+                        "y_min": 660,
+                        "y_max": 790,
+                        "enter_offset": 140,
+                    },
+                ],
             },
+
             {
                 "kind": "spawn",
                 "trigger_x": 2700,

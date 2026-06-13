@@ -63,7 +63,7 @@ def update_wave_system(game_state):
     if wave and wave.started:
         # for normal Wave and BossWave
         if hasattr(wave, "update_spawn"):
-            new_enemies = wave.update_spawn()
+            new_enemies = wave.update_spawn(len(enemies))
             if new_enemies:
                 enemies.extend(new_enemies)
         # only for SpawnWave
