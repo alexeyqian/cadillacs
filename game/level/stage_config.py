@@ -152,7 +152,7 @@ EPISODE_1_STAGES = [
                 "enemy_types": ["gneiss", "gneiss", "black_elmer"],
             },
             {
-                "kind": "boss",
+                "kind": "black_elmer",
                 "trigger_x": 2250,
             },
         ],

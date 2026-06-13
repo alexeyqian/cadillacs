@@ -27,7 +27,8 @@ class Enemy:
 
     def __init__(self, x, y, idle_config=None, walk_config=None,
                 attack_config=None, hit_config=None, dead_config=None,
-                fallback_frame_factory=None, enemy_config=None):
+                fallback_frame_factory=None, enemy_config=None,
+                load_legacy_animations=True):
         self.x = x
         self.y = y
         self.enemy_id = "normal"
@@ -104,12 +105,13 @@ class Enemy:
             attack_config = enemy_config.attack_config
 
         self.animation_manager = AnimationManager()
-        self.init_animations(idle_config=idle_config,
-                            walk_config=walk_config,
-                            attack_config=attack_config,
-                            hit_config=hit_config,
-                            dead_config=dead_config,
-                            fallback_frame_factory=fallback_frame_factory)
+        if load_legacy_animations:
+            self.init_animations(idle_config=idle_config,
+                                walk_config=walk_config,
+                                attack_config=attack_config,
+                                hit_config=hit_config,
+                                dead_config=dead_config,
+                                fallback_frame_factory=fallback_frame_factory)
 
     def apply_enemy_config(self, config):
         self.enemy_id = config.enemy_id

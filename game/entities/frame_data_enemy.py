@@ -9,7 +9,9 @@ from game.entities.enemy_config import get_enemy_config
 
 class FrameDataEnemy(Enemy):
     def __init__(self, x, y, enemy_type, animation_data, anim_fps, sprite_scale=4):
-        super().__init__(x, y, enemy_type, enemy_config=get_enemy_config(enemy_type))
+        super().__init__(x, y, enemy_type,
+            enemy_config=get_enemy_config(enemy_type),
+            load_legacy_animations=False)
         self.animation_data = animation_data
         self.anim_fps = anim_fps
         self.sprite_scale = sprite_scale
@@ -49,20 +51,18 @@ class FrameDataEnemy(Enemy):
     
     def get_frame_rect(self):
         frame = self.get_current_frame_data()
-        if not frame: # for old logic compatibility
-            return super().get_logical_rect()
+        if not frame:
+            raise ValueError(f"Missing frame data for enemy state: {self.state}")
         scale = self.sprite_scale
         offset_x, offset_y = frame.offset
         frame_w = frame.image.get_width()*scale
         frame_h = frame.image.get_height()*scale
         offset_x *= scale
         offset_y *= scale
-        # Enemy art currently follows Enemy.draw() convention:
-        # source art faces left, and is flipped when facing_right is True.
         if self.facing_right:
-            world_x = self.x - frame_w - offset_x
-        else: 
             world_x = self.x + offset_x
+        else: 
+            world_x = self.x - frame_w - offset_x
             
         world_y = self.y + offset_y
         return pygame.Rect(int(world_x), int(world_y), int(frame_w), int(frame_h))
@@ -72,8 +72,8 @@ class FrameDataEnemy(Enemy):
     
     def get_hurt_rect(self):
         frame = self.get_current_frame_data()
-        if not frame: # for old logic compatibility
-            return super().get_hurt_rect()
+        if not frame or not frame.hurt_rect:
+            return pygame.Rect(int(self.x), int(self.y), 0, 0)
         scale = self.sprite_scale
         local_x, local_y, w, h = frame.hurt_rect
         offset_x, offset_y = frame.offset
@@ -88,10 +88,10 @@ class FrameDataEnemy(Enemy):
         frame_w *= scale
         
         if self.facing_right:
+            world_x = self.x + offset_x + local_x
+        else:
             mirrored_x = frame_w - local_x - w
             world_x = self.x - frame_w - offset_x + mirrored_x
-        else:
-            world_x = self.x + offset_x + local_x
             
         world_y = self.y + offset_y + local_y
         return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
@@ -118,10 +118,10 @@ class FrameDataEnemy(Enemy):
             frame_w *= scale
 
             if self.facing_right:
+                world_x = self.x + offset_x + local_x
+            else:
                 mirrored_x = frame_w - local_x - w
                 world_x = self.x - frame_w - offset_x + mirrored_x
-            else:
-                world_x = self.x + offset_x + local_x
 
             world_y = self.y + offset_y + local_y
 
@@ -132,14 +132,13 @@ class FrameDataEnemy(Enemy):
                 int(h)
             )
 
-        return super().get_attack_rect()
+        return None
 
     def draw(self, screen, camera_x):
         frame = self.get_current_frame_data()
 
         if not frame:
-            super().draw(screen, camera_x)
-            return
+            raise ValueError(f"Missing frame data for enemy state: {self.state}")
 
         # get the surface object of current animation's current frame
         image = self.animation_manager.get_image()
@@ -153,7 +152,7 @@ class FrameDataEnemy(Enemy):
             )
         )
 
-        if self.facing_right:
+        if not self.facing_right:
             image = pygame.transform.flip(image, True, False)
 
         frame_rect = self.get_frame_rect()

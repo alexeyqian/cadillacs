@@ -1,38 +1,8 @@
 from dataclasses import dataclass, field
 from typing import Any
 
-from game.animation.animation_config import (
-    FAST_ENEMY_ATTACK,
-    FAST_ENEMY_IDLE,
-    FAST_ENEMY_WALK,
-    HEAVY_ENEMY_ATTACK,
-    HEAVY_ENEMY_IDLE,
-    HEAVY_ENEMY_WALK,
-    NORMAL_ENEMY_ATTACK,
-    NORMAL_ENEMY_IDLE,
-    NORMAL_ENEMY_WALK,
-)
-from game.settings import (
-    ENEMY_ATTACK_DAMAGE,
-    ENEMY_DETECT_RANGE,
-    ENEMY_H,
-    ENEMY_MAX_HP,
-    ENEMY_SPEED,
-    ENEMY_W,
-    FAST_ENEMY_ATTACK_DAMAGE,
-    FAST_ENEMY_H,
-    FAST_ENEMY_MAX_HP,
-    FAST_ENEMY_SPEED,
-    FAST_ENEMY_W,
-    HEAVY_ENEMY_ATTACK_DAMAGE,
-    HEAVY_ENEMY_H,
-    HEAVY_ENEMY_MAX_HP,
-    HEAVY_ENEMY_SPEED,
-    HEAVY_ENEMY_W,
-    RANGED_ENEMY_ATTACK_DAMAGE,
-    RANGED_ENEMY_MAX_HP,
-)
-
+from game.animation.animation_config import *
+from game.settings import *
 
 @dataclass(frozen=True)
 class EnemyConfig:
