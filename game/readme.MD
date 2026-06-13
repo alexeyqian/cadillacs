@@ -251,6 +251,11 @@ So do not force everything into bottom-center. Instead, make projectile/effect c
 Player/enemy/object/weapon/loot = bottom-center world position
 Projectile/effect/floating text = point or top-left effect position
 
+Let's use dynamic hurt box and hit box settings, based on configs of each movement/action loaded from player's animation config file.
+And the hurt box and hit box offset_x, offset_y, width, height will be loaded for player's animation_config.py, since each frame might have different sizes, and each action might have different body movements and positions, so the hurt box and hit box for each move will be different. Also the offset_x and offset_y usually negative, since the offsets is relative to bottom center feet.
+
+So basically all positions is relative to entity's bottom center feet
+
 TODO:
 for FPS=60, what is best practice for animations:
 How many frames should use for idle, walk, running, jumping, fist attack, leg attach, grab and throw animations?
