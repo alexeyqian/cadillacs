@@ -71,7 +71,7 @@ GNEISS_ANIMATIONS = {
                 "frame_rect": (122, 0, 96, 76),
                 "offset": (-30, -76),
                 "hurt_rect": (25, 0, 43, 76),
-                "attack_rect": None
+                "attack_rect": (66, 10, 30, 10)
             }
         ]
     },
