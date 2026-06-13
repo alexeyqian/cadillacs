@@ -1,5 +1,6 @@
 import pygame
 from game.colors import *
+from game.effects.hit_spark import HitSpark
 from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
 from game.entities.boss_enemy import BossEnemy
@@ -47,7 +48,7 @@ def handle_player_attack_collision(game_state):
             if isinstance(enemies, BossEnemy):
                 boss_hit_shake(game_state)
             enemy_rect = enemy.get_hurt_rect()
-            #hit_sparks.append(HitSpark(enemy_rect.centerx,enemy_rect.centery))
+            game_state.hit_sparks.append(HitSpark(enemy_rect.centerx, enemy_rect.centery))
             break # ?? useless, only can attack one enemy at a time?
 
     # attack breakables
@@ -78,7 +79,7 @@ def handle_player_projectile_collision(game_state):
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,120,120)))
                 game_state.score_manager.register_hit() # for combo score
                 projectile.active = False
-                #hit_sparks.append(HitSpark(enemy.x+enemy.width//2,enemy.y + enemy.height//2))
+                game_state.hit_sparks.append(HitSpark(enemy.x + enemy.width // 2, enemy.y + enemy.height // 2))
                 break
 
         # projectile hit breakable
