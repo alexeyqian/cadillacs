@@ -35,7 +35,7 @@ def handle_player_attack_collision(game_state):
     # attack enemies
     for enemy in enemies:
         enemy_hurt_rect = enemy.get_hurt_rect()
-        if attack_rect.colliderect(enemy_hurt_rect):
+        if enemy_hurt_rect and attack_rect.colliderect(enemy_hurt_rect):
             damage = player.attack_damage()
             enemy.take_damage(damage, player.x)
             enemy_rect = enemy.get_logical_rect()
@@ -71,7 +71,7 @@ def handle_player_projectile_collision(game_state):
         # projectile hit enemy
         for enemy in enemies:
             enemy_hurt_rect = enemy.get_hurt_rect()
-            if projectile_rect.colliderect(enemy_hurt_rect):
+            if enemy_hurt_rect and projectile_rect.colliderect(enemy_hurt_rect):
                 damage = projectile.damage
                 enemy.take_damage(damage, player.x)
                 enemy_rect = enemy.get_logical_rect()

@@ -100,7 +100,7 @@ class BossEnemy(Enemy):
             attack_rect = self.get_attack_rect()
             player_hurt_rect = player.get_hurt_rect()
 
-            if attack_rect.colliderect(player_hurt_rect):
+            if attack_rect and player_hurt_rect and attack_rect.colliderect(player_hurt_rect):
                 player.take_damage(self.attack_damage)
                 self.attack_has_hit = True
 
