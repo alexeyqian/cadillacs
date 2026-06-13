@@ -17,14 +17,14 @@ EPISODE_1_STAGES = [
             {
                 "kind": "normal",
                 "trigger_x": 1800,
-                "enemy_types": ["ferris", "fast", "heavy"],
+                "enemy_types": ["ferris", "gneiss", "fast"],
             },
             {
                 "kind": "spawn",
                 "trigger_x": 2700,
                 "spawners": [
                     {
-                        "enemy_type": "ferris",
+                        "enemy_type": "gneiss",
                         "x": 2780,
                         "y": 760,
                         "total_count": 3,

@@ -2,33 +2,33 @@
 # offset format: (x, y) - x, y  = (0,0) - (feet_center_x, feet_center_y)
 # hurt_rect format: (x, y, width, height) -   x, y is relative position inside the current frame
 # attack_rect format: (x, y, width, height) - x, y is relative position inside the current frame
-FERRIS_ANIMATIONS = {
+GNEISS_ANIMATIONS = {
     "idle": {
-        "file": "assets/enemies/ferris_idle.png",
+        "file": "assets/enemies/gneiss_idle.png",
         "frames_count": 3,
         "frames": [
             {
-                "frame_rect": (0, 0, 61, 75),
-                "offset": (-30, -75),
-                "hurt_rect": (7, 0, 43, 75),
+                "frame_rect": (0, 0, 61, 76),
+                "offset": (-30, -76),
+                "hurt_rect": (7, 0, 43, 76),
                 "attack_rect": None
             },
             {
-                "frame_rect": (61, 0, 61, 75),
-                "offset": (-30, -75),
-                "hurt_rect": (7, 0, 43, 75),
+                "frame_rect": (61, 0, 61, 76),
+                "offset": (-30, -76),
+                "hurt_rect": (7, 0, 43, 76),
                 "attack_rect": None
             },
             {
-                "frame_rect": (122, 0, 61, 75),
-                "offset": (-30, -75),
-                "hurt_rect": (7, 0, 43, 75),
+                "frame_rect": (122, 0, 61, 76),
+                "offset": (-30, -76),
+                "hurt_rect": (7, 0, 43, 76),
                 "attack_rect": None
             }
         ]
     },
     "walk": {
-        "file": "assets/enemies/ferris_walk.png",
+        "file": "assets/enemies/gneiss_walk.png",
         "frames_count": 3,
         "frames": [
             {
@@ -52,62 +52,62 @@ FERRIS_ANIMATIONS = {
         ]
     },
     "attack": {
-        "file": "assets/enemies/ferris_attack.png",
+        "file": "assets/enemies/gneiss_attack.png",
         "frames_count": 3,
         "frames": [
             {
-                "frame_rect": (0, 0, 61, 78),
-                "offset": (-30, -78),
-                "hurt_rect": (15, 0, 43, 78),
+                "frame_rect": (0, 0, 61, 79),
+                "offset": (-30, -79),
+                "hurt_rect": (15, 0, 43, 79),
                 "attack_rect": None
             },
             {
-                "frame_rect": (51, 0, 58, 78),
-                "offset": (-30, -78),
-                "hurt_rect": (21, 0, 43, 78),
+                "frame_rect": (61, 0, 80, 79),
+                "offset": (-30, -79),
+                "hurt_rect": (21, 0, 43, 79),
                 "attack_rect": None
             },
             {
-                "frame_rect": (101, 0, 96, 78),
-                "offset": (-30, -78),
-                "hurt_rect": (25, 0, 43, 78),
+                "frame_rect": (141, 0, 96, 79),
+                "offset": (-30, -79),
+                "hurt_rect": (25, 0, 43, 79),
                 "attack_rect": None
             }
         ]
     },
     "hit": {
-        "file": "assets/enemies/ferris_hit.png",
+        "file": "assets/enemies/gneiss_hit.png",
         "frames_count": 1,
         "frames": [
             {
-                "frame_rect": (0, 0, 66, 77),
-                "offset": (-30, -77),
-                "hurt_rect": (15, 0, 43, 77),
+                "frame_rect": (0, 0, 66, 78),
+                "offset": (-30, -78),
+                "hurt_rect": (15, 0, 43, 78),
                 "attack_rect": None
             }
         ]
     },
     "dead": {
-        "file": "assets/enemies/ferris_dead.png",
+        "file": "assets/enemies/gneiss_dead.png",
         "frames_count": 2,
         "frames": [
             {
-                "frame_rect": (0, 0, 111, 36),
+                "frame_rect": (0, 0, 112, 36),
                 "offset": (-50, -36),
                 "hurt_rect": (15, 0, 110, 36),
                 "attack_rect": None
             },
             {
-                "frame_rect": (111, 0, 125, 36),
+                "frame_rect": (112, 0, 125, 36),
                 "offset": (-50, -36),
-                "hurt_rect": (15, 40, 110, 36),
+                "hurt_rect": (15, 0, 110, 36),
                 "attack_rect": None
             }
         ]
     },
 }
 
-FERRIS_ANIM_FPS = {
+GNEISS_ANIM_FPS = {
     "idle": 6,
     "walk": 6,
     "attack": 6,
