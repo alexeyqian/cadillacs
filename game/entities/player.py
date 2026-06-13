@@ -348,10 +348,10 @@ class Player:
         screen_x = self.x - camera_x
 
         # player health bar (above player)
-        hb_x = screen_left
-        hb_y = self.get_top() - 16
         hb_w = self.width
         hb_h = 8
+        hb_x = int(screen_x - hb_w / 2)
+        hb_y = self.get_top() - 16
         # background
         pygame.draw.rect(screen, (100, 100, 100), (hb_x, hb_y, hb_w, hb_h))
         # filled portion (clamped between 0 and 1)

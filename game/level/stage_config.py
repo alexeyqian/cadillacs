@@ -17,7 +17,7 @@ EPISODE_1_STAGES = [
             {
                 "kind": "normal",
                 "trigger_x": 1800,
-                "enemy_types": ["ferris", "gneiss", "fast"],
+                "enemy_types": ["ferris", "gneiss", "black_elmer"],
             },
             {
                 "kind": "spawn",
@@ -31,7 +31,7 @@ EPISODE_1_STAGES = [
                         "spawn_delay": 120,
                     },
                     {
-                        "enemy_type": "fast",
+                        "enemy_type": "black_elmer",
                         "x": 2760,
                         "y": 760,
                         "total_count": 2,

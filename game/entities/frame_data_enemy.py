@@ -195,15 +195,17 @@ class FrameDataEnemy(Enemy):
                     attack_rect.height
                 ), 1)
 
-        hp_width = int(50 * (self.hp / self.max_hp))
+        bar_width = 50
+        bar_x = int(self.x - camera_x - bar_width / 2)
+        hp_width = int(bar_width * (self.hp / self.max_hp))
         hp_height = 12
         pygame.draw.rect(
             screen,
             (120, 120, 120),
-            (frame_rect.x - camera_x, frame_rect.y - hp_height, 50, 6)
+            (bar_x, frame_rect.y - hp_height, bar_width, 6)
         )
         pygame.draw.rect(
             screen,
             (255, 0, 0),
-            (frame_rect.x - camera_x, frame_rect.y - hp_height, hp_width, 6)
+            (bar_x, frame_rect.y - hp_height, hp_width, 6)
         )

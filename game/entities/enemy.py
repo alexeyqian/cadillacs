@@ -347,17 +347,19 @@ class Enemy:
                     attack_rect.width, attack_rect.height), 1)
 
         # health bar background
-        hp_width = int(50 * (self.hp / self.max_hp))
+        bar_width = 50
+        bar_x = int(self.x - camera_x - bar_width / 2)
+        hp_width = int(bar_width * (self.hp / self.max_hp))
         hp_height = 12
         # todo: fix hardcode 50 and 6 here
         pygame.draw.rect(
             screen, (120, 120, 120),
-            (screen_left, self.get_top() - hp_height, 50, 6))
+            (bar_x, self.get_top() - hp_height, bar_width, 6))
         # health bar
         
         pygame.draw.rect(
             screen, (255, 0, 0),
-            (screen_left, self.get_top() - hp_height, hp_width, 6))
+            (bar_x, self.get_top() - hp_height, hp_width, 6))
 
     def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
         # todo: remove these lines of temp code
