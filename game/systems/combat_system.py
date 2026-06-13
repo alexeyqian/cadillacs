@@ -5,8 +5,11 @@ from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
 from game.entities.boss_enemy import BossEnemy
 
-def create_hit_spark(game_state, attack_rect, hurt_rect):
-    spark_x = attack_rect.right
+def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True):
+    if facing_right:
+        spark_x = attack_rect.right
+    else:
+        spark_x = attack_rect.left
     spark_y = attack_rect.top
     game_state.hit_sparks.append(HitSpark(spark_x, spark_y))
 
@@ -53,7 +56,7 @@ def handle_player_attack_collision(game_state):
             if isinstance(enemies, BossEnemy):
                 boss_hit_shake(game_state)
             enemy_rect = enemy.get_hurt_rect()
-            create_hit_spark(game_state, attack_rect, enemy_rect)
+            create_hit_spark(game_state, attack_rect, enemy_rect, player.facing_right)
             break # ?? useless, only can attack one enemy at a time?
 
     # attack breakables
@@ -84,7 +87,12 @@ def handle_player_projectile_collision(game_state):
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,120,120)))
                 game_state.score_manager.register_hit() # for combo score
                 projectile.active = False
-                create_hit_spark(game_state, projectile_rect, enemy_hurt_rect)
+                create_hit_spark(
+                    game_state,
+                    projectile_rect,
+                    enemy_hurt_rect,
+                    projectile.direction > 0,
+                )
                 break
 
         # projectile hit breakable

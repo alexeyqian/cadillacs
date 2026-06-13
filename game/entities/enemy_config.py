@@ -120,9 +120,10 @@ ENEMY_CONFIGS = {
         enemy_id="gneiss",
         display_name="Gneiss",
         archetype="basic_melee",
-        max_hp=50,
-        speed=ENEMY_SPEED * 1.02,
+        max_hp=int(ENEMY_MAX_HP*1.2),
+        speed=ENEMY_SPEED * 1.10,
         attack_damage=8,
+        hit_stun_duration=28,
         score_points=110,
     ),
     "punk": EnemyConfig(

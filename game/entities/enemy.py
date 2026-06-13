@@ -258,8 +258,11 @@ class Enemy:
         # enemy pauses briefly when hit by player, but can still be knocked back
         self.hit_timer -= 1
         self.apply_knockback()
-        if self.hit_timer == 0:
+        if self.hit_timer <= 0:
             self.state = self.IDLE
+        else:
+            self.state = self.HIT
+        self.update_animation()
 
         return True
 
