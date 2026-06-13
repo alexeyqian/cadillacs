@@ -10,8 +10,8 @@ EPISODE_1_STAGES = [
         "lane_bottom": 820,
         "waves": [
             {
-                "kind": "normal",
                 "trigger_x": 900,
+                "max_active": 3,
                 "spawns": [
                     {
                         "enemy_type": "ferris",
@@ -39,9 +39,7 @@ EPISODE_1_STAGES = [
                     },
                 ],
             },
-
             {
-                "kind": "normal",
                 "trigger_x": 2100,
                 "max_active": 3,
                 "spawns": [
@@ -72,35 +70,37 @@ EPISODE_1_STAGES = [
                     },
                 ],
             },
-
             {
-                "kind": "normal",
                 "trigger_x": 2700,
-                "spawners": [
+                "max_active": 4,
+                "spawns": [
                     {
                         "enemy_type": "gneiss",
-                        "x": 2780,
-                        "y": 760,
-                        "total_count": 3,
-                        "spawn_delay": 120,
+                        "count": 3,
+                        "side": "right",
+                        "delay_min": 90,
+                        "delay_max": 140,
+                        "y_min": 650,
+                        "y_max": 800,
                     },
                     {
                         "enemy_type": "black_elmer",
-                        "x": 2760,
-                        "y": 760,
-                        "total_count": 2,
-                        "spawn_delay": 180,
+                        "count": 2,
+                        "side": "left",
+                        "delay_min": 140,
+                        "delay_max": 220,
+                        "y_min": 660,
+                        "y_max": 800,
+                        "enter_offset": 140,
                     },
                 ],
             },
         ],
-
         "weapons": [
             {"type": "knife", "x": 850, "y": 760},
             {"type": "bat", "x": 1750, "y": 760},
             {"type": "pistol", "x": 2260, "y": 760},
         ],
-
         "objects": [
             {"kind": "breakable", "x": 880, "y": 760},
             {"kind": "breakable", "x": 1780, "y": 760},
@@ -108,8 +108,7 @@ EPISODE_1_STAGES = [
             {"kind": "breakable", "x": 2320, "y": 760},
         ],
         "completion": "clear_waves_then_exit",
-        # Stage 1 rooftop, exit near far right door/edge
-        "exit_rect": (2700, 340, 100, 260)
+        "exit_rect": (2700, 340, 100, 260),
     },
     {
         "id": "episode_1_stage_2_hallway",
@@ -122,43 +121,96 @@ EPISODE_1_STAGES = [
         "lane_bottom": 1080,
         "waves": [
             {
-                "kind": "normal",
                 "trigger_x": 900,
-                "enemy_types": ["ferris", "ferris", "ferris"],
-            },
-            {
-                "kind": "normal",
-                "trigger_x": 1800,
-                "enemy_types": ["ferris", "gneiss", "gneiss"],
-            },
-            {
-                "kind": "spawn",
-                "trigger_x": 2250,
-                "spawners": [
+                "max_active": 3,
+                "spawns": [
                     {
                         "enemy_type": "ferris",
-                        "x": 2320,
-                        "y": 760,
-                        "total_count": 3,
-                        "spawn_delay": 120,
+                        "side": "right",
+                        "delay_min": 40,
+                        "delay_max": 80,
+                        "y_min": 720,
+                        "y_max": 900,
+                    },
+                    {
+                        "enemy_type": "ferris",
+                        "side": "right",
+                        "delay_min": 70,
+                        "delay_max": 120,
+                        "y_min": 820,
+                        "y_max": 1020,
+                    },
+                    {
+                        "enemy_type": "ferris",
+                        "side": "left",
+                        "delay_min": 100,
+                        "delay_max": 150,
+                        "y_min": 700,
+                        "y_max": 960,
+                    },
+                ],
+            },
+            {
+                "trigger_x": 1800,
+                "max_active": 3,
+                "spawns": [
+                    {
+                        "enemy_type": "ferris",
+                        "side": "right",
+                        "delay_min": 50,
+                        "delay_max": 90,
+                        "y_min": 720,
+                        "y_max": 980,
+                    },
+                    {
+                        "enemy_type": "gneiss",
+                        "side": "left",
+                        "delay_min": 90,
+                        "delay_max": 140,
+                        "y_min": 680,
+                        "y_max": 900,
+                    },
+                    {
+                        "enemy_type": "gneiss",
+                        "side": "right",
+                        "delay_min": 130,
+                        "delay_max": 190,
+                        "y_min": 820,
+                        "y_max": 1040,
+                    },
+                ],
+            },
+            {
+                "trigger_x": 2250,
+                "max_active": 4,
+                "spawns": [
+                    {
+                        "enemy_type": "ferris",
+                        "count": 3,
+                        "side": "right",
+                        "delay_min": 80,
+                        "delay_max": 130,
+                        "y_min": 720,
+                        "y_max": 1040,
                     },
                     {
                         "enemy_type": "black_elmer",
-                        "x": 2400,
-                        "y": 760,
-                        "total_count": 2,
-                        "spawn_delay": 180,
+                        "count": 2,
+                        "side": "left",
+                        "delay_min": 130,
+                        "delay_max": 210,
+                        "y_min": 700,
+                        "y_max": 980,
+                        "enter_offset": 140,
                     },
                 ],
             },
         ],
-
         "weapons": [
             {"type": "knife", "x": 850, "y": 760},
             {"type": "bat", "x": 1750, "y": 760},
             {"type": "pistol", "x": 2220, "y": 760},
         ],
-
         "objects": [
             {"kind": "breakable", "x": 880, "y": 760},
             {"kind": "breakable", "x": 1780, "y": 760},
@@ -166,8 +218,7 @@ EPISODE_1_STAGES = [
             {"kind": "breakable", "x": 2280, "y": 760},
         ],
         "completion": "clear_waves_then_exit",
-        # Stage 2 hallway, exit near right staircase/edge
-        "exit_rect": (2800, 650, 150, 420)
+        "exit_rect": (2800, 650, 150, 420),
     },
     {
         "id": "episode_1_stage_3_transition",
@@ -182,7 +233,6 @@ EPISODE_1_STAGES = [
         "weapons": [],
         "objects": [],
         "completion": "reach_exit",
-        # Stage 3 transition, exit near right edge
         "exit_rect": (900, 760, 120, 320),
     },
     {
@@ -196,27 +246,76 @@ EPISODE_1_STAGES = [
         "lane_bottom": 1080,
         "waves": [
             {
-                "kind": "normal",
                 "trigger_x": 900,
-                "enemy_types": ["ferris", "ferris", "ferris"],
+                "max_active": 3,
+                "spawns": [
+                    {
+                        "enemy_type": "ferris",
+                        "side": "right",
+                        "delay_min": 40,
+                        "delay_max": 90,
+                        "y_min": 700,
+                        "y_max": 940,
+                    },
+                    {
+                        "enemy_type": "ferris",
+                        "side": "right",
+                        "delay_min": 80,
+                        "delay_max": 130,
+                        "y_min": 820,
+                        "y_max": 1040,
+                    },
+                    {
+                        "enemy_type": "ferris",
+                        "side": "left",
+                        "delay_min": 110,
+                        "delay_max": 170,
+                        "y_min": 660,
+                        "y_max": 900,
+                    },
+                ],
             },
             {
-                "kind": "normal",
                 "trigger_x": 1700,
-                "enemy_types": ["gneiss", "gneiss", "black_elmer"],
+                "max_active": 3,
+                "spawns": [
+                    {
+                        "enemy_type": "gneiss",
+                        "side": "right",
+                        "delay_min": 60,
+                        "delay_max": 110,
+                        "y_min": 700,
+                        "y_max": 920,
+                    },
+                    {
+                        "enemy_type": "gneiss",
+                        "side": "left",
+                        "delay_min": 100,
+                        "delay_max": 160,
+                        "y_min": 820,
+                        "y_max": 1040,
+                    },
+                    {
+                        "enemy_type": "black_elmer",
+                        "side": "right",
+                        "delay_min": 150,
+                        "delay_max": 230,
+                        "y_min": 720,
+                        "y_max": 980,
+                        "enter_offset": 140,
+                    },
+                ],
             },
             {
-                "kind": "black_elmer",
+                "kind": "boss",
                 "trigger_x": 2250,
             },
         ],
-
         "weapons": [
             {"type": "knife", "x": 850, "y": 760},
             {"type": "bat", "x": 1750, "y": 760},
             {"type": "pistol", "x": 2220, "y": 760},
         ],
-
         "objects": [
             {"kind": "breakable", "x": 880, "y": 760},
             {"kind": "breakable", "x": 1780, "y": 760},
@@ -224,7 +323,6 @@ EPISODE_1_STAGES = [
             {"kind": "breakable", "x": 2280, "y": 760},
         ],
         "completion": "clear_waves_then_exit",
-        # Stage 4 arena, exit near far right after boss
         "exit_rect": (2500, 620, 140, 460),
     },
 ]

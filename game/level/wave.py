@@ -15,6 +15,7 @@ class SpawnInstruction:
     y_max: Optional[int] = None
     # how far offscreen the enemy starts.
     enter_offset: int = 80
+    min_player_distance: int = 360
 
 @dataclass
 class PendingSpawn:
@@ -33,7 +34,8 @@ class Wave:
         self.pending_spawns = []
         self.spawn_timer = 0
 
-    def spawn(self, camera_x=0, lane_top=LANE_TOP, lane_bottom=LANE_BOTTOM):
+    def spawn(self, camera_x=0, 
+            lane_top=LANE_TOP, lane_bottom=LANE_BOTTOM, player_x=None):
         self.started = True
         self.spawn_timer = 0
         self.pending_spawns = []
@@ -44,8 +46,12 @@ class Wave:
         for instruction in self.spawn_instructions:
             if instruction.side == "left":
                 spawn_x = viewport_left - instruction.enter_offset
+                if player_x is not None:
+                    spawn_x = min(spawn_x, player_x - instruction.min_player_distance)
             else:
                 spawn_x = viewport_right + instruction.enter_offset
+                if player_x is not None:
+                    spawn_x = max(spawn_x, player_x + instruction.min_player_distance)
 
             y_min = instruction.y_min
             y_max = instruction.y_max
@@ -93,39 +99,8 @@ class Wave:
         self.spawn_timer = pending_spawn.delay
         return [enemy]
 
-class SpawnWave:
-    def __init__(self, trigger_x, spawners):
-        self.trigger_x = trigger_x
-        self.spawners = spawners
-        self.started = False
-        self.completed = False
-
-    def spawn(self, camera_x=0, lane_top=LANE_TOP, lane_bottom=LANE_BOTTOM):
-        self.started = True
-        viewport_left = camera_x
-        viewport_right = camera_x + SCREEN_WIDTH
-        spawn_y = max(lane_top, min(lane_bottom, lane_bottom - 80))
-        for spawner in self.spawners:
-            spawner.spawn_x = max(
-                viewport_left + 120,
-                min(spawner.spawn_x, viewport_right - 220)
-            )
-            spawner.spawn_y = spawn_y
-        return []
-
-    def update(self):
-        new_enemies = []
-        for spawner in self.spawners:
-            enemy = spawner.update()
-            if enemy:
-                new_enemies.append(enemy)
-        return new_enemies
-
-    def all_spawners_finished(self):
-        for spawner in self.spawners:
-            if not spawner.finished():
-                return False
-        return True
+    def finished_spawning(self):
+        return len(self.pending_spawns) == 0
 
 class BossWave(Wave):
     def __init__(self, trigger_x):

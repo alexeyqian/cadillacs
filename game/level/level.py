@@ -2,7 +2,6 @@ from game.settings import *
 from game.level.background import Background
 from game.level.prop import Prop
 from game.level.wave import *
-from game.level.spawner import EnemySpawner
 
 # background image, far layer, ground layer foreground layer
 class Level:
@@ -26,12 +25,20 @@ class Level:
         self.waves = []
 
         for wave_config in self.wave_configs:
-            kind = wave_config["kind"]
+            kind = wave_config.get("kind")
 
-            if kind == "normal":
-                spawn_instructions = []
+            if kind == "boss":
+                self.waves.append(BossWave(
+                    trigger_x=wave_config["trigger_x"]
+                ))
+                continue
 
-                for spawn_config in wave_config["spawns"]:
+            spawn_instructions = []
+
+            for spawn_config in wave_config["spawns"]:
+                count = spawn_config.get("count", 1)
+
+                for _ in range(count):
                     spawn_instructions.append(SpawnInstruction(
                         enemy_type=spawn_config["enemy_type"],
                         side=spawn_config.get("side", "right"),
@@ -40,36 +47,14 @@ class Level:
                         y_min=spawn_config.get("y_min"),
                         y_max=spawn_config.get("y_max"),
                         enter_offset=spawn_config.get("enter_offset", 80),
-                        min_player_distance=spawn_config.get(
-                            "min_player_distance", 360),
+                        min_player_distance=spawn_config.get("min_player_distance", 360),
                     ))
 
-                self.waves.append(Wave(
-                    trigger_x=wave_config["trigger_x"],
-                    spawn_instructions=spawn_instructions,
-                    max_active=wave_config.get("max_active", 4),
-                ))
-
-            elif kind == "spawn":
-                spawners = []
-                for spawner_config in wave_config["spawners"]:
-                    spawners.append(EnemySpawner(
-                        spawner_config["x"],
-                        spawner_config["y"],
-                        spawner_config["enemy_type"],
-                        spawner_config["total_count"],
-                        spawner_config["spawn_delay"]
-                    ))
-
-                self.waves.append(SpawnWave(
-                    trigger_x=wave_config["trigger_x"],
-                    spawners=spawners
-                ))
-
-            elif kind == "boss":
-                self.waves.append(BossWave(
-                    trigger_x=wave_config["trigger_x"]
-                ))
+            self.waves.append(Wave(
+                trigger_x=wave_config["trigger_x"],
+                spawn_instructions=spawn_instructions,
+                max_active=wave_config.get("max_active", 4),
+            ))
 
 
         #self.prop1_x = self.e1s1_wave1_x -100

@@ -1,5 +1,5 @@
 import pygame
-from game.level.wave import SpawnWave, Wave
+from game.level.wave import BossWave, Wave
 from game.settings import SCREEN_WIDTH
 
 def player_is_in_exit_rect(player, exit_rect):
@@ -43,7 +43,7 @@ def update_wave_system(game_state):
     player_trigger_x = get_player_trigger_x(player)
 
     if wave and not wave.started and player_trigger_x + 300 >= wave.trigger_x:
-        if wave.__class__.__name__ == "BossWave":
+        if isinstance(wave, BossWave):
             game_state.announcement_manager.show(
                 "WARNING", "BOSS APPROACHING", 120)
         else:
@@ -53,7 +53,7 @@ def update_wave_system(game_state):
 
     if wave and not wave.started and player_trigger_x >= wave.trigger_x:
             # start the wave and initialize pending enemies
-            wave.spawn(camera.x, level.lane_top, level.lane_bottom)
+            wave.spawn(camera.x, level.lane_top, level.lane_bottom, player.x)
             # lock camera only when wave actually starts
             # set lock_x to current camera.x so the viewport does not jump
             # it only freeze camera, not stop player by itself
@@ -61,13 +61,9 @@ def update_wave_system(game_state):
             level.lock_x = get_camera_lock_x(camera.x, level)
 
     if wave and wave.started:
-        if isinstance(wave, Wave):
-            new_enemies = wave.update_spawn(len(enemies))
-            if new_enemies:
-                enemies.extend(new_enemies))
-
-        elif isinstance(wave, SpawnWave):
-            enemies.extend(wave.update())
+        new_enemies = wave.update_spawn(len(enemies))
+        if new_enemies:
+            enemies.extend(new_enemies)
 
 def update_wave_completion(game_state):
     level = game_state.level
@@ -76,10 +72,7 @@ def update_wave_completion(game_state):
     wave = level.get_current_wave()
     if wave and wave.started:
         wave_finished = False
-        if isinstance(wave, SpawnWave):
-            wave_finished = wave.all_spawners_finished() and len(enemies) == 0
-        else:
-            wave_finished = len(enemies) == 0
+        wave_finished = wave.finished_spawning() and len(enemies) == 0
 
         if wave_finished:
             wave.completed = True
