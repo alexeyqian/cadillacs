@@ -1,5 +1,5 @@
 import pygame
-from game.level.wave import SpawnWave
+from game.level.wave import SpawnWave, Wave
 from game.settings import SCREEN_WIDTH
 
 def player_is_in_exit_rect(player, exit_rect):
@@ -61,13 +61,12 @@ def update_wave_system(game_state):
             level.lock_x = get_camera_lock_x(camera.x, level)
 
     if wave and wave.started:
-        # for normal Wave and BossWave
-        if hasattr(wave, "update_spawn"):
+        if isinstance(wave, Wave):
             new_enemies = wave.update_spawn(len(enemies))
             if new_enemies:
-                enemies.extend(new_enemies)
-        # only for SpawnWave
-        if hasattr(wave, "update"):
+                enemies.extend(new_enemies))
+
+        elif isinstance(wave, SpawnWave):
             enemies.extend(wave.update())
 
 def update_wave_completion(game_state):

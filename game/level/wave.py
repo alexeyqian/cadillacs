@@ -24,21 +24,11 @@ class PendingSpawn:
     delay: int
 
 class Wave:
-    def __init__(self, trigger_x, enemy_types=None,
-                spawn_instructions=None, max_active=4):
+    def __init__(self, trigger_x, spawn_instructions, max_active=4):
         self.trigger_x = trigger_x
         self.started = False
         self.completed = False
         self.max_active = max_active
-        
-        if enemy_types is None:
-            enemy_types = []
-
-        if spawn_instructions is None:
-            spawn_instructions = []
-            for enemy_type in enemy_types:
-                spawn_instructions.append(SpawnInstruction(enemy_type))
-
         self.spawn_instructions = spawn_instructions
         self.pending_spawns = []
         self.spawn_timer = 0
@@ -103,15 +93,6 @@ class Wave:
         self.spawn_timer = pending_spawn.delay
         return [enemy]
 
-class BossWave(Wave):
-    def __init__(self, trigger_x):
-        # treat boss as a specialized single-enemy wave
-        super().__init__(trigger_x, ["boss"]) 
-        # bosses usually spawn slower / have different pacing
-        self.spawn_interval = 180
-
-    # use inherited spawn() and update_spawn() behavior
-
 class SpawnWave:
     def __init__(self, trigger_x, spawners):
         self.trigger_x = trigger_x
@@ -145,3 +126,20 @@ class SpawnWave:
             if not spawner.finished():
                 return False
         return True
+
+class BossWave(Wave):
+    def __init__(self, trigger_x):
+        spawn_instructions = [
+            SpawnInstruction(
+                enemy_type="boss",
+                side="right",
+                delay_min=120,
+                delay_max=180,
+                enter_offset=160,
+            )
+        ]
+        super().__init__(
+            trigger_x=trigger_x,
+            spawn_instructions=spawn_instructions,
+            max_active=1,
+        )

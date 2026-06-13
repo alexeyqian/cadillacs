@@ -74,7 +74,7 @@ EPISODE_1_STAGES = [
             },
 
             {
-                "kind": "spawn",
+                "kind": "normal",
                 "trigger_x": 2700,
                 "spawners": [
                     {
@@ -122,7 +122,7 @@ EPISODE_1_STAGES = [
         "lane_bottom": 1080,
         "waves": [
             {
-                "kind": "ferris",
+                "kind": "normal",
                 "trigger_x": 900,
                 "enemy_types": ["ferris", "ferris", "ferris"],
             },

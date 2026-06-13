@@ -29,24 +29,23 @@ class Level:
             kind = wave_config["kind"]
 
             if kind == "normal":
-                spawn_instructions = None
+                spawn_instructions = []
 
-                if "spawns" in wave_config:
-                    spawn_instructions = []
-                    for spawn_config in wave_config["spawns"]:
-                        spawn_instructions.append(SpawnInstruction(
-                            enemy_type=spawn_config["enemy_type"],
-                            side=spawn_config.get("side", "right"),
-                            delay_min=spawn_config.get("delay_min", 60),
-                            delay_max=spawn_config.get("delay_max", 120),
-                            y_min=spawn_config.get("y_min"),
-                            y_max=spawn_config.get("y_max"),
-                            enter_offset=spawn_config.get("enter_offset", 80),
-                        ))
+                for spawn_config in wave_config["spawns"]:
+                    spawn_instructions.append(SpawnInstruction(
+                        enemy_type=spawn_config["enemy_type"],
+                        side=spawn_config.get("side", "right"),
+                        delay_min=spawn_config.get("delay_min", 60),
+                        delay_max=spawn_config.get("delay_max", 120),
+                        y_min=spawn_config.get("y_min"),
+                        y_max=spawn_config.get("y_max"),
+                        enter_offset=spawn_config.get("enter_offset", 80),
+                        min_player_distance=spawn_config.get(
+                            "min_player_distance", 360),
+                    ))
 
                 self.waves.append(Wave(
                     trigger_x=wave_config["trigger_x"],
-                    enemy_types=wave_config.get("enemy_types"),
                     spawn_instructions=spawn_instructions,
                     max_active=wave_config.get("max_active", 4),
                 ))
