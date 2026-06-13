@@ -85,7 +85,7 @@ def main_draw_world(game_state):
     #level.draw_props(screen, camera.x, "front")
     level.background.draw_front(screen, camera.x)
     draw_exit_rect(screen, camera, level)
-    draw_player_debug_boxes(screen, camera, player)
+    draw_player_debug_boxes(screen, level, camera, player)
 
 def draw_exit_rect(screen, camera, level):
     if not SHOW_EXIT_RECT:
@@ -161,22 +161,7 @@ def main_draw_ui(game_state):
                 f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
     player_text = small_font.render(player_str,True, BLACK_COLOR)
     screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y+2*UI_LINE_HEIGHT))
-    # walkable lane
-    pygame.draw.line(
-        screen,
-        GREEN_COLOR,
-        (0, level.lane_top),
-        (SCREEN_WIDTH, level.lane_top),
-        2
-    )
-
-    pygame.draw.line(
-        screen,
-        GREEN_COLOR,
-        (0, level.lane_bottom),
-        (SCREEN_WIDTH, level.lane_bottom),
-        2
-    )
+    
     # end of debug text
 
     # stage clear manager UI
@@ -254,8 +239,8 @@ def main_draw_ui(game_state):
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(game_over_text, game_over_rect)
         return
-    
-def draw_player_debug_boxes(screen, camera, player):
+
+def draw_player_debug_boxes(screen, level, camera, player):
     if not SHOW_PLAYER_RECT:
         return
 
@@ -304,4 +289,21 @@ def draw_player_debug_boxes(screen, camera, player):
         WHITE_COLOR,
         (int(player.x - camera.x), int(player.y)),
         3
+    )
+    
+    # walkable lane
+    pygame.draw.line(
+        screen,
+        GREEN_COLOR,
+        (0, level.lane_top),
+        (SCREEN_WIDTH, level.lane_top),
+        2
+    )
+
+    pygame.draw.line(
+        screen,
+        GREEN_COLOR,
+        (0, level.lane_bottom),
+        (SCREEN_WIDTH, level.lane_bottom),
+        2
     )

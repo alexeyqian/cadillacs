@@ -71,7 +71,7 @@ FERRIS_ANIMATIONS = {
                 "frame_rect": (101, 0, 96, 78),
                 "offset": (-30, -78),
                 "hurt_rect": (25, 0, 43, 78),
-                "attack_rect": None
+                "attack_rect": (66, 13, 30, 10)
             }
         ]
     },

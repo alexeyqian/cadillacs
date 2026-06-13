@@ -265,6 +265,9 @@ class Enemy:
         distance_y = abs(dy)
 
         return dx, dy, distance_x, distance_y
+
+    def face_player(self, player):
+        self.facing_right = player.x > self.x
     
     def choose_state(self, distance_x, distance_y):
         if self.state == self.ATTACK:
@@ -298,6 +301,8 @@ class Enemy:
             return
         self.apply_knockback()
         dx, dy, distance_x, distance_y = self.get_player_distance(player)
+        if distance_x <= self.detect_range:
+            self.face_player(player)
         self.choose_state(distance_x, distance_y)
         self.execute_state(player, enemies, dx, dy)
         #self.apply_world_bounds()

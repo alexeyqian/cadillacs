@@ -68,28 +68,28 @@ EPISODE_1_STAGES = [
         "lane_bottom": 1080,
         "waves": [
             {
-                "kind": "normal",
+                "kind": "ferris",
                 "trigger_x": 900,
-                "enemy_types": ["normal", "normal", "normal"],
+                "enemy_types": ["ferris", "ferris", "ferris"],
             },
             {
                 "kind": "normal",
                 "trigger_x": 1800,
-                "enemy_types": ["normal", "fast", "heavy"],
+                "enemy_types": ["ferris", "gneiss", "gneiss"],
             },
             {
                 "kind": "spawn",
                 "trigger_x": 2250,
                 "spawners": [
                     {
-                        "enemy_type": "normal",
+                        "enemy_type": "ferris",
                         "x": 2320,
                         "y": 760,
                         "total_count": 3,
                         "spawn_delay": 120,
                     },
                     {
-                        "enemy_type": "fast",
+                        "enemy_type": "black_elmer",
                         "x": 2400,
                         "y": 760,
                         "total_count": 2,
@@ -144,12 +144,12 @@ EPISODE_1_STAGES = [
             {
                 "kind": "normal",
                 "trigger_x": 900,
-                "enemy_types": ["normal", "fast", "normal"],
+                "enemy_types": ["ferris", "ferris", "ferris"],
             },
             {
                 "kind": "normal",
                 "trigger_x": 1700,
-                "enemy_types": ["heavy", "fast", "raptor"],
+                "enemy_types": ["gneiss", "gneiss", "black_elmer"],
             },
             {
                 "kind": "boss",

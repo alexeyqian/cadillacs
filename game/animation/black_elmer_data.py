@@ -50,7 +50,7 @@ BLACK_ELMER_ANIMATIONS = {
         "frames": [
             {"frame_rect": (0, 0, 93, 85), "offset": (-47, -85), "hurt_rect": (18, 0, 55, 85), "attack_rect": None},
             {"frame_rect": (93, 0, 107, 85), "offset": (-54, -85), "hurt_rect": (21, 0, 64, 85), "attack_rect": None},
-            {"frame_rect": (200, 0, 128, 85), "offset": (-64, -85), "hurt_rect": (25, 0, 76, 85), "attack_rect": None},
+            {"frame_rect": (200, 0, 128, 85), "offset": (-64, -85), "hurt_rect": (25, 0, 76, 85), "attack_rect": (96, 14, 30, 20)},
         ]
     },
     "leg_attack": {
@@ -59,7 +59,7 @@ BLACK_ELMER_ANIMATIONS = {
         "frames": [
             {"frame_rect": (0, 0, 88, 81), "offset": (-44, -81), "hurt_rect": (17, 0, 52, 81), "attack_rect": None},
             {"frame_rect": (88, 0, 69, 81), "offset": (-35, -81), "hurt_rect": (13, 0, 41, 81), "attack_rect": None},
-            {"frame_rect": (157, 0, 95, 81), "offset": (-48, -81), "hurt_rect": (19, 0, 57, 81), "attack_rect": None},
+            {"frame_rect": (157, 0, 95, 81), "offset": (-48, -81), "hurt_rect": (19, 0, 57, 81), "attack_rect": (220, 30, 30, 15)},
         ]
     },
     "jump": {

@@ -56,21 +56,21 @@ GNEISS_ANIMATIONS = {
         "frames_count": 3,
         "frames": [
             {
-                "frame_rect": (0, 0, 61, 79),
-                "offset": (-30, -79),
-                "hurt_rect": (15, 0, 43, 79),
+                "frame_rect": (0, 0, 61, 76),
+                "offset": (-30, -76),
+                "hurt_rect": (15, 0, 43, 76),
                 "attack_rect": None
             },
             {
-                "frame_rect": (61, 0, 80, 79),
-                "offset": (-30, -79),
-                "hurt_rect": (21, 0, 43, 79),
+                "frame_rect": (61, 0, 61, 76),
+                "offset": (-30, -76),
+                "hurt_rect": (15, 0, 43, 76),
                 "attack_rect": None
             },
             {
-                "frame_rect": (141, 0, 96, 79),
-                "offset": (-30, -79),
-                "hurt_rect": (25, 0, 43, 79),
+                "frame_rect": (122, 0, 96, 76),
+                "offset": (-30, -76),
+                "hurt_rect": (25, 0, 43, 76),
                 "attack_rect": None
             }
         ]

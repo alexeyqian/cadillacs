@@ -17,7 +17,7 @@ class RangedEnemy(Enemy):
             self.state = self.IDLE
             return
 
-        #self.facing_right = player.x > self.x
+        self.face_player(player)
         self.attack_timer += 1
         if (self.attack_timer == self.attack_windup
             and not self.attack_has_hit):
