@@ -278,6 +278,9 @@ class Player:
             self.update_dead_state()
             return
 
+        if self.update_hit_state():
+            return
+
         self.update_timers()
         keys = pygame.key.get_pressed()
         moving = self.update_movement(keys)
@@ -554,13 +557,19 @@ class Player:
         self.update_respawn()
         self.update_animation()
 
-    def update_timers(self):
-        # TODO: hit timer? hit by enemy or attack enemy?
-        if self.hit_timer > 0:
-            self.hit_timer -= 1
-            if self.hit_timer == 0:
-                self.state = self.IDLE
+    def update_hit_state(self):
+        if self.hit_timer <= 0:
+            return False
 
+        self.hit_timer -= 1
+        if self.hit_timer <= 0:
+            self.state = self.IDLE
+        else:
+            self.state = self.HIT
+        self.update_animation()
+        return True
+
+    def update_timers(self):
         if self.combo_timer > 0:
             self.combo_timer -= 1
         else:

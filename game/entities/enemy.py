@@ -197,8 +197,8 @@ class Enemy:
         # add chase
         self.animation_manager.add_animation(
             self.ATTACK, Animation(attack_frames, attack_dur))
-        #self.animation_manager.add_animation(
-        #    self.HIT, Animation(hit_frames(), hit_dur))
+        self.animation_manager.add_animation(
+            self.HIT, Animation(hit_frames(), hit_dur))
         self.animation_manager.add_animation(
             self.DEAD, Animation(dead_frames, dead_dur))
 
