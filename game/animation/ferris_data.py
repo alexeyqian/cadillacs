@@ -77,12 +77,24 @@ FERRIS_ANIMATIONS = {
     },
     "hit": {
         "file": "assets/enemies/ferris_hit.png",
-        "frames_count": 1,
+        "frames_count": 3,
         "frames": [
             {
-                "frame_rect": (0, 0, 66, 77),
-                "offset": (-30, -77),
-                "hurt_rect": (15, 0, 43, 77),
+                "frame_rect": (0, 0, 56, 78),
+                "offset": (-28, -78),
+                "hurt_rect": (12, 0, 34, 78),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (56, 0, 66, 78),
+                "offset": (-33, -78),
+                "hurt_rect": (15, 0, 43, 78),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (122, 0, 56, 78),
+                "offset": (-28, -78),
+                "hurt_rect": (12, 0, 34, 78),
                 "attack_rect": None
             }
         ]
@@ -111,7 +123,7 @@ FERRIS_ANIM_FPS = {
     "idle": 6,
     "walk": 6,
     "attack": 6,
-    "hit": 12,
+    "hit": 10,
     "dead": 12,
 }
 

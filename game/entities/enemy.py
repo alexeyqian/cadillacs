@@ -169,7 +169,7 @@ class Enemy:
         if attack_config is None:
             attack_config = NORMAL_ENEMY_ATTACK
         if hit_config is None:
-            hit_config = NORMAL_ENEMY_IDLE
+            hit_config = NORMAL_ENEMY_HIT
         if use_normal_dead_animation:
             dead_config = NORMAL_ENEMY_DEAD
         if fallback_frame_factory is None:
