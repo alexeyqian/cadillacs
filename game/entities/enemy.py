@@ -11,6 +11,7 @@ from game.assets.asset_manager import AssetManager
 from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
 from game.animation.animation_config import *
+from game.tuning import scale_frames, scale_timing
 
 class Enemy:
     IDLE = "IDLE"
@@ -73,11 +74,12 @@ class Enemy:
         self.attack_timer = 0 # ?
         self.attack_has_hit = False
         self.attack_cooldown = 0
-        self.attack_cooldown_duration = ENEMY_ATTACK_COOLDOWN
-        self.attack_windup = ENEMY_ATTACK_WINDUP
-        self.attack_active = ENEMY_ATTACK_ACTIVE
-        self.attack_recovery = ENEMY_ATTACK_RECOVERY
-        self.attack_total_duration = (self.attack_windup + self.attack_active + self.attack_recovery)
+        self.attack_cooldown_duration = scale_frames(ENEMY_ATTACK_COOLDOWN)
+        self.apply_attack_timing({
+            "windup": ENEMY_ATTACK_WINDUP,
+            "active": ENEMY_ATTACK_ACTIVE,
+            "recovery": ENEMY_ATTACK_RECOVERY,
+        })
 
         # hit reaction
         self.knockback_velocity = 0
@@ -113,6 +115,17 @@ class Enemy:
                                 dead_config=dead_config,
                                 fallback_frame_factory=fallback_frame_factory)
 
+    def apply_attack_timing(self, attack_timing):
+        timing = scale_timing(
+            windup=attack_timing["windup"],
+            active=attack_timing["active"],
+            recovery=attack_timing["recovery"],
+        )
+        self.attack_windup = timing["windup"]
+        self.attack_active = timing["active"]
+        self.attack_recovery = timing["recovery"]
+        self.attack_total_duration = timing["total"]
+
     def apply_enemy_config(self, config):
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
@@ -124,7 +137,8 @@ class Enemy:
         self.speed = config.speed
         self.attack_damage = config.attack_damage
         self.detect_range = config.detect_range
-        self.attack_cooldown_duration = config.attack_cooldown
+        self.attack_cooldown_duration = scale_frames(config.attack_cooldown)
+        self.apply_attack_timing(config.attack_timing)
 
         self.collision_box_w = int(self.width * 0.5)
         self.collision_box_h = int(self.height * 0.2)

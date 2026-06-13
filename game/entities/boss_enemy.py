@@ -5,6 +5,7 @@ from game.colors import *
 from game.entities.enemy import Enemy
 from game.entities.boss_projectile import BossProjectile
 from game.animation.animation_config import *
+from game.tuning import scale_frames
 
 # boss phase system
 # make boss behavior change as HP decreases
@@ -24,10 +25,11 @@ class BossEnemy(Enemy):
         self.speed = BOSS_ENEMY_SPEED
         self.attack_hitbox_w = ENEMY_HITBOX_W*2
         self.attack_damage = BOSS_ENEMY_ATTACK_DAMAGE
+        self.apply_attack_timing(BOSS_ATTACK_TIMING)
 
         # properties special to boss enemy
-        self.attack_cooldown_duration = 60
-        self.special_attack_cooldown_duration = 300
+        self.attack_cooldown_duration = scale_frames(60)
+        self.special_attack_cooldown_duration = scale_frames(300)
         self.special_attack_cooldown = self.special_attack_cooldown_duration
         self.phase = 1
         self.phase_message_timer = 0

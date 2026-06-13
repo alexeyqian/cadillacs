@@ -1,25 +1,6 @@
 from game.animation.ferris_data import *
 from game.entities.frame_data_enemy import FrameDataEnemy
 
-class FerrisEnemy(FrameDataEnemy):
-    def __init__(self, x, y):
-        super().__init__(x, y, enemy_type="ferris",
-                animation_data=FERRIS_ANIMATIONS,
-                anim_fps=FERRIS_ANIM_FPS,
-                sprite_scale=4)
-        # these values are combat timing windows in game frames, 
-        # not sprite-frame durations.
-        # at fps=60 first 20 game frames before the attack can hit. About 0.33s.
-        self.attack_windup = 20
-        # next 8 game frames where hit detection is allowed. About 0.13s.
-        self.attack_active = 8
-        # after the active window, enemy is stuck finishing the attack. About 0.42s.
-        self.attack_recovery = 25
-        # Total attack duration: 20 + 8 + 25 = 53 game frames
-        self.attack_total_duration = (
-            self.attack_windup + self.attack_active + self.attack_recovery
-        )
-
 # Animation is visual part, is diff from above timing window part
 #At 60 FPS, attack animation frame duration is:
 #  60 / 6 = 10 game frames per sprite frame
@@ -71,3 +52,10 @@ Best practice for this project:
   Then FerrisEnemy can load those values instead of hardcoding them in the
   class.
 """
+class FerrisEnemy(FrameDataEnemy):
+    def __init__(self, x, y):
+        super().__init__(x, y, enemy_type="ferris",
+                animation_data=FERRIS_ANIMATIONS,
+                anim_fps=FERRIS_ANIM_FPS,
+                sprite_scale=4,
+                attack_timing=FERRIS_ATTACK_TIMING)

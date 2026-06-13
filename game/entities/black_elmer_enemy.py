@@ -6,4 +6,5 @@ class BlackElmerEnemy(FrameDataEnemy):
         super().__init__(x, y, enemy_type="black_elmer",
                 animation_data=BLACK_ELMER_ANIMATIONS,
                 anim_fps=BLACK_ELMER_ANIM_FPS,
-                sprite_scale=4)
+                sprite_scale=4,
+                attack_timing=BLACK_ELMER_ATTACK_TIMING)

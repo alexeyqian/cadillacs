@@ -244,6 +244,12 @@ BOSS_ENEMY_ATTACK = {
     "frame_count":8
 }
 
+BOSS_ATTACK_TIMING = {
+    "windup": 20,
+    "active": 8,
+    "recovery": 25,
+}
+
 # Animation target FPS (how many animation frames per real second)
 # Tune these to control perceived animation speed; values are in frames-per-second
 # for player

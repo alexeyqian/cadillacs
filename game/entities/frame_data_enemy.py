@@ -5,16 +5,23 @@ from game.animation.frame_animation import *
 from game.settings import *
 from game.colors import *
 from game.entities.enemy_config import get_enemy_config
+from game.tuning import scale_animation_fps_map
 
 
 class FrameDataEnemy(Enemy):
-    def __init__(self, x, y, enemy_type, animation_data, anim_fps, sprite_scale=4):
-        super().__init__(x, y, enemy_type,
+    def __init__(self, x, y, enemy_type, animation_data, anim_fps,
+            sprite_scale=4, attack_timing=None):
+        super().__init__(
+            x,
+            y,
             enemy_config=get_enemy_config(enemy_type),
-            load_legacy_animations=False)
+            load_legacy_animations=False,
+        )
         self.animation_data = animation_data
-        self.anim_fps = anim_fps
+        self.anim_fps = scale_animation_fps_map(anim_fps)
         self.sprite_scale = sprite_scale
+        if attack_timing is not None:
+            self.apply_attack_timing(attack_timing)
         self.init_frame_animations()
 
     def init_frame_animations(self):
