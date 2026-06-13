@@ -6,6 +6,7 @@ from game.entities.ranged_enemy import RangedEnemy
 from game.entities.boss_enemy import BossEnemy
 from game.entities.raptor_enemy import RaptorEnemy
 from game.entities.weapon_enemy import WeaponEnemy
+from game.entities.ferris_enemy import FerrisEnemy
 
 class EnemyFactory:
     @staticmethod
@@ -14,6 +15,8 @@ class EnemyFactory:
             return BossEnemy(x, y)
         if enemy_type == "raptor":
             return RaptorEnemy(x, y)
+        if enemy_type == "ferris":
+            return FerrisEnemy(x, y)
 
         config = get_enemy_config(enemy_type)
         if config.archetype == "basic_melee":

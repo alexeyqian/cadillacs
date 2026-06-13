@@ -16,3 +16,47 @@ class FrameAnimation:
         self.frame_duration = frame_duration
         self.current_frame = 0
         self.timer = 0
+        
+    def update(self):
+        self.timer += 1
+        if self.timer >= self.frame_duration:
+            self.timer = 0
+            self.current_frame += 1
+            if self.current_frame >= len(self.frames):
+                self.current_frame = 0
+
+    def get_image(self):
+        return self.frames[self.current_frame].image
+    
+    def get_frame_data(self):
+        return self.frames[self.current_frame]
+    
+    def get_frame_index(self):
+        return self.current_frame
+    
+    def reset(self):
+        self.current_frame = 0
+        self.timer = 0
+        
+def load_frame_animation(animation_data, animation_key):
+    config = animation_data.get(animation_key)
+    if not config:
+        raise ValueError(f"Missing frame animation data: {animation_key}")
+    
+    sheet = pygame.image.load(config["file"]).convert_alpha()
+    frames = []
+    for frame_config in config["frames"]:
+        
+        frame_x, frame_y, frame_w, frame_h = frame_config["frame_rect"]
+        image = pygame.Surface((frame_w, frame_h), pygame.SRCALPHA)
+        image.blit(sheet, (0,0),(frame_x, frame_y, frame_w, frame_h))
+
+        frames.append(FrameData(
+            image=image,
+            offset=frame_config["offset"],
+            hurt_rect = frame_config.get("hurt_rect"),
+            attack_rect = frame_config.get("attack_rect")))
+    if not frames:
+        raise ValueError(f"No frames loaded for animation: {animation_key}")
+    
+    return frames

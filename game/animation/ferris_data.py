@@ -75,4 +75,39 @@ FERRIS_ANIMATIONS = {
             }
         ]
     },
+    "hit": {
+        "file": "assets/enemies/ferris_hit.png",
+        "frames_count": 1,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 66, 77),
+                "offset": (-30, -77),
+                "hurt_rect": (15, 0, 43, 77),
+                "attack_rect": None
+            }
+        ]
+    },
+    "dead": {
+        "file": "assets/enemies/ferris_dead.png",
+        "frames_count": 2,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 111, 36),
+                "offset": (-50, -36),
+                "hurt_rect": (15, 0, 110, 36),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (111, 0, 125, 36),
+                "offset": (-50, -36),
+                "hurt_rect": (15, 40, 110, 36),
+                "attack_rect": None
+            }
+        ]
+    },
 }
+
+ANIM_FPS_IDLE_ENEMY_FERRIS = 6
+ANIM_FPS_WALK_ENEMY_FERRIS = 6
+ANIM_FPS_ATTACK_ENEMY_FERRIS = 6
+ANIM_FPS_HIT_ENEMY_FERRIS = 6
