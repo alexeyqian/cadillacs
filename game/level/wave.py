@@ -77,6 +77,9 @@ class Wave:
                 delay=delay,
             ))
 
+        if self.pending_spawns:
+            self.spawn_timer = self.pending_spawns[0].delay
+
         return []
 
     def update_spawn(self, active_enemy_count=0):
@@ -96,7 +99,10 @@ class Wave:
             pending_spawn.y
         )
 
-        self.spawn_timer = pending_spawn.delay
+        if self.pending_spawns:
+            self.spawn_timer = self.pending_spawns[0].delay
+        else:
+            self.spawn_timer = 0
         return [enemy]
 
     def finished_spawning(self):

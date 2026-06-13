@@ -121,7 +121,7 @@ PROJECTILE_SPEED=ENEMY_SPEED*4
 
 ######## ranges ########
 PLAYER_GRAB_RANGE=PLAYER_HITBOX_W
-ENEMY_DETECT_RANGE=SCREEN_WIDTH*0.35
+ENEMY_DETECT_RANGE=SCREEN_WIDTH*0.50
 
 ######## enemy attack timing ########
 # windup:prepare -> active attack (hit player once) 

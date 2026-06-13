@@ -1,5 +1,7 @@
 from game.settings import *
 
+ENEMY_ARENA_ENTRY_MARGIN = 560
+
 def apply_arena_bounds(game_state):
     level = game_state.level
     if not level.camera_locked:
@@ -16,7 +18,11 @@ def apply_arena_bounds(game_state):
     for enemy in game_state.enemies:
         if enemy.state == enemy.DEAD:
             continue
-        clamp_entity(enemy, arena_left, arena_right)
+        clamp_entity(
+            enemy,
+            arena_left - ENEMY_ARENA_ENTRY_MARGIN,
+            arena_right + ENEMY_ARENA_ENTRY_MARGIN,
+        )
 
 def clamp_entity(entity, arena_left, arena_right):
     half_w = entity.width // 2
