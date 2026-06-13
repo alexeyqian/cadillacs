@@ -12,7 +12,7 @@ EPISODE_1_STAGES = [
             {
                 "kind": "normal",
                 "trigger_x": 900,
-                "enemy_types": ["ferris", "normal", "normal"],
+                "enemy_types": ["ferris", "ferris", "ferris"],
             },
             {
                 "kind": "normal",

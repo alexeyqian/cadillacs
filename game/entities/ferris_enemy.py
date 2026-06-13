@@ -16,11 +16,15 @@ class FerrisEnemy(BasicMeleeEnemy):
         idle_frames = load_frame_animation(FERRIS_ANIMATIONS, "idle")
         walk_frames = load_frame_animation(FERRIS_ANIMATIONS, "walk")
         attack_frames = load_frame_animation(FERRIS_ANIMATIONS, "attack")
+        hit_frames = load_frame_animation(FERRIS_ANIMATIONS, "hit")
+        dead_frames = load_frame_animation(FERRIS_ANIMATIONS, "dead")
         # todo: game frame duration for single sprite frame? or idle sprite frames
         # Answer: for single sprite frame
         idle_dur = max(1, int(FPS/ANIM_FPS_IDLE_ENEMY_FERRIS))
         walk_dur = max(1, int(FPS/ANIM_FPS_WALK_ENEMY_FERRIS))
         attack_dur = max(1, int(FPS/ANIM_FPS_ATTACK_ENEMY_FERRIS))
+        hit_dur = max(1, int(FPS/ANIM_FPS_HIT_ENEMY_FERRIS))
+        dead_dur = max(1, int(FPS/ANIM_FPS_DEAD_ENEMY_FERRIS))
     
         self.animation_manager.add_animation(self.IDLE,
                 FrameAnimation(idle_frames, idle_dur))
@@ -28,6 +32,10 @@ class FerrisEnemy(BasicMeleeEnemy):
                 FrameAnimation(walk_frames, walk_dur))
         self.animation_manager.add_animation(self.IDLE,
                 FrameAnimation(attack_frames, attack_dur))
+        self.animation_manager.add_animation(self.HIT,
+                FrameAnimation(hit_frames, hit_dur))
+        self.animation_manager.add_animation(self.DEAD,
+                FrameAnimation(dead_frames, dead_dur))
     
     # return value is object include multiple frames/surfaces
     def get_current_frame_data(self):
