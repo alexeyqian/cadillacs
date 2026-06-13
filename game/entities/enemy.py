@@ -85,6 +85,7 @@ class Enemy:
         self.knockback_velocity = 0
         # enemy gets briefly white when hit by player
         self.hit_timer = 0
+        self.hit_stun_duration = 15
         
         # grab/throw
         self.thrown_velocity_x = 0
@@ -139,6 +140,7 @@ class Enemy:
         self.detect_range = config.detect_range
         self.attack_cooldown_duration = scale_frames(config.attack_cooldown)
         self.apply_attack_timing(config.attack_timing)
+        self.hit_stun_duration = scale_frames(config.hit_stun_duration)
 
         self.collision_box_w = int(self.width * 0.5)
         self.collision_box_h = int(self.height * 0.2)
@@ -541,7 +543,7 @@ class Enemy:
             return
 
         self.hp -= damage
-        self.hit_timer = 15
+        self.hit_timer = self.hit_stun_duration
         self.state = self.HIT
 
         # knockback direction based on attacker's position

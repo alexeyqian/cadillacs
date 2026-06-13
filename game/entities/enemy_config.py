@@ -22,6 +22,7 @@ class EnemyConfig:
         "active": ENEMY_ATTACK_ACTIVE,
         "recovery": ENEMY_ATTACK_RECOVERY,
     })
+    hit_stun_duration: int = 15
     score_points: int = 100
     idle_config: Any = field(default_factory=lambda: NORMAL_ENEMY_IDLE)
     walk_config: Any = field(default_factory=lambda: NORMAL_ENEMY_WALK)
@@ -37,6 +38,7 @@ ENEMY_CONFIGS = {
         max_hp=ENEMY_MAX_HP,
         speed=ENEMY_SPEED,
         attack_damage=ENEMY_ATTACK_DAMAGE,
+        hit_stun_duration=28,
         score_points=100,
     ),
     "fast": EnemyConfig(
@@ -102,6 +104,7 @@ ENEMY_CONFIGS = {
         max_hp=ENEMY_MAX_HP,
         speed=ENEMY_SPEED,
         attack_damage=ENEMY_ATTACK_DAMAGE,
+        hit_stun_duration=28,
         score_points=100,
     ),
     "driver": EnemyConfig(

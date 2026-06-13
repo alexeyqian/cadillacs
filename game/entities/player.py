@@ -10,6 +10,7 @@ from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
 from game.animation.animation_config import *
 from game.animation.mustapha_data import MUSTAPHA_ANIMATIONS
+from game.tuning import scale_frames
 
 @dataclass
 class PlayerFrame:
@@ -145,6 +146,7 @@ class Player:
         self.max_hp = PLAYER_MAX_HP
         self.hp = self.max_hp
         self.hit_timer = 0 # hit by enemy
+        self.hit_stun_duration = scale_frames(20)
         self.lives = PLAYER_LIVES
         self.respawn_x = self.x
         self.respawn_y = self.y
@@ -876,7 +878,7 @@ class Player:
 
         self.hp -= damage
         self.state = self.HIT
-        self.hit_timer = 20
+        self.hit_timer = self.hit_stun_duration
 
         if self.hp <= 0:
             self.hp = 0
