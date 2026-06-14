@@ -9,7 +9,7 @@ class EnemyReactionMixin:
         if self.state == self.DEAD:
             return
 
-        self.hp -= damage
+        died = self.health.take_damage(damage)
         self.hit_timer = self.hit_stun_duration
         self.state = self.HIT
 
@@ -22,7 +22,7 @@ class EnemyReactionMixin:
             self.knockdown()
             return
 
-        if self.hp <= 0:
+        if died:
             self.die()
 
     def apply_knockback(self):
@@ -68,8 +68,8 @@ class EnemyReactionMixin:
         if self.state == self.DEAD:
             return
 
-        self.hp -= damage
-        if self.hp <= 0:
+        died = self.health.take_damage(damage)
+        if died:
             self.die()
             return
 
@@ -79,6 +79,6 @@ class EnemyReactionMixin:
         if self.state == self.DEAD:
             return
 
-        self.hp -= damage
-        if self.hp <= 0:
+        died = self.health.take_damage(damage)
+        if died:
             self.die()

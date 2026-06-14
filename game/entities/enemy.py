@@ -15,6 +15,7 @@ from game.entities.enemy_combat import EnemyCombatMixin
 from game.entities.enemy_lifecycle import EnemyLifecycleMixin
 from game.entities.enemy_reactions import EnemyReactionMixin
 from game.entities.loot import Loot
+from game.entities.enemy_health import EnemyHealth
 
 class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             EnemyReactionMixin, EnemyLifecycleMixin):
@@ -73,8 +74,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.display_name = config.display_name
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
-        self.max_hp = config.max_hp
-        self.hp = self.max_hp
+        self.health = EnemyHealth(config.max_hp)
         self.speed = config.speed
         self.patrol_distance = config.patrol_distance
         self.detect_range = config.detect_range
@@ -307,3 +307,19 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
         world_y = self.y + offset_y + local_y
         return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
+
+    @property
+    def hp(self):
+        return self.health.hp
+
+    @hp.setter
+    def hp(self, value):
+        self.health.hp = value
+
+    @property
+    def max_hp(self):
+        return self.health.max_hp
+
+    @max_hp.setter
+    def max_hp(self, value):
+        self.health.max_hp = value
