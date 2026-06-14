@@ -1,7 +1,5 @@
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
-from game.animation.animation_config import *
 from game.settings import *
 
 @dataclass(frozen=True)
@@ -18,9 +16,6 @@ class EnemyConfig:
     detect_range: float = ENEMY_DETECT_RANGE
     hit_stun_duration: int = 15
     score_points: int = 100
-    idle_config: Any = field(default_factory=lambda: NORMAL_ENEMY_IDLE)
-    walk_config: Any = field(default_factory=lambda: NORMAL_ENEMY_WALK)
-    attack_config: Any = field(default_factory=lambda: NORMAL_ENEMY_ATTACK)
 
 
 ENEMY_CONFIGS = {
@@ -75,9 +70,6 @@ ENEMY_CONFIGS = {
         width=FAST_ENEMY_W,
         height=FAST_ENEMY_H,
         score_points=180,
-        idle_config=FAST_ENEMY_IDLE,
-        walk_config=FAST_ENEMY_WALK,
-        attack_config=FAST_ENEMY_ATTACK,
     ),
     "thug": EnemyConfig(
         enemy_id="thug",
@@ -89,9 +81,6 @@ ENEMY_CONFIGS = {
         width=FAST_ENEMY_W,
         height=FAST_ENEMY_H,
         score_points=190,
-        idle_config=FAST_ENEMY_IDLE,
-        walk_config=FAST_ENEMY_WALK,
-        attack_config=FAST_ENEMY_ATTACK,
     ),
     "blade": EnemyConfig(
         enemy_id="blade",
@@ -150,9 +139,6 @@ ENEMY_CONFIGS = {
         height=HEAVY_ENEMY_H,
         
         score_points=300,
-        idle_config=HEAVY_ENEMY_IDLE,
-        walk_config=HEAVY_ENEMY_WALK,
-        attack_config=HEAVY_ENEMY_ATTACK,
     ),
     "hammer": EnemyConfig(
         enemy_id="hammer",
@@ -165,9 +151,6 @@ ENEMY_CONFIGS = {
         height=HEAVY_ENEMY_H,
         
         score_points=350,
-        idle_config=HEAVY_ENEMY_IDLE,
-        walk_config=HEAVY_ENEMY_WALK,
-        attack_config=HEAVY_ENEMY_ATTACK,
     ),
     "wrench": EnemyConfig(
         enemy_id="wrench",
@@ -180,9 +163,6 @@ ENEMY_CONFIGS = {
         height=HEAVY_ENEMY_H,
         
         score_points=325,
-        idle_config=HEAVY_ENEMY_IDLE,
-        walk_config=HEAVY_ENEMY_WALK,
-        attack_config=HEAVY_ENEMY_ATTACK,
     ),
     "boss": EnemyConfig(
         enemy_id="boss",
