@@ -1,8 +1,6 @@
 import random
-import pygame
 
 from game.settings import *
-from game.colors import *
 from game.tuning import scale_frames
 
 from game.entities.enemy_config import get_enemy_config
@@ -16,6 +14,7 @@ from game.entities.loot import Loot
 from game.entities.enemy_health import EnemyHealth
 from game.entities.enemy_hitboxes import EnemyHitboxes
 from game.entities.enemy_animation_controller import EnemyAnimationController
+from game.entities.enemy_renderer import EnemyRenderer
 
 class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             EnemyReactionMixin, EnemyLifecycleMixin):
@@ -66,6 +65,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.getup_timer = 0
 
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
+        self.renderer = EnemyRenderer()
     
     @property
     def hp(self):
@@ -107,7 +107,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
     def update_animation(self):
         self.animation_controller.update(self)
 
-
     def update(self, player, enemies):
         if self.update_special_states():
             return
@@ -133,80 +132,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         return None
 
     def draw(self, screen, camera_x):
-        frame = self.get_current_frame_data()
+        self.renderer.draw(self, screen, camera_x)
 
-        if not frame:
-            raise ValueError(f"Missing frame data for enemy state: {self.state}")
-
-        # get the surface object of current animation's current frame
-        image = self.animation_controller.get_image()
-
-        scale = self.sprite_scale
-        image = pygame.transform.scale(
-            image,
-            (
-                image.get_width() * scale,
-                image.get_height() * scale
-            )
-        )
-
-        if not self.facing_right:
-            image = pygame.transform.flip(image, True, False)
-
-        frame_rect = self.get_frame_rect()
-        screen.blit(image, (frame_rect.x - camera_x, frame_rect.y))
-
-        if SHOW_ENEMY_RECT:
-            body_rect = self.get_logical_rect()
-            hurt_rect = self.get_hurt_rect()
-            collision_rect = self.get_collision_rect()
-            attack_rect = self.get_attack_rect()
-
-            pygame.draw.rect(screen, (80, 180, 255), (
-                collision_rect.x - camera_x,
-                collision_rect.y,
-                collision_rect.width,
-                collision_rect.height
-            ), 1)
-
-            pygame.draw.rect(screen, GREEN_COLOR, (
-                body_rect.x - camera_x,
-                body_rect.y,
-                body_rect.width,
-                body_rect.height
-            ), 1)
-
-            if hurt_rect:
-                pygame.draw.rect(screen, (255, 80, 80), (
-                    hurt_rect.x - camera_x,
-                    hurt_rect.y,
-                    hurt_rect.width,
-                    hurt_rect.height
-                ), 1)
-
-            if attack_rect:
-                pygame.draw.rect(screen, YELLOW_COLOR, (
-                    attack_rect.x - camera_x,
-                    attack_rect.y,
-                    attack_rect.width,
-                    attack_rect.height
-                ), 1)
-
-        bar_width = 50
-        bar_x = int(self.x - camera_x - bar_width / 2)
-        hp_width = int(bar_width * (self.hp / self.max_hp))
-        hp_height = 12
-        pygame.draw.rect(
-            screen,
-            (120, 120, 120),
-            (bar_x, frame_rect.y - hp_height, bar_width, 6)
-        )
-        pygame.draw.rect(
-            screen,
-            (255, 0, 0),
-            (bar_x, frame_rect.y - hp_height, hp_width, 6)
-        )
-    
     # returns the whole visible sprite frame in world space:
     def get_frame_rect(self):
         return self.hitboxes.get_frame_rect(self)

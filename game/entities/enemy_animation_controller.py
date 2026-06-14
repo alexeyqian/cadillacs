@@ -65,10 +65,10 @@ class EnemyAnimationController:
             self.animation_manager.play(owner.HIT)
         elif owner.state == owner.GRABBED:
             self.animation_manager.play(owner.IDLE)
-        elif owner.state == owner.THROWN:
-            self.animation_manager.play(owner.THROWN)
-        elif owner.state == owner.KNOCKDOWN:
-            self.animation_manager.play(owner.KNOCKDOWN)
+        elif owner.state == owner.THROWN: # TODO
+            self.animation_manager.play(owner.HIT)
+        elif owner.state == owner.KNOCKDOWN: # TODO
+            self.animation_manager.play(owner.HIT)
         elif owner.state == owner.GETUP:
             self.animation_manager.play(owner.IDLE)
         elif owner.state == owner.DEAD:
