@@ -28,7 +28,7 @@ def handle_player_attack_collision(game_state):
     if player.state == player.GRAB_KNEE:
         enemy = player.grab.grabbed_enemy
         if enemy and enemy.state != enemy.DEAD:
-            damage = player.combat.attack_damage()
+            damage = player.combat.attack_damage(player)
             enemy.take_grab_knee_damage(damage)
             enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(
