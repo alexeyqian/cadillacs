@@ -30,6 +30,7 @@ class Player:
         self.x = 300
         self.y = 500
         self.player_type = player_type
+        self.state = self.IDLE
         self.apply_player_config(get_player_config(player_type))
         self.animation_data = animation_data
         self.anim_fps = scale_animation_fps_map(anim_fps)
@@ -70,27 +71,24 @@ class Player:
         self.combo_step = 0
         self.combo_timer = 0
 
-        self.state = self.IDLE
-        
-        self.hit_timer = 0 # hit by enemy
-        self.respawn_x = self.x
-        self.respawn_y = self.y
-        self.respawn_timer = 0
-
         self.weapon = None
         self.pending_projectile = None
         self.fire_pressed = False  # track K_k edge for single-shot firing
         self.drop_pressed = False  # track K_q edge for single-press drop
         
-        # grab/throw
+        # grab/throw/knee
         self.grabbed_enemy = None
         self.grab_pressed = False
-
         self.throw_timer = 0
         self.throw_duration = 14
         self.grab_knee_timer = 0
         self.grab_knee_duration = PLAYER_GRAB_KNEE_DURATION
         self.grab_keen_hit_frame = PLAYER_GRAB_KNEE_HIT_FRAME
+
+        self.hit_timer = 0 # hit by enemy
+        self.respawn_x = self.x
+        self.respawn_y = self.y
+        self.respawn_timer = 0
 
         self.animation_manager = AnimationManager()
         self.init_animations()
@@ -188,7 +186,7 @@ class Player:
 
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x
-    def update(self):
+    def update(self, player_input):
         if self.state == self.DEAD:
             self.update_dead_state()
             return
@@ -197,10 +195,9 @@ class Player:
             return
 
         self.update_timers()
-        keys = pygame.key.get_pressed()
-        moving = self.update_movement(keys)
-        self.update_action_input(keys)
-        self.update_jump_physics(keys)
+        moving = self.update_movement(player_input)
+        self.update_action_input(player_input)
+        self.update_jump_physics(player_input)
         self.update_state_after_movement(moving)
         self.update_grabbed_enemy_position()
         #self.apply_world_bounds() # moved to gameplay_system.py
@@ -474,16 +471,16 @@ class Player:
             # comment out, so still can move during attacking
             #return # skip movement while attacking
 
-    def update_movement(self, keys):
+    def update_movement(self, player_input):
         moving = False
         if self.is_jumping: # avoid double movement while jumping
             return False
 
-        left_down = keys[pygame.K_LEFT] or keys[pygame.K_a]
-        right_down = keys[pygame.K_RIGHT] or keys[pygame.K_d]
-        up_down = keys[pygame.K_UP] or keys[pygame.K_w]
-        down_down = keys[pygame.K_DOWN] or keys[pygame.K_s]
-        shift_down = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
+        left_down = player_input.left
+        right_down = player_input.right
+        up_down = player_input.up
+        down_down = player_input.down
+        shift_down = player_input.shift
 
         horizontal_direction = 0
         if left_down and not right_down:
@@ -542,15 +539,15 @@ class Player:
         self.run_direction = direction
         self.run_tap_timer = self.run_tap_window
 
-    def update_jump_physics(self, keys):
+    def update_jump_physics(self, player_input):
         if not self.is_jumping:
             return
         
         # allow small air control
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        if player_input.left:
             self.vx = -self.air_speed
             self.facing_right = False
-        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        elif player_input.right:
             self.vx = self.air_speed
             self.facing_right = True
             
@@ -569,17 +566,17 @@ class Player:
             if self.state in [self.JUMP, self.JUMP_ATTACK]:
                 self.state = self.IDLE
 
-    def update_action_input(self, keys):
+    def update_action_input(self, player_input):
         # jump key
-        if keys[pygame.K_SPACE]:
+        if player_input.jump:
             if not self.jump_pressed:
-                self.start_jump(keys)
+                self.start_jump(player_input)
                 self.jump_pressed = True
         else:
             self.jump_pressed = False
 
         # attacking keys
-        if keys[pygame.K_j]:
+        if player_input.attack:
             if self.is_jumping:
                 if not self.jump_attack_pressed:
                     self.start_jump_attack()
@@ -593,7 +590,7 @@ class Player:
             self.jump_attack_pressed = False
 
         # fire weapon on key-down only (prevent holding K from firing repeatedly)
-        if keys[pygame.K_k]:
+        if player_input.fire:
             if not self.fire_pressed:
                 self.fire_weapon()
                 self.fire_pressed = True
@@ -652,7 +649,7 @@ class Player:
 
     #######################
 
-    def start_jump(self, keys):
+    def start_jump(self, player_input):
         if self.is_jumping:
             return
         if self.is_attacking:
@@ -664,10 +661,10 @@ class Player:
         self.vy = self.jump_power
         self.vx = 0
         
-        if keys[pygame.K_LEFT] or keys[pygame.K_a]:
+        if player_input.left:
             self.vx = -self.air_speed
             self.facing_right = False
-        elif keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        elif player_input.right:
             self.vx = self.air_speed
             self.facing_right = True
 

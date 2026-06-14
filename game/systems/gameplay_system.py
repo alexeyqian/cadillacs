@@ -10,6 +10,7 @@ from game.systems.manager_system import *
 from game.systems.effect_system import *
 from game.systems.arena_system import *
 from game.systems.explosive_system import *
+from game.entities.player_input import PlayerInput
 
 # do not put arena lock logic inside player, enemy, camera
 # arena system controls temporary battle boundaries
@@ -18,7 +19,8 @@ def update_gameplay(game_state, keys):
     
     old_x = game_state.player.x
     old_y = game_state.player.y
-    game_state.player.update()
+    player_input = PlayerInput(keys)
+    game_state.player.update(player_input)
     # moved from player.py
     game_state.player.apply_world_bounds(game_state.level.world_width,
         game_state.level.lane_top, game_state.level.lane_bottom)
