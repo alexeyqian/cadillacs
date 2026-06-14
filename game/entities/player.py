@@ -1,68 +1,12 @@
-from dataclasses import dataclass
-from typing import Optional
 import pygame
 from game.settings import *
 from game.colors import *
 from game.entities.projectile import Projectile
 from game.assets.placeholder.player_frames import *
-from game.assets.asset_manager import AssetManager
-from game.animation.animation import Animation
 from game.animation.animation_manager import AnimationManager
-from game.animation.animation_config import *
-from game.animation.mustapha_data import MUSTAPHA_ANIMATIONS
-from game.tuning import scale_frames
-
-@dataclass
-class PlayerFrame:
-    image: pygame.Surface
-    offset: tuple
-    hurt_rect: tuple
-    attack_rect: Optional[tuple]
-
-class PlayerFrameAnimation:
-    def __init__(self, frames, frame_duration=8):
-        self.frames = frames
-        self.frame_duration = frame_duration
-        self.current_frame = 0
-        self.timer = 0
-
-    def update(self):
-        self.timer += 1
-        if self.timer >= self.frame_duration:
-            self.timer = 0
-            self.current_frame += 1
-            if self.current_frame >= len(self.frames):
-                self.current_frame = 0
-
-    def get_image(self):
-        return self.frames[self.current_frame].image
-
-    def get_frame_data(self):
-        return self.frames[self.current_frame]
-
-    def reset(self):
-        self.current_frame = 0
-        self.timer = 0
-
-    def get_frame_index(self):
-        return self.current_frame
-    
-    # not used yet
-    def wrap_surface_frames(self, surfaces):
-        frames = []
-
-        for surface in surfaces:
-            width = surface.get_width()
-            height = surface.get_height()
-
-            frames.append(PlayerFrame(
-                image=surface,
-                offset=(-width // 2, -height),
-                hurt_rect=None,
-                attack_rect=None,
-            ))
-
-        return frames
+from game.animation.frame_animation import FrameAnimation, load_frame_animation
+from game.entities.player_config import get_player_config
+from game.tuning import scale_animation_fps_map, scale_frames
 
 class Player:
     IDLE = "IDLE"
@@ -82,17 +26,16 @@ class Player:
     GRAB_KNEE="GRAB_KNEE"
     THROW = "THROW"
 
-    def __init__(self):
+    def __init__(self, player_type, animation_data, anim_fps):
         self.x = 300
         self.y = 500
+        self.player_type = player_type
+        self.apply_player_config(get_player_config(player_type))
+        self.animation_data = animation_data
+        self.anim_fps = scale_animation_fps_map(anim_fps)
         # boxes
         # logical box
-        self.width = PLAYER_W
-        self.height = PLAYER_H
-        self.sprite_scale = 2
         #collision box
-        self.collision_box_w = PLAYER_COLLISION_W
-        self.collision_box_h = PLAYER_COLLISION_H
         # hurt box
         self.hurtbox_w = PLAYER_HURTBOX_W
         self.hurtbox_h = PLAYER_HURTBOX_H
@@ -103,11 +46,9 @@ class Player:
         self.attack_hitbox_h = PLAYER_HITBOX_H
         self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
 
-        self.speed = PLAYER_SPEED
         self.facing_right = True
 
         self.is_running = False
-        self.run_speed = PLAYER_RUN_SPEED
         self.run_active = False
         self.run_direction = 0
         self.run_tap_timer = 0
@@ -143,11 +84,8 @@ class Player:
         self.combo_timer = 0
 
         self.state = self.IDLE
-        self.max_hp = PLAYER_MAX_HP
         self.hp = self.max_hp
         self.hit_timer = 0 # hit by enemy
-        self.hit_stun_duration = scale_frames(20)
-        self.lives = PLAYER_LIVES
         self.respawn_x = self.x
         self.respawn_y = self.y
         self.respawn_timer = 0
@@ -173,6 +111,20 @@ class Player:
         
         self.animation_manager = AnimationManager()
         self.init_animations()
+
+    def apply_player_config(self, config):
+        self.player_id = config.player_id
+        self.display_name = config.display_name
+        self.width = int(config.width)
+        self.height = int(config.height)
+        self.collision_box_w = int(config.collision_box_w)
+        self.collision_box_h = int(config.collision_box_h)
+        self.max_hp = config.max_hp
+        self.lives = config.lives
+        self.speed = config.speed
+        self.run_speed = config.run_speed
+        self.hit_stun_duration = scale_frames(config.hit_stun_duration)
+        self.sprite_scale = config.sprite_scale
     
     def get_current_player_frame(self):
         animation = self.animation_manager.current_animation
@@ -181,89 +133,65 @@ class Player:
             return animation.get_frame_data()
         return None
     
-    def load_mustapha_animation(self, animation_key):
-        config = MUSTAPHA_ANIMATIONS.get(animation_key)
-        if not config:
-            # return []
-            raise ValueError(f"Missing player animation data: {animation_key}")
-
-        sheet = pygame.image.load(config["file"]).convert_alpha()
-        frames = []
-
-        for frame_config in config["frames"]:
-            frame_x, frame_y, frame_w, frame_h = frame_config["frame_rect"]
-
-            image = pygame.Surface((frame_w, frame_h), pygame.SRCALPHA)
-            image.blit(sheet, (0, 0), (frame_x, frame_y, frame_w, frame_h))
-
-            frames.append(PlayerFrame(
-                image=image,
-                offset=frame_config["offset"],
-                hurt_rect=frame_config.get("hurt_rect"),
-                attack_rect=frame_config.get("attack_rect"),
-            ))
-
-        return frames
-
     def init_animations(self):
-        idle_frames = self.load_mustapha_animation("idle")
-        walk_frames = self.load_mustapha_animation("walk") 
-        run_frames = self.load_mustapha_animation("run")
-        jump_frames = self.load_mustapha_animation("jump")
-        attack_frames = self.load_mustapha_animation("attack")
-        run_attack_frames = self.load_mustapha_animation("run_attack")
-        jump_attack_frames = self.load_mustapha_animation("jump_attack")
-        grab_frames = self.load_mustapha_animation("grab")
-        throw_frames = self.load_mustapha_animation("throw")
-        grab_knee_frames = self.load_mustapha_animation("grab_knee")
-        hit_frames = self.load_mustapha_animation("hit")
-        dead_frames = self.load_mustapha_animation("dead")
+        idle_frames = load_frame_animation(self.animation_data, "idle")
+        walk_frames = load_frame_animation(self.animation_data, "walk")
+        run_frames = load_frame_animation(self.animation_data, "run")
+        jump_frames = load_frame_animation(self.animation_data, "jump")
+        attack_frames = load_frame_animation(self.animation_data, "attack")
+        run_attack_frames = load_frame_animation(self.animation_data, "run_attack")
+        jump_attack_frames = load_frame_animation(self.animation_data, "jump_attack")
+        grab_frames = load_frame_animation(self.animation_data, "grab")
+        throw_frames = load_frame_animation(self.animation_data, "throw")
+        grab_knee_frames = load_frame_animation(self.animation_data, "grab_knee")
+        hit_frames = load_frame_animation(self.animation_data, "hit")
+        dead_frames = load_frame_animation(self.animation_data, "dead")
 
         # compute frame durations (number of game frames each animation frame should last)
-        idle_dur = max(1, int(FPS / ANIM_FPS_IDLE))
-        walk_dur = max(1, int(FPS / ANIM_FPS_WALK))
-        run_dur = max(1, int(FPS / ANIM_FPS_WALK))
-        jump_dur = max(1, int(FPS / ANIM_FPS_WALK))
-        attack_dur = max(1, int(FPS / ANIM_FPS_ATTACK))
-        run_attack_dur = max(1, int(FPS / ANIM_FPS_RUN_ATTACK))
-        jump_attack_dur = max(1, int(FPS / ANIM_FPS_JUMP_ATTACK))
-        grab_dur = max(1, int(FPS / ANIM_FPS_GRAB))
-        throw_dur = max(1, int(FPS / ANIM_FPS_THROW))
-        grab_knee_dur = max(1, int(FPS / ANIM_FPS_THROW))
-        hit_dur = max(1, int(FPS / ANIM_FPS_HIT))
-        dead_dur = max(1, int(FPS / ANIM_FPS_DEAD))
+        idle_dur = max(1, int(FPS / self.anim_fps["idle"]))
+        walk_dur = max(1, int(FPS / self.anim_fps["walk"]))
+        run_dur = max(1, int(FPS / self.anim_fps["run"]))
+        jump_dur = max(1, int(FPS / self.anim_fps["jump"]))
+        attack_dur = max(1, int(FPS / self.anim_fps["attack"]))
+        run_attack_dur = max(1, int(FPS / self.anim_fps["run_attack"]))
+        jump_attack_dur = max(1, int(FPS / self.anim_fps["jump_attack"]))
+        grab_dur = max(1, int(FPS / self.anim_fps["grab"]))
+        throw_dur = max(1, int(FPS / self.anim_fps["throw"]))
+        grab_knee_dur = max(1, int(FPS / self.anim_fps["grab_knee"]))
+        hit_dur = max(1, int(FPS / self.anim_fps["hit"]))
+        dead_dur = max(1, int(FPS / self.anim_fps["dead"]))
 
         # make duration exact
         self.attack_duration = len(attack_frames) * attack_dur
         self.run_attack_duration = len(run_attack_frames) * run_attack_dur
         self.jump_attack_duration = len(jump_attack_frames) * jump_attack_dur
         self.throw_duration = len(throw_frames) * throw_dur
-        self.grab_knee_duration = len(throw_frames) * throw_dur
+        self.grab_knee_duration = len(grab_knee_frames) * grab_knee_dur
 
         self.animation_manager.add_animation(
-            self.IDLE, PlayerFrameAnimation(idle_frames, idle_dur))
+            self.IDLE, FrameAnimation(idle_frames, idle_dur))
         self.animation_manager.add_animation(
-            self.WALK, PlayerFrameAnimation(walk_frames, walk_dur))
+            self.WALK, FrameAnimation(walk_frames, walk_dur))
         self.animation_manager.add_animation(
-            self.RUN, PlayerFrameAnimation(run_frames, run_dur))
+            self.RUN, FrameAnimation(run_frames, run_dur))
         self.animation_manager.add_animation(
-            self.JUMP, PlayerFrameAnimation(jump_frames, jump_dur))
+            self.JUMP, FrameAnimation(jump_frames, jump_dur))
         self.animation_manager.add_animation(
-            self.ATTACK, PlayerFrameAnimation(attack_frames, attack_dur))
+            self.ATTACK, FrameAnimation(attack_frames, attack_dur))
         self.animation_manager.add_animation(
-            self.RUN_ATTACK, PlayerFrameAnimation(run_attack_frames, run_attack_dur))
+            self.RUN_ATTACK, FrameAnimation(run_attack_frames, run_attack_dur))
         self.animation_manager.add_animation(
-            self.JUMP_ATTACK, PlayerFrameAnimation(jump_attack_frames, jump_attack_dur))
+            self.JUMP_ATTACK, FrameAnimation(jump_attack_frames, jump_attack_dur))
         self.animation_manager.add_animation(
-            self.GRAB, PlayerFrameAnimation(grab_frames, grab_dur))
+            self.GRAB, FrameAnimation(grab_frames, grab_dur))
         self.animation_manager.add_animation(
-            self.THROW, PlayerFrameAnimation(throw_frames, throw_dur))
+            self.THROW, FrameAnimation(throw_frames, throw_dur))
         self.animation_manager.add_animation(
-            self.GRAB_KNEE, PlayerFrameAnimation(grab_knee_frames, grab_knee_dur))
+            self.GRAB_KNEE, FrameAnimation(grab_knee_frames, grab_knee_dur))
         self.animation_manager.add_animation(
-            self.HIT, PlayerFrameAnimation(hit_frames, hit_dur))
+            self.HIT, FrameAnimation(hit_frames, hit_dur))
         self.animation_manager.add_animation(
-            self.DEAD, PlayerFrameAnimation(dead_frames, dead_dur))
+            self.DEAD, FrameAnimation(dead_frames, dead_dur))
 
     def get_current_animation_frame_index(self):
         animation = self.animation_manager.current_animation

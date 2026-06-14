@@ -334,3 +334,18 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
 }
+
+MUSTAPHA_ANIM_FPS = {
+    "idle": 6,
+    "walk": 6,
+    "run": 6,
+    "jump": 6,
+    "attack": 6,
+    "run_attack": 6,
+    "jump_attack": 6,
+    "grab": 6,
+    "throw": 6,
+    "grab_knee": 6,
+    "hit": 6,
+    "dead": 999,
+}
