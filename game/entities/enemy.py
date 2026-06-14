@@ -3,7 +3,7 @@ import pygame
 
 from game.settings import *
 from game.colors import *
-#from game.tuning import scale_frames, scale_timing, scale_animation_fps_map
+from game.tuning import scale_frames, scale_timing, scale_animation_fps_map
 from game.animation.frame_animation import FrameAnimation, load_frame_animation
 from game.animation.animation_manager import AnimationManager
 
@@ -34,24 +34,30 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
                 animation_data, anim_fps, sprite_scale=4):
         self.x = x
         self.y = y
+        self.enemy_type = enemy_type
+
+        # attack_range: should i attack
+        #  attack_rect = did i hit
+        # detect_range: within detect_range, enemy chases player
+        # outside this range, enemy ignores player
 
         # TODO: these fields should be in enemy config
         self.enemy_id = "ferris"
         self.display_name = "Enemy"
         self.score_points = 100
-
         self.speed = ENEMY_SPEED
         self.max_hp = ENEMY_MAX_HP
         self.hp = self.max_hp
-        # TODO: use scaler-able settings to replace hardcode
-        self.attack_range = 90 # should i attack, attack_rect = did i hit
-        self.attack_lane_range = 45
-        self.attack_cooldown_duration = 45
-
         ###### boxes ######
         # TODO: not used? logical box
         self.width = ENEMY_W
         self.height = ENEMY_H
+
+        self.detect_range = ENEMY_DETECT_RANGE
+        self.attack_range = 90 
+        self.attack_lane_range = 45
+        self.attack_cooldown_duration = 45
+        self.attack_damage = ENEMY_ATTACK_DAMAGE
 
         #collision box
         self.collision_box_w = ENEMY_COLLISION_W
@@ -63,15 +69,10 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.death_timer = 30
         self.death_timer_started = False
 
-        # within this range, enemy chases player
-        # outside this range, enemy ignores player
-        self.detect_range = ENEMY_DETECT_RANGE
         # enemy remembers where it spawned
         self.spawn_x = x
         self.patrol_distance = ENEMY_DETECT_RANGE
         self.patrol_direction = 1
-
-        self.attack_damage = ENEMY_ATTACK_DAMAGE
 
         self.attack_has_hit = False
         self.attack_cooldown = 0
@@ -81,7 +82,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         # enemy gets briefly white when hit by player
         self.hit_timer = 0
         self.hit_stun_duration = 15
-        
+
         # grab/throw
         self.thrown_velocity_x = 0
         self.thrown_timer = 0
@@ -93,15 +94,34 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.getup_timer = 0
 
         #lane boundaries
+        # TODO: no need any more, should be in apply world bounds
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
 
-        self.apply_enemy_config(get_enemy_config(enemy_type))
+        self.apply_enemy_config(get_enemy_config(self.enemy_type))
+
         self.animation_data = animation_data
-        #self.anim_fps = scale_animation_fps_map(anim_fps)
+        self.anim_fps = anim_fps #scale_animation_fps_map(anim_fps)
         self.sprite_scale = sprite_scale
         self.animation_manager = AnimationManager()
         self.init_frame_animations()
+
+    def apply_enemy_config(self, config):
+        self.enemy_id = config.enemy_id
+        self.display_name = config.display_name
+        self.score_points = config.score_points
+        self.width = int(config.width)
+        self.height = int(config.height)
+        self.max_hp = config.max_hp
+        self.hp = self.max_hp
+        self.speed = config.speed
+        self.attack_damage = config.attack_damage
+        self.detect_range = config.detect_range
+        #self.attack_cooldown_duration = scale_frames(config.attack_cooldown)
+        self.hit_stun_duration = config.hit_stun_duration #scale_frames(config.hit_stun_duration)
+
+        self.collision_box_w = int(self.width * 0.5)
+        self.collision_box_h = int(self.height * 0.2)
 
     def init_frame_animations(self):
         idle_frames = load_frame_animation(self.animation_data, "idle")
@@ -157,22 +177,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
         self.animation_manager.update()
 
-    def apply_enemy_config(self, config):
-        self.enemy_id = config.enemy_id
-        self.display_name = config.display_name
-        self.score_points = config.score_points
-        self.width = int(config.width)
-        self.height = int(config.height)
-        self.max_hp = config.max_hp
-        self.hp = self.max_hp
-        self.speed = config.speed
-        self.attack_damage = config.attack_damage
-        self.detect_range = config.detect_range
-        #self.attack_cooldown_duration = scale_frames(config.attack_cooldown)
-        self.hit_stun_duration = config.hit_stun_duration #scale_frames(config.hit_stun_duration)
-
-        self.collision_box_w = int(self.width * 0.5)
-        self.collision_box_h = int(self.height * 0.2)
 
     def update(self, player, enemies):
         if self.update_special_states():
