@@ -9,10 +9,12 @@ class EnemyConfig:
     archetype: str
     max_hp: int
     speed: float
+    detect_range: float = ENEMY_DETECT_RANGE
+    attack_range:int = 90 
+    attack_lane_range:int = 45
     attack_damage: float
     attack_cooldown_duration: int = ENEMY_ATTACK_COOLDOWN
     collision_box_w: int = ENEMY_COLLISION_W
-    detect_range: float = ENEMY_DETECT_RANGE
     hit_stun_duration: int = 15
     score_points: int = 100
 

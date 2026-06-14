@@ -44,8 +44,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
         self.hp = self.max_hp
-        self.attack_range = 90 
-        self.attack_lane_range = 45
 
         self.state = self.IDLE
         self.facing_right = False
@@ -95,8 +93,10 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.max_hp = config.max_hp
         self.hp = self.max_hp
         self.speed = config.speed
-        self.attack_damage = config.attack_damage
         self.detect_range = config.detect_range
+        self.attack_range = config.attack_range
+        self.attack_lane_range = config.attack_lane_range
+        self.attack_damage = config.attack_damage
         self.attack_cooldown_duration = config.attack_cooldown_duration #scale_frames(config.attack_cooldown_duration)
         self.hit_stun_duration = config.hit_stun_duration #scale_frames(config.hit_stun_duration)
 
