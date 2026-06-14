@@ -189,7 +189,7 @@ def main():
         keys = pygame.key.get_pressed()
         # player death and lives check, and related continue status
         if (player.state == player.DEAD 
-            and player.lives <= 0 
+            and player.health.lives <= 0 
             and game_state.credits > 0):
             game_state.continue_active = True
 

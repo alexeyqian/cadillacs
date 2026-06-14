@@ -204,46 +204,6 @@ class Player:
         self.movement.vy = value
     
     @property
-    def hp(self):
-        return self.health.hp
-
-    @hp.setter
-    def hp(self, value):
-        self.health.hp = value
-
-    @property
-    def max_hp(self):
-        return self.health.max_hp
-
-    @max_hp.setter
-    def max_hp(self, value):
-        self.health.max_hp = value
-
-    @property
-    def lives(self):
-        return self.health.lives
-
-    @lives.setter
-    def lives(self, value):
-        self.health.lives = value
-    
-    @property
-    def weapon(self):
-        return self.weapon_slot.weapon
-
-    @weapon.setter
-    def weapon(self, value):
-        self.weapon_slot.weapon = value
-
-    @property
-    def pending_projectile(self):
-        return self.weapon_slot.pending_projectile
-
-    @pending_projectile.setter
-    def pending_projectile(self, value):
-        self.weapon_slot.pending_projectile = value
-
-    @property
     def fire_pressed(self):
         return self.weapon_slot.fire_pressed
 

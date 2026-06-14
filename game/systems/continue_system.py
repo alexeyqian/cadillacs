@@ -17,8 +17,8 @@ def update_continue_system(game_state, keys):
             return
         game_state.credits -= 1
 
-        player.lives = 3
-        player.hp = player.max_hp
+        player.health.lives = 3
+        player.health.hp = player.health.max_hp
         player.state = player.IDLE
         player.x = player.respawn_x
         player.y = player.respawn_y

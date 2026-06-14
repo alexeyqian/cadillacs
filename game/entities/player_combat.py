@@ -96,7 +96,8 @@ class PlayerCombat:
         elif owner.state == owner.GRAB_KNEE:
             base_damage = PLAYER_GRAB_KNEE_DAMAGE
 
-        if owner.weapon and not owner.weapon.is_ranged:
-            base_damage += owner.weapon.damage
+        weapon = owner.weapon_slot.weapon
+        if weapon and not weapon.is_ranged:
+            base_damage += weapon.damage
 
         return base_damage

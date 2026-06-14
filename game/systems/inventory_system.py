@@ -18,11 +18,11 @@ def update_player_weapon_interaction(game_state, keys):
         if not player_rect.colliderect(weapon.get_rect()):
             continue
 
-        if player.weapon is None:
+        if player.weapon_slot.weapon is None:
             player.pick_up_weapon(weapon)
             break
 
-        current_power = weapon_power(player.weapon)
+        current_power = weapon_power(player.weapon_slot.weapon)
         ground_power = weapon_power(weapon)
         if ground_power > current_power:
             player.drop_weapon()
@@ -31,7 +31,7 @@ def update_player_weapon_interaction(game_state, keys):
         
     # no need manually pick up weapon any more
     #if keys[pygame.K_e]:
-    #    if player.weapon is None:
+    #    if player.weapon_slot.weapon is None:
     #        player_rect = pygame.Rect(
     #            player.x,player.y,
     #            player.width,player.height)

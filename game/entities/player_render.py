@@ -47,12 +47,13 @@ class PlayerRenderer:
         self.draw_health_bar(owner, screen, screen_x)
 
     def draw_weapon_debug(self, owner, screen, screen_x):
-        if not owner.weapon:
+        weapon = owner.weapon_slot.weapon
+        if not weapon:
             return
 
         weapon_len = 20
-        if not owner.weapon.is_ranged:
-            weapon_len += owner.weapon.hitbox_w_bonus
+        if not weapon.is_ranged:
+            weapon_len += weapon.hitbox_w_bonus
 
         weapon_x = screen_x + owner.width
         if not owner.facing_right:
@@ -73,7 +74,7 @@ class PlayerRenderer:
         pygame.draw.rect(screen, (100, 100, 100), (hb_x, hb_y, hb_w, hb_h))
 
         try:
-            fill_ratio = max(0.0, min(1.0, float(owner.hp) / float(owner.max_hp)))
+            fill_ratio = max(0.0, min(1.0, float(owner.health.hp) / float(owner.health.max_hp)))
         except Exception:
             fill_ratio = 0
 

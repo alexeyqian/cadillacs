@@ -51,11 +51,12 @@ def update_loot_pickup(game_state):
 
         if player_rect.colliderect(loot.get_rect()):
             # add condition to keep health pack if player doesn't need it
-            if loot.loot_type == "health" and player.hp < player.max_hp:
-                player.hp = min(player.max_hp, player.hp + 20)
+            if loot.loot_type == "health" and player.health.hp < player.health.max_hp:
+                player.health.hp = min(player.health.max_hp, player.health.hp + 20)
                 loot.active = False
             # add condition to keep ammo pack if player doesn't have gun
-            elif loot.loot_type == "ammo" and player.weapon and player.weapon.is_ranged:
-                if player.weapon and hasattr(player.weapon, "ammo"):
-                    player.weapon.ammo += 5
+            elif loot.loot_type == "ammo":
+                weapon = player.weapon_slot.weapon
+                if weapon and weapon.is_ranged and hasattr(weapon, "ammo"):
+                    weapon.ammo += 5
                     loot.active = False

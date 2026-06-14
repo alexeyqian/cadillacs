@@ -120,15 +120,15 @@ def main_draw_ui(game_state):
 
     # credits and lives
     next_life_text = small_font.render(
-        f"CREDITS {game_state.credits} | LIVES: {player.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
+        f"CREDITS {game_state.credits} | LIVES: {player.health.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
         True, BLACK_COLOR)
     screen.blit(next_life_text, (400, UI_FIRST_Y))
 
     # health UI
     pygame.draw.rect(screen,(100,100,100), (UI_FIRST_X,UI_FIRST_Y+UI_LINE_HEIGHT,200,20))
-    hp_width = int(200 * (player.hp / player.max_hp))
+    hp_width = int(200 * (player.health.hp / player.health.max_hp))
     pygame.draw.rect(screen, GREEN_COLOR, (UI_FIRST_X,UI_FIRST_Y+UI_LINE_HEIGHT,hp_width,20))
-    hp_text = font.render(f"HP: {int(player.hp)}/{player.max_hp}", True, BLACK_COLOR)
+    hp_text = font.render(f"HP: {int(player.health.hp)}/{player.health.max_hp}", True, BLACK_COLOR)
     screen.blit(hp_text, (240, UI_FIRST_Y+UI_LINE_HEIGHT))
 
     # control
@@ -147,10 +147,11 @@ def main_draw_ui(game_state):
     # Weapon UI
     weapon_name = ""
     ammo_str = ""
-    if player.weapon:
-        weapon_name = player.weapon.weapon_type
-        if player.weapon.is_ranged:
-            ammo_str = f" Ammo:{player.weapon.ammo}"
+    weapon = player.weapon_slot.weapon
+    if weapon:
+        weapon_name = weapon.weapon_type
+        if weapon.is_ranged:
+            ammo_str = f" Ammo:{weapon.ammo}"
         weapon_text = font.render(f"Weapon:{weapon_name}{ammo_str}",True,BLACK_COLOR)
         screen.blit(weapon_text,(650, UI_FIRST_Y))
 
@@ -234,7 +235,7 @@ def main_draw_ui(game_state):
         screen.blit(continue_hint_text, continue_hint_text.get_rect(center=(SCREEN_WIDTH//2,SCREEN_HEIGHT//2 + 60)))
         return
 
-    if player.state == player.DEAD and player.lives <= 0:
+    if player.state == player.DEAD and player.health.lives <= 0:
         game_over_text = big_font.render("GAME OVER", True, RED_COLOR)
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(game_over_text, game_over_rect)
