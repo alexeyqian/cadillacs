@@ -21,6 +21,7 @@ from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_state_resolver import EnemyStateResolver
 from game.entities.enemy_action_controller import EnemyActionController
+from game.entities.enemy_update_controller import EnemyUpdateController
 
 # State resolver: decides what state the enemy wants
 # Action executor: runs behavior for the current state
@@ -81,6 +82,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.lifecycle = EnemyLifecycleController()
         self.state_resolver = EnemyStateResolver()
         self.action_controller = EnemyActionController()
+        self.update_controller = EnemyUpdateController()
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
     
@@ -125,19 +127,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.animation_controller.update(self)
 
     def update(self, player, enemies):
-        if self.update_special_states():
-            return
-        self.update_timers()
-        if self.update_hit_state():
-            return
-        self.apply_knockback()
-        dx, dy, distance_x, distance_y = self.get_player_distance(player)
-        if distance_x <= self.detect_range:
-            self.face_player(player)
-        self.choose_state(distance_x, distance_y)
-        self.execute_state(player, enemies, dx, dy)
-        #self.apply_world_bounds()
-        self.update_animation()
+        self.update_controller.update(self, player, enemies)
 
     def create_loot(self):
         roll = random.randint(1, 100)
