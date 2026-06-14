@@ -1,5 +1,9 @@
 
 ADD: attack buffering, counter-hit, clash/parry, and attack configs 
+counter-hit -> compare attack rect vs hurt rect
+clash/parry -> compare attack rect vs enemy attack rect
+weapon swing boxes -> PlayerHitboxes can ask PlayerWeaponSlot for weapon metadata
+per-frame hitbox debug -> one clear place to inspect
 
 
 spawn enemies randomly around a range of circle of the trigger point, not fixed place

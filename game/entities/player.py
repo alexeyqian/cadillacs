@@ -1,16 +1,14 @@
-import pygame
 from game.settings import *
-from game.colors import *
-from game.assets.placeholder.player_frames import *
-from game.animation.animation_manager import AnimationManager
-from game.animation.frame_animation import FrameAnimation, load_frame_animation
+from game.tuning import scale_frames
 from game.entities.player_config import get_player_config
-from game.tuning import scale_animation_fps_map, scale_frames
+from game.entities.player_hitboxes import PlayerHitboxes
 from game.entities.player_health import PlayerHealth
 from game.entities.player_weapon_slot import PlayerWeaponSlot
 from game.entities.player_movement import PlayerMovement
 from game.entities.player_combat import PlayerCombat
 from game.entities.player_grab_controller import PlayerGrabController
+from game.entities.player_animation_controller import PlayerAnimationController
+from game.entities.player_render import PlayerRenderer
 
 class Player:
     IDLE = "IDLE"
@@ -37,8 +35,6 @@ class Player:
         self.state = self.IDLE
         self.apply_player_config(get_player_config(player_type))
         self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
-        self.animation_data = animation_data
-        self.anim_fps = scale_animation_fps_map(anim_fps)
 
         self.facing_right = True
 
@@ -48,18 +44,19 @@ class Player:
         self.run_attack_duration = 18
         self.jump_attack_pressed = False
         self.jump_attack_duration = self.run_attack_duration
-
-        self.combat = PlayerCombat()
-        self.weapon_slot = PlayerWeaponSlot()
-        
-        # grab/throw/knee
-        self.grab = PlayerGrabController()
-
         self.respawn_x = self.x
         self.respawn_y = self.y
 
-        self.animation_manager = AnimationManager()
-        self.init_animations()
+        self.combat = PlayerCombat()
+        self.weapon_slot = PlayerWeaponSlot()
+        self.grab = PlayerGrabController()
+        self.hitboxes = PlayerHitboxes()
+        self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
+        self.renderer = PlayerRenderer()
+
+    @property
+    def animation_manager(self):
+        return self.animation_controller.animation_manager
 
     @property
     def grabbed_enemy(self):
@@ -280,77 +277,10 @@ class Player:
         self.sprite_scale = config.sprite_scale
     
     def get_current_player_frame(self):
-        animation = self.animation_manager.current_animation
-        # only used for new per-frame metadata
-        if hasattr(animation, "get_frame_data"):
-            return animation.get_frame_data()
-        return None
-    
-    def init_animations(self):
-        idle_frames = load_frame_animation(self.animation_data, "idle")
-        walk_frames = load_frame_animation(self.animation_data, "walk")
-        run_frames = load_frame_animation(self.animation_data, "run")
-        jump_frames = load_frame_animation(self.animation_data, "jump")
-        attack_frames = load_frame_animation(self.animation_data, "attack")
-        run_attack_frames = load_frame_animation(self.animation_data, "run_attack")
-        jump_attack_frames = load_frame_animation(self.animation_data, "jump_attack")
-        grab_frames = load_frame_animation(self.animation_data, "grab")
-        throw_frames = load_frame_animation(self.animation_data, "throw")
-        grab_knee_frames = load_frame_animation(self.animation_data, "grab_knee")
-        hit_frames = load_frame_animation(self.animation_data, "hit")
-        dead_frames = load_frame_animation(self.animation_data, "dead")
-
-        # compute frame durations (number of game frames each animation frame should last)
-        idle_dur = max(1, int(FPS / self.anim_fps["idle"]))
-        walk_dur = max(1, int(FPS / self.anim_fps["walk"]))
-        run_dur = max(1, int(FPS / self.anim_fps["run"]))
-        jump_dur = max(1, int(FPS / self.anim_fps["jump"]))
-        attack_dur = max(1, int(FPS / self.anim_fps["attack"]))
-        run_attack_dur = max(1, int(FPS / self.anim_fps["run_attack"]))
-        jump_attack_dur = max(1, int(FPS / self.anim_fps["jump_attack"]))
-        grab_dur = max(1, int(FPS / self.anim_fps["grab"]))
-        throw_dur = max(1, int(FPS / self.anim_fps["throw"]))
-        grab_knee_dur = max(1, int(FPS / self.anim_fps["grab_knee"]))
-        hit_dur = max(1, int(FPS / self.anim_fps["hit"]))
-        dead_dur = max(1, int(FPS / self.anim_fps["dead"]))
-
-        # make duration exact
-        self.attack_duration = len(attack_frames) * attack_dur
-        self.run_attack_duration = len(run_attack_frames) * run_attack_dur
-        self.jump_attack_duration = len(jump_attack_frames) * jump_attack_dur
-        self.throw_duration = len(throw_frames) * throw_dur
-        self.grab_knee_duration = len(grab_knee_frames) * grab_knee_dur
-
-        self.animation_manager.add_animation(
-            self.IDLE, FrameAnimation(idle_frames, idle_dur))
-        self.animation_manager.add_animation(
-            self.WALK, FrameAnimation(walk_frames, walk_dur))
-        self.animation_manager.add_animation(
-            self.RUN, FrameAnimation(run_frames, run_dur))
-        self.animation_manager.add_animation(
-            self.JUMP, FrameAnimation(jump_frames, jump_dur))
-        self.animation_manager.add_animation(
-            self.ATTACK, FrameAnimation(attack_frames, attack_dur))
-        self.animation_manager.add_animation(
-            self.RUN_ATTACK, FrameAnimation(run_attack_frames, run_attack_dur))
-        self.animation_manager.add_animation(
-            self.JUMP_ATTACK, FrameAnimation(jump_attack_frames, jump_attack_dur))
-        self.animation_manager.add_animation(
-            self.GRAB, FrameAnimation(grab_frames, grab_dur))
-        self.animation_manager.add_animation(
-            self.THROW, FrameAnimation(throw_frames, throw_dur))
-        self.animation_manager.add_animation(
-            self.GRAB_KNEE, FrameAnimation(grab_knee_frames, grab_knee_dur))
-        self.animation_manager.add_animation(
-            self.HIT, FrameAnimation(hit_frames, hit_dur))
-        self.animation_manager.add_animation(
-            self.DEAD, FrameAnimation(dead_frames, dead_dur))
+        return self.animation_controller.get_current_frame()
 
     def get_current_animation_frame_index(self):
-        animation = self.animation_manager.current_animation
-        if hasattr(animation, "get_frame_index"):
-            return animation.get_frame_index()
-        return 0
+        return self.animation_controller.get_current_frame_index()
 
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x
@@ -371,82 +301,9 @@ class Player:
         #self.apply_world_bounds() # moved to gameplay_system.py
         self.update_animation()
 
-    #World:   [--------------------PLAYER----]
-    #                          x=800
-    #Screen window starts at camera_x=600:
-    #	      [    window    ]
-    #	       600          1200
-    #Player appears at pixel 200 inside the window → screen_x = 200
+
     def draw(self, screen, camera_x):
-        # camera_x is how far the camera has scrolled.
-        # Subtracting it converts the player's world position->screen position
-        # player's screen x position after camera offset
-        # bottom-center screen x:
-        screen_x = self.x - camera_x
-        body_left = self.get_left()
-        screen_left = body_left - camera_x
-
-        # add depth
-        # Now moving up/down looks more like a beat'em-up character walking in depth.
-        # shadow_rect = pygame.Rect(screen_x,self.y + self.height - 10,self.width,12)
-        #pygame.draw.ellipse(screen,(50, 50, 50),shadow_rect)
-        # end of depth
-
-        image = self.animation_manager.get_image()
-        scale = self.sprite_scale
-        image = pygame.transform.scale(image, (image.get_width()*scale, image.get_height()*scale))
-        if not self.facing_right:
-            image = pygame.transform.flip(image, True, False)
-        
-        frame = self.get_current_player_frame()
-        #if frame: # for new frame system
-        offset_x, offset_y = frame.offset
-        offset_x *= scale
-        offset_y *= scale
-        if self.facing_right:
-            sprite_world_x = self.x + offset_x
-        else:
-            sprite_world_x = self.x - image.get_width() - offset_x
-        sprite_y = self.y + offset_y
-        screen.blit(image, (sprite_world_x - camera_x, sprite_y))
-        #else:
-            # Sprite frames can be wider/taller than the gameplay body box.
-            # Keep the feet and body anchored to the player's collision rectangle.
-        #    sprite_x = screen_left
-        #    if not self.facing_right:
-        #        sprite_x -= max(0, image.get_width() - self.width)
-        #    sprite_y = self.y - image.get_height()
-        #    screen.blit(image, (sprite_x, sprite_y))
-
-        # weapon section
-        if self.weapon:
-            weapon_len = 20
-            if not self.weapon.is_ranged:
-                weapon_len += self.weapon.hitbox_w_bonus
-            weapon_x = screen_x + self.width
-            if not self.facing_right:
-                weapon_x = screen_x - weapon_len
-            
-            pygame.draw.rect(screen, (255,255,0),
-                (weapon_x, self.y+30,weapon_len,5))
-
-        screen_x = self.x - camera_x
-
-        # player health bar (above player)
-        hb_w = self.width
-        hb_h = 8
-        hb_x = int(screen_x - hb_w / 2)
-        hb_y = self.get_top() - 16
-        # background
-        pygame.draw.rect(screen, (100, 100, 100), (hb_x, hb_y, hb_w, hb_h))
-        # filled portion (clamped between 0 and 1)
-        fill_ratio = 0
-        try:
-            fill_ratio = max(0.0, min(1.0, float(self.hp) / float(self.max_hp)))
-        except Exception:
-            fill_ratio = 0
-        hp_w = int(hb_w * fill_ratio)
-        pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
+        self.renderer.draw(self, screen, camera_x)
 
     def get_left(self):
         return self.get_frame_rect().left
@@ -461,135 +318,25 @@ class Player:
         return self.get_frame_rect().bottom
 
     def get_frame_rect(self):
-        frame = self.get_current_player_frame()
-        if not frame:
-            raise ValueError(f"Missing player frame data for {self.state}")
-
-        scale = self.sprite_scale
-        offset_x, offset_y = frame.offset
-
-        frame_w = frame.image.get_width() * scale
-        frame_h = frame.image.get_height() * scale
-        offset_x *= scale
-        offset_y *= scale
-
-        if self.facing_right:
-            world_x = self.x + offset_x
-        else:
-            world_x = self.x - frame_w - offset_x
-
-        world_y = self.y + offset_y
-
-        return pygame.Rect(
-            int(world_x),
-            int(world_y),
-            int(frame_w),
-            int(frame_h)
-        )
+        return self.hitboxes.get_frame_rect(self)
 
     # TODO: deprecated
     def get_logical_rect(self):
         return self.get_frame_rect()
-        #return pygame.Rect(
-        #    self.get_left(),self.get_top(),
-        #    self.width,self.height)
 
     def get_hurt_rect(self):
-        scale = self.sprite_scale
-        frame = self.get_current_player_frame()
-        # new for frame-aware logic
-        local_x, local_y, w, h = frame.hurt_rect
-        offset_x, offset_y = frame.offset
-        frame_w = frame.image.get_width()
+        return self.hitboxes.get_hurt_rect(self)
 
-        # scale
-        local_x *= scale
-        local_y *= scale
-        w *= scale
-        h *= scale
-        offset_x *= scale
-        offset_y *= scale
-        frame_w *= scale
-        if self.facing_right:
-            world_x = self.x + offset_x + local_x
-        else:
-            mirrored_x = frame_w - local_x - w
-            world_x = self.x - frame_w - offset_x + mirrored_x
-
-        world_y = self.y + offset_y + local_y
-        return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
     # on bottom center
     def get_collision_rect(self):
-        return pygame.Rect(
-            int(self.x - self.collision_box_w/2),
-            int(self.y - self.collision_box_h),
-            int(self.collision_box_w),
-            int(self.collision_box_h)
-        )
+        return self.hitboxes.get_collision_rect(self)
 
     # hit box
     def get_attack_rect(self):
-        if not self.is_attacking:
-            return None
-        
-        # for new per-frame logic
-        frame = self.get_current_player_frame()
-        if frame and frame.attack_rect:
-            scale = self.sprite_scale
-            local_x, local_y, w, h = frame.attack_rect
-            offset_x, offset_y = frame.offset
-            frame_w = frame.image.get_width()
-
-            local_x *= scale
-            local_y *= scale
-            w *= scale
-            h *= scale
-            offset_x *= scale
-            offset_y *= scale
-            frame_w *= scale
-
-            if self.facing_right:
-                world_x = self.x + offset_x + local_x
-            else:
-                mirrored_x = frame_w - local_x - w
-                world_x = self.x - frame_w - offset_x + mirrored_x
-
-            world_y = self.y + offset_y + local_y
-            return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
-
-        return None
+        return self.hitboxes.get_attack_rect(self)
 
     def update_animation(self):
-        if self.state == self.IDLE:
-            self.animation_manager.play(self.IDLE)
-        elif self.state == self.WALK:
-            self.animation_manager.play(self.WALK)
-        elif self.state == self.RUN:
-            self.animation_manager.play(self.RUN)
-        elif self.state == self.JUMP:
-            self.animation_manager.play(self.JUMP)
-
-        elif self.state in [self.ATTACK_1, self.ATTACK_2, self.ATTACK_3]:
-            self.animation_manager.play(self.ATTACK)
-        elif self.state == self.RUN_ATTACK:
-            self.animation_manager.play(self.RUN_ATTACK)
-        elif self.state == self.JUMP_ATTACK:
-            self.animation_manager.play(self.JUMP_ATTACK)
-        elif self.state == self.GRAB:
-            self.animation_manager.play(self.GRAB)
-        elif self.state == self.GRAB_KNEE:
-            self.animation_manager.play(self.GRAB_KNEE)
-        elif self.state == self.THROW:
-            self.animation_manager.play(self.THROW)
-
-        elif self.state == self.HIT: # Take hit by enemy
-            self.animation_manager.play(self.HIT)
-        elif self.state == self.DEAD:
-            self.animation_manager.play(self.DEAD)
-        else:
-            self.animation_manager.play(self.IDLE)
-
-        self.animation_manager.update()
+        self.animation_controller.update(self)
 
     def update_dead_state(self):
         self.update_respawn()
