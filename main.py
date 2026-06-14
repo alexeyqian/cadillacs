@@ -90,8 +90,6 @@ def load_stage(game_state, stage_data):
     game_state.player.is_jumping = False
     game_state.player.vx = 0
     game_state.player.vy = 0
-    game_state.player.lane_top = stage_data["lane_top"] #todo: remove
-    game_state.player.lane_bottom = stage_data["lane_bottom"] #todo: remove
     game_state.player.state = game_state.player.IDLE
     game_state.player.facing_right = True
 

@@ -92,10 +92,6 @@ class Player:
         self.grab_knee_duration = PLAYER_GRAB_KNEE_DURATION
         self.grab_keen_hit_frame = PLAYER_GRAB_KNEE_HIT_FRAME
 
-        # lane boundaries
-        self.lane_top = LANE_TOP
-        self.lane_bottom = LANE_BOTTOM
-        
         self.animation_manager = AnimationManager()
         self.init_animations()
 
@@ -642,10 +638,8 @@ class Player:
     def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
         if world_width is None:
             world_width = WORLD_WIDTH
-        if lane_top is None:
-            lane_top = self.lane_top
-        if lane_bottom is None:
-            lane_bottom = self.lane_bottom
+        if lane_top is None or lane_bottom is None:
+            raise ValueError("Player.apply_world_bounds requires lane_top and lane_bottom")
 
         # world boundaries
         half_w = int(self.width / 2)
