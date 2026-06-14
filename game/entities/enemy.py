@@ -1,22 +1,23 @@
 import random
+import pygame
 
 from game.settings import *
-from game.entities.loot import Loot
-
+from game.colors import *
+from game.tuning import scale_frames, scale_timing, scale_animation_fps_map
+from game.animation.frame_animation import FrameAnimation, load_frame_animation
 from game.animation.animation_manager import AnimationManager
-from game.tuning import scale_frames, scale_timing
+
+from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_boxes import EnemyBoxMixin
 from game.entities.enemy_ai import EnemyAIMixin
 from game.entities.enemy_combat import EnemyCombatMixin
-from game.entities.enemy_animation import EnemyAnimationMixin
-from game.entities.enemy_render import EnemyRendererMixin
 from game.entities.enemy_lifecycle import EnemyLifecycleMixin
 from game.entities.enemy_reactions import EnemyReactionMixin
+from game.entities.loot import Loot
 
 class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
-            EnemyReactionMixin, EnemyLifecycleMixin,
-            EnemyAnimationMixin, EnemyRendererMixin):
+            EnemyReactionMixin, EnemyLifecycleMixin):
     IDLE = EnemyState.IDLE
     WALK = EnemyState.WALK
     PATROL = EnemyState.PATROL
@@ -29,10 +30,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
     KNOCKDOWN = EnemyState.KNOCKDOWN
     GETUP = EnemyState.GETUP
 
-    def __init__(self, x, y, idle_config=None, walk_config=None,
-                attack_config=None, hit_config=None, dead_config=None,
-                fallback_frame_factory=None, enemy_config=None,
-                load_legacy_animations=True):
+    def __init__(self, x, y, enemy_type, animation_data, anim_fps,
+            sprite_scale=4, attack_timing=None):
         self.x = x
         self.y = y
         self.enemy_id = "normal"
@@ -104,20 +103,75 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
 
-        if enemy_config is not None:
-            self.apply_enemy_config(enemy_config)
-            idle_config = enemy_config.idle_config
-            walk_config = enemy_config.walk_config
-            attack_config = enemy_config.attack_config
-
+        self.apply_enemy_config(get_enemy_config(enemy_type))
+        self.animation_data = animation_data
+        self.anim_fps = scale_animation_fps_map(anim_fps)
+        self.sprite_scale = sprite_scale
+        if attack_timing is not None:
+            self.apply_attack_timing(attack_timing)
         self.animation_manager = AnimationManager()
-        if load_legacy_animations:
-            self.init_animations(idle_config=idle_config,
-                                walk_config=walk_config,
-                                attack_config=attack_config,
-                                hit_config=hit_config,
-                                dead_config=dead_config,
-                                fallback_frame_factory=fallback_frame_factory)
+        self.init_frame_animations()
+
+    def init_frame_animations(self):
+        idle_frames = load_frame_animation(self.animation_data, "idle")
+        walk_frames = load_frame_animation(self.animation_data, "walk")
+        attack_frames = load_frame_animation(self.animation_data, "attack")
+        hit_frames = load_frame_animation(self.animation_data, "hit")
+        dead_frames = load_frame_animation(self.animation_data, "dead")
+        # todo: game frame duration for single sprite frame? or idle sprite frames
+        # Answer: for single sprite frame
+        idle_dur = max(1, int(FPS/self.anim_fps["idle"]))
+        walk_dur = max(1, int(FPS/self.anim_fps["walk"]))
+        attack_dur = max(1, int(FPS/self.anim_fps["attack"]))
+        hit_dur = max(1, int(FPS/self.anim_fps["hit"]))
+        dead_dur = max(1, int(FPS/self.anim_fps["dead"]))
+    
+        self.animation_manager.add_animation(self.IDLE,
+                FrameAnimation(idle_frames, idle_dur))
+        self.animation_manager.add_animation(self.WALK,
+                FrameAnimation(walk_frames, walk_dur))
+        self.animation_manager.add_animation(self.ATTACK,
+                FrameAnimation(attack_frames, attack_dur))
+        self.animation_manager.add_animation(self.HIT,
+                FrameAnimation(hit_frames, hit_dur))
+        self.animation_manager.add_animation(self.DEAD,
+                FrameAnimation(dead_frames, dead_dur))
+
+        # return value is object include multiple frames/surfaces
+
+    def get_current_frame_data(self):
+        animation = self.animation_manager.current_animation
+        if hasattr(animation, "get_frame_data"):
+            return animation.get_frame_data()
+        return None
+
+    def update_animation(self):
+        if self.state == self.IDLE:
+            self.animation_manager.play(self.IDLE)
+        elif self.state == self.WALK:
+            self.animation_manager.play(self.WALK)
+        elif self.state == self.PATROL:
+            self.animation_manager.play(self.IDLE)
+        elif self.state == self.CHASE:
+            self.animation_manager.play(self.WALK)
+        elif self.state == self.ATTACK:
+            self.animation_manager.play(self.ATTACK)
+        # by player
+        elif self.state == self.HIT:
+            self.animation_manager.play(self.HIT)
+        elif self.state == self.GRABBED:
+            self.animation_manager.play(self.IDLE)
+        elif self.state == self.THROWN:
+            self.animation_manager.play(self.THROWN)
+        elif self.state == self.KNOCKDOWN:
+            self.animation_manager.play(self.KNOCKDOWN)
+
+        elif self.state == self.GETUP:
+            self.animation_manager.play(self.IDLE)
+        elif self.state == self.DEAD:
+            self.animation_manager.play(self.DEAD)
+
+        self.animation_manager.update()
 
     def apply_attack_timing(self, attack_timing):
         timing = scale_timing(
@@ -178,3 +232,78 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             return Loot(self.x, self.y, "ammo")
 
         return None
+
+    def draw(self, screen, camera_x):
+        frame = self.get_current_frame_data()
+
+        if not frame:
+            raise ValueError(f"Missing frame data for enemy state: {self.state}")
+
+        # get the surface object of current animation's current frame
+        image = self.animation_manager.get_image()
+
+        scale = self.sprite_scale
+        image = pygame.transform.scale(
+            image,
+            (
+                image.get_width() * scale,
+                image.get_height() * scale
+            )
+        )
+
+        if not self.facing_right:
+            image = pygame.transform.flip(image, True, False)
+
+        frame_rect = self.get_frame_rect()
+        screen.blit(image, (frame_rect.x - camera_x, frame_rect.y))
+
+        if SHOW_ENEMY_RECT:
+            body_rect = self.get_logical_rect()
+            hurt_rect = self.get_hurt_rect()
+            collision_rect = self.get_collision_rect()
+            attack_rect = self.get_attack_rect()
+
+            pygame.draw.rect(screen, (80, 180, 255), (
+                collision_rect.x - camera_x,
+                collision_rect.y,
+                collision_rect.width,
+                collision_rect.height
+            ), 1)
+
+            pygame.draw.rect(screen, GREEN_COLOR, (
+                body_rect.x - camera_x,
+                body_rect.y,
+                body_rect.width,
+                body_rect.height
+            ), 1)
+
+            if hurt_rect:
+                pygame.draw.rect(screen, (255, 80, 80), (
+                    hurt_rect.x - camera_x,
+                    hurt_rect.y,
+                    hurt_rect.width,
+                    hurt_rect.height
+                ), 1)
+
+            if attack_rect:
+                pygame.draw.rect(screen, YELLOW_COLOR, (
+                    attack_rect.x - camera_x,
+                    attack_rect.y,
+                    attack_rect.width,
+                    attack_rect.height
+                ), 1)
+
+        bar_width = 50
+        bar_x = int(self.x - camera_x - bar_width / 2)
+        hp_width = int(bar_width * (self.hp / self.max_hp))
+        hp_height = 12
+        pygame.draw.rect(
+            screen,
+            (120, 120, 120),
+            (bar_x, frame_rect.y - hp_height, bar_width, 6)
+        )
+        pygame.draw.rect(
+            screen,
+            (255, 0, 0),
+            (bar_x, frame_rect.y - hp_height, hp_width, 6)
+        )

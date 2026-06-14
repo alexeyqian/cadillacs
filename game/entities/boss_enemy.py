@@ -6,6 +6,7 @@ from game.entities.enemy import Enemy
 from game.entities.boss_projectile import BossProjectile
 from game.animation.animation_config import *
 from game.tuning import scale_frames
+from game.animation.boss_data import BOSS_ANIMATIONS, BOSS_ANIM_FPS
 
 # boss phase system
 # make boss behavior change as HP decreases
@@ -14,9 +15,15 @@ from game.tuning import scale_frames
 # Phase 3: dangerous final phase below 30% HP
 class BossEnemy(Enemy):
     def __init__(self, x, y):
-        super().__init__(x,y,
-                        walk_config=BOSS_ENEMY_WALK,
-                        attack_config=BOSS_ENEMY_ATTACK)
+        super().__init__(
+            x,
+            y,
+            enemy_type="boss",
+            animation_data=BOSS_ANIMATIONS,
+            anim_fps=BOSS_ANIM_FPS,
+            sprite_scale=4,
+            attack_timing=BOSS_ATTACK_TIMING,
+        )
 
         self.max_hp = BOSS_ENEMY_MAX_HP
         self.hp = self.max_hp
@@ -90,36 +97,6 @@ class BossEnemy(Enemy):
         self.pending_projectile = BossProjectile(self.x-15, self.get_top()+120,
             direction, self.speed * 2, damage)
 
-    def update_attack(self, player):
-        self.facing_right = player.x > self.x
-        self.attack_timer += 1
-
-        active_start = self.attack_windup
-        active_end = self.attack_windup + self.attack_active
-
-        is_active_frame = active_start <= self.attack_timer < active_end
-
-        if is_active_frame and not self.attack_has_hit:
-            attack_rect = self.get_attack_rect()
-            player_hurt_rect = player.get_hurt_rect()
-
-            if attack_rect and player_hurt_rect and attack_rect.colliderect(player_hurt_rect):
-                player.take_damage(self.attack_damage)
-                self.attack_has_hit = True
-
-        if self.attack_timer >= self.attack_total_duration:
-            self.state = self.IDLE
-            self.attack_timer = 0
-            self.attack_has_hit = False
-            self.attack_cooldown = self.attack_cooldown_duration
-
-    def update_attack_old(self, player):
-        if self.attack_cooldown > 0:
-            return
-
-        player.take_damage(self.attack_damage)
-        self.attack_cooldown = self.attack_cooldown_duration
-    
     # add better boss knockback resistance
     def take_damage(self, damage, attacker_x):
         if self.state == self.DEAD:

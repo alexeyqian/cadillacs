@@ -8,13 +8,11 @@ class EnemyCombatMixin:
         self.facing_right = player.x > self.x
         self.attack_timer += 1
 
-        active_start = self.attack_windup
-        active_end = self.attack_windup + self.attack_active
-        is_active_frame = active_start <= self.attack_timer < active_end
-        if is_active_frame and not self.attack_has_hit:
-            attack_rect = self.get_attack_rect()
-            player_hurt_rect = player.get_hurt_rect()
-            if attack_rect and player_hurt_rect and attack_rect.colliderect(player_hurt_rect):
+        attack_rect = self.get_attack_rect()
+        player_hurt_rect = player.get_hurt_rect()
+
+        if attack_rect and player_hurt_rect and not self.attack_has_hit:
+            if attack_rect.colliderect(player_hurt_rect):
                 player.take_damage(self.attack_damage)
                 self.attack_has_hit = True
         

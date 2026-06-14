@@ -1,5 +1,5 @@
 from game.animation.ferris_data import *
-from game.entities.frame_data_enemy import FrameDataEnemy
+from game.entities.enemy import Enemy
 
 # Animation is visual part, is diff from above timing window part
 #At 60 FPS, attack animation frame duration is:
@@ -52,7 +52,7 @@ Best practice for this project:
   Then FerrisEnemy can load those values instead of hardcoding them in the
   class.
 """
-class FerrisEnemy(FrameDataEnemy):
+class FerrisEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y, enemy_type="ferris",
                 animation_data=FERRIS_ANIMATIONS,

@@ -299,8 +299,23 @@ ENEMY_CONFIGS = {
         walk_config=HEAVY_ENEMY_WALK,
         attack_config=HEAVY_ENEMY_ATTACK,
     ),
+    "boss": EnemyConfig(
+        enemy_id="boss",
+        display_name="Boss",
+        archetype="boss",
+        max_hp=BOSS_ENEMY_MAX_HP,
+        speed=BOSS_ENEMY_SPEED,
+        attack_damage=BOSS_ENEMY_ATTACK_DAMAGE,
+        width=BOSS_ENEMY_W,
+        height=BOSS_ENEMY_H,
+        attack_range_multiplier=2.0,
+        attack_timing=BOSS_ATTACK_TIMING,
+        attack_cooldown=60,
+        hit_stun_duration=8,
+        score_points=1000,
+    ),
 }
 
 
 def get_enemy_config(enemy_type):
-    return ENEMY_CONFIGS.get(enemy_type, ENEMY_CONFIGS["normal"])
+    return ENEMY_CONFIGS.get(enemy_type, ENEMY_CONFIGS["ferris"])

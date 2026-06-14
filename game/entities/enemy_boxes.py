@@ -20,18 +20,24 @@ class EnemyBoxMixin:
         self.y = max(lane_top, self.y) # cannot go above lane_top
         self.y = min(lane_bottom, self.y) # cannot go below lane_bottom
 
-    def get_left(self):
-        return int(self.x - self.width / 2)
+    def get_frame_rect(self):
+        frame = self.get_current_frame_data()
+        if not frame:
+            raise ValueError(f"Missing frame data for enemy state: {self.state}")
+        scale = self.sprite_scale
+        offset_x, offset_y = frame.offset
+        frame_w = frame.image.get_width()*scale
+        frame_h = frame.image.get_height()*scale
+        offset_x *= scale
+        offset_y *= scale
+        if self.facing_right:
+            world_x = self.x + offset_x
+        else: 
+            world_x = self.x - frame_w - offset_x
+            
+        world_y = self.y + offset_y
+        return pygame.Rect(int(world_x), int(world_y), int(frame_w), int(frame_h))
 
-    def get_top(self):
-        return self.y - self.height
-
-    def get_right(self):
-        return int(self.x + self.width / 2)
-
-    def get_bottom(self):
-        return self.y
-    
     # on bottom center
     def get_collision_rect(self):
         return pygame.Rect(
@@ -43,39 +49,68 @@ class EnemyBoxMixin:
 
     # sprite frame rect
     def get_logical_rect(self):
-        return pygame.Rect(
-            int(self.get_left()),
-            int(self.get_top()),
-            int(self.width),
-            int(self.height)
-        )
+        return self.get_frame_rect()
 
     def get_hurt_rect(self):
-        return pygame.Rect(
-            int(self.get_left() + self.hurtbox_offset_x),
-            int(self.get_top() + self.hurtbox_offset_y),
-            int(self.hurtbox_w),
-            int(self.hurtbox_h))
+        frame = self.get_current_frame_data()
+        if not frame or not frame.hurt_rect:
+            return pygame.Rect(int(self.x), int(self.y), 0, 0)
+        scale = self.sprite_scale
+        local_x, local_y, w, h = frame.hurt_rect
+        offset_x, offset_y = frame.offset
+        frame_w = frame.image.get_width()
+
+        local_x *= scale
+        local_y *= scale
+        w *= scale
+        h *= scale
+        offset_x *= scale
+        offset_y *= scale
+        frame_w *= scale
         
-    # hit box
-    def get_attack_rect(self):
-        body_left = self.get_left()
-        body_top = self.get_top()
-
-        # Use symmetric hitbox size and offsets so left/right behave identically
-        hit_w = self.attack_hitbox_w
-        # giving running attack a longer hitbox
-        #if self.state == self.RUN_ATTACK:
-        #    hit_w = self.attack_hitbox_w * 1.5
-        hit_h = self.attack_hitbox_h
-        #if self.weapon and not self.weapon.is_ranged:
-        #    hit_w += self.weapon.hitbox_w_bonus
-        #    hit_h += self.weapon.hitbox_h_bonus
-
-        hit_y = body_top + self.attack_hitbox_offset_y
         if self.facing_right:
-            hit_x = int(self.x + self.width/2)
+            world_x = self.x + offset_x + local_x
         else:
-            hit_x = int(self.x - self.width/2 - hit_w)
+            mirrored_x = frame_w - local_x - w
+            world_x = self.x - frame_w - offset_x + mirrored_x
+            
+        world_y = self.y + offset_y + local_y
+        return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
 
-        return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
+    def get_attack_rect(self):
+        frame = self.get_current_frame_data()
+
+        if frame:
+            if not frame.attack_rect:
+                return None
+
+            scale = self.sprite_scale
+
+            local_x, local_y, w, h = frame.attack_rect
+            offset_x, offset_y = frame.offset
+            frame_w = frame.image.get_width()
+
+            local_x *= scale
+            local_y *= scale
+            w *= scale
+            h *= scale
+            offset_x *= scale
+            offset_y *= scale
+            frame_w *= scale
+
+            if self.facing_right:
+                world_x = self.x + offset_x + local_x
+            else:
+                mirrored_x = frame_w - local_x - w
+                world_x = self.x - frame_w - offset_x + mirrored_x
+
+            world_y = self.y + offset_y + local_y
+
+            return pygame.Rect(
+                int(world_x),
+                int(world_y),
+                int(w),
+                int(h)
+            )
+
+        return None
