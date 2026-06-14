@@ -1,6 +1,6 @@
 class EnemyAIMixin:
     def get_player_distance(self, player):
-        self.movement.get_player_distance(self, player)
+        return self.movement.get_player_distance(self, player)
 
     def face_player(self, player):
         self.movement.face_player(self, player)
