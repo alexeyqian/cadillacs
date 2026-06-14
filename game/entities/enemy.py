@@ -16,6 +16,7 @@ from game.entities.enemy_lifecycle import EnemyLifecycleMixin
 from game.entities.enemy_reactions import EnemyReactionMixin
 from game.entities.loot import Loot
 from game.entities.enemy_health import EnemyHealth
+from game.entities.enemy_hitboxes import EnemyHitboxes
 
 class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             EnemyReactionMixin, EnemyLifecycleMixin):
@@ -45,6 +46,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
         self.state = self.IDLE
         self.facing_right = False
+        self.hitboxes = EnemyHitboxes()
         self.loot_generated = False
         self.death_timer = 30
         self.death_timer_started = False
@@ -68,6 +70,22 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.anim_fps = anim_fps #scale_animation_fps_map(anim_fps)
         self.animation_manager = AnimationManager()
         self.init_frame_animations()
+    
+    @property
+    def hp(self):
+        return self.health.hp
+
+    @hp.setter
+    def hp(self, value):
+        self.health.hp = value
+
+    @property
+    def max_hp(self):
+        return self.health.max_hp
+
+    @max_hp.setter
+    def max_hp(self, value):
+        self.health.max_hp = value
 
     def apply_enemy_config(self, config):
         self.enemy_id = config.enemy_id
@@ -243,83 +261,15 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
     
     # returns the whole visible sprite frame in world space:
     def get_frame_rect(self):
-        frame = self.get_current_frame_data()
-        if not frame:
-            raise ValueError(f"Missing frame data for enemy state: {self.state}")
-
-        scale = self.sprite_scale
-        offset_x, offset_y = frame.offset
-        frame_w = frame.image.get_width() * scale
-        frame_h = frame.image.get_height() * scale
-        offset_x *= scale
-        offset_y *= scale
-
-        if self.facing_right:
-            world_x = self.x + offset_x
-        else:
-            world_x = self.x - frame_w - offset_x
-
-        world_y = self.y + offset_y
-        return pygame.Rect(int(world_x), int(world_y), int(frame_w), int(frame_h))
-
+        return self.hitboxes.get_frame_rect(self)
 
     def get_logical_rect(self):
         return self.get_frame_rect()
 
 
     def get_hurt_rect(self):
-        frame = self.get_current_frame_data()
-        if not frame or not frame.hurt_rect:
-            return pygame.Rect(int(self.x), int(self.y), 0, 0)
-
-        return self._get_in_frame_box_rect(frame.hurt_rect)
+        return self.hitboxes.get_hurt_rect(self)
 
 
     def get_attack_rect(self):
-        frame = self.get_current_frame_data()
-        if not frame or not frame.attack_rect:
-            return None
-
-        return self._get_in_frame_box_rect(frame.attack_rect)
-
-    # convert one local frame-data box into a world-space
-    def _get_in_frame_box_rect(self, local_rect):
-        frame = self.get_current_frame_data()
-        scale = self.sprite_scale
-
-        local_x, local_y, w, h = local_rect
-        offset_x, offset_y = frame.offset
-        frame_w = frame.image.get_width()
-
-        local_x *= scale
-        local_y *= scale
-        w *= scale
-        h *= scale
-        offset_x *= scale
-        offset_y *= scale
-        frame_w *= scale
-
-        if self.facing_right:
-            world_x = self.x + offset_x + local_x
-        else:
-            mirrored_x = frame_w - local_x - w
-            world_x = self.x - frame_w - offset_x + mirrored_x
-
-        world_y = self.y + offset_y + local_y
-        return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
-
-    @property
-    def hp(self):
-        return self.health.hp
-
-    @hp.setter
-    def hp(self, value):
-        self.health.hp = value
-
-    @property
-    def max_hp(self):
-        return self.health.max_hp
-
-    @max_hp.setter
-    def max_hp(self, value):
-        self.health.max_hp = value
+        return self.hitboxes.get_attack_rect(self)
