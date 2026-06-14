@@ -10,6 +10,8 @@ from game.entities.player_grab_controller import PlayerGrabController
 from game.entities.player_animation_controller import PlayerAnimationController
 from game.entities.player_render import PlayerRenderer
 from game.entities.player_action_controller import PlayerActionController
+from game.entities.player_state_resolver import PlayerStateResolver
+from game.entities.player_lifecycle import PlayerLifecycle
 
 class Player:
     IDLE = "IDLE"
@@ -35,6 +37,7 @@ class Player:
         self.player_type = player_type
         self.state = self.IDLE
         self.apply_player_config(get_player_config(player_type))
+
         self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
 
         self.facing_right = True
@@ -45,14 +48,15 @@ class Player:
         self.run_attack_duration = 18
         self.jump_attack_pressed = False
         self.jump_attack_duration = self.run_attack_duration
-        self.respawn_x = self.x
-        self.respawn_y = self.y
 
         self.combat = PlayerCombat()
         self.weapon_slot = PlayerWeaponSlot()
         self.action_controller = PlayerActionController()
         self.grab = PlayerGrabController()
         self.hitboxes = PlayerHitboxes()
+        self.state_resolver = PlayerStateResolver()
+        self.lifecycle = PlayerLifecycle(self.x, self.y)
+
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 
@@ -83,17 +87,17 @@ class Player:
     # draw() translates to screen coordinates using camera_x
     def update(self, player_input):
         if self.state == self.DEAD:
-            self.update_dead_state()
+            self.lifecycle.update_dead_state(self)
             return
 
-        if self.update_hit_state():
+        if self.lifecycle.update_hit_state(self):
             return
 
         self.update_timers()
         moving = self.update_movement(player_input)
         self.action_controller.update(self, player_input)
         self.update_jump_physics(player_input)
-        self.update_state_after_movement(moving)
+        self.state_resolver.update_after_movement(self, moving)
         self.update_grabbed_enemy_position()
         #self.apply_world_bounds() # moved to gameplay_system.py
         self.update_animation()
@@ -135,23 +139,6 @@ class Player:
     def update_animation(self):
         self.animation_controller.update(self)
 
-    def update_dead_state(self):
-        self.update_respawn()
-        self.update_animation()
-
-    def update_hit_state(self):
-        if self.health.hit_timer <= 0:
-            return False
-
-        still_in_hit_stun = self.health.update_hit_timer()
-        if still_in_hit_stun:
-            self.state = self.HIT
-        else:
-            self.state = self.IDLE
-
-        self.update_animation()
-        return True
-
     def update_timers(self):
         self.combat.update_timers(self)
         self.grab.update_timers(self)
@@ -162,30 +149,6 @@ class Player:
 
     def update_jump_physics(self, player_input):
         return self.movement.update_jump_physics(self, player_input)
-
-    def update_state_after_movement(self, moving):
-        # update state (preserve attack state if attacking)
-        if self.combat.is_attacking:
-            return
-            #pass # keep attack state and animation set by start_attack
-        if self.movement.is_jumping:
-            if self.state != self.JUMP_ATTACK:
-                self.state = self.JUMP
-            return
-
-        elif self.grab.throw_timer > 0:
-            self.state = self.THROW
-        elif self.grab.grab_knee_timer > 0:
-            self.state = self.GRAB_KNEE
-        elif self.grab.grabbed_enemy:
-            self.state = self.GRAB
-        else:
-            if moving and self.movement.is_running:
-                self.state = self.RUN
-            elif moving:
-                    self.state = self.WALK
-            else:
-                self.state = self.IDLE
 
     def update_grabbed_enemy_position(self):
         self.grab.update_grabbed_enemy_position(self)
@@ -209,37 +172,7 @@ class Player:
         return self.combat.attack_damage(self)
 
     def take_damage(self, damage):
-        if self.state == self.DEAD:
-            return
-
-        lost_life = self.health.take_damage(damage)
-        self.state = self.HIT
-
-        if lost_life:
-            self.lost_life()
-
-    def lost_life(self):
-        self.state = self.DEAD
-        
-    def update_respawn(self):
-        if self.state != self.DEAD:
-            return
-        if self.health.lives <= 0:
-            return
-        if self.health.update_respawn_timer():
-            self.respawn()
-            
-    def respawn(self):
-        self.health.reset_for_respawn()
-        self.x = self.respawn_x
-        self.y = self.respawn_y
-        self.movement.ground_y = self.respawn_y
-        self.movement.vx = 0
-        self.movement.vy = 0
-        self.movement.is_jumping = False
-        self.state = self.IDLE
-        self.combat.is_attacking = False
-        self.grab.grabbed_enemy = None
+        self.lifecycle.take_damage(self, damage)
 
     def pick_up_weapon(self, weapon):
         self.weapon_slot.pick_up(weapon)

@@ -20,8 +20,8 @@ def update_continue_system(game_state, keys):
         player.health.lives = 3
         player.health.hp = player.health.max_hp
         player.state = player.IDLE
-        player.x = player.respawn_x
-        player.y = player.respawn_y
+        player.x = player.lifecycle.respawn_x
+        player.y = player.lifecycle.respawn_y
         
         game_state.continue_timer = 600
         game_state.continue_active = False

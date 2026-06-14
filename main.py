@@ -84,8 +84,8 @@ def load_stage(game_state, stage_data):
     start_x, start_y = stage_data["player_start"]
     game_state.player.x = start_x
     game_state.player.y = start_y
-    game_state.player.respawn_x = start_x
-    game_state.player.respawn_y = start_y
+    game_state.player.lifecycle.respawn_x = start_x
+    game_state.player.lifecycle.respawn_y = start_y
     game_state.player.movement.ground_y = start_y
     game_state.player.movement.is_jumping = False
     game_state.player.movement.vx = 0
