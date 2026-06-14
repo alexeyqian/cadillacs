@@ -30,34 +30,26 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
     KNOCKDOWN = EnemyState.KNOCKDOWN
     GETUP = EnemyState.GETUP
 
+    # attack_range: should i attack
+    #  attack_rect = did i hit
+    # detect_range: within detect_range, enemy chases player
+    # outside this range, enemy ignores player
     def __init__(self, x, y, enemy_type, 
                 animation_data, anim_fps, sprite_scale=4):
         self.x = x
         self.y = y
         self.enemy_type = enemy_type
+        self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
-        # attack_range: should i attack
-        #  attack_rect = did i hit
-        # detect_range: within detect_range, enemy chases player
-        # outside this range, enemy ignores player
-
-        # TODO: these fields should be in enemy config
-        self.enemy_id = "ferris"
-        self.display_name = "Enemy"
-        self.score_points = 100
-        self.speed = ENEMY_SPEED
-        self.max_hp = ENEMY_MAX_HP
         self.hp = self.max_hp
-        ###### boxes ######
-        # TODO: not used? logical box
-        self.width = ENEMY_W
-        self.height = ENEMY_H
+
+        # todo: move to enemy config
+        self.attack_cooldown_duration = 45
+        self.attack_damage = ENEMY_ATTACK_DAMAGE
 
         self.detect_range = ENEMY_DETECT_RANGE
         self.attack_range = 90 
         self.attack_lane_range = 45
-        self.attack_cooldown_duration = 45
-        self.attack_damage = ENEMY_ATTACK_DAMAGE
 
         #collision box
         self.collision_box_w = ENEMY_COLLISION_W
@@ -77,9 +69,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.attack_has_hit = False
         self.attack_cooldown = 0
 
-        # hit reaction
+        # hit reaction # enemy gets briefly white when hit by player
         self.knockback_velocity = 0
-        # enemy gets briefly white when hit by player
         self.hit_timer = 0
         self.hit_stun_duration = 15
 
@@ -97,8 +88,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         # TODO: no need any more, should be in apply world bounds
         self.lane_top = LANE_TOP
         self.lane_bottom = LANE_BOTTOM
-
-        self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
         self.animation_data = animation_data
         self.anim_fps = anim_fps #scale_animation_fps_map(anim_fps)
