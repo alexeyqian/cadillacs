@@ -118,7 +118,7 @@ class PlayerMovement:
             owner.jump_attack_pressed = False
 
             if owner.state in [owner.JUMP, owner.JUMP_ATTACK]:
-                owner.state = owner.IDLE
+                owner.state_machine.change_to(owner, owner.IDLE)
 
     def start_jump(self, owner, player_input):
         if self.is_jumping:
@@ -140,7 +140,7 @@ class PlayerMovement:
             self.vx = self.air_speed
             owner.facing_right = True
 
-        owner.state = owner.JUMP
+        owner.state_machine.change_to(owner, owner.JUMP)
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
         if world_width is None:

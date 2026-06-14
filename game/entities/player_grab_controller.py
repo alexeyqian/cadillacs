@@ -24,9 +24,9 @@ class PlayerGrabController:
                 owner.combat.already_hit_enemy = False
 
                 if self.grabbed_enemy:
-                    owner.state = owner.GRAB
+                    owner.state_machine.change_to(owner, owner.GRAB)
                 else:
-                    owner.state = owner.IDLE
+                    owner.state_machine.change_to(owner, owner.IDLE)
 
     # keep grabbed enemy in front of player
     def update_grabbed_enemy_position(self, owner):
@@ -70,4 +70,4 @@ class PlayerGrabController:
         self.grabbed_enemy = None
 
         self.throw_timer = self.throw_duration
-        owner.state = owner.THROW
+        owner.state_machine.change_to(owner, owner.THROW)

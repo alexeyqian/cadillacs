@@ -13,6 +13,7 @@ from game.entities.player_action_controller import PlayerActionController
 from game.entities.player_state_resolver import PlayerStateResolver
 from game.entities.player_lifecycle import PlayerLifecycle
 from game.entities.player_events import PlayerEvents
+from game.entities.player_state_machine import PlayerStateMachine
 
 class Player:
     IDLE = "IDLE"
@@ -37,11 +38,11 @@ class Player:
         self.y = 500
         self.player_type = player_type
         self.state = self.IDLE
+        self.state_machine = PlayerStateMachine(self)
+        self.facing_right = True
         self.apply_player_config(get_player_config(player_type))
 
         self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
-
-        self.facing_right = True
 
         self.movement = PlayerMovement(self.speed)
         self.movement.ground_y = self.y

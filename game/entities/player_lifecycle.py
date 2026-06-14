@@ -13,9 +13,9 @@ class PlayerLifecycle:
 
         still_in_hit_stun = owner.health.update_hit_timer()
         if still_in_hit_stun:
-            owner.state = owner.HIT
+            owner.state_machine.change_to(owner, owner.HIT)
         else:
-            owner.state = owner.IDLE
+            owner.state_machine.change_to(owner, owner.IDLE)
 
         owner.update_animation()
         return True
@@ -25,7 +25,7 @@ class PlayerLifecycle:
             return
 
         lost_life = owner.health.take_damage(damage)
-        owner.state = owner.HIT
+        owner.state_machine.change_to(owner, owner.HIT)
 
         if lost_life:
             self.lost_life(owner)
@@ -49,6 +49,6 @@ class PlayerLifecycle:
         owner.movement.vx = 0
         owner.movement.vy = 0
         owner.movement.is_jumping = False
-        owner.state = owner.IDLE
+        owner.state_machine.change_to(owner, owner.IDLE)
         owner.combat.is_attacking = False
         owner.grab.grabbed_enemy = None

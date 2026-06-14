@@ -5,19 +5,19 @@ class PlayerStateResolver:
 
         if owner.movement.is_jumping:
             if owner.state != owner.JUMP_ATTACK:
-                owner.state = owner.JUMP
+                owner.state_machine.change_to(owner, owner.JUMP)
             return
 
         if owner.grab.throw_timer > 0:
-            owner.state = owner.THROW
+            owner.state_machine.change_to(owner, owner.THROW)
         elif owner.grab.grab_knee_timer > 0:
-            owner.state = owner.GRAB_KNEE
+            owner.state_machine.change_to(owner, owner.GRAB_KNEE)
         elif owner.grab.grabbed_enemy:
-            owner.state = owner.GRAB
+            owner.state_machine.change_to(owner, owner.GRAB)
         else:
             if moving and owner.movement.is_running:
-                owner.state = owner.RUN
+                owner.state_machine.change_to(owner, owner.RUN)
             elif moving:
-                owner.state = owner.WALK
+                owner.state_machine.change_to(owner, owner.WALK)
             else:
-                owner.state = owner.IDLE
+                owner.state_machine.change_to(owner, owner.IDLE)

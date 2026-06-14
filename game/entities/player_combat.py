@@ -25,7 +25,7 @@ class PlayerCombat:
             if self.attack_timer <= 0:
                 self.is_attacking = False
                 if owner.state != owner.DEAD:
-                    owner.state = owner.IDLE
+                    owner.state_machine.change_to(owner, owner.IDLE)
 
     def start_attack(self, owner):
         if self.is_attacking:
@@ -39,7 +39,7 @@ class PlayerCombat:
             self.attack_timer = owner.run_attack_duration
             self.combo_timer = 0
             self.combo_step = 0
-            owner.state = owner.RUN_ATTACK
+            owner.state_machine.change_to(owner, owner.RUN_ATTACK)
             return
 
         if self.combo_timer > 0:
@@ -51,11 +51,11 @@ class PlayerCombat:
         self.combo_timer = 30 # TODO: adjust timer
 
         if self.combo_step == 1:
-            owner.state = owner.ATTACK_1
+            owner.state_machine.change_to(owner, owner.ATTACK_1)
         elif self.combo_step == 2:
-            owner.state = owner.ATTACK_2
+            owner.state_machine.change_to(owner, owner.ATTACK_2)
         else:
-            owner.state = owner.ATTACK_3
+            owner.state_machine.change_to(owner, owner.ATTACK_3)
 
     def start_jump_attack(self, owner):
         if not owner.movement.is_jumping:
@@ -66,7 +66,7 @@ class PlayerCombat:
         self.is_attacking = True
         self.attack_timer = owner.jump_attack_duration
         self.already_hit_enemy = False
-        owner.state = owner.JUMP_ATTACK
+        owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
     def start_grab_knee_attack(self, owner):
         if not owner.grab.grabbed_enemy:
@@ -78,7 +78,7 @@ class PlayerCombat:
         self.attack_timer = owner.grab.grab_knee_duration
         owner.grab.grab_knee_timer = owner.grab.grab_knee_duration
         self.already_hit_enemy = False
-        owner.state = owner.GRAB_KNEE
+        owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
     def attack_damage(self, owner):
         base_damage = FIST_DAMAGE

@@ -90,7 +90,7 @@ def load_stage(game_state, stage_data):
     game_state.player.movement.is_jumping = False
     game_state.player.movement.vx = 0
     game_state.player.movement.vy = 0
-    game_state.player.state = game_state.player.IDLE
+    game_state.player.state_machine.change_to(game_state.player, game_state.player.IDLE)
     game_state.player.facing_right = True
 
     game_state.camera.x = 0
