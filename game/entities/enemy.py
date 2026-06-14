@@ -38,6 +38,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
                 animation_data, anim_fps, sprite_scale=4):
         self.x = x
         self.y = y
+        self.spawn_x = x # enemy remembers where it spawned
         self.enemy_type = enemy_type
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
@@ -47,7 +48,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.death_timer = 30
         self.death_timer_started = False
 
-        self.spawn_x = x # enemy remembers where it spawned
         self.patrol_direction = 1
         self.attack_has_hit = False
         self.attack_cooldown = 0
