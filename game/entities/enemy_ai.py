@@ -1,15 +1,9 @@
 class EnemyAIMixin:
     def get_player_distance(self, player):
-        dx = player.x - self.x
-        dy = player.y - self.y
-
-        distance_x = abs(dx)
-        distance_y = abs(dy)
-
-        return dx, dy, distance_x, distance_y
+        self.movement.get_player_distance(self, player)
 
     def face_player(self, player):
-        self.facing_right = player.x > self.x
+        self.movement.face_player(self, player)
 
     def choose_state(self, distance_x, distance_y):
         if self.state == self.ATTACK:
@@ -37,40 +31,10 @@ class EnemyAIMixin:
     
     # enemy patrol back and forth
     def update_patrol(self):
-        self.x += self.patrol_direction
-        if self.patrol_direction > 0:
-            self.facing_right = True
-        elif self.patrol_direction < 0:
-            self.facing_right = False
-        if self.x > self.spawn_x + self.patrol_distance:
-            self.patrol_direction = -1
-        if self.x < self.spawn_x - self.patrol_distance:
-            self.patrol_direction = 1
+        self.movement.update_patrol(self)
 
     def update_chasing(self, dx, dy):
-        # horizontal movement
-        if dx > 0:
-            self.x += self.speed
-            self.facing_right = True
-        elif dx < 0:
-            self.x -= self.speed
-            self.facing_right = False
-        # vertical movement
-        if abs(dy) > 10: # allow some vertical leniency
-            if dy > 0:
-                self.y += self.speed
-            else:
-                self.y -= self.speed
+        self.movement.update_chasing(self, dx, dy)
 
     def separate_from_other_enemies(self, enemies):
-        for other in enemies:
-            if other is self:
-                continue
-            if other.state == self.DEAD:
-                continue
-            dx = other.x - self.x
-            if abs(dx) < 40:
-                if dx > 0:
-                    self.x -= 1
-                else:
-                    self.x += 1
+        self.movement.separate_from_other_enemies(self, enemies)

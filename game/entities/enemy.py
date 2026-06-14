@@ -15,6 +15,7 @@ from game.entities.enemy_health import EnemyHealth
 from game.entities.enemy_hitboxes import EnemyHitboxes
 from game.entities.enemy_animation_controller import EnemyAnimationController
 from game.entities.enemy_renderer import EnemyRenderer
+from game.entities.enemy_movement import EnemyMovement
 
 class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             EnemyReactionMixin, EnemyLifecycleMixin):
@@ -64,6 +65,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.knockdown_timer = 0
         self.getup_timer = 0
 
+        self.movement = EnemyMovement()
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
     
