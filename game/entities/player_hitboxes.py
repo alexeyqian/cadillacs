@@ -43,7 +43,7 @@ class PlayerHitboxes:
         )
 
     def get_attack_rect(self, owner):
-        if not owner.is_attacking:
+        if not owner.combat.is_attacking:
             return None
 
         frame = owner.get_current_player_frame()

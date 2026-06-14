@@ -54,171 +54,6 @@ class Player:
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 
-    @property
-    def animation_manager(self):
-        return self.animation_controller.animation_manager
-
-    @property
-    def grabbed_enemy(self):
-        return self.grab.grabbed_enemy
-
-    @grabbed_enemy.setter
-    def grabbed_enemy(self, value):
-        self.grab.grabbed_enemy = value
-
-    @property
-    def grab_pressed(self):
-        return self.grab.grab_pressed
-
-    @grab_pressed.setter
-    def grab_pressed(self, value):
-        self.grab.grab_pressed = value
-
-    @property
-    def throw_timer(self):
-        return self.grab.throw_timer
-
-    @throw_timer.setter
-    def throw_timer(self, value):
-        self.grab.throw_timer = value
-
-    @property
-    def throw_duration(self):
-        return self.grab.throw_duration
-
-    @throw_duration.setter
-    def throw_duration(self, value):
-        self.grab.throw_duration = value
-
-    @property
-    def grab_knee_timer(self):
-        return self.grab.grab_knee_timer
-
-    @grab_knee_timer.setter
-    def grab_knee_timer(self, value):
-        self.grab.grab_knee_timer = value
-
-    @property
-    def grab_knee_duration(self):
-        return self.grab.grab_knee_duration
-
-    @grab_knee_duration.setter
-    def grab_knee_duration(self, value):
-        self.grab.grab_knee_duration = value
-
-    # TODO: remove these for compatibility code
-    @property
-    def is_attacking(self):
-        return self.combat.is_attacking
-
-    @is_attacking.setter
-    def is_attacking(self, value):
-        self.combat.is_attacking = value
-
-    @property
-    def attack_timer(self):
-        return self.combat.attack_timer
-
-    @attack_timer.setter
-    def attack_timer(self, value):
-        self.combat.attack_timer = value
-
-    @property
-    def attack_duration(self):
-        return self.combat.attack_duration
-
-    @attack_duration.setter
-    def attack_duration(self, value):
-        self.combat.attack_duration = value
-
-    @property
-    def already_hit_enemy(self):
-        return self.combat.already_hit_enemy
-
-    @already_hit_enemy.setter
-    def already_hit_enemy(self, value):
-        self.combat.already_hit_enemy = value
-
-    @property
-    def combo_step(self):
-        return self.combat.combo_step
-
-    @combo_step.setter
-    def combo_step(self, value):
-        self.combat.combo_step = value
-
-    @property
-    def combo_timer(self):
-        return self.combat.combo_timer
-
-    @combo_timer.setter
-    def combo_timer(self, value):
-        self.combat.combo_timer = value
-    
-    @property
-    def jump_pressed(self):
-        return self.movement.jump_pressed
-
-    @jump_pressed.setter
-    def jump_pressed(self, value):
-        self.movement.jump_pressed = value
-    
-    @property
-    def is_running(self):
-        return self.movement.is_running
-
-    @is_running.setter
-    def is_running(self, value):
-        self.movement.is_running = value
-
-    @property
-    def is_jumping(self):
-        return self.movement.is_jumping
-
-    @is_jumping.setter
-    def is_jumping(self, value):
-        self.movement.is_jumping = value
-
-    @property
-    def ground_y(self):
-        return self.movement.ground_y
-
-    @ground_y.setter
-    def ground_y(self, value):
-        self.movement.ground_y = value
-
-    @property
-    def vx(self):
-        return self.movement.vx
-
-    @vx.setter
-    def vx(self, value):
-        self.movement.vx = value
-
-    @property
-    def vy(self):
-        return self.movement.vy
-
-    @vy.setter
-    def vy(self, value):
-        self.movement.vy = value
-    
-    @property
-    def fire_pressed(self):
-        return self.weapon_slot.fire_pressed
-
-    @fire_pressed.setter
-    def fire_pressed(self, value):
-        self.weapon_slot.fire_pressed = value
-
-    @property
-    def drop_pressed(self):
-        return self.weapon_slot.drop_pressed
-
-    @drop_pressed.setter
-    def drop_pressed(self, value):
-        self.weapon_slot.drop_pressed = value
-        
     def apply_player_config(self, config):
         self.player_id = config.player_id
         self.display_name = config.display_name
@@ -329,20 +164,20 @@ class Player:
     def update_action_input(self, player_input):
         # jump key
         if player_input.jump:
-            if not self.jump_pressed:
+            if not self.movement.jump_pressed:
                 self.start_jump(player_input)
-                self.jump_pressed = True
+                self.movement.jump_pressed = True
         else:
-            self.jump_pressed = False
+            self.movement.jump_pressed = False
 
         # attacking keys
         if player_input.attack:
-            if self.is_jumping:
+            if self.movement.is_jumping:
                 if not self.jump_attack_pressed:
                     self.start_jump_attack()
                     self.jump_attack_pressed = True
             else:
-                if self.grabbed_enemy:
+                if self.grab.grabbed_enemy:
                     self.start_grab_knee_attack()
                 else:
                     self.start_attack()
@@ -351,30 +186,30 @@ class Player:
 
         # fire weapon on key-down only (prevent holding K from firing repeatedly)
         if player_input.fire:
-            if not self.fire_pressed:
+            if not self.weapon_slot.fire_pressed:
                 self.fire_weapon()
-                self.fire_pressed = True
+                self.weapon_slot.fire_pressed = True
         else:
-            self.fire_pressed = False
+            self.weapon_slot.fire_pressed = False
 
     def update_state_after_movement(self, moving):
         # update state (preserve attack state if attacking)
-        if self.is_attacking:
+        if self.combat.is_attacking:
             return
             #pass # keep attack state and animation set by start_attack
-        if self.is_jumping:
+        if self.movement.is_jumping:
             if self.state != self.JUMP_ATTACK:
                 self.state = self.JUMP
             return
 
-        elif self.throw_timer > 0:
+        elif self.grab.throw_timer > 0:
             self.state = self.THROW
-        elif self.grab_knee_timer > 0:
+        elif self.grab.grab_knee_timer > 0:
             self.state = self.GRAB_KNEE
-        elif self.grabbed_enemy:
+        elif self.grab.grabbed_enemy:
             self.state = self.GRAB
         else:
-            if moving and self.is_running:
+            if moving and self.movement.is_running:
                 self.state = self.RUN
             elif moving:
                     self.state = self.WALK
@@ -427,13 +262,13 @@ class Player:
         self.health.reset_for_respawn()
         self.x = self.respawn_x
         self.y = self.respawn_y
-        self.ground_y = self.respawn_y
-        self.vx = 0
-        self.vy = 0
-        self.is_jumping = False
+        self.movement.ground_y = self.respawn_y
+        self.movement.vx = 0
+        self.movement.vy = 0
+        self.movement.is_jumping = False
         self.state = self.IDLE
-        self.is_attacking = False
-        self.grabbed_enemy = None
+        self.combat.is_attacking = False
+        self.grab.grabbed_enemy = None
 
     def pick_up_weapon(self, weapon):
         self.weapon_slot.pick_up(weapon)

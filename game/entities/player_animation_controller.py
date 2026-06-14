@@ -53,11 +53,11 @@ class PlayerAnimationController:
         hit_dur = self.frame_duration("hit")
         dead_dur = self.frame_duration("dead")
 
-        owner.attack_duration = len(attack_frames) * attack_dur
+        owner.combat.attack_duration = len(attack_frames) * attack_dur
         owner.run_attack_duration = len(run_attack_frames) * run_attack_dur
         owner.jump_attack_duration = len(jump_attack_frames) * jump_attack_dur
-        owner.throw_duration = len(throw_frames) * throw_dur
-        owner.grab_knee_duration = len(grab_knee_frames) * grab_knee_dur
+        owner.grab.throw_duration = len(throw_frames) * throw_dur
+        owner.grab.grab_knee_duration = len(grab_knee_frames) * grab_knee_dur
 
         self.animation_manager.add_animation(owner.IDLE, FrameAnimation(idle_frames, idle_dur))
         self.animation_manager.add_animation(owner.WALK, FrameAnimation(walk_frames, walk_dur))

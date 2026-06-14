@@ -22,11 +22,11 @@ def handle_player_attack_collision(game_state):
     attack_rect = player.get_attack_rect()
     if not attack_rect:
         return
-    if player.already_hit_enemy:
+    if player.combat.already_hit_enemy:
         return
 
     if player.state == player.GRAB_KNEE:
-        enemy = player.grabbed_enemy
+        enemy = player.grab.grabbed_enemy
         if enemy and enemy.state != enemy.DEAD:
             damage = player.attack_damage()
             enemy.take_grab_knee_damage(damage)
@@ -35,9 +35,9 @@ def handle_player_attack_collision(game_state):
                 FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), YELLOW_COLOR)
             )
             game_state.score_manager.register_hit()
-            player.already_hit_enemy = True
+            player.combat.already_hit_enemy = True
             if enemy.state == enemy.DEAD:
-                player.grabbed_enemy = None
+                player.grab.grabbed_enemy = None
         return
 
 
@@ -50,7 +50,7 @@ def handle_player_attack_collision(game_state):
             enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
-            player.already_hit_enemy = True
+            player.combat.already_hit_enemy = True
             if enemy.hp >0 and enemy.max_hp >= 200:
                 heavy_hit_shake(game_state)
             if isinstance(enemies, BossEnemy):
@@ -109,11 +109,11 @@ def handle_player_grab_or_throw(game_state, keys):
     player = game_state.player
 
     if keys[pygame.K_l]:
-        if player.grab_pressed:
+        if player.grab.grab_pressed:
             return
-        player.grab_pressed = True
+        player.grab.grab_pressed = True
 
-        if player.grabbed_enemy:
+        if player.grab.grabbed_enemy:
             player.throw_grabbed_enemy()
             return
         
@@ -122,7 +122,7 @@ def handle_player_grab_or_throw(game_state, keys):
                 player.grab_enemy(enemy)
                 break
     else:
-        player.grab_pressed = False
+        player.grab.grab_pressed = False
 
 def handle_player_thrown_enemy_collision(game_state):
     for thrown_enemy in game_state.enemies:

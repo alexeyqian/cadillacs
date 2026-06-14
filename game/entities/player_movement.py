@@ -123,9 +123,9 @@ class PlayerMovement:
     def start_jump(self, owner, player_input):
         if self.is_jumping:
             return
-        if owner.is_attacking:
+        if owner.combat.is_attacking:
             return
-        if owner.grabbed_enemy:
+        if owner.grab.grabbed_enemy:
             return
 
         self.is_jumping = True

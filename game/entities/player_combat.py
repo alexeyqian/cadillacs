@@ -32,10 +32,10 @@ class PlayerCombat:
             return
 
         self.is_attacking = True
-        self.attack_timer = owner.attack_duration
+        self.attack_timer = self.attack_duration
         self.already_hit_enemy = False
 
-        if owner.is_running:
+        if owner.movement.is_running:
             self.attack_timer = owner.run_attack_duration
             self.combo_timer = 0
             self.combo_step = 0
@@ -58,7 +58,7 @@ class PlayerCombat:
             owner.state = owner.ATTACK_3
 
     def start_jump_attack(self, owner):
-        if not owner.is_jumping:
+        if not owner.movement.is_jumping:
             return
         if self.is_attacking:
             return
@@ -69,14 +69,14 @@ class PlayerCombat:
         owner.state = owner.JUMP_ATTACK
 
     def start_grab_knee_attack(self, owner):
-        if not owner.grabbed_enemy:
+        if not owner.grab.grabbed_enemy:
             return
         if self.is_attacking:
             return
 
         self.is_attacking = True
-        self.attack_timer = owner.grab_knee_duration
-        owner.grab_knee_timer = owner.grab_knee_duration
+        self.attack_timer = owner.grab.grab_knee_duration
+        owner.grab.grab_knee_timer = owner.grab.grab_knee_duration
         self.already_hit_enemy = False
         owner.state = owner.GRAB_KNEE
 
