@@ -25,7 +25,7 @@ class BossEnemy(Enemy):
         )
 
         self.health.max_hp = BOSS_ENEMY_MAX_HP
-        self.health.hp = self.max_hp
+        self.health.hp = self.health.max_hp
         self.speed = BOSS_ENEMY_SPEED
 
         # properties special to boss enemy

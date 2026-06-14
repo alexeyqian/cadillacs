@@ -1,5 +1,4 @@
 class EnemyActionController:
-    # todo: rename to execute_action?
     def execute_state(self, owner, player, enemies, dx, dy):
         if owner.state == owner.PATROL:
             owner.update_patrol()

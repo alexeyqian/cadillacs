@@ -1,6 +1,3 @@
-from game.settings import *
-from game.tuning import scale_frames
-
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_boxes import EnemyBoxMixin
@@ -26,6 +23,9 @@ from game.entities.enemy_loot_controller import EnemyLootController
 # Movement: changes x/y/facing
 # Combat: handles attack hit detection
 # Lifecycle: advances temporary states
+# Enemy is a small coordinator. Components own movement, combat,
+# reactions, lifecycle, state decisions, loot, animation, and rendering.
+
 class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             EnemyReactionMixin, EnemyLifecycleMixin):
     IDLE = EnemyState.IDLE
@@ -97,8 +97,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.attack_range = config.attack_range
         self.attack_lane_range = config.attack_lane_range
         self.attack_damage = config.attack_damage
-        self.attack_cooldown_duration = config.attack_cooldown_duration #scale_frames(config.attack_cooldown_duration)
-        self.hit_stun_duration = config.hit_stun_duration #scale_frames(config.hit_stun_duration)
+        self.attack_cooldown_duration = config.attack_cooldown_duration
+        self.hit_stun_duration = config.hit_stun_duration
         self.thrown_damage = config.thrown_damage
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale
