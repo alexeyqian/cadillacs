@@ -3,7 +3,7 @@ import pygame
 
 from game.settings import *
 from game.colors import *
-from game.tuning import scale_frames, scale_timing, scale_animation_fps_map
+from game.tuning import scale_frames
 from game.animation.frame_animation import FrameAnimation, load_frame_animation
 from game.animation.animation_manager import AnimationManager
 
@@ -42,10 +42,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
         self.hp = self.max_hp
-
-        # todo: move to enemy config
-        self.attack_cooldown_duration = 45
-        self.attack_damage = ENEMY_ATTACK_DAMAGE
 
         self.detect_range = ENEMY_DETECT_RANGE
         self.attack_range = 90 
@@ -106,7 +102,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.speed = config.speed
         self.attack_damage = config.attack_damage
         self.detect_range = config.detect_range
-        #self.attack_cooldown_duration = scale_frames(config.attack_cooldown)
+        self.attack_cooldown_duration = config.attack_cooldown_duration #scale_frames(config.attack_cooldown_duration)
         self.hit_stun_duration = config.hit_stun_duration #scale_frames(config.hit_stun_duration)
 
         self.collision_box_w = int(self.width * 0.5)

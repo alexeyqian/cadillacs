@@ -12,6 +12,7 @@ class EnemyConfig:
     max_hp: int
     speed: float
     attack_damage: float
+    attack_cooldown_duration: int = ENEMY_ATTACK_COOLDOWN
     width: float = ENEMY_W
     height: float = ENEMY_H
     detect_range: float = ENEMY_DETECT_RANGE
@@ -228,6 +229,7 @@ ENEMY_CONFIGS = {
         max_hp=BOSS_ENEMY_MAX_HP,
         speed=BOSS_ENEMY_SPEED,
         attack_damage=BOSS_ENEMY_ATTACK_DAMAGE,
+        attack_cooldown_duration=60,
         width=BOSS_ENEMY_W,
         height=BOSS_ENEMY_H,
 

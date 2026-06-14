@@ -29,10 +29,8 @@ class BossEnemy(Enemy):
         self.width = BOSS_ENEMY_W
         self.height = BOSS_ENEMY_H
         self.speed = BOSS_ENEMY_SPEED
-        self.attack_damage = BOSS_ENEMY_ATTACK_DAMAGE
 
         # properties special to boss enemy
-        self.attack_cooldown_duration = scale_frames(60)
         self.special_attack_cooldown_duration = scale_frames(300)
         self.special_attack_cooldown = self.special_attack_cooldown_duration
         self.phase = 1
