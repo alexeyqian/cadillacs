@@ -24,45 +24,7 @@ class EnemyConfig:
 
 
 ENEMY_CONFIGS = {
-    # Legacy aliases used by existing stage configs.
-    "normal": EnemyConfig(
-        enemy_id="normal",
-        display_name="Ferris",
-        archetype="basic_melee",
-        max_hp=ENEMY_MAX_HP,
-        speed=ENEMY_SPEED,
-        attack_damage=ENEMY_ATTACK_DAMAGE,
-        hit_stun_duration=28,
-        score_points=100,
-    ),
-    "fast": EnemyConfig(
-        enemy_id="fast",
-        display_name="Punk",
-        archetype="fast_small",
-        max_hp=FAST_ENEMY_MAX_HP,
-        speed=FAST_ENEMY_SPEED,
-        attack_damage=FAST_ENEMY_ATTACK_DAMAGE,
-        width=FAST_ENEMY_W,
-        height=FAST_ENEMY_H,
-        score_points=200,
-        idle_config=FAST_ENEMY_IDLE,
-        walk_config=FAST_ENEMY_WALK,
-        attack_config=FAST_ENEMY_ATTACK,
-    ),
-    "heavy": EnemyConfig(
-        enemy_id="heavy",
-        display_name="Hammer Terhune",
-        archetype="heavy",
-        max_hp=HEAVY_ENEMY_MAX_HP,
-        speed=HEAVY_ENEMY_SPEED,
-        attack_damage=HEAVY_ENEMY_ATTACK_DAMAGE,
-        width=HEAVY_ENEMY_W,
-        height=HEAVY_ENEMY_H,
-        score_points=300,
-        idle_config=HEAVY_ENEMY_IDLE,
-        walk_config=HEAVY_ENEMY_WALK,
-        attack_config=HEAVY_ENEMY_ATTACK,
-    ),
+
     "ranged": EnemyConfig(
         enemy_id="ranged",
         display_name="Poacher Joe",
