@@ -45,7 +45,7 @@ def handle_player_attack_collision(game_state):
     for enemy in enemies:
         enemy_hurt_rect = enemy.get_hurt_rect()
         if enemy_hurt_rect and attack_rect.colliderect(enemy_hurt_rect):
-            damage = player.attack_damage()
+            damage = player.combat.attack_damage(player)
             enemy.take_damage(damage, player.x)
             enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,80,80)))
@@ -64,7 +64,7 @@ def handle_player_attack_collision(game_state):
         if obj.destroyed:
             continue
         if attack_rect.colliderect(obj.get_rect()):
-            obj.take_damage(player.attack_damage())
+            obj.take_damage(player.combat.attack_damage(player))
             
 def handle_player_projectile_collision(game_state):
     player = game_state.player
@@ -141,7 +141,7 @@ def handle_player_thrown_enemy_collision(game_state):
             enemy_hurt_rect = enemy.get_hurt_rect()
             if thrown_rect.colliderect(enemy_hurt_rect):
                 damage = enemy.thrown_damage
-                enemy.take_damage(damage, thrown_enemy.x)
+                enemy.lifecycle.take_damage(damage, thrown_enemy.x)
                 enemy_rect = enemy.get_logical_rect()
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,150,0)))
                 thrown_enemy.thrown_hit_targets.add(id(enemy))

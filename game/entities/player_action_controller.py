@@ -22,7 +22,7 @@ class PlayerActionController:
                 if owner.grab.grabbed_enemy:
                     owner.combat.start_grab_knee_attack()
                 else:
-                    owner.combat.start_attack()
+                    owner.combat.start_attack(owner)
         else:
             owner.jump_attack_pressed = False
 
