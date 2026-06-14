@@ -33,16 +33,8 @@ class Player:
         self.apply_player_config(get_player_config(player_type))
         self.animation_data = animation_data
         self.anim_fps = scale_animation_fps_map(anim_fps)
-        # boxes
-        # logical box
-        #collision box
-        # attack box
-        self.attack_hitbox_w = PLAYER_HITBOX_W
-        self.attack_hitbox_h = PLAYER_HITBOX_H
-        self.attack_hitbox_offset_y = PLAYER_HITBOX_OFFSET_Y
 
         self.facing_right = True
-
         self.is_running = False
         self.run_active = False
         self.run_direction = 0
@@ -50,7 +42,7 @@ class Player:
         self.run_tap_window = max(1, int(RUN_DOUBLE_TAP_TIME * FPS))
         self.left_pressed = False
         self.right_pressed = False
-        self.run_attack_damage = 35 # use scaler*normal_damage
+
         self.run_attack_timer = 0
         self.run_attack_duration = 18
         
@@ -65,7 +57,7 @@ class Player:
         self.gravity = 2
         self.air_speed = self.speed * 1.2
         self.air_friction = 0.92
-        self.jump_attack_damage = FIST_DAMAGE + 10
+        
         self.jump_attack_duration = self.run_attack_duration
 
         self.is_attacking = False
@@ -79,7 +71,7 @@ class Player:
         self.combo_timer = 0
 
         self.state = self.IDLE
-        self.hp = self.max_hp
+        
         self.hit_timer = 0 # hit by enemy
         self.respawn_x = self.x
         self.respawn_y = self.y
@@ -93,7 +85,7 @@ class Player:
         # grab/throw
         self.grabbed_enemy = None
         self.grab_pressed = False
-        self.grab_range = PLAYER_GRAB_RANGE
+
         self.throw_timer = 0
         self.throw_duration = 14
         self.grab_knee_timer = 0
@@ -115,9 +107,13 @@ class Player:
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
         self.max_hp = config.max_hp
+        self.hp = self.max_hp
         self.lives = config.lives
         self.speed = config.speed
         self.run_speed = config.run_speed
+        self.run_attack_damage = config.run_attack_damage
+        self.jump_attack_damage = config.jump_attack_damage
+        self.grab_range = config.grab_range
         self.hit_stun_duration = scale_frames(config.hit_stun_duration)
         self.sprite_scale = config.sprite_scale
     
@@ -400,41 +396,7 @@ class Player:
             world_y = self.y + offset_y + local_y
             return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
 
-        # fallback for old logic
-        body_left = self.get_left()
-        body_top = self.get_top()
-
-        # OLD LOGIC
-        # Use symmetric hitbox size and offsets so left/right behave identically
-        #hit_w = self.attack_hitbox_w
-        # giving running attack a longer hitbox
-        #if self.state == self.RUN_ATTACK:
-        #    hit_w = self.attack_hitbox_w * 1.5
-        #if self.state == self.JUMP_ATTACK:
-        #    hit_w = self.attack_hitbox_w
-        #if self.state == self.GRAB_KNEE:
-        #    hit_w = PLAYER_GRAB_KNEE_HITBOX_W
-        #    hit_h = PLAYER_GRAB_KNEE_HITBOX_H
-        #    hit_y = int(self.get_top() + self.height*0.35)
-        #    # tune this hardcode 0.35 and 0.15 later
-        #    if self.facing_right:
-        #        hit_x = int(self.x + self.width*0.15)
-        #    else:
-        #        hit_x = int(self.x - hit_w - self.width*0.15)
-
-        #    return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
-
-        #hit_h = self.attack_hitbox_h
-        #if self.weapon and not self.weapon.is_ranged:
-        #    hit_w += self.weapon.hitbox_w_bonus
-        #    hit_h += self.weapon.hitbox_h_bonus
-
-        #hit_y = body_top + self.attack_hitbox_offset_y
-        #if self.facing_right:
-        #    hit_x = int(self.x + self.width/2)
-        #else:
-        #    hit_x = int(self.x - self.width/2 - hit_w)
-        #return pygame.Rect(hit_x, hit_y, hit_w, hit_h)
+        return None
 
     def update_animation(self):
         if self.state == self.IDLE:
