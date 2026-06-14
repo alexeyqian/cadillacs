@@ -7,6 +7,7 @@ from game.animation.animation_manager import AnimationManager
 from game.animation.frame_animation import FrameAnimation, load_frame_animation
 from game.entities.player_config import get_player_config
 from game.tuning import scale_animation_fps_map, scale_frames
+from game.entities.player_health import PlayerHealth
 
 class Player:
     IDLE = "IDLE"
@@ -32,6 +33,7 @@ class Player:
         self.player_type = player_type
         self.state = self.IDLE
         self.apply_player_config(get_player_config(player_type))
+        self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
         self.animation_data = animation_data
         self.anim_fps = scale_animation_fps_map(anim_fps)
 
@@ -85,14 +87,37 @@ class Player:
         self.grab_knee_duration = PLAYER_GRAB_KNEE_DURATION
         self.grab_keen_hit_frame = PLAYER_GRAB_KNEE_HIT_FRAME
 
-        self.hit_timer = 0 # hit by enemy
         self.respawn_x = self.x
         self.respawn_y = self.y
-        self.respawn_timer = 0
 
         self.animation_manager = AnimationManager()
         self.init_animations()
 
+    # TODO: remove these for compatibility code
+    @property
+    def hp(self):
+        return self.health.hp
+
+    @hp.setter
+    def hp(self, value):
+        self.health.hp = value
+
+    @property
+    def max_hp(self):
+        return self.health.max_hp
+
+    @max_hp.setter
+    def max_hp(self, value):
+        self.health.max_hp = value
+
+    @property
+    def lives(self):
+        return self.health.lives
+
+    @lives.setter
+    def lives(self, value):
+        self.health.lives = value
+    
     def apply_player_config(self, config):
         self.player_id = config.player_id
         self.display_name = config.display_name
@@ -100,9 +125,8 @@ class Player:
         self.height = int(config.height)
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
-        self.max_hp = config.max_hp
-        self.hp = self.max_hp
-        self.lives = config.lives
+        self.config_max_hp = config.max_hp
+        self.config_lives = config.lives
         self.speed = config.speed
         self.run_speed = config.run_speed
         self.run_attack_damage = config.run_attack_damage
@@ -428,14 +452,15 @@ class Player:
         self.update_animation()
 
     def update_hit_state(self):
-        if self.hit_timer <= 0:
+        if self.health.hit_timer <= 0:
             return False
 
-        self.hit_timer -= 1
-        if self.hit_timer <= 0:
-            self.state = self.IDLE
-        else:
+        still_in_hit_stun = self.health.update_hit_timer()
+        if still_in_hit_stun:
             self.state = self.HIT
+        else:
+            self.state = self.IDLE
+
         self.update_animation()
         return True
 
@@ -480,7 +505,7 @@ class Player:
         right_down = player_input.right
         up_down = player_input.up
         down_down = player_input.down
-        shift_down = player_input.shift
+        shift_down = player_input.run
 
         horizontal_direction = 0
         if left_down and not right_down:
@@ -749,40 +774,25 @@ class Player:
         if self.state == self.DEAD:
             return
 
-        try:
-            damage = float(damage)
-        except (TypeError, ValueError):
-            return
-
-        self.hp -= damage
+        lost_life = self.health.take_damage(damage)
         self.state = self.HIT
-        self.hit_timer = self.hit_stun_duration
 
-        if self.hp <= 0:
-            self.hp = 0
+        if lost_life:
             self.lost_life()
-            #self.state = self.DEAD
 
     def lost_life(self):
-        self.lives -= 1
-        if self.lives <= 0:
-            self.state = self.DEAD
-            return
         self.state = self.DEAD
-        self.respawn_timer = 90
         
     def update_respawn(self):
         if self.state != self.DEAD:
             return
-        if self.lives <= 0:
+        if self.health.lives <= 0:
             return
-        if self.respawn_timer > 0:
-            self.respawn_timer -= 1
-        if self.respawn_timer <= 0:
+        if self.health.update_respawn_timer():
             self.respawn()
             
     def respawn(self):
-        self.hp = self.max_hp
+        self.hp = self.health.reset_for_respawn()
         self.x = self.respawn_x
         self.y = self.respawn_y
         self.ground_y = self.respawn_y
