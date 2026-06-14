@@ -39,17 +39,14 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.x = x
         self.y = y
         self.enemy_type = enemy_type
+        self.collision_box_w = ENEMY_COLLISION_W
+        self.collision_box_h = ENEMY_COLLISION_H
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
         self.hp = self.max_hp
-
         self.detect_range = ENEMY_DETECT_RANGE
         self.attack_range = 90 
         self.attack_lane_range = 45
-
-        #collision box
-        self.collision_box_w = ENEMY_COLLISION_W
-        self.collision_box_h = ENEMY_COLLISION_H
 
         self.state = self.IDLE
         self.facing_right = False
@@ -105,8 +102,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.attack_cooldown_duration = config.attack_cooldown_duration #scale_frames(config.attack_cooldown_duration)
         self.hit_stun_duration = config.hit_stun_duration #scale_frames(config.hit_stun_duration)
 
-        self.collision_box_w = int(self.width * 0.5)
-        self.collision_box_h = int(self.height * 0.2)
+        #self.collision_box_w = int(self.width * 0.5)
+        #self.collision_box_h = int(self.height * 0.2)
 
     def init_frame_animations(self):
         idle_frames = load_frame_animation(self.animation_data, "idle")
