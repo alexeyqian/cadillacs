@@ -1,5 +1,3 @@
-import random
-
 from game.settings import *
 from game.tuning import scale_frames
 
@@ -10,7 +8,6 @@ from game.entities.enemy_ai import EnemyAIMixin
 from game.entities.enemy_combat import EnemyCombatMixin
 from game.entities.enemy_lifecycle import EnemyLifecycleMixin
 from game.entities.enemy_reactions import EnemyReactionMixin
-from game.entities.loot import Loot
 from game.entities.enemy_health import EnemyHealth
 from game.entities.enemy_hitboxes import EnemyHitboxes
 from game.entities.enemy_animation_controller import EnemyAnimationController
@@ -22,6 +19,7 @@ from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_state_resolver import EnemyStateResolver
 from game.entities.enemy_action_controller import EnemyActionController
 from game.entities.enemy_update_controller import EnemyUpdateController
+from game.entities.enemy_loot_controller import EnemyLootController
 
 # State resolver: decides what state the enemy wants
 # Action executor: runs behavior for the current state
@@ -83,24 +81,9 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.state_resolver = EnemyStateResolver()
         self.action_controller = EnemyActionController()
         self.update_controller = EnemyUpdateController()
+        self.loot_controller = EnemyLootController()
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
-    
-    @property
-    def hp(self):
-        return self.health.hp
-
-    @hp.setter
-    def hp(self, value):
-        self.health.hp = value
-
-    @property
-    def max_hp(self):
-        return self.health.max_hp
-
-    @max_hp.setter
-    def max_hp(self, value):
-        self.health.max_hp = value
 
     def apply_enemy_config(self, config):
         self.enemy_id = config.enemy_id
@@ -130,13 +113,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.update_controller.update(self, player, enemies)
 
     def create_loot(self):
-        roll = random.randint(1, 100)
-        if roll <= 30:
-            return Loot(self.x, self.y, "health")
-        elif roll <= 50:
-            return Loot(self.x, self.y, "ammo")
-
-        return None
+        return self.loot_controller.create_loot(self)
 
     def draw(self, screen, camera_x):
         self.renderer.draw(self, screen, camera_x)

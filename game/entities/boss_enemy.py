@@ -24,8 +24,8 @@ class BossEnemy(Enemy):
             sprite_scale=4
         )
 
-        self.max_hp = BOSS_ENEMY_MAX_HP
-        self.hp = self.max_hp
+        self.health.max_hp = BOSS_ENEMY_MAX_HP
+        self.health.hp = self.max_hp
         self.speed = BOSS_ENEMY_SPEED
 
         # properties special to boss enemy
@@ -60,7 +60,7 @@ class BossEnemy(Enemy):
         bar_width = self.collision_box_w
         bar_x = int(screen_x - bar_width / 2)
         bar_y = self.y - 24
-        hp_width = int(bar_width * (self.hp / self.max_hp))
+        hp_width = int(bar_width * (self.health.hp / self.health.max_hp))
         pygame.draw.rect(screen, (60, 20, 60),
             (bar_x, bar_y, bar_width, 10))
         pygame.draw.rect(screen, (255, 40, 40),
@@ -91,12 +91,11 @@ class BossEnemy(Enemy):
         self.pending_projectile = BossProjectile(self.x-15, self.get_top()+120,
             direction, self.speed * 2, damage)
 
-    # add better boss knockback resistance
     def take_damage(self, damage, attacker_x):
         if self.state == self.DEAD:
             return
 
-        self.hp -= damage
+        died = self.health.take_damage(damage)
         self.hit_timer = 8
         self.state = self.HIT
 
@@ -106,12 +105,11 @@ class BossEnemy(Enemy):
         else:
             self.knockback_velocity = -3
 
-        if self.hp <= 0:
-            self.hp = 0
+        if died:
             self.state = self.DEAD
 
     def update_phase(self):
-        hp_ratio = self.hp / self.max_hp
+        hp_ratio = self.health.hp / self.health.max_hp
         old_phase = self.phase
 
         if hp_ratio <= 0.3:

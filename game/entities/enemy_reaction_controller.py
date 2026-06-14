@@ -1,6 +1,6 @@
 class EnemyReactionController:
     def die(self, owner):
-        owner.hp = 0
+        owner.health.hp = 0
         owner.state = owner.DEAD
         owner.death_timer = 30
         owner.death_timer_started = False
@@ -18,7 +18,7 @@ class EnemyReactionController:
         else:
             owner.knockback_velocity = -10
 
-        if owner.hp > 0 and owner.should_knockdown_from_damage(damage):
+        if owner.health.hp > 0 and owner.should_knockdown_from_damage(damage):
             owner.knockdown()
             return
 

@@ -51,7 +51,7 @@ def handle_player_attack_collision(game_state):
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
             player.combat.already_hit_enemy = True
-            if enemy.hp >0 and enemy.max_hp >= 200:
+            if enemy.health.hp >0 and enemy.health.max_hp >= 200:
                 heavy_hit_shake(game_state)
             if isinstance(enemies, BossEnemy):
                 boss_hit_shake(game_state)

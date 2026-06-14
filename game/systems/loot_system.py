@@ -7,7 +7,7 @@ def create_enemy_loot(game_state):
     loot_items = game_state.loot_items
 
     for enemy in enemies:
-        if enemy.hp > 0:
+        if enemy.health.hp > 0:
             continue
         if enemy.loot_generated:
             continue

@@ -14,8 +14,8 @@ class RaptorEnemy(Enemy):
         super().__init__(x, y, fallback_frame_factory=create_raptor_frames)
         self.width = RAPTOR_ENEMY_W
         self.height = RAPTOR_ENEMY_H
-        self.max_hp = RAPTOR_ENEMY_MAX_HP
-        self.hp = self.max_hp
+        self.health.max_hp = RAPTOR_ENEMY_MAX_HP
+        self.health.hp = self.health.max_hp
         self.speed = RAPTOR_ENEMY_SPEED
         self.attack_damage = RAPTOR_ENEMY_ATTACK_DAMAGE
 
