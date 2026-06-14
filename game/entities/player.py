@@ -8,6 +8,7 @@ from game.animation.frame_animation import FrameAnimation, load_frame_animation
 from game.entities.player_config import get_player_config
 from game.tuning import scale_animation_fps_map, scale_frames
 from game.entities.player_health import PlayerHealth
+from game.entities.player_weapon_slot import PlayerWeaponSlot
 
 class Player:
     IDLE = "IDLE"
@@ -73,10 +74,7 @@ class Player:
         self.combo_step = 0
         self.combo_timer = 0
 
-        self.weapon = None
-        self.pending_projectile = None
-        self.fire_pressed = False  # track K_k edge for single-shot firing
-        self.drop_pressed = False  # track K_q edge for single-press drop
+        self.weapon_slot = PlayerWeaponSlot()
         
         # grab/throw/knee
         self.grabbed_enemy = None
@@ -118,6 +116,38 @@ class Player:
     def lives(self, value):
         self.health.lives = value
     
+    @property
+    def weapon(self):
+        return self.weapon_slot.weapon
+
+    @weapon.setter
+    def weapon(self, value):
+        self.weapon_slot.weapon = value
+
+    @property
+    def pending_projectile(self):
+        return self.weapon_slot.pending_projectile
+
+    @pending_projectile.setter
+    def pending_projectile(self, value):
+        self.weapon_slot.pending_projectile = value
+
+    @property
+    def fire_pressed(self):
+        return self.weapon_slot.fire_pressed
+
+    @fire_pressed.setter
+    def fire_pressed(self, value):
+        self.weapon_slot.fire_pressed = value
+
+    @property
+    def drop_pressed(self):
+        return self.weapon_slot.drop_pressed
+
+    @drop_pressed.setter
+    def drop_pressed(self, value):
+        self.weapon_slot.drop_pressed = value
+        
     def apply_player_config(self, config):
         self.player_id = config.player_id
         self.display_name = config.display_name
@@ -792,7 +822,7 @@ class Player:
             self.respawn()
             
     def respawn(self):
-        self.hp = self.health.reset_for_respawn()
+        self.health.reset_for_respawn()
         self.x = self.respawn_x
         self.y = self.respawn_y
         self.ground_y = self.respawn_y
@@ -804,35 +834,13 @@ class Player:
         self.grabbed_enemy = None
 
     def pick_up_weapon(self, weapon):
-        self.weapon = weapon
-        weapon.picked_up = True
+        self.weapon_slot.pick_up(weapon)
 
     def drop_weapon(self):
-        if self.weapon is None:
-            return
-
-        self.weapon.picked_up = False
-        self.weapon.x = self.x - 80
-        self.weapon.y = self.y + 80
-        self.weapon = None
+        self.weapon_slot.drop(self)
 
     def fire_weapon(self):
-        if self.weapon is None:
-            return
-        if not self.weapon.is_ranged:
-            return
-        if self.weapon.ammo <= 0:
-            return
-
-        direction = 1
-        if not self.facing_right:
-            direction = -1
-        
-        muzzle_x = self.x + (40 if self.facing_right else -40)
-        muzzle_y = self.get_top() + 105
-        projectile = Projectile(muzzle_x, muzzle_y, direction, PROJECTILE_SPEED, self.weapon.damage)
-        self.pending_projectile = projectile
-        self.weapon.ammo -= 1
+        self.weapon_slot.fire(self)
         
     def can_grab_enemy(self, enemy):
         if enemy.state == enemy.DEAD:
