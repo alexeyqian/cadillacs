@@ -15,13 +15,6 @@ class EnemyConfig:
     width: float = ENEMY_W
     height: float = ENEMY_H
     detect_range: float = ENEMY_DETECT_RANGE
-    attack_range_multiplier: float = 1.0
-    attack_cooldown: int = 45
-    attack_timing: dict = field(default_factory=lambda: {
-        "windup": ENEMY_ATTACK_WINDUP,
-        "active": ENEMY_ATTACK_ACTIVE,
-        "recovery": ENEMY_ATTACK_RECOVERY,
-    })
     hit_stun_duration: int = 15
     score_points: int = 100
     idle_config: Any = field(default_factory=lambda: NORMAL_ENEMY_IDLE)
@@ -50,11 +43,6 @@ ENEMY_CONFIGS = {
         attack_damage=FAST_ENEMY_ATTACK_DAMAGE,
         width=FAST_ENEMY_W,
         height=FAST_ENEMY_H,
-        attack_timing={
-            "windup": 14,
-            "active": 8,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
         score_points=200,
         idle_config=FAST_ENEMY_IDLE,
         walk_config=FAST_ENEMY_WALK,
@@ -69,12 +57,6 @@ ENEMY_CONFIGS = {
         attack_damage=HEAVY_ENEMY_ATTACK_DAMAGE,
         width=HEAVY_ENEMY_W,
         height=HEAVY_ENEMY_H,
-        attack_range_multiplier=1.2,
-        attack_timing={
-            "windup": 26,
-            "active": 10,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
         score_points=300,
         idle_config=HEAVY_ENEMY_IDLE,
         walk_config=HEAVY_ENEMY_WALK,
@@ -87,12 +69,6 @@ ENEMY_CONFIGS = {
         max_hp=RANGED_ENEMY_MAX_HP,
         speed=ENEMY_SPEED * 0.85,
         attack_damage=RANGED_ENEMY_ATTACK_DAMAGE,
-        attack_range_multiplier=4.0,
-        attack_timing={
-            "windup": ENEMY_ATTACK_WINDUP,
-            "active": 3,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
         score_points=250,
     ),
 
@@ -135,11 +111,6 @@ ENEMY_CONFIGS = {
         attack_damage=7,
         width=FAST_ENEMY_W,
         height=FAST_ENEMY_H,
-        attack_timing={
-            "windup": 14,
-            "active": 8,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
         score_points=180,
         idle_config=FAST_ENEMY_IDLE,
         walk_config=FAST_ENEMY_WALK,
@@ -154,11 +125,6 @@ ENEMY_CONFIGS = {
         attack_damage=8,
         width=FAST_ENEMY_W,
         height=FAST_ENEMY_H,
-        attack_timing={
-            "windup": 14,
-            "active": 8,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
         score_points=190,
         idle_config=FAST_ENEMY_IDLE,
         walk_config=FAST_ENEMY_WALK,
@@ -171,12 +137,6 @@ ENEMY_CONFIGS = {
         max_hp=55,
         speed=ENEMY_SPEED * 1.05,
         attack_damage=12,
-        attack_range_multiplier=1.6,
-        attack_timing={
-            "windup": 18,
-            "active": 10,
-            "recovery": 28,
-        },
         score_points=225,
     ),
     "razor": EnemyConfig(
@@ -186,12 +146,7 @@ ENEMY_CONFIGS = {
         max_hp=60,
         speed=ENEMY_SPEED * 1.1,
         attack_damage=13,
-        attack_range_multiplier=1.65,
-        attack_timing={
-            "windup": 18,
-            "active": 10,
-            "recovery": 28,
-        },
+        
         score_points=240,
     ),
     "poacher_joe": EnemyConfig(
@@ -201,12 +156,6 @@ ENEMY_CONFIGS = {
         max_hp=60,
         speed=ENEMY_SPEED * 0.85,
         attack_damage=18,
-        attack_range_multiplier=4.0,
-        attack_timing={
-            "windup": ENEMY_ATTACK_WINDUP,
-            "active": 3,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
         score_points=250,
     ),
     "gutter": EnemyConfig(
@@ -216,12 +165,6 @@ ENEMY_CONFIGS = {
         max_hp=65,
         speed=ENEMY_SPEED * 0.9,
         attack_damage=18,
-        attack_range_multiplier=4.0,
-        attack_timing={
-            "windup": ENEMY_ATTACK_WINDUP,
-            "active": 3,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
         score_points=275,
     ),
     "skinner": EnemyConfig(
@@ -231,12 +174,6 @@ ENEMY_CONFIGS = {
         max_hp=70,
         speed=ENEMY_SPEED * 0.92,
         attack_damage=20,
-        attack_range_multiplier=4.0,
-        attack_timing={
-            "windup": ENEMY_ATTACK_WINDUP,
-            "active": 3,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
         score_points=300,
     ),
     "black_elmer": EnemyConfig(
@@ -248,12 +185,7 @@ ENEMY_CONFIGS = {
         attack_damage=16,
         width=HEAVY_ENEMY_W,
         height=HEAVY_ENEMY_H,
-        attack_range_multiplier=1.2,
-        attack_timing={
-            "windup": 26,
-            "active": 10,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
+        
         score_points=300,
         idle_config=HEAVY_ENEMY_IDLE,
         walk_config=HEAVY_ENEMY_WALK,
@@ -268,12 +200,7 @@ ENEMY_CONFIGS = {
         attack_damage=18,
         width=HEAVY_ENEMY_W,
         height=HEAVY_ENEMY_H,
-        attack_range_multiplier=1.25,
-        attack_timing={
-            "windup": 26,
-            "active": 10,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
+        
         score_points=350,
         idle_config=HEAVY_ENEMY_IDLE,
         walk_config=HEAVY_ENEMY_WALK,
@@ -288,12 +215,7 @@ ENEMY_CONFIGS = {
         attack_damage=17,
         width=HEAVY_ENEMY_W,
         height=HEAVY_ENEMY_H,
-        attack_range_multiplier=1.2,
-        attack_timing={
-            "windup": 26,
-            "active": 10,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        },
+        
         score_points=325,
         idle_config=HEAVY_ENEMY_IDLE,
         walk_config=HEAVY_ENEMY_WALK,
@@ -308,9 +230,8 @@ ENEMY_CONFIGS = {
         attack_damage=BOSS_ENEMY_ATTACK_DAMAGE,
         width=BOSS_ENEMY_W,
         height=BOSS_ENEMY_H,
-        attack_range_multiplier=2.0,
-        attack_timing=BOSS_ATTACK_TIMING,
-        attack_cooldown=60,
+
+
         hit_stun_duration=8,
         score_points=1000,
     ),

@@ -17,8 +17,8 @@ class EnemyAIMixin:
 
         # state selection, attack if close enough
         if (self.attack_cooldown <= 0
-            and distance_x <= self.attack_hitbox_w
-            and distance_y <= self.attack_hitbox_h):
+            and distance_x <= self.attack_range
+            and distance_y <= self.attack_lane_range):
             self.state = self.ATTACK
         elif distance_x <= self.detect_range:
             self.state = self.CHASE

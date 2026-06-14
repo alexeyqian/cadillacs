@@ -6,5 +6,4 @@ class GneissEnemy(Enemy):
         super().__init__(x, y, enemy_type="gneiss",
                 animation_data=GNEISS_ANIMATIONS,
                 anim_fps=GNEISS_ANIM_FPS,
-                sprite_scale=4,
-                attack_timing=GNEISS_ATTACK_TIMING)
+                sprite_scale=4)

@@ -37,6 +37,12 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.enemy_id = "normal"
         self.display_name = "Enemy"
         self.score_points = 100
+        
+        # TODO: use scaler-able settings to replace hardcode
+        self.attack_range = 90 # should i attack, attack_rect = did i hit
+        self.attack_lane_range = 45
+        self.attack_cooldown_duration = 45
+
         ###### boxes ######
         # logical box
         self.width = ENEMY_W
@@ -49,10 +55,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.hurtbox_h = ENEMY_HURTBOX_H
         self.hurtbox_offset_x = ENEMY_HURTBOX_OFFSET_X
         self.hurtbox_offset_y = ENEMY_HURTBOX_OFFSET_Y
-        # attack box
-        self.attack_hitbox_w = ENEMY_HITBOX_W
-        self.attack_hitbox_h = ENEMY_HITBOX_H
-        self.attack_hitbox_offset_y = ENEMY_HITBOX_OFFSET_Y
 
         self.speed = ENEMY_SPEED
         self.max_hp = ENEMY_MAX_HP
@@ -73,15 +75,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
         self.attack_damage = ENEMY_ATTACK_DAMAGE
 
-        self.attack_timer = 0 # ?
         self.attack_has_hit = False
         self.attack_cooldown = 0
-        self.attack_cooldown_duration = scale_frames(ENEMY_ATTACK_COOLDOWN)
-        self.apply_attack_timing({
-            "windup": ENEMY_ATTACK_WINDUP,
-            "active": ENEMY_ATTACK_ACTIVE,
-            "recovery": ENEMY_ATTACK_RECOVERY,
-        })
 
         # hit reaction
         self.knockback_velocity = 0
@@ -107,8 +102,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.animation_data = animation_data
         self.anim_fps = scale_animation_fps_map(anim_fps)
         self.sprite_scale = sprite_scale
-        if attack_timing is not None:
-            self.apply_attack_timing(attack_timing)
         self.animation_manager = AnimationManager()
         self.init_frame_animations()
 
@@ -172,17 +165,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             self.animation_manager.play(self.DEAD)
 
         self.animation_manager.update()
-
-    def apply_attack_timing(self, attack_timing):
-        timing = scale_timing(
-            windup=attack_timing["windup"],
-            active=attack_timing["active"],
-            recovery=attack_timing["recovery"],
-        )
-        self.attack_windup = timing["windup"]
-        self.attack_active = timing["active"]
-        self.attack_recovery = timing["recovery"]
-        self.attack_total_duration = timing["total"]
 
     def apply_enemy_config(self, config):
         self.enemy_id = config.enemy_id

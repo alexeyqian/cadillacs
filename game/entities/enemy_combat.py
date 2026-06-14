@@ -1,12 +1,12 @@
 class EnemyCombatMixin:
     def start_attack(self):
         self.state = self.ATTACK
-        self.attack_timer = 0
         self.attack_has_hit = False
+        self.animation_manager.play(self.ATTACK)
+        self.animation_manager.current_animation.reset()
 
     def update_attack(self, player):
-        self.facing_right = player.x > self.x
-        self.attack_timer += 1
+        self.face_player(player)
 
         attack_rect = self.get_attack_rect()
         player_hurt_rect = player.get_hurt_rect()
@@ -15,10 +15,10 @@ class EnemyCombatMixin:
             if attack_rect.colliderect(player_hurt_rect):
                 player.take_damage(self.attack_damage)
                 self.attack_has_hit = True
-        
-        if self.attack_timer >= self.attack_total_duration:
-            self.state = self.PATROL # TODO: what state should be here
-            self.attack_timer = 0
+
+        animation = self.animation_manager.current_animation
+        # use is_finished
+        if animation.current_frame == len(animation.frames) - 1:
+            self.state = self.PATROL
             self.attack_has_hit = False
-            self.attack_cooldown = self.attack_cooldown_duration # ?
-        
+            self.attack_cooldown = self.attack_cooldown_duration

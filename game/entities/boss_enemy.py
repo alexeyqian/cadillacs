@@ -30,9 +30,7 @@ class BossEnemy(Enemy):
         self.width = BOSS_ENEMY_W
         self.height = BOSS_ENEMY_H
         self.speed = BOSS_ENEMY_SPEED
-        self.attack_hitbox_w = ENEMY_HITBOX_W*2
         self.attack_damage = BOSS_ENEMY_ATTACK_DAMAGE
-        self.apply_attack_timing(BOSS_ATTACK_TIMING)
 
         # properties special to boss enemy
         self.attack_cooldown_duration = scale_frames(60)
@@ -138,8 +136,9 @@ class BossEnemy(Enemy):
             elif self.phase == 3:
                 self.speed += 1
                 self.attack_damage += 10
-                self.attack_hitbox_w += 40
-                self.attack_cooldown_duration = 35
+                self.attack_range += 50
+                self.attack_lane_range += 50
+                self.attack_cooldown_duration = 60
                 self.special_attack_cooldown_duration = 120
                 self.special_attack_cooldown = min(
                     self.special_attack_cooldown,
