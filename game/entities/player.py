@@ -1,7 +1,6 @@
 import pygame
 from game.settings import *
 from game.colors import *
-from game.entities.projectile import Projectile
 from game.assets.placeholder.player_frames import *
 from game.animation.animation_manager import AnimationManager
 from game.animation.frame_animation import FrameAnimation, load_frame_animation
@@ -9,6 +8,7 @@ from game.entities.player_config import get_player_config
 from game.tuning import scale_animation_fps_map, scale_frames
 from game.entities.player_health import PlayerHealth
 from game.entities.player_weapon_slot import PlayerWeaponSlot
+from game.entities.player_movement import PlayerMovement
 
 class Player:
     IDLE = "IDLE"
@@ -39,29 +39,14 @@ class Player:
         self.anim_fps = scale_animation_fps_map(anim_fps)
 
         self.facing_right = True
-        self.is_running = False
-        self.run_active = False
-        self.run_direction = 0
-        self.run_tap_timer = 0
-        self.run_tap_window = max(1, int(RUN_DOUBLE_TAP_TIME * FPS))
-        self.left_pressed = False
-        self.right_pressed = False
+
+        self.movement = PlayerMovement(self.speed)
+        self.movement.ground_y = self.y
 
         self.run_attack_timer = 0
         self.run_attack_duration = 18
-        
-        # jump / jump attack
-        self.is_jumping = False
-        self.jump_pressed = False
+
         self.jump_attack_pressed = False
-        self.ground_y = self.y
-        self.vx = 0
-        self.vy = 0
-        self.jump_power = -20
-        self.gravity = 2
-        self.air_speed = self.speed * 1.2
-        self.air_friction = 0.92
-        
         self.jump_attack_duration = self.run_attack_duration
 
         self.is_attacking = False
@@ -92,6 +77,46 @@ class Player:
         self.init_animations()
 
     # TODO: remove these for compatibility code
+    @property
+    def is_running(self):
+        return self.movement.is_running
+
+    @is_running.setter
+    def is_running(self, value):
+        self.movement.is_running = value
+
+    @property
+    def is_jumping(self):
+        return self.movement.is_jumping
+
+    @is_jumping.setter
+    def is_jumping(self, value):
+        self.movement.is_jumping = value
+
+    @property
+    def ground_y(self):
+        return self.movement.ground_y
+
+    @ground_y.setter
+    def ground_y(self, value):
+        self.movement.ground_y = value
+
+    @property
+    def vx(self):
+        return self.movement.vx
+
+    @vx.setter
+    def vx(self, value):
+        self.movement.vx = value
+
+    @property
+    def vy(self):
+        return self.movement.vy
+
+    @vy.setter
+    def vy(self, value):
+        self.movement.vy = value
+    
     @property
     def hp(self):
         return self.health.hp
@@ -503,8 +528,7 @@ class Player:
         if self.throw_timer > 0:
             self.throw_timer -= 1
 
-        if self.run_tap_timer > 0:
-            self.run_tap_timer -= 1
+        self.movement.update_timers()
             
         if self.grab_knee_timer > 0:
             self.grab_knee_timer -= 1
@@ -527,99 +551,10 @@ class Player:
             #return # skip movement while attacking
 
     def update_movement(self, player_input):
-        moving = False
-        if self.is_jumping: # avoid double movement while jumping
-            return False
-
-        left_down = player_input.left
-        right_down = player_input.right
-        up_down = player_input.up
-        down_down = player_input.down
-        shift_down = player_input.run
-
-        horizontal_direction = 0
-        if left_down and not right_down:
-            horizontal_direction = -1
-        elif right_down and not left_down:
-            horizontal_direction = 1
-
-        self.update_run_input(left_down, right_down, horizontal_direction)
-        self.is_running = horizontal_direction != 0 and (
-            shift_down or self.run_active)
-
-        move_speed = self.run_speed if self.is_running else self.speed
-
-        if left_down:
-            self.x -= move_speed
-            self.facing_right = False
-            moving = True
-        if right_down:
-            self.x += move_speed
-            self.facing_right = True
-            moving = True
-        if up_down:
-            self.y -= self.speed
-            moving = True
-        if down_down:
-            self.y += self.speed
-            moving = True
-
-        return moving
-
-    def update_run_input(self, left_down, right_down, horizontal_direction):
-        if horizontal_direction == 0:
-            self.run_active = False
-            self.left_pressed = left_down
-            self.right_pressed = right_down
-            return
-
-        left_just_pressed = left_down and not self.left_pressed
-        right_just_pressed = right_down and not self.right_pressed
-
-        if left_just_pressed:
-            self.check_run_double_tap(-1)
-        elif right_just_pressed:
-            self.check_run_double_tap(1)
-
-        if self.run_active and self.run_direction != horizontal_direction:
-            self.run_active = False
-
-        self.left_pressed = left_down
-        self.right_pressed = right_down
-
-    def check_run_double_tap(self, direction):
-        if self.run_direction == direction and self.run_tap_timer > 0:
-            self.run_active = True
-
-        self.run_direction = direction
-        self.run_tap_timer = self.run_tap_window
+        return self.movement.update_movement(self, player_input)
 
     def update_jump_physics(self, player_input):
-        if not self.is_jumping:
-            return
-        
-        # allow small air control
-        if player_input.left:
-            self.vx = -self.air_speed
-            self.facing_right = False
-        elif player_input.right:
-            self.vx = self.air_speed
-            self.facing_right = True
-            
-        self.x += self.vx
-        self.y += self.vy
-        self.vx *= self.air_friction
-        self.vy += self.gravity
-
-        if self.y >= self.ground_y:
-            self.y = self.ground_y
-            self.vx = 0
-            self.vy = 0
-            self.is_jumping = False
-            self.jump_attack_pressed = False
-            
-            if self.state in [self.JUMP, self.JUMP_ATTACK]:
-                self.state = self.IDLE
+        return self.movement.update_jump_physics(self, player_input)
 
     def update_action_input(self, player_input):
         # jump key
@@ -688,42 +623,10 @@ class Player:
             self.grabbed_enemy.y = self.y
 
     def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
-        if world_width is None:
-            world_width = WORLD_WIDTH
-        if lane_top is None or lane_bottom is None:
-            raise ValueError("Player.apply_world_bounds requires lane_top and lane_bottom")
-
-        # world boundaries
-        half_w = int(self.width / 2)
-        self.x = max(half_w, self.x) # cannot go left of window
-        self.x = min(self.x, world_width - half_w) # cannot go right window
-        # beat'em up lane limitsL creates the illusion of depth
-        # player walks on a horizontal strip, not full screen
-        self.y = max(lane_top, self.y) # cannot go above lane_top
-        self.y = min(lane_bottom, self.y) # cannot go below lane_bottom
-
-    #######################
+        self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
 
     def start_jump(self, player_input):
-        if self.is_jumping:
-            return
-        if self.is_attacking:
-            return
-        if self.grabbed_enemy:
-            return
-        self.is_jumping = True
-        self.ground_y = self.y
-        self.vy = self.jump_power
-        self.vx = 0
-        
-        if player_input.left:
-            self.vx = -self.air_speed
-            self.facing_right = False
-        elif player_input.right:
-            self.vx = self.air_speed
-            self.facing_right = True
-
-        self.state = self.JUMP
+        self.movement.start_jump(self, player_input)
 
     def start_jump_attack(self):
         if not self.is_jumping:
@@ -847,7 +750,7 @@ class Player:
             return False
         if enemy.state == enemy.GRABBED:
             return False
-        
+
         dx = abs(enemy.x - self.x)
         dy = abs(enemy.y - self.y)
         return dx <= self.grab_range and dy <= 40
