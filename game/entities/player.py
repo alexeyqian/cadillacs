@@ -12,6 +12,7 @@ from game.entities.player_render import PlayerRenderer
 from game.entities.player_action_controller import PlayerActionController
 from game.entities.player_state_resolver import PlayerStateResolver
 from game.entities.player_lifecycle import PlayerLifecycle
+from game.entities.player_events import PlayerEvents
 
 class Player:
     IDLE = "IDLE"
@@ -51,6 +52,7 @@ class Player:
 
         self.combat = PlayerCombat()
         self.weapon_slot = PlayerWeaponSlot()
+        self.events = PlayerEvents()
         self.action_controller = PlayerActionController()
         self.grab = PlayerGrabController()
         self.hitboxes = PlayerHitboxes()

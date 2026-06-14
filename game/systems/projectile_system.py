@@ -4,9 +4,8 @@ def collect_player_projectiles(game_state):
     player = game_state.player
     projectiles = game_state.projectiles
 
-    if player.weapon_slot.pending_projectile:
-        projectiles.append(player.weapon_slot.pending_projectile)
-        player.weapon_slot.pending_projectile = None
+    for event in player.events.drain("spawn_projectile"):
+        projectiles.append(event["payload"])
 
 def collect_enemy_projectile(game_state, enemy):
     if hasattr(enemy, "pending_projectile"):

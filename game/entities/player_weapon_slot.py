@@ -5,7 +5,6 @@ from game.entities.projectile import Projectile
 class PlayerWeaponSlot:
     def __init__(self):
         self.weapon = None
-        self.pending_projectile = None
         self.fire_pressed = False
         self.drop_pressed = False
 
@@ -37,11 +36,12 @@ class PlayerWeaponSlot:
         muzzle_x = owner.x + (40 if owner.facing_right else -40)
         muzzle_y = owner.get_top() + 105
 
-        self.pending_projectile = Projectile(
+        projectile = Projectile(
             muzzle_x,
             muzzle_y,
             direction,
             PROJECTILE_SPEED,
             self.weapon.damage
         )
+        owner.events.emit("spawn_projectile", projectile)
         self.weapon.ammo -= 1
