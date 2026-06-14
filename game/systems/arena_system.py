@@ -22,10 +22,15 @@ def apply_arena_bounds(game_state):
             enemy,
             arena_left - ENEMY_ARENA_ENTRY_MARGIN,
             arena_right + ENEMY_ARENA_ENTRY_MARGIN,
+            use_collision_width=True,
         )
 
-def clamp_entity(entity, arena_left, arena_right):
-    half_w = entity.width // 2
+def clamp_entity(entity, arena_left, arena_right, use_collision_width=False):
+    if use_collision_width:
+        width = entity.collision_box_w
+    else:
+        width = entity.width
+    half_w = width // 2
     if entity.x - half_w < arena_left:
         entity.x = arena_left + half_w
 

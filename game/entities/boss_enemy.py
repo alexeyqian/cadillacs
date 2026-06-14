@@ -26,8 +26,6 @@ class BossEnemy(Enemy):
 
         self.max_hp = BOSS_ENEMY_MAX_HP
         self.hp = self.max_hp
-        self.width = BOSS_ENEMY_W
-        self.height = BOSS_ENEMY_H
         self.speed = BOSS_ENEMY_SPEED
 
         # properties special to boss enemy
@@ -59,11 +57,12 @@ class BossEnemy(Enemy):
         super().draw(screen, camera_x)
 
         screen_x = self.x - camera_x
-        bar_x = int(screen_x - self.width / 2)
+        bar_width = self.collision_box_w
+        bar_x = int(screen_x - bar_width / 2)
         bar_y = self.y - 24
-        hp_width = int(self.width * (self.hp / self.max_hp))
+        hp_width = int(bar_width * (self.hp / self.max_hp))
         pygame.draw.rect(screen, (60, 20, 60),
-            (bar_x, bar_y, self.width, 10))
+            (bar_x, bar_y, bar_width, 10))
         pygame.draw.rect(screen, (255, 40, 40),
             (bar_x, bar_y, hp_width, 10))
         

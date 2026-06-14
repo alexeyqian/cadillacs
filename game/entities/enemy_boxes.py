@@ -12,7 +12,7 @@ class EnemyBoxMixin:
             lane_bottom = self.lane_bottom
 
         # world boundaries
-        half_w = self.width // 2
+        half_w = self.collision_box_w // 2
         self.x = max(half_w, self.x) # cannot go left of window
         self.x = min(self.x, world_width - half_w) # cannot go right window
         # beat'em up lane limits creates the illusion of depth

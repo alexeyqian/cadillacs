@@ -754,7 +754,8 @@ class Player:
     def update_grabbed_enemy_position(self):
         # keep grabbed enemy in front of player
         if self.grabbed_enemy:
-            grab_offset = (self.width + self.grabbed_enemy.width) / 2 + 5
+            grabbed_width = self.grabbed_enemy.collision_box_w
+            grab_offset = (self.collision_box_w + grabbed_width) / 2 + 5
             if self.facing_right:
                 self.grabbed_enemy.x = self.x + grab_offset
             else:

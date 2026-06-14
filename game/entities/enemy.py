@@ -91,7 +91,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
         self.score_points = config.score_points
-        self.width = int(config.width)
+        self.collision_box_w = int(config.collision_box_w)
         self.max_hp = config.max_hp
         self.hp = self.max_hp
         self.speed = config.speed

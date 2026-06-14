@@ -11,7 +11,7 @@ class EnemyConfig:
     speed: float
     attack_damage: float
     attack_cooldown_duration: int = ENEMY_ATTACK_COOLDOWN
-    width: float = ENEMY_W
+    collision_box_w: int = ENEMY_COLLISION_W
     detect_range: float = ENEMY_DETECT_RANGE
     hit_stun_duration: int = 15
     score_points: int = 100
@@ -66,7 +66,7 @@ ENEMY_CONFIGS = {
         max_hp=35,
         speed=ENEMY_SPEED * 1.35,
         attack_damage=7,
-        width=FAST_ENEMY_W,
+        collision_box_w=int(FAST_ENEMY_W * 0.5),
         score_points=180,
     ),
     "thug": EnemyConfig(
@@ -76,7 +76,7 @@ ENEMY_CONFIGS = {
         max_hp=40,
         speed=ENEMY_SPEED * 1.25,
         attack_damage=8,
-        width=FAST_ENEMY_W,
+        collision_box_w=int(FAST_ENEMY_W * 0.5),
         score_points=190,
     ),
     "blade": EnemyConfig(
@@ -132,7 +132,7 @@ ENEMY_CONFIGS = {
         max_hp=95,
         speed=ENEMY_SPEED * 0.75,
         attack_damage=16,
-        width=HEAVY_ENEMY_W,
+        collision_box_w=int(HEAVY_ENEMY_W * 0.5),
         
         score_points=300,
     ),
@@ -143,7 +143,7 @@ ENEMY_CONFIGS = {
         max_hp=115,
         speed=ENEMY_SPEED * 0.8,
         attack_damage=18,
-        width=HEAVY_ENEMY_W,
+        collision_box_w=int(HEAVY_ENEMY_W * 0.5),
         
         score_points=350,
     ),
@@ -154,7 +154,7 @@ ENEMY_CONFIGS = {
         max_hp=105,
         speed=ENEMY_SPEED * 0.85,
         attack_damage=17,
-        width=HEAVY_ENEMY_W,
+        collision_box_w=int(HEAVY_ENEMY_W * 0.5),
         
         score_points=325,
     ),
@@ -166,7 +166,7 @@ ENEMY_CONFIGS = {
         speed=BOSS_ENEMY_SPEED,
         attack_damage=BOSS_ENEMY_ATTACK_DAMAGE,
         attack_cooldown_duration=60,
-        width=BOSS_ENEMY_W,
+        collision_box_w=int(BOSS_ENEMY_W * 0.5),
 
 
         hit_stun_duration=8,
