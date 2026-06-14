@@ -114,12 +114,12 @@ def handle_player_grab_or_throw(game_state, keys):
         player.grab.grab_pressed = True
 
         if player.grab.grabbed_enemy:
-            player.grab.throw_grabbed_enemy()
+            player.grab.throw_grabbed_enemy(player)
             return
         
         for enemy in game_state.enemies:
-            if player.grab.can_grab_enemy(enemy):
-                player.grab.grab_enemy(enemy)
+            if player.grab.can_grab_enemy(player, enemy):
+                player.grab.grab_enemy(player, enemy)
                 break
     else:
         player.grab.grab_pressed = False

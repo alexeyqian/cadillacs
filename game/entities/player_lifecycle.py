@@ -5,7 +5,7 @@ class PlayerLifecycle:
 
     def update_dead_state(self, owner):
         self.update_respawn(owner)
-        owner.update_animation()
+        owner.animation_controller.update(owner)
 
     def update_hit_state(self, owner):
         if owner.health.hit_timer <= 0:
@@ -17,7 +17,7 @@ class PlayerLifecycle:
         else:
             owner.state_machine.change_to(owner, owner.IDLE)
 
-        owner.update_animation()
+        owner.animation_controller.update(owner)
         return True
 
     def take_damage(self, owner, damage):
