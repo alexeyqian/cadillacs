@@ -177,8 +177,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.speed = config.speed
         self.attack_damage = config.attack_damage
         self.detect_range = config.detect_range
-        self.attack_cooldown_duration = scale_frames(config.attack_cooldown)
-        self.apply_attack_timing(config.attack_timing)
+        #self.attack_cooldown_duration = scale_frames(config.attack_cooldown)
         self.hit_stun_duration = scale_frames(config.hit_stun_duration)
 
         self.collision_box_w = int(self.width * 0.5)
@@ -187,9 +186,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.hurtbox_h = int(self.height * 0.6)
         self.hurtbox_offset_x = int(self.width * 0.2)
         self.hurtbox_offset_y = int(self.height * 0.1)
-        self.attack_hitbox_w = int(ENEMY_HITBOX_W * config.attack_range_multiplier)
-        self.attack_hitbox_h = int(self.height * 0.5)
-        self.attack_hitbox_offset_y = int(self.height * 0.2)
 
     def update(self, player, enemies):
         if self.update_special_states():
