@@ -17,7 +17,15 @@ from game.entities.enemy_animation_controller import EnemyAnimationController
 from game.entities.enemy_renderer import EnemyRenderer
 from game.entities.enemy_movement import EnemyMovement
 from game.entities.enemy_combat_controller import EnemyCombatController
+from game.entities.enemy_reaction_controller import EnemyReactionController
+from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
+from game.entities.enemy_state_resolver import EnemyStateResolver
 
+# State resolver: decides what state the enemy wants
+# Action executor: runs behavior for the current state
+# Movement: changes x/y/facing
+# Combat: handles attack hit detection
+# Lifecycle: advances temporary states
 class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             EnemyReactionMixin, EnemyLifecycleMixin):
     IDLE = EnemyState.IDLE
@@ -68,6 +76,9 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
         self.movement = EnemyMovement()
         self.combat = EnemyCombatController()
+        self.reactions = EnemyReactionController()
+        self.lifecycle = EnemyLifecycleController()
+        self.state_resolver = EnemyStateResolver()
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
     

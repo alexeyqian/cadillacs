@@ -6,18 +6,7 @@ class EnemyAIMixin:
         self.movement.face_player(self, player)
 
     def choose_state(self, distance_x, distance_y):
-        if self.state == self.ATTACK:
-            return
-
-        # state selection, attack if close enough
-        if (self.attack_cooldown <= 0
-            and distance_x <= self.attack_range
-            and distance_y <= self.attack_lane_range):
-            self.state = self.ATTACK
-        elif distance_x <= self.detect_range:
-            self.state = self.CHASE
-        else:
-            self.state = self.PATROL
+        self.state_resolver.choose_state(self, distance_x, distance_y)
 
     def execute_state(self, player, enemies, dx, dy):
         if self.state == self.PATROL:
