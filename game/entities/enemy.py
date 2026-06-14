@@ -3,7 +3,7 @@ import pygame
 
 from game.settings import *
 from game.colors import *
-from game.tuning import scale_frames, scale_timing, scale_animation_fps_map
+#from game.tuning import scale_frames, scale_timing, scale_animation_fps_map
 from game.animation.frame_animation import FrameAnimation, load_frame_animation
 from game.animation.animation_manager import AnimationManager
 
@@ -30,35 +30,33 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
     KNOCKDOWN = EnemyState.KNOCKDOWN
     GETUP = EnemyState.GETUP
 
-    def __init__(self, x, y, enemy_type, animation_data, anim_fps,
-            sprite_scale=4, attack_timing=None):
+    def __init__(self, x, y, enemy_type, 
+                animation_data, anim_fps, sprite_scale=4):
         self.x = x
         self.y = y
-        self.enemy_id = "normal"
+
+        # TODO: these fields should be in enemy config
+        self.enemy_id = "ferris"
         self.display_name = "Enemy"
         self.score_points = 100
-        
+
+        self.speed = ENEMY_SPEED
+        self.max_hp = ENEMY_MAX_HP
+        self.hp = self.max_hp
         # TODO: use scaler-able settings to replace hardcode
         self.attack_range = 90 # should i attack, attack_rect = did i hit
         self.attack_lane_range = 45
         self.attack_cooldown_duration = 45
 
         ###### boxes ######
-        # logical box
+        # TODO: not used? logical box
         self.width = ENEMY_W
         self.height = ENEMY_H
+
         #collision box
         self.collision_box_w = ENEMY_COLLISION_W
         self.collision_box_h = ENEMY_COLLISION_H
-        # hurt box
-        self.hurtbox_w = ENEMY_HURTBOX_W
-        self.hurtbox_h = ENEMY_HURTBOX_H
-        self.hurtbox_offset_x = ENEMY_HURTBOX_OFFSET_X
-        self.hurtbox_offset_y = ENEMY_HURTBOX_OFFSET_Y
 
-        self.speed = ENEMY_SPEED
-        self.max_hp = ENEMY_MAX_HP
-        self.hp = self.max_hp
         self.state = self.IDLE
         self.facing_right = False
         self.loot_generated = False
@@ -100,7 +98,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
         self.apply_enemy_config(get_enemy_config(enemy_type))
         self.animation_data = animation_data
-        self.anim_fps = scale_animation_fps_map(anim_fps)
+        #self.anim_fps = scale_animation_fps_map(anim_fps)
         self.sprite_scale = sprite_scale
         self.animation_manager = AnimationManager()
         self.init_frame_animations()
@@ -119,18 +117,11 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         hit_dur = max(1, int(FPS/self.anim_fps["hit"]))
         dead_dur = max(1, int(FPS/self.anim_fps["dead"]))
     
-        self.animation_manager.add_animation(self.IDLE,
-                FrameAnimation(idle_frames, idle_dur))
-        self.animation_manager.add_animation(self.WALK,
-                FrameAnimation(walk_frames, walk_dur))
-        self.animation_manager.add_animation(self.ATTACK,
-                FrameAnimation(attack_frames, attack_dur))
-        self.animation_manager.add_animation(self.HIT,
-                FrameAnimation(hit_frames, hit_dur))
-        self.animation_manager.add_animation(self.DEAD,
-                FrameAnimation(dead_frames, dead_dur))
-
-        # return value is object include multiple frames/surfaces
+        self.animation_manager.add_animation(self.IDLE, FrameAnimation(idle_frames, idle_dur))
+        self.animation_manager.add_animation(self.WALK, FrameAnimation(walk_frames, walk_dur))
+        self.animation_manager.add_animation(self.ATTACK, FrameAnimation(attack_frames, attack_dur))
+        self.animation_manager.add_animation(self.HIT, FrameAnimation(hit_frames, hit_dur))
+        self.animation_manager.add_animation(self.DEAD, FrameAnimation(dead_frames, dead_dur))
 
     def get_current_frame_data(self):
         animation = self.animation_manager.current_animation
@@ -178,14 +169,10 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.attack_damage = config.attack_damage
         self.detect_range = config.detect_range
         #self.attack_cooldown_duration = scale_frames(config.attack_cooldown)
-        self.hit_stun_duration = scale_frames(config.hit_stun_duration)
+        self.hit_stun_duration = config.hit_stun_duration #scale_frames(config.hit_stun_duration)
 
         self.collision_box_w = int(self.width * 0.5)
         self.collision_box_h = int(self.height * 0.2)
-        self.hurtbox_w = int(self.width * 0.6)
-        self.hurtbox_h = int(self.height * 0.6)
-        self.hurtbox_offset_x = int(self.width * 0.2)
-        self.hurtbox_offset_y = int(self.height * 0.1)
 
     def update(self, player, enemies):
         if self.update_special_states():
@@ -285,3 +272,70 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             (255, 0, 0),
             (bar_x, frame_rect.y - hp_height, hp_width, 6)
         )
+    
+    # returns the whole visible sprite frame in world space:
+    def get_frame_rect(self):
+        frame = self.get_current_frame_data()
+        if not frame:
+            raise ValueError(f"Missing frame data for enemy state: {self.state}")
+
+        scale = self.sprite_scale
+        offset_x, offset_y = frame.offset
+        frame_w = frame.image.get_width() * scale
+        frame_h = frame.image.get_height() * scale
+        offset_x *= scale
+        offset_y *= scale
+
+        if self.facing_right:
+            world_x = self.x + offset_x
+        else:
+            world_x = self.x - frame_w - offset_x
+
+        world_y = self.y + offset_y
+        return pygame.Rect(int(world_x), int(world_y), int(frame_w), int(frame_h))
+
+
+    def get_logical_rect(self):
+        return self.get_frame_rect()
+
+
+    def get_hurt_rect(self):
+        frame = self.get_current_frame_data()
+        if not frame or not frame.hurt_rect:
+            return pygame.Rect(int(self.x), int(self.y), 0, 0)
+
+        return self._get_in_frame_box_rect(frame.hurt_rect)
+
+
+    def get_attack_rect(self):
+        frame = self.get_current_frame_data()
+        if not frame or not frame.attack_rect:
+            return None
+
+        return self._get_in_frame_box_rect(frame.attack_rect)
+
+    # convert one local frame-data box into a world-space
+    def _get_in_frame_box_rect(self, local_rect):
+        frame = self.get_current_frame_data()
+        scale = self.sprite_scale
+
+        local_x, local_y, w, h = local_rect
+        offset_x, offset_y = frame.offset
+        frame_w = frame.image.get_width()
+
+        local_x *= scale
+        local_y *= scale
+        w *= scale
+        h *= scale
+        offset_x *= scale
+        offset_y *= scale
+        frame_w *= scale
+
+        if self.facing_right:
+            world_x = self.x + offset_x + local_x
+        else:
+            mirrored_x = frame_w - local_x - w
+            world_x = self.x - frame_w - offset_x + mirrored_x
+
+        world_y = self.y + offset_y + local_y
+        return pygame.Rect(int(world_x), int(world_y), int(w), int(h))

@@ -77,8 +77,8 @@ class RaptorEnemy(Enemy):
 
         can_attack = (
             self.attack_cooldown <= 0
-            and distance_x <= self.attack_hitbox_w
-            and distance_y <= self.attack_hitbox_h
+            and distance_x <= self.attack_range
+            and distance_y <= self.attack_lane_range
         )
         if can_attack:
             if self.leap_cooldown <= 0:

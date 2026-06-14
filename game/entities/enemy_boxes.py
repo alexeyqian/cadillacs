@@ -20,24 +20,6 @@ class EnemyBoxMixin:
         self.y = max(lane_top, self.y) # cannot go above lane_top
         self.y = min(lane_bottom, self.y) # cannot go below lane_bottom
 
-    def get_frame_rect(self):
-        frame = self.get_current_frame_data()
-        if not frame:
-            raise ValueError(f"Missing frame data for enemy state: {self.state}")
-        scale = self.sprite_scale
-        offset_x, offset_y = frame.offset
-        frame_w = frame.image.get_width()*scale
-        frame_h = frame.image.get_height()*scale
-        offset_x *= scale
-        offset_y *= scale
-        if self.facing_right:
-            world_x = self.x + offset_x
-        else: 
-            world_x = self.x - frame_w - offset_x
-            
-        world_y = self.y + offset_y
-        return pygame.Rect(int(world_x), int(world_y), int(frame_w), int(frame_h))
-
     # on bottom center
     def get_collision_rect(self):
         return pygame.Rect(
@@ -47,37 +29,6 @@ class EnemyBoxMixin:
             int(self.collision_box_h)
         )
 
-    # sprite frame rect
-    def get_logical_rect(self):
-        return self.get_frame_rect()
-
-    def get_hurt_rect(self):
-        frame = self.get_current_frame_data()
-        if not frame or not frame.hurt_rect:
-            return pygame.Rect(int(self.x), int(self.y), 0, 0)
-        scale = self.sprite_scale
-        local_x, local_y, w, h = frame.hurt_rect
-        offset_x, offset_y = frame.offset
-        frame_w = frame.image.get_width()
-
-        local_x *= scale
-        local_y *= scale
-        w *= scale
-        h *= scale
-        offset_x *= scale
-        offset_y *= scale
-        frame_w *= scale
-        
-        if self.facing_right:
-            world_x = self.x + offset_x + local_x
-        else:
-            mirrored_x = frame_w - local_x - w
-            world_x = self.x - frame_w - offset_x + mirrored_x
-            
-        world_y = self.y + offset_y + local_y
-        return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
-
-    def get_attack_rect(self):
         frame = self.get_current_frame_data()
 
         if frame:

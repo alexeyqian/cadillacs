@@ -21,8 +21,7 @@ class BossEnemy(Enemy):
             enemy_type="boss",
             animation_data=BOSS_ANIMATIONS,
             anim_fps=BOSS_ANIM_FPS,
-            sprite_scale=4,
-            attack_timing=BOSS_ATTACK_TIMING,
+            sprite_scale=4
         )
 
         self.max_hp = BOSS_ENEMY_MAX_HP
