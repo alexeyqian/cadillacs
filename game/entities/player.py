@@ -36,11 +36,6 @@ class Player:
         # boxes
         # logical box
         #collision box
-        # hurt box
-        self.hurtbox_w = PLAYER_HURTBOX_W
-        self.hurtbox_h = PLAYER_HURTBOX_H
-        self.hurtbox_offset_x = PLAYER_HURTBOX_OFFSET_X
-        self.hurtbox_offset_y = PLAYER_HURTBOX_OFFSET_Y
         # attack box
         self.attack_hitbox_w = PLAYER_HITBOX_W
         self.attack_hitbox_h = PLAYER_HITBOX_H
@@ -366,14 +361,6 @@ class Player:
 
         world_y = self.y + offset_y + local_y
         return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
-
-        # fallback to old logic
-        #return pygame.Rect(
-        #    int(self.get_left() + self.hurtbox_offset_x),
-        #    int(self.get_top() + self.hurtbox_offset_y),
-        #    int(self.hurtbox_w),
-        #    int(self.hurtbox_h))
-
     # on bottom center
     def get_collision_rect(self):
         return pygame.Rect(
