@@ -9,6 +9,8 @@ from game.tuning import scale_animation_fps_map, scale_frames
 from game.entities.player_health import PlayerHealth
 from game.entities.player_weapon_slot import PlayerWeaponSlot
 from game.entities.player_movement import PlayerMovement
+from game.entities.player_combat import PlayerCombat
+from game.entities.player_grab_controller import PlayerGrabController
 
 class Player:
     IDLE = "IDLE"
@@ -42,33 +44,16 @@ class Player:
 
         self.movement = PlayerMovement(self.speed)
         self.movement.ground_y = self.y
-
         self.run_attack_timer = 0
         self.run_attack_duration = 18
-
         self.jump_attack_pressed = False
         self.jump_attack_duration = self.run_attack_duration
 
-        self.is_attacking = False
-        self.attack_timer = 0
-        self.attack_duration = 12
-        self.already_hit_enemy = False # already_hit
-
-        # classic combo system
-        # J punch 1, J punch 2, J punch 3
-        self.combo_step = 0
-        self.combo_timer = 0
-
+        self.combat = PlayerCombat()
         self.weapon_slot = PlayerWeaponSlot()
         
         # grab/throw/knee
-        self.grabbed_enemy = None
-        self.grab_pressed = False
-        self.throw_timer = 0
-        self.throw_duration = 14
-        self.grab_knee_timer = 0
-        self.grab_knee_duration = PLAYER_GRAB_KNEE_DURATION
-        self.grab_keen_hit_frame = PLAYER_GRAB_KNEE_HIT_FRAME
+        self.grab = PlayerGrabController()
 
         self.respawn_x = self.x
         self.respawn_y = self.y
@@ -76,7 +61,111 @@ class Player:
         self.animation_manager = AnimationManager()
         self.init_animations()
 
+    @property
+    def grabbed_enemy(self):
+        return self.grab.grabbed_enemy
+
+    @grabbed_enemy.setter
+    def grabbed_enemy(self, value):
+        self.grab.grabbed_enemy = value
+
+    @property
+    def grab_pressed(self):
+        return self.grab.grab_pressed
+
+    @grab_pressed.setter
+    def grab_pressed(self, value):
+        self.grab.grab_pressed = value
+
+    @property
+    def throw_timer(self):
+        return self.grab.throw_timer
+
+    @throw_timer.setter
+    def throw_timer(self, value):
+        self.grab.throw_timer = value
+
+    @property
+    def throw_duration(self):
+        return self.grab.throw_duration
+
+    @throw_duration.setter
+    def throw_duration(self, value):
+        self.grab.throw_duration = value
+
+    @property
+    def grab_knee_timer(self):
+        return self.grab.grab_knee_timer
+
+    @grab_knee_timer.setter
+    def grab_knee_timer(self, value):
+        self.grab.grab_knee_timer = value
+
+    @property
+    def grab_knee_duration(self):
+        return self.grab.grab_knee_duration
+
+    @grab_knee_duration.setter
+    def grab_knee_duration(self, value):
+        self.grab.grab_knee_duration = value
+
     # TODO: remove these for compatibility code
+    @property
+    def is_attacking(self):
+        return self.combat.is_attacking
+
+    @is_attacking.setter
+    def is_attacking(self, value):
+        self.combat.is_attacking = value
+
+    @property
+    def attack_timer(self):
+        return self.combat.attack_timer
+
+    @attack_timer.setter
+    def attack_timer(self, value):
+        self.combat.attack_timer = value
+
+    @property
+    def attack_duration(self):
+        return self.combat.attack_duration
+
+    @attack_duration.setter
+    def attack_duration(self, value):
+        self.combat.attack_duration = value
+
+    @property
+    def already_hit_enemy(self):
+        return self.combat.already_hit_enemy
+
+    @already_hit_enemy.setter
+    def already_hit_enemy(self, value):
+        self.combat.already_hit_enemy = value
+
+    @property
+    def combo_step(self):
+        return self.combat.combo_step
+
+    @combo_step.setter
+    def combo_step(self, value):
+        self.combat.combo_step = value
+
+    @property
+    def combo_timer(self):
+        return self.combat.combo_timer
+
+    @combo_timer.setter
+    def combo_timer(self, value):
+        self.combat.combo_timer = value
+    
+    @property
+    def jump_pressed(self):
+        return self.movement.jump_pressed
+
+    @jump_pressed.setter
+    def jump_pressed(self, value):
+        self.movement.jump_pressed = value
+    
     @property
     def is_running(self):
         return self.movement.is_running
@@ -520,35 +609,9 @@ class Player:
         return True
 
     def update_timers(self):
-        if self.combo_timer > 0:
-            self.combo_timer -= 1
-        else:
-            self.combo_step = 0
-
-        if self.throw_timer > 0:
-            self.throw_timer -= 1
-
+        self.combat.update_timers(self)
+        self.grab.update_timers(self)
         self.movement.update_timers()
-            
-        if self.grab_knee_timer > 0:
-            self.grab_knee_timer -= 1
-            if self.grab_knee_timer <= 0:
-                self.is_attacking = False
-                self.already_hit_enemy = False
-                if self.grabbed_enemy:
-                    self.state = self.GRAB
-                else:
-                    self.state = self.IDLE
-
-        # attack timer
-        if self.is_attacking:
-            self.attack_timer -= 1
-            if self.attack_timer <= 0:
-                self.is_attacking = False
-                if self.state != self.DEAD:
-                    self.state = self.IDLE
-            # comment out, so still can move during attacking
-            #return # skip movement while attacking
 
     def update_movement(self, player_input):
         return self.movement.update_movement(self, player_input)
@@ -612,15 +675,7 @@ class Player:
                 self.state = self.IDLE
 
     def update_grabbed_enemy_position(self):
-        # keep grabbed enemy in front of player
-        if self.grabbed_enemy:
-            grabbed_width = self.grabbed_enemy.collision_box_w
-            grab_offset = (self.collision_box_w + grabbed_width) / 2 + 5
-            if self.facing_right:
-                self.grabbed_enemy.x = self.x + grab_offset
-            else:
-                self.grabbed_enemy.x = self.x - grab_offset
-            self.grabbed_enemy.y = self.y
+        self.grab.update_grabbed_enemy_position(self)
 
     def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
         self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
@@ -629,79 +684,16 @@ class Player:
         self.movement.start_jump(self, player_input)
 
     def start_jump_attack(self):
-        if not self.is_jumping:
-            return
-        if self.is_attacking:
-            return
-        self.is_attacking = True
-        self.attack_timer = self.jump_attack_duration
-        self.already_hit_enemy = False
-        self.state = self.JUMP_ATTACK
+        self.combat.start_jump_attack(self)
     
     def start_attack(self):
-        # The current start_attack() prevents attack chaining while an attack is active:
-        # we'll replace this with an input buffer system
-        if self.is_attacking:
-            return
-
-        # for default walking attack
-        self.is_attacking = True
-        self.attack_timer = self.attack_duration
-        self.already_hit_enemy = False
-
-        # for running attack
-        if self.is_running:
-            self.attack_timer = self.run_attack_duration
-            self.combo_timer = 0
-            self.combo_step = 0
-            self.state = self.RUN_ATTACK
-            return
-
-        if self.combo_timer > 0:
-            self.combo_step += 1
-        else:
-            self.combo_step = 1
-        
-        self.combo_step = min(self.combo_step, 3)
-        self.combo_timer = 30 # time window to continue the combo
-        # state
-        if self.combo_step == 1:
-            self.state = self.ATTACK_1
-        elif self.combo_step == 2:
-            self.state = self.ATTACK_2
-        else:
-            self.state = self.ATTACK_3
+        self.combat.start_attack(self)
 
     def start_grab_knee_attack(self):
-        if not self.grabbed_enemy:
-            return
-        if self.is_attacking:
-            return
-        self.is_attacking = True
-        self.attack_timer = self.grab_knee_duration
-        self.grab_knee_timer = self.grab_knee_duration
-        self.already_hit_enemy = False
-        self.state = self.GRAB_KNEE
+        self.combat.start_grab_knee_attack(self)
 
     def attack_damage(self):
-        base_damage = FIST_DAMAGE
-        if self.state == self.ATTACK_1:
-            base_damage = FIST_DAMAGE
-        elif self.state == self.ATTACK_2:
-            base_damage = FIST_DAMAGE + 4
-        elif self.state == self.ATTACK_3:
-            base_damage = FIST_DAMAGE + 8
-        elif self.state == self.RUN_ATTACK:
-            base_damage = FIST_DAMAGE + 6
-        elif self.state == self.JUMP_ATTACK:
-            base_damage = FIST_DAMAGE + 6
-        elif self.state == self.GRAB_KNEE:
-            base_damage = PLAYER_GRAB_KNEE_DAMAGE
-
-        if self.weapon and not self.weapon.is_ranged:
-            base_damage += self.weapon.damage
-
-        return base_damage
+        return self.combat.attack_damage(self)
 
     def take_damage(self, damage):
         if self.state == self.DEAD:
@@ -746,29 +738,10 @@ class Player:
         self.weapon_slot.fire(self)
         
     def can_grab_enemy(self, enemy):
-        if enemy.state == enemy.DEAD:
-            return False
-        if enemy.state == enemy.GRABBED:
-            return False
-
-        dx = abs(enemy.x - self.x)
-        dy = abs(enemy.y - self.y)
-        return dx <= self.grab_range and dy <= 40
+        return self.grab.can_grab_enemy(self, enemy)
     
     def grab_enemy(self, enemy):
-        self.grabbed_enemy = enemy
-        enemy.grabbed_by_player()
-        self.state = self.GRAB
+        self.grab.grab_enemy(self, enemy)
         
     def throw_grabbed_enemy(self):
-        if self.grabbed_enemy is None:
-            return
-        
-        direction = 1
-        if not self.facing_right:
-            direction = -1
-        self.grabbed_enemy.thrown_by_player(direction)
-        
-        self.grabbed_enemy = None
-        self.throw_timer = self.throw_duration
-        self.state = self.THROW
+        self.grab.throw_grabbed_enemy(self)

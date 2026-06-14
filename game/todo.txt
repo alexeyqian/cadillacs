@@ -1,46 +1,17 @@
 
+ADD: attack buffering, counter-hit, clash/parry, and attack configs 
 
-for each frame, I would like to have these config data:
-:(frame_offset_x, frame_offset_y), 
-[(hurtbox_offset_x, hurbox_offset_y, hurbox_width, hurtbox_height)], 
-[(attackbox_offset_x, attackbox_offset_y, attack_box_width, attack_box_height)]
-offsets for frame, a hurtbox list might include multiple hurboxes, each include offset_x, offset_y, width and Height
-and a list of attack box might be empty or multiple attack boxes
-"idle": {
-        "frames_count": 6,
-        # Format: (frame tuple, hurt box tuple list, hit box tuple list)
-        # tuple layout: (offset_x, offset_y, width, height)
-        # tuple layout; (frame_offset_x, frame_offset_y), (hurtbox_offset_x, hurbox_offset_y, hurbox_width, hurtbox_height), (attackbox_offset_x, attackbox_offset_y, attack_box_width, attack_box_height)
-        "frames": [
-            ((0, 0, 100, 182), (-20, -90, 40, 85), None),
-            ((100, 0, 100, 182), (-20, -90, 40, 85), None),
-            ((210, 0, 110, 182), (-21, -91, 42, 86), None),
-            ((350, 0, 140, 182), (-20, -90, 40, 85), None)
-            ((480, 0, 130, 182), (-20, -90, 40, 85), None)
-            ((610, 0, 100, 182), (-20, -90, 40, 85), None)
-        ]
-    },
 
 spawn enemies randomly around a range of circle of the trigger point, not fixed place
 
 improve combat system, make enemy more intelligent
 
 
-how to design game level and assets pack, what tools to use?
-
 Add enemy attach delay when within attach range
 How to move weapons and break object to level
 
 how to design the background images so that it matches stage's walkable area
 
-
-multi stage design
-
-sprite_rect: visual drawing rectangle only, often bigger than the collision body because the sprite includes arms, hair, weapon swing frames, etc.
-
-feet_rect or ground_rect: tiny box near the feet for sorting depth, checking stage bounds, or deciding “same lane”
-
-how to design hurtbox, does it in middle of body box or align with player's body box right or left edge?
 
 re-factory weapon system.
 
