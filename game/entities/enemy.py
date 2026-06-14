@@ -4,8 +4,6 @@ import pygame
 from game.settings import *
 from game.colors import *
 from game.tuning import scale_frames
-from game.animation.frame_animation import FrameAnimation, load_frame_animation
-from game.animation.animation_manager import AnimationManager
 
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
@@ -17,6 +15,7 @@ from game.entities.enemy_reactions import EnemyReactionMixin
 from game.entities.loot import Loot
 from game.entities.enemy_health import EnemyHealth
 from game.entities.enemy_hitboxes import EnemyHitboxes
+from game.entities.enemy_animation_controller import EnemyAnimationController
 
 class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             EnemyReactionMixin, EnemyLifecycleMixin):
@@ -66,10 +65,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.knockdown_timer = 0
         self.getup_timer = 0
 
-        self.animation_data = animation_data
-        self.anim_fps = anim_fps #scale_animation_fps_map(anim_fps)
-        self.animation_manager = AnimationManager()
-        self.init_frame_animations()
+        self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
     
     @property
     def hp(self):
@@ -105,59 +101,11 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale
 
-    def init_frame_animations(self):
-        idle_frames = load_frame_animation(self.animation_data, "idle")
-        walk_frames = load_frame_animation(self.animation_data, "walk")
-        attack_frames = load_frame_animation(self.animation_data, "attack")
-        hit_frames = load_frame_animation(self.animation_data, "hit")
-        dead_frames = load_frame_animation(self.animation_data, "dead")
-        # todo: game frame duration for single sprite frame? or idle sprite frames
-        # Answer: for single sprite frame
-        idle_dur = max(1, int(FPS/self.anim_fps["idle"]))
-        walk_dur = max(1, int(FPS/self.anim_fps["walk"]))
-        attack_dur = max(1, int(FPS/self.anim_fps["attack"]))
-        hit_dur = max(1, int(FPS/self.anim_fps["hit"]))
-        dead_dur = max(1, int(FPS/self.anim_fps["dead"]))
-    
-        self.animation_manager.add_animation(self.IDLE, FrameAnimation(idle_frames, idle_dur))
-        self.animation_manager.add_animation(self.WALK, FrameAnimation(walk_frames, walk_dur))
-        self.animation_manager.add_animation(self.ATTACK, FrameAnimation(attack_frames, attack_dur))
-        self.animation_manager.add_animation(self.HIT, FrameAnimation(hit_frames, hit_dur))
-        self.animation_manager.add_animation(self.DEAD, FrameAnimation(dead_frames, dead_dur))
-
     def get_current_frame_data(self):
-        animation = self.animation_manager.current_animation
-        if hasattr(animation, "get_frame_data"):
-            return animation.get_frame_data()
-        return None
+        return self.animation_controller.get_current_frame_data()
 
     def update_animation(self):
-        if self.state == self.IDLE:
-            self.animation_manager.play(self.IDLE)
-        elif self.state == self.WALK:
-            self.animation_manager.play(self.WALK)
-        elif self.state == self.PATROL:
-            self.animation_manager.play(self.IDLE)
-        elif self.state == self.CHASE:
-            self.animation_manager.play(self.WALK)
-        elif self.state == self.ATTACK:
-            self.animation_manager.play(self.ATTACK)
-        # by player
-        elif self.state == self.HIT:
-            self.animation_manager.play(self.HIT)
-        elif self.state == self.GRABBED:
-            self.animation_manager.play(self.IDLE)
-        elif self.state == self.THROWN:
-            self.animation_manager.play(self.THROWN)
-        elif self.state == self.KNOCKDOWN:
-            self.animation_manager.play(self.KNOCKDOWN)
-
-        elif self.state == self.GETUP:
-            self.animation_manager.play(self.IDLE)
-        elif self.state == self.DEAD:
-            self.animation_manager.play(self.DEAD)
-
-        self.animation_manager.update()
+        self.animation_controller.update(self)
 
 
     def update(self, player, enemies):
@@ -191,7 +139,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             raise ValueError(f"Missing frame data for enemy state: {self.state}")
 
         # get the surface object of current animation's current frame
-        image = self.animation_manager.get_image()
+        image = self.animation_controller.get_image()
 
         scale = self.sprite_scale
         image = pygame.transform.scale(

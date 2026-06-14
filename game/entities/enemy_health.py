@@ -13,3 +13,4 @@ class EnemyHealth:
 
     def is_dead(self):
         return self.hp <= 0
+

@@ -77,3 +77,4 @@ class EnemyHitboxes:
 
         world_y = owner.y + offset_y + local_y
         return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
+    

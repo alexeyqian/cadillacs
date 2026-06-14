@@ -2,8 +2,8 @@ class EnemyCombatMixin:
     def start_attack(self):
         self.state = self.ATTACK
         self.attack_has_hit = False
-        self.animation_manager.play(self.ATTACK)
-        self.animation_manager.current_animation.reset()
+        self.animation_controller.play(self.ATTACK)
+        self.animation_controller.reset_current_animation()
 
     def update_attack(self, player):
         self.face_player(player)
@@ -16,7 +16,7 @@ class EnemyCombatMixin:
                 player.take_damage(self.attack_damage)
                 self.attack_has_hit = True
 
-        animation = self.animation_manager.current_animation
+        animation = self.animation_controller.get_current_animation()
         # use is_finished
         if animation.current_frame == len(animation.frames) - 1:
             self.state = self.PATROL
