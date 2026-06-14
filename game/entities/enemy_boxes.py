@@ -3,13 +3,10 @@ from game.settings import WORLD_WIDTH
 
 class EnemyBoxMixin:
     def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
-        # todo: remove these lines of temp code
         if world_width is None:
             world_width = WORLD_WIDTH
-        if lane_top is None:
-            lane_top = self.lane_top
-        if lane_bottom is None:
-            lane_bottom = self.lane_bottom
+        if lane_top is None or lane_bottom is None:
+            raise ValueError("Enemy.apply_world_bounds requires lane_top and lane_bottom")
 
         # world boundaries
         half_w = self.collision_box_w // 2

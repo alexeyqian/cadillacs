@@ -5,22 +5,25 @@ from game.settings import *
 @dataclass(frozen=True)
 class EnemyConfig:
     enemy_id: str
-    display_name: str
-    archetype: str
-    max_hp: int
-    speed: float
+    display_name: str = "Enemy"
+    archetype: str = "basic_melee"
+    collision_box_w: int = ENEMY_COLLISION_W
+    collision_box_h: int = ENEMY_COLLISION_H
+    max_hp: int = ENEMY_MAX_HP
+    speed: float = ENEMY_SPEED
+    patrol_distance:int = ENEMY_DETECT_RANGE
     detect_range: float = ENEMY_DETECT_RANGE
     attack_range:int = 90 
     attack_lane_range:int = 45
-    attack_damage: float
+    attack_damage: float = ENEMY_ATTACK_DAMAGE
     attack_cooldown_duration: int = ENEMY_ATTACK_COOLDOWN
-    collision_box_w: int = ENEMY_COLLISION_W
     hit_stun_duration: int = 15
+    thrown_damage:int = THROWN_DAMAGE
     score_points: int = 100
+    sprite_scale: int  = 4
 
 
 ENEMY_CONFIGS = {
-
     "ranged": EnemyConfig(
         enemy_id="ranged",
         display_name="Poacher Joe",

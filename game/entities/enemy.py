@@ -39,11 +39,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.x = x
         self.y = y
         self.enemy_type = enemy_type
-        self.collision_box_w = ENEMY_COLLISION_W
-        self.collision_box_h = ENEMY_COLLISION_H
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
-
-        self.hp = self.max_hp
 
         self.state = self.IDLE
         self.facing_right = False
@@ -51,54 +47,45 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.death_timer = 30
         self.death_timer_started = False
 
-        # enemy remembers where it spawned
-        self.spawn_x = x
-        self.patrol_distance = ENEMY_DETECT_RANGE
+        self.spawn_x = x # enemy remembers where it spawned
         self.patrol_direction = 1
-
         self.attack_has_hit = False
         self.attack_cooldown = 0
-
         # hit reaction # enemy gets briefly white when hit by player
         self.knockback_velocity = 0
         self.hit_timer = 0
         self.hit_stun_duration = 15
-
         # grab/throw
         self.thrown_velocity_x = 0
         self.thrown_timer = 0
         self.thrown_hit_targets = set()
-        self.thrown_damage = THROWN_DAMAGE
-        
         #knockdown/getup
         self.knockdown_timer = 0
         self.getup_timer = 0
 
-        #lane boundaries
-        # TODO: no need any more, should be in apply world bounds
-        self.lane_top = LANE_TOP
-        self.lane_bottom = LANE_BOTTOM
-
         self.animation_data = animation_data
         self.anim_fps = anim_fps #scale_animation_fps_map(anim_fps)
-        self.sprite_scale = sprite_scale
         self.animation_manager = AnimationManager()
         self.init_frame_animations()
 
     def apply_enemy_config(self, config):
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
-        self.score_points = config.score_points
         self.collision_box_w = int(config.collision_box_w)
+        self.collision_box_h = int(config.collision_box_h)
         self.max_hp = config.max_hp
         self.hp = self.max_hp
         self.speed = config.speed
+        self.patrol_distance = config.patrol_distance
         self.detect_range = config.detect_range
         self.attack_range = config.attack_range
         self.attack_lane_range = config.attack_lane_range
         self.attack_damage = config.attack_damage
         self.attack_cooldown_duration = config.attack_cooldown_duration #scale_frames(config.attack_cooldown_duration)
         self.hit_stun_duration = config.hit_stun_duration #scale_frames(config.hit_stun_duration)
+        self.thrown_damage = config.thrown_damage
+        self.score_points = config.score_points
+        self.sprite_scale = config.sprite_scale
 
     def init_frame_animations(self):
         idle_frames = load_frame_animation(self.animation_data, "idle")
