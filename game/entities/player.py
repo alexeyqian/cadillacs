@@ -9,6 +9,7 @@ from game.entities.player_combat import PlayerCombat
 from game.entities.player_grab_controller import PlayerGrabController
 from game.entities.player_animation_controller import PlayerAnimationController
 from game.entities.player_render import PlayerRenderer
+from game.entities.player_action_controller import PlayerActionController
 
 class Player:
     IDLE = "IDLE"
@@ -49,6 +50,7 @@ class Player:
 
         self.combat = PlayerCombat()
         self.weapon_slot = PlayerWeaponSlot()
+        self.action_controller = PlayerActionController()
         self.grab = PlayerGrabController()
         self.hitboxes = PlayerHitboxes()
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
@@ -89,7 +91,7 @@ class Player:
 
         self.update_timers()
         moving = self.update_movement(player_input)
-        self.update_action_input(player_input)
+        self.action_controller.update(self, player_input)
         self.update_jump_physics(player_input)
         self.update_state_after_movement(moving)
         self.update_grabbed_enemy_position()
@@ -160,37 +162,6 @@ class Player:
 
     def update_jump_physics(self, player_input):
         return self.movement.update_jump_physics(self, player_input)
-
-    def update_action_input(self, player_input):
-        # jump key
-        if player_input.jump:
-            if not self.movement.jump_pressed:
-                self.start_jump(player_input)
-                self.movement.jump_pressed = True
-        else:
-            self.movement.jump_pressed = False
-
-        # attacking keys
-        if player_input.attack:
-            if self.movement.is_jumping:
-                if not self.jump_attack_pressed:
-                    self.start_jump_attack()
-                    self.jump_attack_pressed = True
-            else:
-                if self.grab.grabbed_enemy:
-                    self.start_grab_knee_attack()
-                else:
-                    self.start_attack()
-        else:
-            self.jump_attack_pressed = False
-
-        # fire weapon on key-down only (prevent holding K from firing repeatedly)
-        if player_input.fire:
-            if not self.weapon_slot.fire_pressed:
-                self.fire_weapon()
-                self.weapon_slot.fire_pressed = True
-        else:
-            self.weapon_slot.fire_pressed = False
 
     def update_state_after_movement(self, moving):
         # update state (preserve attack state if attacking)
