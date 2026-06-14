@@ -30,7 +30,7 @@ class PlayerRenderer:
         if not owner.facing_right:
             image = pygame.transform.flip(image, True, False)
 
-        frame = owner.get_current_player_frame()
+        frame = owner.animation_controller.get_current_frame()
         offset_x, offset_y = frame.offset
         offset_x *= scale
         offset_y *= scale

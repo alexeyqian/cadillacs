@@ -26,7 +26,7 @@ def update_player_weapon_interaction(game_state, keys):
         ground_power = weapon_power(weapon)
         if ground_power > current_power:
             player.drop_weapon()
-            player.pick_up_weapon(weapon)
+            player.weapon_slot.pick_up(weapon)
             break
         
     # no need manually pick up weapon any more
@@ -43,4 +43,4 @@ def update_player_weapon_interaction(game_state, keys):
     #                break
 
     if keys[pygame.K_q]:
-        player.drop_weapon()
+        player.weapon_slot.drop(player)

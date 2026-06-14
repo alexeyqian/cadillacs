@@ -56,7 +56,7 @@ class PlayerGrabController:
     def grab_enemy(self, owner, enemy):
         self.grabbed_enemy = enemy
         enemy.grabbed_by_player()
-        owner.state = owner.GRAB
+        owner.state_machine.change_to(owner, owner.GRAB)
 
     def throw_grabbed_enemy(self, owner):
         if self.grabbed_enemy is None:

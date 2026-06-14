@@ -3,7 +3,7 @@ import pygame
 
 class PlayerHitboxes:
     def get_frame_rect(self, owner):
-        frame = owner.get_current_player_frame()
+        frame = owner.animation_controller.get_current_frame()
         if not frame:
             raise ValueError(f"Missing player frame data for {owner.state}")
 
@@ -30,7 +30,7 @@ class PlayerHitboxes:
         )
 
     def get_hurt_rect(self, owner):
-        frame = owner.get_current_player_frame()
+        frame = owner.animation_controller.get_current_frame()
         local_x, local_y, w, h = frame.hurt_rect
         return self._frame_local_rect_to_world(owner, frame, local_x, local_y, w, h)
 
@@ -46,7 +46,7 @@ class PlayerHitboxes:
         if not owner.combat.is_attacking:
             return None
 
-        frame = owner.get_current_player_frame()
+        frame = owner.animation_controller.get_current_frame()
         if frame and frame.attack_rect:
             local_x, local_y, w, h = frame.attack_rect
             return self._frame_local_rect_to_world(owner, frame, local_x, local_y, w, h)

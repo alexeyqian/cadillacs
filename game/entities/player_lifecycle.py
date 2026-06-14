@@ -31,7 +31,7 @@ class PlayerLifecycle:
             self.lost_life(owner)
 
     def lost_life(self, owner):
-        owner.state = owner.DEAD
+        owner.state_machine.change_to(owner, owner.DEAD)
 
     def update_respawn(self, owner):
         if owner.state != owner.DEAD:
