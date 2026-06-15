@@ -34,6 +34,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
     CHASE = EnemyState.CHASE
     ATTACK = EnemyState.ATTACK
     HIT = EnemyState.HIT
+    RECOIL = EnemyState.RECOIL
     DEAD = EnemyState.DEAD
     GRABBED = EnemyState.GRABBED
     THROWN = EnemyState.THROWN
@@ -163,3 +164,15 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
     def get_attack_total_duration(self):
         return self.attack_windup + self.attack_active + self.attack_recovery
+    
+    def get_attack_phase_name(self):
+        if self.state != self.ATTACK:
+            return ""
+
+        if self.attack_timer < self.attack_windup:
+            return "WINDUP"
+
+        if self.attack_timer < self.attack_windup + self.attack_active:
+            return "ACTIVE"
+
+        return "RECOVERY"

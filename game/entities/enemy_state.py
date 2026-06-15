@@ -4,7 +4,10 @@ class EnemyState:
     PATROL = "PATROL" # ai decisions
     CHASE = "CHASE"
     ATTACK = "ATTACK"
+    # HIT means damaged; 
+    # RECOIL means clash bounce/no damage
     HIT = "HIT"
+    RECOIL = "RECOIL"
     DEAD = "DEAD"
     GRABBED = "GRABBED"
     THROWN = "THROWN"

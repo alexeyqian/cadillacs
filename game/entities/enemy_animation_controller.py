@@ -63,6 +63,9 @@ class EnemyAnimationController:
             self.animation_manager.play(owner.ATTACK)
         elif owner.state == owner.HIT:
             self.animation_manager.play(owner.HIT)
+        elif owner.state == owner.RECOIL:
+            # todo: add recoil animation
+            self.animation_manager.play(owner.HIT)
         elif owner.state == owner.GRABBED:
             self.animation_manager.play(owner.IDLE)
         elif owner.state == owner.THROWN: # TODO
