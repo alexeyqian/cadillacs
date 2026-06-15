@@ -129,6 +129,9 @@ ENEMY_ATTACK_RECOVERY=25
 ENEMY_ATTACK_COOLDOWN=45
 # Only a small number of regular melee enemies should enter ATTACK at the same time.
 MAX_MELEE_ATTACKERS = 2
+ENEMY_FLANK_OFFSET_X = 120
+ENEMY_FLANK_DECISION_DURATION = 45
+ENEMY_FLANK_Y_TOLERANCE = 18
 
 ######## damages ########
 # player attack damage

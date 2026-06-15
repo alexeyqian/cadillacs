@@ -78,8 +78,11 @@ class EnemyMovement:
                 owner.x -= owner.speed
                 owner.facing_right = False
 
+        # Flanking has smoother vertical drift instead of sharp diagonal snapping
+        # Slightly slower vertical correction makes enemy movement 
+        # look more organic while still understandable.
         if abs(owner.y - target_y) > owner.speed:
             if owner.y < target_y:
-                owner.y += owner.speed
+                owner.y += owner.speed * 0.75
             else:
-                owner.y -= owner.speed
+                owner.y -= owner.speed * 0.75

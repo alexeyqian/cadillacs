@@ -1,3 +1,4 @@
+from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_boxes import EnemyBoxMixin
@@ -82,7 +83,11 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         # it should reposition toward an open side instead of just pressing into the player. 
         # This makes groups look more intentional.
         self.flank_target_side = None
-        self.flank_offset_x = 120
+        self.flank_offset_x = ENEMY_FLANK_OFFSET_X
+        # avoid make enemies jitter between left/right if counts are close. 
+        # give each flank decision a short commitment timer.
+        self.flank_decision_timer = 0
+        self.flank_decision_duration = ENEMY_FLANK_DECISION_DURATION
 
         # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
         # and the enemy cannot instantly resume pressure either.
@@ -117,7 +122,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
         self.archetype = config.archetype
-        self.max_melee_attackers = getattr(config, "max_melee_attackers", None)
+        self.melee_attack_slot_limit = getattr(config, "melee_attack_slot_limit", None)
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
         self.health = EnemyHealth(config.max_hp)
@@ -204,6 +209,9 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         return "right"
     
     def set_flank_target(self, player, enemies):
+        if self.flank_decision_timer > 0 and self.flank_target_side:
+            return
+
         left_count = 0
         right_count = 0
 
@@ -222,6 +230,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             self.flank_target_side = "left"
         else:
             self.flank_target_side = "right"
+
+        self.flank_decision_timer = self.flank_decision_duration
 
     def get_flank_target_position(self, player):
         if self.flank_target_side == "left":

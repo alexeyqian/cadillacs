@@ -1,4 +1,4 @@
-from game.settings import MAX_MELEE_ATTACKERS
+from game.settings import *
 
 class EnemyStateResolver:
     def choose_state(self, owner, player, distance_x, distance_y, enemies):
@@ -7,16 +7,19 @@ class EnemyStateResolver:
 
         if self.can_attack_player(owner, player, distance_x, distance_y, enemies):
             owner.flank_target_side = None
+            owner.flank_decision_timer = 0
             owner.start_attack()
         elif distance_x <= owner.detect_range:
             if self.should_flank(owner, player, distance_x, distance_y, enemies):
                 owner.set_flank_target(player, enemies)
             else:
                 owner.flank_target_side = None
+                owner.flank_decision_timer = 0
             # todo: replace with entry function like: start_chase()
             owner.state = owner.CHASE
         else:
             owner.flank_target_side = None
+            owner.flank_decision_timer = 0
             # todo: replace with: start_patrol()
             owner.state = owner.PATROL
 
@@ -90,8 +93,8 @@ class EnemyStateResolver:
 
         return False
     
-    def get_max_melee_attackers(self, owner):
-        return getattr(owner, "max_melee_attackers", MAX_MELEE_ATTACKERS)
+    def get_melee_attack_slot_limit(self, owner):
+        return getattr(owner, "melee_attack_slot_limit", MAX_MELEE_ATTACKERS)
     
     def count_active_melee_attackers(self, enemies):
         count = 0
@@ -107,9 +110,11 @@ class EnemyStateResolver:
             return False
         if distance_x > owner.attack_range:
             return False
-        if distance_y > owner.attack_lane_range:
+        # Why: enemies slightly above/below the attack lane should still 
+        # try to flank into position instead of giving up immediately.
+        if distance_y > owner.attack_lane_range + ENEMY_FLANK_Y_TOLERANCE:
             return False
-        if self.count_active_melee_attackers(enemies) < self.get_max_melee_attackers(owner):
+        if self.count_active_melee_attackers(enemies) < self.get_melee_attack_slot_limit(owner):
             return False
 
         return True

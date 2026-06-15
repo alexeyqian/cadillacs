@@ -33,6 +33,15 @@ class BossEnemy(Enemy):
         self.special_attack_cooldown = self.special_attack_cooldown_duration
         self.phase = 1
         self.phase_message_timer = 0
+        self.phase_message = ""
+
+        self.base_speed = self.speed
+        self.base_attack_damage = self.attack_damage
+        self.base_attack_range = self.attack_range
+        self.base_attack_lane_range = self.attack_lane_range
+        self.base_attack_cooldown_duration = self.attack_cooldown_duration
+        self.base_special_attack_cooldown_duration = self.special_attack_cooldown_duration
+
         self.pending_projectile = None
 
     def update(self, player, enemies):
@@ -73,9 +82,8 @@ class BossEnemy(Enemy):
         screen.blit(phase_text,(screen_x,self.y - 45))
 
         if self.phase_message_timer > 0:
-            warning = font.render(
-                f"BOSS PHASE {self.phase}!",True,(255, 0, 0))
-            screen.blit(warning,(screen_x - 20,self.y - 70))
+            warning = font.render(self.phase_message, True, (255, 0, 0))
+            screen.blit(warning, (screen_x - 60, self.y - 70))
 
     def perform_special_attack(self, player):
         direction = 1
@@ -126,23 +134,43 @@ class BossEnemy(Enemy):
             self.phase = 1
 
         if self.phase != old_phase:
-            self.phase_message_timer = 120
+            if self.phase != old_phase:
+                self.apply_phase_stats()
+                
+    def apply_phase_stats(self):
+        self.phase_message_timer = 120
 
-            if self.phase == 2:
-                self.flinch_damage_threshold = FIST_DAMAGE + 8
-                self.speed += 0.5
-                self.attack_damage += 6
-                self.attack_cooldown_duration = 45
+        if self.phase == 1:
+            self.phase_message = "BOSS PHASE 1"
+            self.flinch_damage_threshold = FIST_DAMAGE + 4
+            self.speed = self.base_speed
+            self.attack_damage = self.base_attack_damage
+            self.attack_range = self.base_attack_range
+            self.attack_lane_range = self.base_attack_lane_range
+            self.attack_cooldown_duration = self.base_attack_cooldown_duration
+            self.special_attack_cooldown_duration = self.base_special_attack_cooldown_duration
 
-            elif self.phase == 3:
-                self.flinch_damage_threshold = FIST_DAMAGE * 2
-                self.speed += 1
-                self.attack_damage += 10
-                self.attack_range += 50
-                self.attack_lane_range += 50
-                self.attack_cooldown_duration = 60
-                self.special_attack_cooldown_duration = 120
-                self.special_attack_cooldown = min(
-                    self.special_attack_cooldown,
-                    self.special_attack_cooldown_duration
-                )
+        elif self.phase == 2:
+            self.phase_message = "BOSS ENRAGED"
+            self.flinch_damage_threshold = FIST_DAMAGE + 8
+            self.speed = self.base_speed + 0.5
+            self.attack_damage = self.base_attack_damage + 6
+            self.attack_range = self.base_attack_range
+            self.attack_lane_range = self.base_attack_lane_range
+            self.attack_cooldown_duration = 45
+            self.special_attack_cooldown_duration = self.base_special_attack_cooldown_duration
+
+        elif self.phase == 3:
+            self.phase_message = "FINAL PHASE"
+            self.flinch_damage_threshold = FIST_DAMAGE * 2
+            self.speed = self.base_speed + 1
+            self.attack_damage = self.base_attack_damage + 10
+            self.attack_range = self.base_attack_range + 50
+            self.attack_lane_range = self.base_attack_lane_range + 50
+            self.attack_cooldown_duration = 60
+            self.special_attack_cooldown_duration = 120
+
+        self.special_attack_cooldown = min(
+            self.special_attack_cooldown,
+            self.special_attack_cooldown_duration
+        )

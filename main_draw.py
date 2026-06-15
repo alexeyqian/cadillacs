@@ -172,7 +172,7 @@ def main_draw_ui(game_state):
         for enemy in enemies:
             if enemy.has_attack_slot:
                 active_slots += 1
-                max_slots = getattr(enemy, "max_melee_attackers", None) or max_slots
+                max_slots = getattr(enemy, "melee_attack_slot_limit", None) or max_slots
 
         slot_text = small_font.render(f"Attack Slots: {active_slots}/{max_slots}",True,BLACK_COLOR)
         screen.blit(slot_text, (UI_FIRST_X, UI_FIRST_Y + 4 * UI_LINE_HEIGHT))

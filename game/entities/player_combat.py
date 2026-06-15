@@ -1,14 +1,23 @@
+from dataclasses import dataclass
 from game.settings import FIST_DAMAGE, PLAYER_GRAB_KNEE_DAMAGE
-PLAYER_MOVE_DAMAGE = {
-    "ATTACK_1": FIST_DAMAGE - 2,
-    "ATTACK_2": FIST_DAMAGE,
-    "ATTACK_3": FIST_DAMAGE + 4,
-    "RUN_ATTACK": FIST_DAMAGE,
-    "JUMP_ATTACK": FIST_DAMAGE,
-    # Grab knee is safe once a grab succeeds, 
-    # so keep it below combo finisher damage.
-    "GRAB_KNEE": FIST_DAMAGE,
+
+@dataclass(frozen=True)
+class PlayerMoveData:
+    damage: int
+    counter_hit_stun_bonus: int = 0
+
+
+PLAYER_MOVES = {
+    "ATTACK_1": PlayerMoveData(damage=FIST_DAMAGE - 2),
+    "ATTACK_2": PlayerMoveData(damage=FIST_DAMAGE),
+    "ATTACK_3": PlayerMoveData(damage=FIST_DAMAGE + 4),
+    "RUN_ATTACK": PlayerMoveData(damage=FIST_DAMAGE),
+    "JUMP_ATTACK": PlayerMoveData(damage=FIST_DAMAGE),
+    # Grab knee is safe once a grab succeeds, so keep it below combo finisher damage.
+    "GRAB_KNEE": PlayerMoveData(damage=FIST_DAMAGE),
 }
+PLAYER_COUNTER_HIT_STUN_BONUS = 10
+
 PLAYER_COMBO_WINDOW = 30
 PLAYER_THIRD_HIT_RECOVERY = 10
 PLAYER_CLASH_RECOVERY = 8
@@ -158,7 +167,8 @@ class PlayerCombat:
         self.action_lock_timer = 0
 
     def get_attack_damage(self, owner):
-        base_damage = PLAYER_MOVE_DAMAGE.get(owner.state, FIST_DAMAGE)
+        move_data = PLAYER_MOVES.get(owner.state)
+        base_damage = move_data.get(owner.state, FIST_DAMAGE)
 
         weapon = owner.weapon_slot.weapon
         if weapon and not weapon.is_ranged:

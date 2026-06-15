@@ -86,6 +86,11 @@ class EnemyRenderer:
             font = pygame.font.SysFont(None, 20)
             label = font.render(phase_name, True, YELLOW_COLOR)
             screen.blit(label, (int(owner.x - camera_x - 28), int(owner.y - 180)))
+            
+        if owner.flank_target_side:
+            font = pygame.font.SysFont(None, 20)
+            label = font.render(f"FLANK {owner.flank_target_side.upper()}", True, WHITE_COLOR)
+            screen.blit(label, (int(owner.x - camera_x - 42), int(owner.y - 225)))
 
     def draw_health_bar(self, owner, screen, camera_x, frame_rect):
         bar_width = 50

@@ -4,6 +4,7 @@ from game.effects.hit_spark import HitSpark
 from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
 from game.entities.boss_enemy import BossEnemy
+from game.entities.player_combat import PLAYER_COUNTER_HIT_STUN_BONUS
 
 def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):
     if facing_right:
@@ -45,7 +46,7 @@ def handle_player_attack_collision(game_state):
             if (enemy.is_attack_active() 
                 and enemy_attack_rect.colliderect(counter_hurt_rect)):
                 # hit stun bonus here: A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
-                player.take_damage(enemy.attack_damage, hit_stun_bonus=10)
+                player.take_damage(enemy.attack_damage, hit_stun_bonus=PLAYER_COUNTER_HIT_STUN_BONUS)
                 enemy.attack_already_hit = True
                 create_hit_spark(game_state, enemy_attack_rect, counter_hurt_rect, enemy.facing_right, ORANGE_COLOR)
                 # used for debug, remove in production

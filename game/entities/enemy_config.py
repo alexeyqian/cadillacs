@@ -24,6 +24,7 @@ class EnemyConfig:
     attack_windup: int = ENEMY_ATTACK_WINDUP
     attack_active: int = ENEMY_ATTACK_ACTIVE
     attack_recovery: int = ENEMY_ATTACK_RECOVERY
+    melee_attack_slot_limit: int|None = None
 
     hit_stun_duration: int = 15
     # give heavy enemies poise, so weak punches still deal damage 
