@@ -7,7 +7,7 @@ class PlayerCombat:
         self.is_attacking = False
         self.attack_timer = 0
         self.attack_duration = 12
-        self.already_hit_enemy = False
+        self.attack_connected = False
 
         # classic combo system
         # J punch 1, J punch 2, J punch 3
@@ -47,7 +47,7 @@ class PlayerCombat:
                 # Player cannot build third hit by punching empty space
                 attack_missed = (
                     finished_state in [owner.ATTACK_1, owner.ATTACK_2, owner.ATTACK_3]
-                    and not self.already_hit_enemy
+                    and not self.attack_connected
                 )
                 if attack_missed:
                     self.combo_timer = 0
@@ -71,7 +71,7 @@ class PlayerCombat:
 
         self.is_attacking = True
         self.attack_timer = self.attack_duration
-        self.already_hit_enemy = False
+        self.attack_connected = False
 
         if owner.movement.is_running:
             self.attack_timer = owner.run_attack_duration
@@ -103,7 +103,7 @@ class PlayerCombat:
 
         self.is_attacking = True
         self.attack_timer = owner.jump_attack_duration
-        self.already_hit_enemy = False
+        self.attack_connected = False
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
     def start_grab_knee_attack(self, owner):
@@ -115,7 +115,7 @@ class PlayerCombat:
         self.is_attacking = True
         self.attack_timer = owner.grab.grab_knee_duration
         owner.grab.grab_knee_timer = owner.grab.grab_knee_duration
-        self.already_hit_enemy = False
+        self.attack_connected = False
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
     def start_clash_recovery(self):
@@ -126,7 +126,7 @@ class PlayerCombat:
     def cancel_attack(self):
         self.is_attacking = False
         self.attack_timer = 0
-        self.already_hit_enemy = False
+        self.attack_connected = False
         self.combo_step = 0
         self.combo_timer = 0
         self.attack_recovery_timer = 0

@@ -22,7 +22,7 @@ def handle_player_attack_collision(game_state):
     attack_rect = player.get_attack_rect()
     if not attack_rect:
         return
-    if player.combat.already_hit_enemy:
+    if player.combat.attack_connected:
         return
     # Rule: if the player is attacking and an enemy active attack overlaps the player’s counter_hurt_rect, 
     # the player gets hit and their combo cancels. 
@@ -61,7 +61,7 @@ def handle_player_attack_collision(game_state):
                 FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), YELLOW_COLOR)
             )
             game_state.score_manager.register_hit()
-            player.combat.already_hit_enemy = True
+            player.combat.attack_connected = True
             if enemy.state == enemy.DEAD:
                 player.grab.grabbed_enemy = None
         return
@@ -97,7 +97,7 @@ def handle_player_attack_collision(game_state):
             enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
-            player.combat.already_hit_enemy = True
+            player.combat.attack_connected = True
             if enemy.health.hp >0 and enemy.health.max_hp >= 200:
                 heavy_hit_shake(game_state)
             if isinstance(enemies, BossEnemy):
