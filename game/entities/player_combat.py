@@ -19,6 +19,11 @@ class PlayerCombat:
         self.attack_recovery_timer = 0
         self.third_hit_recovery_duration = 10
 
+    # Avoiding the combo step advances when the player presses attack inside the combo timer, 
+    # even if the previous punch hit nothing. 
+    # That means the player can “charge” into ATTACK_3 by punching air, 
+    # then walk in and land the stronger hit. 
+    # The combo damage has to be earned.
     def update_timers(self, owner):
         if self.attack_recovery_timer > 0:
             self.attack_recovery_timer -= 1
@@ -32,6 +37,19 @@ class PlayerCombat:
             self.attack_timer -= 1
             if self.attack_timer <= 0:
                 finished_state = owner.state
+
+                # expected behavior:
+                # Punch hits enemy -> combo can continue
+                # Punch misses enemy -> combo resets
+                # Player cannot build third hit by punching empty space
+                attack_missed = (
+                    finished_state in [owner.ATTACK_1, owner.ATTACK_2, owner.ATTACK_3]
+                    and not self.already_hit_enemy
+                )
+                if attack_missed:
+                    self.combo_timer = 0
+                    self.combo_step = 0
+
                 self.is_attacking = False
 
                 if finished_state == owner.ATTACK_3:
