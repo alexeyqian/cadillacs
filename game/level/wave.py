@@ -11,11 +11,10 @@ class SpawnInstruction:
     side: str = "right"
     delay_min: int = 60
     delay_max: int = 120
-    y_min: Optional[int] = None
-    y_max: Optional[int] = None
-    # how far offscreen the enemy starts.
-    enter_offset: int = 80
-    min_player_distance: int = 360
+    y_min: int = 700
+    y_max: int = 800
+    enter_offset: int = 50 # how far offscreen the enemy starts.
+    min_player_distance: int = 100
 
 @dataclass
 class PendingSpawn:

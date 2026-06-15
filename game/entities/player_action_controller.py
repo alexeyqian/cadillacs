@@ -12,18 +12,25 @@ class PlayerActionController:
         else:
             owner.movement.jump_pressed = False
 
+    # avoid doing this:
+    # as soon as the attack timer ends, 
+    # holding J immediately starts the next combo step. 
+    # So the player can auto-chain punches by holding the button.
     def update_attack_input(self, owner, player_input):
         if player_input.attack:
             if owner.movement.is_jumping:
                 if not owner.jump_attack_pressed:
-                    owner.combat.start_jump_attack()
+                    owner.combat.start_jump_attack(owner)
                     owner.jump_attack_pressed = True
             else:
-                if owner.grab.grabbed_enemy:
-                    owner.combat.start_grab_knee_attack()
-                else:
-                    owner.combat.start_attack(owner)
+                if not owner.attack_pressed:
+                    if owner.grab.grabbed_enemy:
+                        owner.combat.start_grab_knee_attack(owner)
+                    else:
+                        owner.combat.start_attack(owner)
+                    owner.attack_pressed = True
         else:
+            owner.attack_pressed = False
             owner.jump_attack_pressed = False
 
     def update_fire_input(self, owner, player_input):

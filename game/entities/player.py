@@ -46,6 +46,12 @@ class Player:
 
         self.movement = PlayerMovement(self.speed)
         self.movement.ground_y = self.y
+        # stop the “hold attack to auto-combo” problem.
+        # expected gameplay for attack and attack combo:
+        # Hold J: one punch only
+        # Press J, release, press J: combo advances
+        # Mashing J: combo still works, but requires timing/input
+        self.attack_pressed = False
         self.run_attack_timer = 0
         self.run_attack_duration = 18
         self.jump_attack_pressed = False
