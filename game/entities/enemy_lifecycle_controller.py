@@ -1,8 +1,12 @@
 class EnemyLifecycleController:
     def update_special_states(self, owner):
+        if owner.state == owner.DEAD:
+            self.update_dead_state(owner)
+            return True
+
         # give enemies their own clash recovery timer,
         if owner.clash_recovery_timer > 0:
-            owner.clash_recovery_timer -= 0
+            owner.clash_recovery_timer -= 1
             owner.state = owner.IDLE
             owner.update_animation()
             return True
@@ -21,10 +25,6 @@ class EnemyLifecycleController:
 
         if owner.state == owner.GETUP:
             self.update_getup_state(owner)
-            return True
-
-        if owner.state == owner.DEAD:
-            self.update_dead_state(owner)
             return True
 
         return False

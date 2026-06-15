@@ -1,7 +1,7 @@
 class EnemyCombatController:
     def start_attack(self, owner):
         owner.state = owner.ATTACK
-        owner.attack_has_hit = False
+        owner.attack_already_hit = False
         owner.attack_timer = 0
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
@@ -21,10 +21,10 @@ class EnemyCombatController:
         is_active = active_start <= owner.attack_timer < active_end
 
         if (is_active and attack_rect and player_hurt_rect 
-            and not owner.attack_has_hit):
+            and not owner.attack_already_hit):
             if attack_rect.colliderect(player_hurt_rect):
                 player.take_damage(owner.attack_damage)
-                owner.attack_has_hit = True
+                owner.attack_already_hit = True
 
         attack_total_duration = (
             owner.attack_windup
@@ -35,5 +35,5 @@ class EnemyCombatController:
         if owner.attack_timer >= attack_total_duration:
             owner.state = owner.PATROL
             owner.attack_timer = 0
-            owner.attack_has_hit = False
+            owner.attack_already_hit = False
             owner.attack_cooldown = owner.attack_cooldown_duration

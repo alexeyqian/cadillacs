@@ -21,7 +21,7 @@ class PlayerGrabController:
             self.grab_knee_timer -= 1
             if self.grab_knee_timer <= 0:
                 owner.combat.is_attacking = False
-                owner.combat.already_hit_enemy = False
+                owner.combat.attack_connected = False
 
                 if self.grabbed_enemy:
                     owner.state_machine.change_to(owner, owner.GRAB)

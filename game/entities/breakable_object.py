@@ -7,8 +7,8 @@ class BreakableObject:
     def __init__(self, x, y):
         self.x = x
         self.y = y
-        self.width = 50
-        self.height = 50
+        self.width = 100
+        self.height = 100
         self.hp = 30
         self.destroyed = False
         self.loot_generated = False

@@ -34,7 +34,7 @@ EPISODE_1_STAGES = [
             },
             {
                 "trigger_x": 2700,
-                "max_active": 4,
+                "max_active": 3,
                 "spawns": [
                     {
                         "enemy_type": "gneiss",
@@ -48,15 +48,15 @@ EPISODE_1_STAGES = [
             },
         ],
         "weapons": [
-            {"type": "knife", "x": 850, "y": 760},
-            {"type": "bat", "x": 1750, "y": 760},
-            {"type": "pistol", "x": 2260, "y": 760},
+            {"type": "knife", "x": 850, "y": 600},
+            #{"type": "bat", "x": 1750, "y": 600},
+            #{"type": "pistol", "x": 2260, "y": 760},
         ],
         "objects": [
-            {"kind": "breakable", "x": 880, "y": 760},
-            {"kind": "breakable", "x": 1780, "y": 760},
-            {"kind": "barrel", "x": 1740, "y": 760},
-            {"kind": "breakable", "x": 2320, "y": 760},
+            {"kind": "breakable", "x": 880, "y": 500},
+            {"kind": "breakable", "x": 1780, "y": 500},
+            #{"kind": "barrel", "x": 1740, "y": 760},
+            #{"kind": "breakable", "x": 2320, "y": 760},
         ],
         "completion": "clear_waves_then_exit",
         "exit_rect": (2700, 340, 100, 260),

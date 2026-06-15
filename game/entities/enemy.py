@@ -68,7 +68,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.death_timer_started = False
 
         self.patrol_direction = 1
-        self.attack_has_hit = False
+        self.attack_already_hit = False
         self.attack_cooldown = 0
 
         # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
@@ -121,7 +121,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.attack_cooldown_duration = config.attack_cooldown_duration
 
         self.hit_stun_duration = config.hit_stun_duration
-        self.hit_interrupt_damage_threshold = config.hit_interrupt_damage_threshold
+        self.flinch_damage_threshold = config.flinch_damage_threshold
         self.thrown_damage = config.thrown_damage
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale

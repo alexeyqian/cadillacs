@@ -10,11 +10,11 @@ class EnemyReactionController:
             return
 
         died = owner.health.take_damage(damage)
-        should_interrupt = damage >= owner.hit_interrupt_damage_threshold
+        should_flinch = damage >= owner.flinch_damage_threshold
         if died:
-            should_interrupt = True
+            should_flinch = True
 
-        if should_interrupt:
+        if should_flinch:
             owner.hit_timer = owner.hit_stun_duration
             owner.state = owner.HIT
 

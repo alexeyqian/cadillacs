@@ -1,5 +1,15 @@
 from game.settings import FIST_DAMAGE, PLAYER_GRAB_KNEE_DAMAGE
-
+PLAYER_MOVE_DAMAGE = {
+    "ATTACK_1": FIST_DAMAGE - 2,
+    "ATTACK_2": FIST_DAMAGE,
+    "ATTACK_3": FIST_DAMAGE + 4,
+    "RUN_ATTACK": FIST_DAMAGE,
+    "JUMP_ATTACK": FIST_DAMAGE,
+    "GRAB_KNEE": PLAYER_GRAB_KNEE_DAMAGE,
+}
+PLAYER_COMBO_WINDOW = 30
+PLAYER_THIRD_HIT_RECOVERY = 10
+PLAYER_CLASH_RECOVERY = 8
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombat:
@@ -17,10 +27,10 @@ class PlayerCombat:
         # so the finisher cannot immediately loop back into ATTACK_1.
         # expected feel: ATTACK_1 -> ATTACK_2 -> ATTACK_3 -> tiny recovery pause
         self.attack_recovery_timer = 0
-        self.third_hit_recovery_duration = 10
+        self.third_hit_recovery_duration = PLAYER_THIRD_HIT_RECOVERY
         # make clash create a tiny recovery pause 
         # where the player cannot attack again instantly.
-        self.clash_recovery_duration = 8
+        self.clash_recovery_duration = PLAYER_CLASH_RECOVERY
 
     # Avoiding the combo step advances when the player presses attack inside the combo timer, 
     # even if the previous punch hit nothing. 
@@ -86,7 +96,7 @@ class PlayerCombat:
             self.combo_step = 1
 
         self.combo_step = min(self.combo_step, 3)
-        self.combo_timer = 30 # TODO: adjust timer
+        self.combo_timer = PLAYER_COMBO_WINDOW
 
         if self.combo_step == 1:
             owner.state_machine.change_to(owner, owner.ATTACK_1)
@@ -131,21 +141,8 @@ class PlayerCombat:
         self.combo_timer = 0
         self.attack_recovery_timer = 0
 
-    def attack_damage(self, owner):
-        base_damage = FIST_DAMAGE
-
-        if owner.state == owner.ATTACK_1:
-            base_damage = FIST_DAMAGE - 2
-        elif owner.state == owner.ATTACK_2:
-            base_damage = FIST_DAMAGE
-        elif owner.state == owner.ATTACK_3:
-            base_damage = FIST_DAMAGE + 4
-        elif owner.state == owner.RUN_ATTACK:
-            base_damage = FIST_DAMAGE
-        elif owner.state == owner.JUMP_ATTACK:
-            base_damage = FIST_DAMAGE
-        elif owner.state == owner.GRAB_KNEE:
-            base_damage = PLAYER_GRAB_KNEE_DAMAGE
+    def get_attack_damage(self, owner):
+        base_damage = PLAYER_MOVE_DAMAGE.get(owner.state, FIST_DAMAGE)
 
         weapon = owner.weapon_slot.weapon
         if weapon and not weapon.is_ranged:

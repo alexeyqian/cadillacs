@@ -33,7 +33,7 @@ def handle_player_attack_collision(game_state):
             if enemy.state != enemy.ATTACK:
                 continue
             # prevent the same enemy attack from counter-hitting more than once.
-            if enemy.attack_has_hit:
+            if enemy.attack_already_hit:
                 continue
 
             enemy_attack_rect = enemy.get_attack_rect()
@@ -47,14 +47,14 @@ def handle_player_attack_collision(game_state):
             if enemy_attack_is_active and enemy_attack_rect.colliderect(counter_hurt_rect):
                 # hit stun bonus here: A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
                 player.take_damage(enemy.attack_damage, hit_stun_bonus=10)
-                enemy.attack_has_hit = True
+                enemy.attack_already_hit = True
                 create_hit_spark(game_state, enemy_attack_rect, counter_hurt_rect, enemy.facing_right)
                 return
 
     if player.state == player.GRAB_KNEE:
         enemy = player.grab.grabbed_enemy
         if enemy and enemy.state != enemy.DEAD:
-            damage = player.combat.attack_damage(player)
+            damage = player.combat.get_attack_damage(player)
             enemy.take_grab_knee_damage(damage)
             enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(
@@ -84,7 +84,7 @@ def handle_player_attack_collision(game_state):
                 if player.state != player.DEAD:
                     player.state_machine.change_to(player, player.IDLE)
                 enemy.state = enemy.IDLE
-                enemy.attack_has_hit = False
+                enemy.attack_already_hit = False
                 enemy.clash_recovery_timer = enemy.clash_recovery_duration
                 enemy.attack_cooldown = max(enemy.attack_cooldown, 20)
                 create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right)
@@ -92,7 +92,7 @@ def handle_player_attack_collision(game_state):
 
         enemy_hurt_rect = enemy.get_hurt_rect()
         if enemy_hurt_rect and attack_rect.colliderect(enemy_hurt_rect):
-            damage = player.combat.attack_damage(player)
+            damage = player.combat.get_attack_damage(player)
             enemy.take_damage(damage, player.x)
             enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(damage), (255,80,80)))
@@ -111,8 +111,10 @@ def handle_player_attack_collision(game_state):
         if obj.destroyed:
             continue
         if attack_rect.colliderect(obj.get_rect()):
-            obj.take_damage(player.combat.attack_damage(player))
-            
+            obj.take_damage(player.combat.get_attack_damage(player))
+            player.combat.attack_connected = True
+            break
+
 def handle_player_projectile_collision(game_state):
     player = game_state.player
     enemies = game_state.enemies

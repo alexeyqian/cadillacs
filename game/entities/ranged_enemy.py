@@ -38,10 +38,10 @@ class RangedEnemy(Enemy):
                 PROJECTILE_SPEED * 0.7, self.attack_damage)
 
             self.shot_fired = True
-            self.attack_has_hit = True
+            self.attack_already_hit = True
 
         if animation.current_frame == len(animation.frames) - 1:
             self.state = self.PATROL
             self.shot_fired = False
-            self.attack_has_hit = False
+            self.attack_already_hit = False
             self.shoot_cooldown = self.attack_cooldown_duration
