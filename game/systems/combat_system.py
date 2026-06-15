@@ -5,13 +5,13 @@ from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
 from game.entities.boss_enemy import BossEnemy
 
-def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True):
+def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):
     if facing_right:
         spark_x = attack_rect.right
     else:
         spark_x = attack_rect.left
     spark_y = attack_rect.top
-    game_state.hit_sparks.append(HitSpark(spark_x, spark_y))
+    game_state.hit_sparks.append(HitSpark(spark_x, spark_y, color))
 
 # todo: refactoring to be easy to understand and maintainable
 def handle_player_attack_collision(game_state):
@@ -47,7 +47,7 @@ def handle_player_attack_collision(game_state):
                 # hit stun bonus here: A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
                 player.take_damage(enemy.attack_damage, hit_stun_bonus=10)
                 enemy.attack_already_hit = True
-                create_hit_spark(game_state, enemy_attack_rect, counter_hurt_rect, enemy.facing_right)
+                create_hit_spark(game_state, enemy_attack_rect, counter_hurt_rect, enemy.facing_right, ORANGE_COLOR)
                 # used for debug, remove in production
                 # Design note: this will make tuning much easier. 
                 # If you see COUNTER too often, the counter-hurtbox is too large or enemy active windows are too generous. 
@@ -92,7 +92,12 @@ def handle_player_attack_collision(game_state):
                 #enemy.action_lock_timer = enemy.clash_recovery_duration
                 enemy.attack_already_hit = False
                 enemy.attack_cooldown = max(enemy.attack_cooldown, 20)
-                create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right)
+                create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right, YELLOW_COLOR)
+                # used for debug
+                game_state.floating_texts.append(
+                    FloatingText(attack_rect.centerx,
+                        attack_rect.top - 18,
+                        "CLASH", YELLOW_COLOR))
                 return
 
         enemy_hurt_rect = enemy.get_hurt_rect()
@@ -108,7 +113,7 @@ def handle_player_attack_collision(game_state):
             if isinstance(enemies, BossEnemy):
                 boss_hit_shake(game_state)
             enemy_rect = enemy.get_hurt_rect()
-            create_hit_spark(game_state, attack_rect, enemy_rect, player.facing_right)
+            create_hit_spark(game_state, attack_rect, enemy_rect, player.facing_right, WHITE_COLOR)
             break # ?? useless, only can attack one enemy at a time?
 
     # attack breakables
@@ -177,6 +182,13 @@ def handle_player_grab_or_throw(game_state, keys):
                 break
     else:
         player.grab.grab_pressed = False
+    
+    # add visual feedback for failed grab
+    if player.grab.failed_grab_feedback:
+        game_state.floating_texts.append(
+            FloatingText(player.x, player.y - 160,
+                "NO GRAB", ORANGE_COLOR))
+        player.grab.failed_grab_feedback = False
 
 def handle_player_thrown_enemy_collision(game_state):
     for thrown_enemy in game_state.enemies:

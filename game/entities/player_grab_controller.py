@@ -5,6 +5,9 @@ class PlayerGrabController:
     def __init__(self):
         self.grabbed_enemy = None
         self.grab_pressed = False
+        # failed heavy grab causes a tiny recovery and slightly punishable.
+        self.failed_grab_recovery_duration = 8
+        self.failed_grab_feedback = False
 
         self.throw_timer = 0
         self.throw_duration = 14
@@ -22,6 +25,11 @@ class PlayerGrabController:
             if self.grab_knee_timer <= 0:
                 owner.combat.is_attacking = False
                 owner.combat.attack_connected = False
+                # expected behavior
+                # Grab knee damage: 12 -> 10
+                # Repeated knees have a tiny 6-frame rhythm pause
+                # Grab still feels valuable, just less free
+                owner.combat.action_lock_timer = owner.combat.grab_knee_recovery_duration
 
                 if self.grabbed_enemy:
                     owner.state_machine.change_to(owner, owner.GRAB)
@@ -48,6 +56,24 @@ class PlayerGrabController:
             return False
         if enemy.state == enemy.GRABBED:
             return False
+        # make heavy enemies harder to grab from the front.
+        # todo: use archtype heavy instead of enemy id
+        if getattr(enemy, "enemy_id", "") == "black_elmer":
+            player_is_behind_enemy = owner.facing_right == enemy.facing_right
+            if not player_is_behind_enemy:
+                # punish for 8 game frames if grab fails on heavy enemy in front
+                owner.combat.action_locker_timer = self.failed_grab_recovery_duration
+                # failed grab read as a small bounce-off.
+                owner.state_machine.change_to(owner, owner.RECOIL)
+                # Small edge case: after a failed heavy grab, 
+                # the player may still be holding L, 
+                # and grab_pressed can make the next grab attempt feel unresponsive until release. 
+                # below line of code make the failed-grab recovery explicit.
+                # Failed grab consumes the grab press
+                # Player must release and press L again for another grab attempt
+                self.grab_pressed = True
+                self.failed_grab_feedback = True
+                return False
 
         dx = abs(enemy.x - owner.x)
         dy = abs(enemy.y - owner.y)

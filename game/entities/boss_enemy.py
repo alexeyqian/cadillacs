@@ -96,14 +96,20 @@ class BossEnemy(Enemy):
             return
 
         died = self.health.take_damage(damage)
-        self.hit_timer = 8
-        self.state = self.HIT
 
-        # boss barely moves when hit
-        if attacker_x < self.x:
-            self.knockback_velocity = 3
-        else:
-            self.knockback_velocity = -3
+        should_flinch = damage >= self.flinch_damage_threshold
+        if died:
+            should_flinch = True
+
+        if should_flinch:
+            self.hit_timer = 8
+            self.state = self.HIT
+
+            # boss barely moves when hit
+            if attacker_x < self.x:
+                self.knockback_velocity = 3
+            else:
+                self.knockback_velocity = -3
 
         if died:
             self.state = self.DEAD
@@ -123,11 +129,13 @@ class BossEnemy(Enemy):
             self.phase_message_timer = 120
 
             if self.phase == 2:
+                self.flinch_damage_threshold = FIST_DAMAGE + 8
                 self.speed += 0.5
                 self.attack_damage += 6
                 self.attack_cooldown_duration = 45
 
             elif self.phase == 3:
+                self.flinch_damage_threshold = FIST_DAMAGE * 2
                 self.speed += 1
                 self.attack_damage += 10
                 self.attack_range += 50

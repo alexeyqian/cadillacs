@@ -102,6 +102,7 @@ ENEMY_CONFIGS = {
         attack_windup=30,
         attack_active=12,
         attack_recovery=35,
+        flinch_damage_threshold=FIST_DAMAGE + 4,
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         score_points=int(ENEMY_SCORE_POINTS*10),
     ),

@@ -5,13 +5,13 @@ class HitSpark:
     image_load_failed = False
     image_path = "assets/effects/hit_spark.png"
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, color=(255,255,0)):
         self.x = x
         self.y = y
-        
         self.timer = 12
         self.duration = self.timer
         self.active = True
+        self.color = color
 
     @classmethod
     def get_image(cls):
@@ -40,20 +40,14 @@ class HitSpark:
             size = max(1, int(image.get_width() * scale))
             spark_image = pygame.transform.smoothscale(image, (size, size))
             spark_image.set_alpha(alpha)
-            screen.blit(
-                spark_image,
-                (
-                    int(screen_x - size / 2),
-                    int(self.y - size / 2),
-                )
-            )
+            screen.blit(spark_image,
+                (int(screen_x - size / 2), int(self.y - size / 2),))
             return
 
         radius = self.timer * 2
-        
         pygame.draw.circle(
             screen,
-            (255, 255, 120),
+            self.color,
             (int(screen_x), int(self.y)),
             radius,
             2

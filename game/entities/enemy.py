@@ -104,6 +104,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
     def apply_enemy_config(self, config):
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
+        self.archetype = config.archetype
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
         self.health = EnemyHealth(config.max_hp)
@@ -176,3 +177,10 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             return "ACTIVE"
 
         return "RECOVERY"
+
+    # Later we can upgrade it into an “attack reservation” system
+    def uses_melee_attack_slot(self):
+        return self.archetype not in ["ranged", "boss"]
+
+    def can_bypass_attack_slot_limit(self):
+        return self.archetype in ["boss", "ranged"]

@@ -5,7 +5,9 @@ PLAYER_MOVE_DAMAGE = {
     "ATTACK_3": FIST_DAMAGE + 4,
     "RUN_ATTACK": FIST_DAMAGE,
     "JUMP_ATTACK": FIST_DAMAGE,
-    "GRAB_KNEE": PLAYER_GRAB_KNEE_DAMAGE,
+    # Grab knee is safe once a grab succeeds, 
+    # so keep it below combo finisher damage.
+    "GRAB_KNEE": FIST_DAMAGE,
 }
 PLAYER_COMBO_WINDOW = 30
 PLAYER_THIRD_HIT_RECOVERY = 10
@@ -31,6 +33,8 @@ class PlayerCombat:
         # make clash create a tiny recovery pause 
         # where the player cannot attack again instantly.
         self.clash_recovery_duration = PLAYER_CLASH_RECOVERY
+        # add a short recovery after a knee so the player cannot mash knee as freely.
+        self.grab_knee_recovery_duration = 6
 
     # Avoiding the combo step advances when the player presses attack inside the combo timer, 
     # even if the previous punch hit nothing. 

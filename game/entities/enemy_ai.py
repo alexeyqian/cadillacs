@@ -5,8 +5,8 @@ class EnemyAIMixin:
     def face_player(self, player):
         self.movement.face_player(self, player)
 
-    def choose_state(self, distance_x, distance_y):
-        self.state_resolver.choose_state(self, distance_x, distance_y)
+    def choose_state(self, distance_x, distance_y, enemies):
+        self.state_resolver.choose_state(self, distance_x, distance_y, enemies)
 
     def execute_state(self, player, enemies, dx, dy):
         self.action_controller.execute_state(self, player, enemies, dx, dy)
