@@ -49,8 +49,13 @@ UI_FIRST_Y=32
 UI_LINE_HEIGHT=32
 UI_FONT_SIZE=36
 
-SHOW_PLAYER_RECT=False
-SHOW_ENEMY_RECT=False
+# Design note for the overlay colors:
+# blue  = collision/footprint box
+# green = hurtbox
+# red   = attack hitbox
+# orange = counter-hurtbox / extended limb vulnerability
+# yellow = active enemy attack timing indicator
+SHOW_COMBAT_BOXES=True
 SHOW_EXIT_RECT=True
 
 PLAYER_LIVES=3

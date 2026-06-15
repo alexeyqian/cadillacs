@@ -242,48 +242,22 @@ def main_draw_ui(game_state):
         return
 
 def draw_player_debug_boxes(screen, level, camera, player):
-    if not SHOW_PLAYER_RECT:
+    if not SHOW_COMBAT_BOXES:
         return
 
+    collision_rect = player.get_collision_rect()
     body_rect = player.get_logical_rect()
     hurt_rect = player.get_hurt_rect()
-    collision_rect = player.get_collision_rect()
+    counter_hurt_rect = player.get_counter_hurt_rect()
     attack_rect = player.get_attack_rect()
 
-    # green = old logical body / gameplay reference
-    pygame.draw.rect(screen, GREEN_COLOR, (
-        body_rect.x - camera.x,
-        body_rect.y,
-        body_rect.width,
-        body_rect.height
-    ), 1)
-
-    # red = current animation frame hurt box
-    if hurt_rect and hurt_rect.width > 0 and hurt_rect.height > 0:
-        pygame.draw.rect(screen, RED_COLOR, (
-            hurt_rect.x - camera.x,
-            hurt_rect.y,
-            hurt_rect.width,
-            hurt_rect.height
-        ), 2)
-
     # blue = collision / feet box
-    pygame.draw.rect(screen, (80, 180, 255), (
+    pygame.draw.rect(screen, BLUE_COLOR, (
         collision_rect.x - camera.x,
         collision_rect.y,
         collision_rect.width,
         collision_rect.height
     ), 1)
-
-    # yellow = current animation frame attack box
-    if attack_rect and attack_rect.width > 0 and attack_rect.height > 0:
-        pygame.draw.rect(screen, YELLOW_COLOR, (
-            attack_rect.x - camera.x,
-            attack_rect.y,
-            attack_rect.width,
-            attack_rect.height
-        ), 2)
-
     # small feet anchor marker
     pygame.draw.circle(
         screen,
@@ -291,6 +265,41 @@ def draw_player_debug_boxes(screen, level, camera, player):
         (int(player.x - camera.x), int(player.y)),
         3
     )
+
+    # white = full animation frame / visual reference
+    pygame.draw.rect(screen, WHITE_COLOR, (
+        body_rect.x - camera.x,
+        body_rect.y,
+        body_rect.width,
+        body_rect.height
+    ), 1)
+
+    # green = current animation frame hurt box
+    if hurt_rect and hurt_rect.width > 0 and hurt_rect.height > 0:
+        pygame.draw.rect(screen, GREEN_COLOR, (
+            hurt_rect.x - camera.x,
+            hurt_rect.y,
+            hurt_rect.width,
+            hurt_rect.height
+        ), 2)
+        
+    # orange = counter-hurtbox / extended limb vulnerability
+    if counter_hurt_rect and counter_hurt_rect.width > 0 and counter_hurt_rect.height > 0:
+        pygame.draw.rect(screen, ORANGE_COLOR, (
+            counter_hurt_rect.x - camera.x,
+            counter_hurt_rect.y,
+            counter_hurt_rect.width,
+            counter_hurt_rect.height
+        ), 2)
+
+    # red = current animation frame attack box
+    if attack_rect and attack_rect.width > 0 and attack_rect.height > 0:
+        pygame.draw.rect(screen, RED_COLOR, (
+            attack_rect.x - camera.x,
+            attack_rect.y,
+            attack_rect.width,
+            attack_rect.height
+        ), 2)
     
     # walkable lane
     pygame.draw.line(
