@@ -49,11 +49,17 @@ def handle_player_attack_collision(game_state):
         enemy_attack_rect = enemy.get_attack_rect()
         if enemy.state == enemy.ATTACK and enemy_attack_rect:
             if attack_rect.colliderect(enemy_attack_rect):
-                player.combat.cancel_attack()
+                # Expected behavior
+                # Clash -> player gets 8 frames recovery
+                # Clash -> enemy gets 12 frames recovery
+                # Both sides separate mentally for a beat
+                # No one takes damage
+                player.combat.start_clash_recovery()
                 if player.state != player.DEAD:
                     player.state_machine.change_to(player, player.IDLE)
-                enemy.state = enemy.PATROL
+                enemy.state = enemy.IDLE
                 enemy.attack_has_hit = False
+                enemy.clash_recovery_timer = enemy.clash_recovery_duration
                 enemy.attack_cooldown = max(enemy.attack_cooldown, 20)
                 create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right)
                 return

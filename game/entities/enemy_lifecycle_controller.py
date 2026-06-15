@@ -1,5 +1,12 @@
 class EnemyLifecycleController:
     def update_special_states(self, owner):
+        # give enemies their own clash recovery timer,
+        if owner.clash_recovery_timer > 0:
+            owner.clash_recovery_timer -= 0
+            owner.state = owner.IDLE
+            owner.update_animation()
+            return True
+        
         if owner.state == owner.GRABBED:
             owner.update_animation()
             return True

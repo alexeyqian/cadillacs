@@ -18,6 +18,9 @@ class PlayerCombat:
         # expected feel: ATTACK_1 -> ATTACK_2 -> ATTACK_3 -> tiny recovery pause
         self.attack_recovery_timer = 0
         self.third_hit_recovery_duration = 10
+        # make clash create a tiny recovery pause 
+        # where the player cannot attack again instantly.
+        self.clash_recovery_duration = 8
 
     # Avoiding the combo step advances when the player presses attack inside the combo timer, 
     # even if the previous punch hit nothing. 
@@ -114,6 +117,10 @@ class PlayerCombat:
         owner.grab.grab_knee_timer = owner.grab.grab_knee_duration
         self.already_hit_enemy = False
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
+
+    def start_clash_recovery(self):
+        self.cancel_attack()
+        self.attack_recovery_timer = self.clash_recovery_duration
 
     # enemy hits should fully cancel the player’s combo.
     def cancel_attack(self):
