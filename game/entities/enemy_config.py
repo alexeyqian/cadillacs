@@ -15,8 +15,15 @@ class EnemyConfig:
     detect_range: float = ENEMY_DETECT_RANGE
     attack_range:int = 90 
     attack_lane_range:int = 45
+
     attack_damage: float = ENEMY_ATTACK_DAMAGE
+    # todo: remove not used old design?
     attack_cooldown_duration: int = ENEMY_ATTACK_COOLDOWN
+    # new design
+    attack_windup: int = ENEMY_ATTACK_WINDUP
+    attack_active: int = ENEMY_ATTACK_ACTIVE
+    attack_recovery: int = ENEMY_ATTACK_RECOVERY
+
     hit_stun_duration: int = 15
     # give heavy enemies poise, so weak punches still deal damage 
     # but do not always interrupt them.
@@ -25,7 +32,7 @@ class EnemyConfig:
     score_points: int = ENEMY_SCORE_POINTS
     sprite_scale: int  = 4
 
-
+# each enemy archetype now has a readable combat rhythm.
 ENEMY_CONFIGS = {
     "ferris": EnemyConfig(
         enemy_id="ferris",
@@ -37,6 +44,9 @@ ENEMY_CONFIGS = {
         max_hp=int(ENEMY_MAX_HP*1.2),
         speed=int(ENEMY_SPEED * 1.2),
         attack_damage=int(ENEMY_ATTACK_DAMAGE*1.2),
+        attack_windup=16,
+        attack_active=8,
+        attack_recovery=22,
         score_points=int(ENEMY_SCORE_POINTS*1.2),
     ),
     "black_elmer": EnemyConfig(
@@ -46,6 +56,9 @@ ENEMY_CONFIGS = {
         max_hp=ENEMY_MAX_HP*2,
         speed=int(ENEMY_SPEED * 0.75),
         attack_damage=ENEMY_ATTACK_DAMAGE * 2,
+        attack_windup=26,
+        attack_active=10,
+        attack_recovery=30,
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
@@ -62,6 +75,9 @@ ENEMY_CONFIGS = {
         attack_lane_range=55,
         attack_damage=RAPTOR_ENEMY_ATTACK_DAMAGE,
         attack_cooldown_duration=50,
+        attack_windup=14,
+        attack_active=8,
+        attack_recovery=18,
         score_points=int(ENEMY_SCORE_POINTS * 2),
     ),
     "ranged": EnemyConfig(
@@ -83,6 +99,9 @@ ENEMY_CONFIGS = {
         speed=int(ENEMY_SPEED * 0.5),
         attack_damage=ENEMY_ATTACK_DAMAGE*3,
         attack_cooldown_duration=60,
+        attack_windup=30,
+        attack_active=12,
+        attack_recovery=35,
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         score_points=int(ENEMY_SCORE_POINTS*10),
     ),

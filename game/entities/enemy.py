@@ -50,7 +50,15 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.y = y
         self.spawn_x = x # enemy remembers where it spawned
         self.enemy_type = enemy_type
-        self.apply_enemy_config(get_enemy_config(self.enemy_type))
+
+        # new design
+        # give every enemy attack a clean timer 
+        # so the next chunk can use windup / active / recovery 
+        # instead of relying only on animation frame position.
+        self.attack_timer = 0
+        self.attack_windup = 20
+        self.attack_active = 8
+        self.attack_recovery = 25
 
         self.state = self.IDLE
         self.facing_right = False
@@ -62,16 +70,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.patrol_direction = 1
         self.attack_has_hit = False
         self.attack_cooldown = 0
-        
-        # new design
-        # give every enemy attack a clean timer 
-        # so the next chunk can use windup / active / recovery 
-        # instead of relying only on animation frame position.
-        self.attack_timer = 0
-        self.attack_windup = 20
-        self.attack_active = 8
-        self.attack_recovery = 25
-        
+
         # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
         # and the enemy cannot instantly resume pressure either.
         self.clash_recovery_timer = 0
@@ -87,6 +86,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         #knockdown/getup
         self.knockdown_timer = 0
         self.getup_timer = 0
+
+        self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
         self.movement = EnemyMovement()
         self.combat = EnemyCombatController()

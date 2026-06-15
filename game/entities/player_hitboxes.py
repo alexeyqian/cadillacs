@@ -33,6 +33,14 @@ class PlayerHitboxes:
         frame = owner.animation_controller.get_current_frame()
         local_x, local_y, w, h = frame.hurt_rect
         return self._frame_local_rect_to_world(owner, frame, local_x, local_y, w, h)
+    
+    def get_counter_hurt_rect(self, owner):
+        frame = owner.animation_controller.get_current_frame()
+        if not frame or not frame.counter_hurt_rect:
+            return None
+
+        local_x, local_y, w, h = frame.counter_hurt_rect
+        return self._frame_local_rect_to_world(owner, frame, local_x, local_y, w, h)
 
     def get_collision_rect(self, owner):
         return pygame.Rect(

@@ -130,6 +130,9 @@ class Player:
     def get_hurt_rect(self):
         return self.hitboxes.get_hurt_rect(self)
 
+    def get_counter_hurt_rect(self):
+        return self.hitboxes.get_counter_hurt_rect(self)
+
     # on bottom center
     def get_collision_rect(self):
         return self.hitboxes.get_collision_rect(self)
