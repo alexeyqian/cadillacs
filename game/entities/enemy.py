@@ -112,6 +112,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
         self.archetype = config.archetype
+        self.max_melee_attackers = getattr(config, "max_melee_attackers", None)
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
         self.health = EnemyHealth(config.max_hp)
@@ -191,3 +192,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
     def can_bypass_attack_slot_limit(self):
         return self.archetype in ["boss", "ranged"]
+    
+    def get_side_of_player(self, player):
+        if self.x < player.x:
+            return "left"
+        return "right"

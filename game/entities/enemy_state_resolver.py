@@ -27,25 +27,17 @@ class EnemyStateResolver:
         # This makes group behavior feel more intentional.
         if not self.is_closest_melee_attacker(owner, player, enemies):
             return False
-        
-        active_melee_attackers = 0
-        for enemy in enemies:
-            if enemy is owner:
-                continue
-            if enemy.has_attack_slot:
-                active_melee_attackers += 1
-        return active_melee_attackers < MAX_MELEE_ATTACKERS
+        if self.side_already_has_attacker(owner, player, enemies):
+            return False
+
+        return self.count_active_melee_attackers(enemies) < self.get_max_melee_attackers(owner)
     
     def is_closest_melee_attacker(self, owner, player, enemies):
         closest_enemy = owner
         closest_distance = float("inf")
 
         for enemy in enemies:
-            if not enemy.uses_melee_attack_slot():
-                continue
-            if enemy.attack_cooldown > 0:
-                continue
-            if enemy.state in [enemy.DEAD, enemy.HIT, enemy.GRABBED, enemy.THROWN, enemy.KNOCKDOWN, enemy.GETUP]:
+            if not self.is_eligible_melee_attacker(enemy, player):
                 continue
 
             dx = abs(enemy.x - player.x)
@@ -59,3 +51,46 @@ class EnemyStateResolver:
                 closest_enemy = enemy
 
         return closest_enemy is owner
+
+    def is_eligible_melee_attacker(self, enemy, player):
+        if not enemy.uses_melee_attack_slot():
+            return False
+        if enemy.attack_cooldown > 0:
+            return False
+        # That means an enemy that already owns a slot remains counted as eligible 
+        # for priority until it releases the slot. 
+        # This makes the coordination stable during the attack.
+        if enemy.has_attack_slot:
+            return True
+        if enemy.state in [enemy.DEAD, enemy.HIT, enemy.GRABBED, enemy.THROWN, enemy.KNOCKDOWN, enemy.GETUP]:
+            return False
+
+        dx = abs(enemy.x - player.x)
+        dy = abs(enemy.y - player.y)
+
+        return dx <= enemy.attack_range and dy <= enemy.attack_lane_range
+    
+    #  enemies prefer opposite sides
+    # This prevents same-side dogpiles
+    def side_already_has_attacker(self, owner, player, enemies):
+        owner_side = owner.get_side_of_player(player)
+
+        for enemy in enemies:
+            if enemy is owner:
+                continue
+            if not enemy.has_attack_slot:
+                continue
+            if enemy.get_side_of_player(player) == owner_side:
+                return True
+
+        return False
+    
+    def get_max_melee_attackers(self, owner):
+        return getattr(owner, "max_melee_attackers", MAX_MELEE_ATTACKERS)
+    
+    def count_active_melee_attackers(self, enemies):
+        count = 0
+        for enemy in enemies:
+            if enemy.has_attack_slot:
+                count += 1
+        return count

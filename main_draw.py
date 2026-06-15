@@ -134,8 +134,8 @@ def main_draw_ui(game_state):
     screen.blit(hp_text, (240, UI_FIRST_Y+UI_LINE_HEIGHT))
 
     # control
-    control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, BLACK_COLOR)
-    screen.blit(control_text, (UI_FIRST_X + 450, UI_FIRST_Y+UI_LINE_HEIGHT))
+    #control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, BLACK_COLOR)
+    #screen.blit(control_text, (UI_FIRST_X + 450, UI_FIRST_Y+UI_LINE_HEIGHT))
 
     # combo UI
     combo = game_state.score_manager.combo_count
@@ -159,11 +159,24 @@ def main_draw_ui(game_state):
 
     # debug UI
     player_feet_x, player_feet_y = player.get_logical_rect().midbottom
-    player_str = (f"State: {level.stage_name} Camera x:{int(camera.x)} "
+    player_str = (f"Stage: {level.stage_name} Camera x:{int(camera.x)} "
                 f"Player feet x:{int(player_feet_x)} y:{int(player_feet_y)} State:{player.state} "
                 f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
     player_text = small_font.render(player_str,True, BLACK_COLOR)
     screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y+2*UI_LINE_HEIGHT))
+    
+    if settings.SHOW_COMBAT_BOXES:
+        active_slots = 0
+        max_slots = MAX_MELEE_ATTACKERS
+
+        for enemy in enemies:
+            if enemy.has_attack_slot:
+                active_slots += 1
+                max_slots = getattr(enemy, "max_melee_attackers", None) or max_slots
+
+        slot_text = small_font.render(f"Attack Slots: {active_slots}/{max_slots}",
+            True,BLACK_COLOR)
+        screen.blit(slot_text, (UI_FIRST_X, UI_FIRST_Y + 3 * UI_LINE_HEIGHT))
     
     # end of debug text
 

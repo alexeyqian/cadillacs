@@ -7,6 +7,7 @@ class EnemyConfig:
     enemy_id: str
     display_name: str = "Enemy"
     archetype: str = "basic_melee"
+    max_melee_attackers:int = 2 # move to stage config?
     collision_box_w: int = ENEMY_COLLISION_W
     collision_box_h: int = ENEMY_COLLISION_H
     max_hp: int = ENEMY_MAX_HP
