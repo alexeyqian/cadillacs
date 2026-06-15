@@ -11,6 +11,9 @@ class EnemyReactionController:
 
         died = owner.health.take_damage(damage)
         should_interrupt = damage >= owner.hit_interrupt_damage_threshold
+        if died:
+            should_interrupt = True
+
         if should_interrupt:
             owner.hit_timer = owner.hit_stun_duration
             owner.state = owner.HIT

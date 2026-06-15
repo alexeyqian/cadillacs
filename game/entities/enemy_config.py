@@ -49,7 +49,7 @@ ENEMY_CONFIGS = {
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
-        hit_interrupt_damage_threshold=14,
+        hit_interrupt_damage_threshold=FIST_DAMAGE + 4,
         score_points=int(ENEMY_SCORE_POINTS*2),
     ),
     "raptor": EnemyConfig(

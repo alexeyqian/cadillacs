@@ -25,9 +25,12 @@ class PlayerMovement:
         if self.run_tap_timer > 0:
             self.run_tap_timer -= 1
 
+    # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):
         moving = False
         if self.is_jumping:
+            return False
+        if owner.combat.is_attacking:
             return False
 
         left_down = player_input.left
