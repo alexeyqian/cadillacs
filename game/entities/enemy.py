@@ -133,12 +133,11 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.attack_range = config.attack_range
         self.attack_lane_range = config.attack_lane_range
 
-        self.attack_windup = getattr(config, "attack_windup", self.attack_windup)
-        self.attack_active = getattr(config, "attack_active", self.attack_active)
-        self.attack_recovery = getattr(config, "attack_recovery", self.attack_recovery)
-
-        self.attack_damage = config.attack_damage
-        self.attack_cooldown_duration = config.attack_cooldown_duration
+        self.attack_damage = config.attack.damage
+        self.attack_cooldown_duration = config.attack.cooldown
+        self.attack_windup = config.attack.windup
+        self.attack_active = config.attack.active
+        self.attack_recovery = config.attack.recovery
 
         self.hit_stun_duration = config.hit_stun_duration
         self.flinch_damage_threshold = config.flinch_damage_threshold

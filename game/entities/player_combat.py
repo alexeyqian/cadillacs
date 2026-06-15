@@ -1,26 +1,28 @@
 from dataclasses import dataclass
 from game.settings import FIST_DAMAGE, PLAYER_GRAB_KNEE_DAMAGE
 
+PLAYER_COUNTER_HIT_STUN_BONUS = 10
+PLAYER_COMBO_WINDOW = 30
+PLAYER_THIRD_HIT_RECOVERY = 10
+PLAYER_CLASH_RECOVERY = 8
 @dataclass(frozen=True)
 class PlayerMoveData:
     damage: int
+    combo_window: int = PLAYER_COMBO_WINDOW
+    action_lock: int = 0
     counter_hit_stun_bonus: int = 0
-
 
 PLAYER_MOVES = {
     "ATTACK_1": PlayerMoveData(damage=FIST_DAMAGE - 2),
     "ATTACK_2": PlayerMoveData(damage=FIST_DAMAGE),
-    "ATTACK_3": PlayerMoveData(damage=FIST_DAMAGE + 4),
+    "ATTACK_3": PlayerMoveData(damage=FIST_DAMAGE + 4,
+                combo_window=0,
+                action_lock=PLAYER_THIRD_HIT_RECOVERY),
     "RUN_ATTACK": PlayerMoveData(damage=FIST_DAMAGE),
     "JUMP_ATTACK": PlayerMoveData(damage=FIST_DAMAGE),
     # Grab knee is safe once a grab succeeds, so keep it below combo finisher damage.
     "GRAB_KNEE": PlayerMoveData(damage=FIST_DAMAGE),
 }
-PLAYER_COUNTER_HIT_STUN_BONUS = 10
-
-PLAYER_COMBO_WINDOW = 30
-PLAYER_THIRD_HIT_RECOVERY = 10
-PLAYER_CLASH_RECOVERY = 8
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombat:
@@ -38,7 +40,7 @@ class PlayerCombat:
         # so the finisher cannot immediately loop back into ATTACK_1.
         # expected feel: ATTACK_1 -> ATTACK_2 -> ATTACK_3 -> tiny recovery pause
         self.action_lock_timer = 0
-        self.third_hit_recovery_duration = PLAYER_THIRD_HIT_RECOVERY
+
         # make clash create a tiny recovery pause 
         # where the player cannot attack again instantly.
         self.clash_recovery_duration = PLAYER_CLASH_RECOVERY
@@ -89,7 +91,8 @@ class PlayerCombat:
 
                 self.is_attacking = False
 
-                if finished_state == owner.ATTACK_3:
+                finished_move = PLAYER_MOVES.get(finished_state)
+                if finished_move and finished_move.action_lock > 0:
                     self.action_lock_timer = self.third_hit_recovery_duration
                     self.combo_timer = 0
                     self.combo_step = 0
@@ -120,14 +123,15 @@ class PlayerCombat:
             self.combo_step = 1
 
         self.combo_step = min(self.combo_step, 3)
-        self.combo_timer = PLAYER_COMBO_WINDOW
-
         if self.combo_step == 1:
             owner.state_machine.change_to(owner, owner.ATTACK_1)
         elif self.combo_step == 2:
             owner.state_machine.change_to(owner, owner.ATTACK_2)
         else:
             owner.state_machine.change_to(owner, owner.ATTACK_3)
+
+        move_data = PLAYER_MOVES.get(owner.state)
+        self.combo_timer = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
 
     def start_jump_attack(self, owner):
         if not owner.movement.is_jumping:

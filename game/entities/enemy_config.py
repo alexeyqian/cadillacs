@@ -1,6 +1,15 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from game.settings import *
+
+@dataclass(frozen=True)
+class EnemyAttackData:
+    damage: float = ENEMY_ATTACK_DAMAGE
+    cooldown: int = ENEMY_ATTACK_COOLDOWN
+    windup: int = ENEMY_ATTACK_WINDUP
+    active: int = ENEMY_ATTACK_ACTIVE
+    recovery: int = ENEMY_ATTACK_RECOVERY
 
 @dataclass(frozen=True)
 class EnemyConfig:
@@ -16,15 +25,8 @@ class EnemyConfig:
     detect_range: float = ENEMY_DETECT_RANGE
     attack_range:int = 90 
     attack_lane_range:int = 45
-
-    attack_damage: float = ENEMY_ATTACK_DAMAGE
-    # todo: remove not used old design?
-    attack_cooldown_duration: int = ENEMY_ATTACK_COOLDOWN
-    # new design
-    attack_windup: int = ENEMY_ATTACK_WINDUP
-    attack_active: int = ENEMY_ATTACK_ACTIVE
-    attack_recovery: int = ENEMY_ATTACK_RECOVERY
-    melee_attack_slot_limit: int|None = None
+    attack: EnemyAttackData = EnemyAttackData()
+    melee_attack_slot_limit: Optional[int] = None
 
     hit_stun_duration: int = 15
     # give heavy enemies poise, so weak punches still deal damage 
@@ -45,10 +47,12 @@ ENEMY_CONFIGS = {
         display_name="Gneiss",
         max_hp=int(ENEMY_MAX_HP*1.2),
         speed=int(ENEMY_SPEED * 1.2),
-        attack_damage=int(ENEMY_ATTACK_DAMAGE*1.2),
-        attack_windup=16,
-        attack_active=8,
-        attack_recovery=22,
+        attack=EnemyAttackData(
+            damage=int(ENEMY_ATTACK_DAMAGE * 1.2),
+            windup=16,
+            active=8,
+            recovery=22,
+        ),
         score_points=int(ENEMY_SCORE_POINTS*1.2),
     ),
     "black_elmer": EnemyConfig(
@@ -57,10 +61,12 @@ ENEMY_CONFIGS = {
         archetype="heavy",
         max_hp=ENEMY_MAX_HP*2,
         speed=int(ENEMY_SPEED * 0.75),
-        attack_damage=ENEMY_ATTACK_DAMAGE * 2,
-        attack_windup=26,
-        attack_active=10,
-        attack_recovery=30,
+        attack=EnemyAttackData(
+            damage=ENEMY_ATTACK_DAMAGE * 2,
+            windup=26,
+            active=10,
+            recovery=30,
+        ),
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
@@ -75,11 +81,13 @@ ENEMY_CONFIGS = {
         speed=RAPTOR_ENEMY_SPEED,
         attack_range=110,
         attack_lane_range=55,
-        attack_damage=RAPTOR_ENEMY_ATTACK_DAMAGE,
-        attack_cooldown_duration=50,
-        attack_windup=14,
-        attack_active=8,
-        attack_recovery=18,
+        attack=EnemyAttackData(
+            damage=RAPTOR_ENEMY_ATTACK_DAMAGE,
+            cooldown=50,
+            windup=14,
+            active=8,
+            recovery=18,
+        ),
         score_points=int(ENEMY_SCORE_POINTS * 2),
     ),
     "ranged": EnemyConfig(
@@ -89,8 +97,10 @@ ENEMY_CONFIGS = {
         max_hp=RANGED_ENEMY_MAX_HP,
         attack_range=260,
         attack_lane_range=60,
-        attack_damage=RANGED_ENEMY_ATTACK_DAMAGE,
-        attack_cooldown_duration=90,
+        attack=EnemyAttackData(
+            damage=RANGED_ENEMY_ATTACK_DAMAGE,
+            cooldown=90,
+        ),
         score_points=int(ENEMY_SCORE_POINTS * 1.5),
     ),
     "boss": EnemyConfig(
@@ -99,11 +109,13 @@ ENEMY_CONFIGS = {
         archetype="boss",
         max_hp=ENEMY_MAX_HP*10,
         speed=int(ENEMY_SPEED * 0.5),
-        attack_damage=ENEMY_ATTACK_DAMAGE*3,
-        attack_cooldown_duration=60,
-        attack_windup=30,
-        attack_active=12,
-        attack_recovery=35,
+        attack=EnemyAttackData(
+            damage=ENEMY_ATTACK_DAMAGE * 3,
+            cooldown=60,
+            windup=30,
+            active=12,
+            recovery=35,
+        ),
         flinch_damage_threshold=FIST_DAMAGE + 4,
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         score_points=int(ENEMY_SCORE_POINTS*10),
