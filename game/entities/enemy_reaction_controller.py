@@ -57,6 +57,7 @@ class EnemyReactionController:
         owner.state = owner.KNOCKDOWN
         owner.knockdown_timer = 60
         owner.knockback_velocity = 0
+        owner.has_attack_slot = False
 
     def grabbed_by_player(self, owner):
         if owner.state == owner.DEAD:
@@ -65,6 +66,7 @@ class EnemyReactionController:
         owner.state = owner.GRABBED
         owner.knockback_velocity = 0
         owner.hit_timer = 0
+        owner.has_attack_slot = False
 
     def thrown_by_player(self, owner, direction):
         if owner.state == owner.DEAD:
@@ -75,6 +77,7 @@ class EnemyReactionController:
         owner.thrown_velocity_x = 14 * direction
         owner.thrown_timer = 30
         owner.thrown_hit_targets.clear()
+        owner.has_attack_slot = False
         owner.take_thrown_damage(owner.thrown_damage)
 
     def take_grab_knee_damage(self, owner, damage):
@@ -87,11 +90,13 @@ class EnemyReactionController:
             owner.die()
             return
 
+        owner.has_attack_slot = False
         owner.state = owner.GRABBED
 
     def take_thrown_damage(self, owner, damage):
         if owner.state == owner.DEAD:
             return
+        owner.has_attack_slot = False
 
         died = owner.health.take_damage(damage)
 

@@ -15,7 +15,7 @@ class EnemyUpdateController:
         if distance_x <= owner.detect_range:
             owner.face_player(player)
 
-        owner.choose_state(distance_x, distance_y, enemies)
+        owner.choose_state(player, distance_x, distance_y, enemies)
         owner.execute_state(player, enemies, dx, dy)
 
         # owner.apply_world_bounds()
