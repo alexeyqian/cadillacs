@@ -71,6 +71,13 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.patrol_direction = 1
         self.attack_already_hit = False
         self.attack_cooldown = 0
+        # todo: add enemy coordination layer in future
+        # attack slot reservation system
+        # expected behavior:
+        # Enemy reserves a melee attack slot when attack starts
+        # Enemy releases slot when attack ends, flinches, dies, or clashes
+        # Attack limit becomes more reliable and easier to reason about
+        self.has_attack_slot = False
 
         # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
         # and the enemy cannot instantly resume pressure either.

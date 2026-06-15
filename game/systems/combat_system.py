@@ -92,6 +92,7 @@ def handle_player_attack_collision(game_state):
                 #enemy.action_lock_timer = enemy.clash_recovery_duration
                 enemy.attack_already_hit = False
                 enemy.attack_cooldown = max(enemy.attack_cooldown, 20)
+                enemy.has_attack_slot = False
                 create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right, YELLOW_COLOR)
                 # used for debug
                 game_state.floating_texts.append(

@@ -32,6 +32,6 @@ class EnemyStateResolver:
         for enemy in enemies:
             if enemy is owner:
                 continue
-            if enemy.state == enemy.ATTACK and enemy.uses_melee_attack_slot():
+            if enemy.has_attack_slot:
                 active_melee_attackers += 1
         return active_melee_attackers < MAX_MELEE_ATTACKERS

@@ -4,6 +4,7 @@ class EnemyReactionController:
         owner.state = owner.DEAD
         owner.death_timer = 30
         owner.death_timer_started = False
+        owner.has_attack_slot = False
 
     # temp for renaming
     def take_damage(self, owner, damage, attacker_x):
@@ -21,6 +22,8 @@ class EnemyReactionController:
         if should_flinch:
             owner.hit_timer = owner.hit_stun_duration
             owner.state = owner.HIT
+            # So if an enemy is interrupted, it releases the slot.
+            owner.has_attack_slot = False
 
             if attacker_x < owner.x:
                 owner.knockback_velocity = 10

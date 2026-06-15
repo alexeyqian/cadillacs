@@ -2,6 +2,7 @@ class EnemyCombatController:
     def start_attack(self, owner):
         owner.state = owner.ATTACK
         owner.attack_already_hit = False
+        owner.has_attack_slot = owner.uses_melee_attack_slot()
         owner.attack_timer = 0
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
@@ -27,4 +28,5 @@ class EnemyCombatController:
             owner.state = owner.PATROL
             owner.attack_timer = 0
             owner.attack_already_hit = False
+            owner.has_attack_slot = False
             owner.attack_cooldown = owner.attack_cooldown_duration

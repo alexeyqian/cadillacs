@@ -128,7 +128,7 @@ ENEMY_ATTACK_ACTIVE=8
 ENEMY_ATTACK_RECOVERY=25
 ENEMY_ATTACK_COOLDOWN=45
 # Only a small number of regular melee enemies should enter ATTACK at the same time.
-MAX_MELEE_ATTACKERS = 1
+MAX_MELEE_ATTACKERS = 2
 
 ######## damages ########
 # player attack damage
