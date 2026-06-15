@@ -48,6 +48,14 @@ def handle_player_attack_collision(game_state):
                 player.take_damage(enemy.attack_damage, hit_stun_bonus=10)
                 enemy.attack_already_hit = True
                 create_hit_spark(game_state, enemy_attack_rect, counter_hurt_rect, enemy.facing_right)
+                # used for debug, remove in production
+                # Design note: this will make tuning much easier. 
+                # If you see COUNTER too often, the counter-hurtbox is too large or enemy active windows are too generous. 
+                # If you never see it, the boxes/windows may be too strict.
+                game_state.floating_texts.append(
+                    FloatingText(counter_hurt_rect.centerx,
+                        counter_hurt_rect.top - 18,
+                        "COUNTER", ORANGE_COLOR))
                 return
 
     if player.state == player.GRAB_KNEE:
@@ -79,12 +87,10 @@ def handle_player_attack_collision(game_state):
                 # Clash -> enemy gets 12 frames recovery
                 # Both sides separate mentally for a beat
                 # No one takes damage
-                player.combat.start_clash_recovery()
-                if player.state != player.DEAD:
-                    player.state_machine.change_to(player, player.IDLE)
-                enemy.state = enemy.IDLE
+                player.combat.start_clash_recovery(player)
+                #enemy.state = enemy.IDLE
+                #enemy.action_lock_timer = enemy.clash_recovery_duration
                 enemy.attack_already_hit = False
-                enemy.clash_recovery_timer = enemy.clash_recovery_duration
                 enemy.attack_cooldown = max(enemy.attack_cooldown, 20)
                 create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right)
                 return

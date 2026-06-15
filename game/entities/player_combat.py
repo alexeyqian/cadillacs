@@ -26,7 +26,7 @@ class PlayerCombat:
         # add a short lockout after ATTACK_3, 
         # so the finisher cannot immediately loop back into ATTACK_1.
         # expected feel: ATTACK_1 -> ATTACK_2 -> ATTACK_3 -> tiny recovery pause
-        self.attack_recovery_timer = 0
+        self.action_lock_timer = 0
         self.third_hit_recovery_duration = PLAYER_THIRD_HIT_RECOVERY
         # make clash create a tiny recovery pause 
         # where the player cannot attack again instantly.
@@ -38,8 +38,19 @@ class PlayerCombat:
     # then walk in and land the stronger hit. 
     # The combo damage has to be earned.
     def update_timers(self, owner):
-        if self.attack_recovery_timer > 0:
-            self.attack_recovery_timer -= 1
+        # action lock timer means:  the player cannot start a new action yet.
+        if self.action_lock_timer > 0:
+            self.action_lock_timer -= 1
+            if owner.state == owner.RECOIL:
+                if self.action_lock_timer <= 0:
+                    owner.state_machine.change_to(owner, owner.IDLE)
+                # Why return?
+                # During recoil, we do not want combo timers or attack ending logic to also manipulate state.
+                # expected behavior:
+                # Clash -> player enters RECOIL
+                # Player stays RECOIL for clash recovery duration
+                # Then returns to IDLE
+                return
 
         if self.combo_timer > 0:
             self.combo_timer -= 1
@@ -66,7 +77,7 @@ class PlayerCombat:
                 self.is_attacking = False
 
                 if finished_state == owner.ATTACK_3:
-                    self.attack_recovery_timer = self.third_hit_recovery_duration
+                    self.action_lock_timer = self.third_hit_recovery_duration
                     self.combo_timer = 0
                     self.combo_step = 0
 
@@ -76,7 +87,7 @@ class PlayerCombat:
     def start_attack(self, owner):
         if self.is_attacking:
             return
-        if self.attack_recovery_timer > 0:
+        if self.action_lock_timer > 0:
             return
 
         self.is_attacking = True
@@ -128,9 +139,10 @@ class PlayerCombat:
         self.attack_connected = False
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
-    def start_clash_recovery(self):
+    def start_clash_recovery(self, owner):
         self.cancel_attack()
-        self.attack_recovery_timer = self.clash_recovery_duration
+        self.action_lock_timer = self.clash_recovery_duration
+        owner.state_machine.change_to(owner, owner.RECOIL)
 
     # enemy hits should fully cancel the player’s combo.
     def cancel_attack(self):
@@ -139,7 +151,7 @@ class PlayerCombat:
         self.attack_connected = False
         self.combo_step = 0
         self.combo_timer = 0
-        self.attack_recovery_timer = 0
+        self.action_lock_timer = 0
 
     def get_attack_damage(self, owner):
         base_damage = PLAYER_MOVE_DAMAGE.get(owner.state, FIST_DAMAGE)

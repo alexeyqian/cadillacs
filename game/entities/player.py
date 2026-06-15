@@ -28,6 +28,7 @@ class Player:
     ATTACK_2 = "ATTACK_2"
     ATTACK_3 = "ATTACK_3"
     HIT = "HIT" # hit by enemies
+    RECOIL = "RECOIL"
     DEAD = "DEAD"
     GRAB = "GRAB"
     GRAB_KNEE="GRAB_KNEE"

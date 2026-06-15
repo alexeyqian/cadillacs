@@ -70,6 +70,7 @@ class PlayerAnimationController:
         self.animation_manager.add_animation(owner.THROW, FrameAnimation(throw_frames, throw_dur))
         self.animation_manager.add_animation(owner.GRAB_KNEE, FrameAnimation(grab_knee_frames, grab_knee_dur))
         self.animation_manager.add_animation(owner.HIT, FrameAnimation(hit_frames, hit_dur))
+        # todo: add recoil animation
         self.animation_manager.add_animation(owner.DEAD, FrameAnimation(dead_frames, dead_dur))
 
     def frame_duration(self, animation_name):
@@ -97,6 +98,8 @@ class PlayerAnimationController:
         elif owner.state == owner.THROW:
             self.animation_manager.play(owner.THROW)
         elif owner.state == owner.HIT:
+            self.animation_manager.play(owner.HIT)
+        elif owner.state == owner.RECOIL: # TODO: add recoil animation
             self.animation_manager.play(owner.HIT)
         elif owner.state == owner.DEAD:
             self.animation_manager.play(owner.DEAD)

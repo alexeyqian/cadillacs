@@ -54,6 +54,9 @@ class JumpAttackState(PlayerState):
 class HitState(PlayerState):
     name = "HIT"
 
+class RecoilState(PlayerState):
+    name = "RECOIL"
+
 
 class DeadState(PlayerState):
     name = "DEAD"
@@ -85,6 +88,7 @@ class PlayerStateMachine:
             owner.RUN_ATTACK: RunAttackState(),
             owner.JUMP_ATTACK: JumpAttackState(),
             owner.HIT: HitState(),
+            owner.RECOIL: RecoilState(),
             owner.DEAD: DeadState(),
             owner.GRAB: GrabState(),
             owner.GRAB_KNEE: GrabKneeState(),

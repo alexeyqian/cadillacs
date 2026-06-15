@@ -5,9 +5,9 @@ class EnemyLifecycleController:
             return True
 
         # give enemies their own clash recovery timer,
-        if owner.clash_recovery_timer > 0:
-            owner.clash_recovery_timer -= 1
-            owner.state = owner.IDLE
+        if owner.action_lock_timer > 0:
+            owner.action_lock_timer -= 1
+            owner.state = owner.RECOIL
             owner.update_animation()
             return True
         

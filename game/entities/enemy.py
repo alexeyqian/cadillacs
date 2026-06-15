@@ -74,7 +74,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
         # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
         # and the enemy cannot instantly resume pressure either.
-        self.clash_recovery_timer = 0
+        self.action_lock_timer = 0
         self.clash_recovery_duration = 12
         # hit reaction # enemy gets briefly white when hit by player
         self.knockback_velocity = 0
