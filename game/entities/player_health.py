@@ -7,9 +7,10 @@ class PlayerHealth:
         self.hit_timer = 0
         self.respawn_timer = 0
 
-    def take_damage(self, damage):
+    # A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
+    def take_damage(self, damage, hit_stun_bonus=0):
         self.hp -= damage
-        self.hit_timer = self.hit_stun_duration
+        self.hit_timer = self.hit_stun_duration + hit_stun_bonus
 
         if self.hp <= 0:
             self.hp = 0

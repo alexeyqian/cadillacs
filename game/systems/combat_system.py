@@ -24,6 +24,32 @@ def handle_player_attack_collision(game_state):
         return
     if player.combat.already_hit_enemy:
         return
+    # Rule: if the player is attacking and an enemy active attack overlaps the player’s counter_hurt_rect, 
+    # the player gets hit and their combo cancels. 
+    # This check should happen before the player’s attack damages enemies.
+    counter_hurt_rect = player.get_counter_hurt_rect()
+    if counter_hurt_rect:
+        for enemy in enemies:
+            if enemy.state != enemy.ATTACK:
+                continue
+            # prevent the same enemy attack from counter-hitting more than once.
+            if enemy.attack_has_hit:
+                continue
+
+            enemy_attack_rect = enemy.get_attack_rect()
+            if not enemy_attack_rect:
+                continue
+
+            active_start = enemy.attack_windup
+            active_end = enemy.attack_windup + enemy.attack_active
+            enemy_attack_is_active = active_start <= enemy.attack_timer < active_end
+
+            if enemy_attack_is_active and enemy_attack_rect.colliderect(counter_hurt_rect):
+                # hit stun bonus here: A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
+                player.take_damage(enemy.attack_damage, hit_stun_bonus=10)
+                enemy.attack_has_hit = True
+                create_hit_spark(game_state, enemy_attack_rect, counter_hurt_rect, enemy.facing_right)
+                return
 
     if player.state == player.GRAB_KNEE:
         enemy = player.grab.grabbed_enemy

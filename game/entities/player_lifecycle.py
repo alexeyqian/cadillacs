@@ -20,7 +20,7 @@ class PlayerLifecycle:
         owner.animation_controller.update(owner)
         return True
 
-    def take_damage(self, owner, damage):
+    def take_damage(self, owner, damage, hit_stun_bonus=0):
         if owner.state == owner.DEAD:
             return
 
@@ -31,7 +31,7 @@ class PlayerLifecycle:
         owner.combat.cancel_attack()
         owner.grab.grabbed_enemy = None
 
-        lost_life = owner.health.take_damage(damage)
+        lost_life = owner.health.take_damage(damage, hit_stun_bonus)
         owner.state_machine.change_to(owner, owner.HIT)
 
         if lost_life:

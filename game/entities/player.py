@@ -149,5 +149,5 @@ class Player:
     def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
         self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
 
-    def take_damage(self, damage):
-        self.lifecycle.take_damage(self, damage)
+    def take_damage(self, damage, hit_stun_bonus=0):
+        self.lifecycle.take_damage(self, damage, hit_stun_bonus)
