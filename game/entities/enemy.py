@@ -83,7 +83,9 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         # it should reposition toward an open side instead of just pressing into the player. 
         # This makes groups look more intentional.
         self.flank_target_side = None
+        self.flank_target_y_offset = 0
         self.flank_offset_x = ENEMY_FLANK_OFFSET_X
+        self.flank_offset_y = ENEMY_FLANK_OFFSET_Y
         # avoid make enemies jitter between left/right if counts are close. 
         # give each flank decision a short commitment timer.
         self.flank_decision_timer = 0
@@ -229,11 +231,23 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
             self.flank_target_side = "left"
         else:
             self.flank_target_side = "right"
+            
+        same_side_count = left_count if self.flank_target_side == "left" else right_count
+        if same_side_count % 2 == 0:
+            self.flank_target_y_offset = -self.flank_offset_y
+        else:
+            self.flank_target_y_offset = self.flank_offset_y
 
         self.flank_decision_timer = self.flank_decision_duration
 
-    def get_flank_target_position(self, player):
-        if self.flank_target_side == "left":
-            return player.x - self.flank_offset_x, player.y
+    def clear_flank_target(self):
+        self.flank_target_side = None
+        self.flank_target_y_offset = 0
+        self.flank_decision_timer = 0
 
-        return player.x + self.flank_offset_x, player.y
+    def get_flank_target_position(self, player):
+        target_y = player.y + self.flank_target_y_offset
+        if self.flank_target_side == "left":
+            return player.x - self.flank_offset_x, target_y
+
+        return player.x + self.flank_offset_x, target_y
