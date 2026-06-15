@@ -13,8 +13,16 @@ class PlayerCombat:
         # J punch 1, J punch 2, J punch 3
         self.combo_step = 0
         self.combo_timer = 0
+        # add a short lockout after ATTACK_3, 
+        # so the finisher cannot immediately loop back into ATTACK_1.
+        # expected feel: ATTACK_1 -> ATTACK_2 -> ATTACK_3 -> tiny recovery pause
+        self.attack_recovery_timer = 0
+        self.third_hit_recovery_duration = 10
 
     def update_timers(self, owner):
+        if self.attack_recovery_timer > 0:
+            self.attack_recovery_timer -= 1
+
         if self.combo_timer > 0:
             self.combo_timer -= 1
         else:
@@ -23,12 +31,21 @@ class PlayerCombat:
         if self.is_attacking:
             self.attack_timer -= 1
             if self.attack_timer <= 0:
+                finished_state = owner.state
                 self.is_attacking = False
+
+                if finished_state == owner.ATTACK_3:
+                    self.attack_recovery_timer = self.third_hit_recovery_duration
+                    self.combo_timer = 0
+                    self.combo_step = 0
+
                 if owner.state != owner.DEAD:
                     owner.state_machine.change_to(owner, owner.IDLE)
 
     def start_attack(self, owner):
         if self.is_attacking:
+            return
+        if self.attack_recovery_timer > 0:
             return
 
         self.is_attacking = True
@@ -84,15 +101,15 @@ class PlayerCombat:
         base_damage = FIST_DAMAGE
 
         if owner.state == owner.ATTACK_1:
-            base_damage = FIST_DAMAGE
+            base_damage = FIST_DAMAGE - 2
         elif owner.state == owner.ATTACK_2:
-            base_damage = FIST_DAMAGE + 4
+            base_damage = FIST_DAMAGE
         elif owner.state == owner.ATTACK_3:
-            base_damage = FIST_DAMAGE + 8
+            base_damage = FIST_DAMAGE + 4
         elif owner.state == owner.RUN_ATTACK:
-            base_damage = FIST_DAMAGE + 6
+            base_damage = FIST_DAMAGE
         elif owner.state == owner.JUMP_ATTACK:
-            base_damage = FIST_DAMAGE + 6
+            base_damage = FIST_DAMAGE
         elif owner.state == owner.GRAB_KNEE:
             base_damage = PLAYER_GRAB_KNEE_DAMAGE
 
@@ -100,4 +117,4 @@ class PlayerCombat:
         if weapon and not weapon.is_ranged:
             base_damage += weapon.damage
 
-        return base_damage
+        return int(base_damage)
