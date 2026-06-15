@@ -1,4 +1,6 @@
 import pygame
+# module import is the right choice for mutable runtime flags
+import game.settings as settings
 from game.settings import *
 from game.colors import *
 
@@ -242,7 +244,7 @@ def main_draw_ui(game_state):
         return
 
 def draw_player_debug_boxes(screen, level, camera, player):
-    if not SHOW_COMBAT_BOXES:
+    if not settings.SHOW_COMBAT_BOXES:
         return
 
     collision_rect = player.get_collision_rect()

@@ -1,5 +1,7 @@
 import os
 import pygame
+# used for dynamic setting values
+import game.settings as settings
 from game.settings import *
 from game.camera import Camera
 from game.level.level import Level
@@ -181,6 +183,8 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
+                if event.key == pygame.K_F1:
+                    settings.SHOW_COMBAT_BOXES = not settings.SHOW_COMBAT_BOXES
                 # todo: insert coin as credit, only use for dev
                 if event.key == pygame.K_5:
                     game_state.credits += 1
