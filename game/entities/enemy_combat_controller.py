@@ -6,23 +6,34 @@ class EnemyCombatController:
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
 
+    # Enemy attack has explicit windup frames
+    # Enemy attack only damages during active frames
+    # Enemy attack has explicit recovery before it can act again
     def update_attack(self, owner, player):
         owner.face_player(player)
         owner.attack_timer += 1
 
         attack_rect = owner.get_attack_rect()
         player_hurt_rect = player.get_hurt_rect()
+        
+        active_start = owner.attack_windup
+        active_end = owner.attack_windup + owner.attack_active
+        is_active = active_start <= owner.attack_timer < active_end
 
-        if attack_rect and player_hurt_rect and not owner.attack_has_hit:
+        if (is_active and attack_rect and player_hurt_rect 
+            and not owner.attack_has_hit):
             if attack_rect.colliderect(player_hurt_rect):
                 player.take_damage(owner.attack_damage)
                 owner.attack_has_hit = True
 
-        animation = owner.animation_controller.get_current_animation()
-        is_last_frame = animation.current_frame == len(animation.frames) - 1
-        last_frame_finished = animation.timer >= animation.frame_duration - 1
-        # enemy attack hitbox is active for the visible final attack frame
-        if is_last_frame and last_frame_finished:
+        attack_total_duration = (
+            owner.attack_windup
+            + owner.attack_active
+            + owner.attack_recovery
+        )
+
+        if owner.attack_timer >= attack_total_duration:
             owner.state = owner.PATROL
+            owner.attack_timer = 0
             owner.attack_has_hit = False
             owner.attack_cooldown = owner.attack_cooldown_duration

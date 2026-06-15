@@ -11,19 +11,32 @@ class FrameData:
     attack_rect: Optional[tuple]
     
 class FrameAnimation:
-    def __init__(self, frames, frame_duration=8):
+    def __init__(self, frames, frame_duration=8, loop=True):
         self.frames = frames
         self.frame_duration = frame_duration
         self.current_frame = 0
         self.timer = 0
-        
+        # add one-shot animation support, then use it for enemy attacks.
+        self.loop = loop
+    
+    # Enemy attack animation plays once
+    # Enemy holds final attack/follow through frame during remaining recovery
+    # Animation no longer loops while attack_timer is still running
     def update(self):
         self.timer += 1
-        if self.timer >= self.frame_duration:
-            self.timer = 0
-            self.current_frame += 1
-            if self.current_frame >= len(self.frames):
-                self.current_frame = 0
+        if self.timer < self.frame_duration:
+            return
+
+        self.timer = 0
+        self.current_frame += 1
+
+        if self.current_frame < len(self.frames):
+            return
+
+        if self.loop:
+            self.current_frame = 0
+        else:
+            self.current_frame = len(self.frames) - 1
 
     def get_image(self):
         return self.frames[self.current_frame].image

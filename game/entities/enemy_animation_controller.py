@@ -43,7 +43,7 @@ class EnemyAnimationController:
 
         self.animation_manager.add_animation(owner.IDLE, FrameAnimation(idle_frames, idle_dur))
         self.animation_manager.add_animation(owner.WALK, FrameAnimation(walk_frames, walk_dur))
-        self.animation_manager.add_animation(owner.ATTACK, FrameAnimation(attack_frames, attack_dur))
+        self.animation_manager.add_animation(owner.ATTACK, FrameAnimation(attack_frames, attack_dur, loop=False))
         self.animation_manager.add_animation(owner.HIT, FrameAnimation(hit_frames, hit_dur))
         self.animation_manager.add_animation(owner.DEAD, FrameAnimation(dead_frames, dead_dur))
 
