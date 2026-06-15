@@ -155,3 +155,11 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
     def get_attack_rect(self):
         return self.hitboxes.get_attack_rect(self)
+    
+    def is_attack_active(self):
+        active_start = self.attack_windup
+        active_end = self.attack_windup + self.attack_active
+        return active_start <= self.attack_timer < active_end
+
+    def get_attack_total_duration(self):
+        return self.attack_windup + self.attack_active + self.attack_recovery

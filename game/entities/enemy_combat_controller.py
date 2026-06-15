@@ -15,24 +15,15 @@ class EnemyCombatController:
 
         attack_rect = owner.get_attack_rect()
         player_hurt_rect = player.get_hurt_rect()
-        
-        active_start = owner.attack_windup
-        active_end = owner.attack_windup + owner.attack_active
-        is_active = active_start <= owner.attack_timer < active_end
 
-        if (is_active and attack_rect and player_hurt_rect 
+        if (owner.is_attack_active() 
+            and attack_rect and player_hurt_rect 
             and not owner.attack_already_hit):
             if attack_rect.colliderect(player_hurt_rect):
                 player.take_damage(owner.attack_damage)
                 owner.attack_already_hit = True
 
-        attack_total_duration = (
-            owner.attack_windup
-            + owner.attack_active
-            + owner.attack_recovery
-        )
-
-        if owner.attack_timer >= attack_total_duration:
+        if owner.attack_timer >= owner.get_attack_total_duration():
             owner.state = owner.PATROL
             owner.attack_timer = 0
             owner.attack_already_hit = False

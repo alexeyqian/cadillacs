@@ -5,7 +5,11 @@ class EnemyReactionController:
         owner.death_timer = 30
         owner.death_timer_started = False
 
+    # temp for renaming
     def take_damage(self, owner, damage, attacker_x):
+        self.apply_hit(owner, damage, attacker_x)
+
+    def apply_hit(self, owner, damage, attacker_x):
         if owner.state == owner.DEAD:
             return
 

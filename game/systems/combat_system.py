@@ -24,6 +24,8 @@ def handle_player_attack_collision(game_state):
         return
     if player.combat.attack_connected:
         return
+    
+    # COUNTER-HIT BLOCK
     # Rule: if the player is attacking and an enemy active attack overlaps the player’s counter_hurt_rect, 
     # the player gets hit and their combo cancels. 
     # This check should happen before the player’s attack damages enemies.
@@ -40,11 +42,8 @@ def handle_player_attack_collision(game_state):
             if not enemy_attack_rect:
                 continue
 
-            active_start = enemy.attack_windup
-            active_end = enemy.attack_windup + enemy.attack_active
-            enemy_attack_is_active = active_start <= enemy.attack_timer < active_end
-
-            if enemy_attack_is_active and enemy_attack_rect.colliderect(counter_hurt_rect):
+            if (enemy.is_attack_active() 
+                and enemy_attack_rect.colliderect(counter_hurt_rect)):
                 # hit stun bonus here: A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
                 player.take_damage(enemy.attack_damage, hit_stun_bonus=10)
                 enemy.attack_already_hit = True
