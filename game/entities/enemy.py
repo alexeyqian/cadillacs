@@ -99,6 +99,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.attack_damage = config.attack_damage
         self.attack_cooldown_duration = config.attack_cooldown_duration
         self.hit_stun_duration = config.hit_stun_duration
+        self.hit_interrupt_damage_threshold = config.hit_interrupt_damage_threshold
         self.thrown_damage = config.thrown_damage
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale

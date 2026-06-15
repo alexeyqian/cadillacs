@@ -10,13 +10,15 @@ class EnemyReactionController:
             return
 
         died = owner.health.take_damage(damage)
-        owner.hit_timer = owner.hit_stun_duration
-        owner.state = owner.HIT
+        should_interrupt = damage >= owner.hit_interrupt_damage_threshold
+        if should_interrupt:
+            owner.hit_timer = owner.hit_stun_duration
+            owner.state = owner.HIT
 
-        if attacker_x < owner.x:
-            owner.knockback_velocity = 10
-        else:
-            owner.knockback_velocity = -10
+            if attacker_x < owner.x:
+                owner.knockback_velocity = 10
+            else:
+                owner.knockback_velocity = -10
 
         if owner.health.hp > 0 and owner.should_knockdown_from_damage(damage):
             owner.knockdown()
