@@ -4,7 +4,7 @@ class EnemyActionController:
             owner.update_patrol()
 
         elif owner.state == owner.CHASE:
-            owner.update_chasing(dx, dy)
+            owner.update_chasing(player, dx, dy)
             owner.separate_from_other_enemies(enemies)
 
         elif owner.state == owner.ATTACK:

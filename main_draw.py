@@ -131,7 +131,7 @@ def main_draw_ui(game_state):
     hp_width = int(200 * (player.health.hp / player.health.max_hp))
     pygame.draw.rect(screen, GREEN_COLOR, (UI_FIRST_X,UI_FIRST_Y+UI_LINE_HEIGHT,hp_width,20))
     hp_text = font.render(f"HP: {int(player.health.hp)}/{player.health.max_hp}", True, BLACK_COLOR)
-    screen.blit(hp_text, (240, UI_FIRST_Y+UI_LINE_HEIGHT))
+    screen.blit(hp_text, (240, UI_FIRST_Y + UI_LINE_HEIGHT))
 
     # control
     #control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, BLACK_COLOR)
@@ -155,7 +155,7 @@ def main_draw_ui(game_state):
         if weapon.is_ranged:
             ammo_str = f" Ammo:{weapon.ammo}"
         weapon_text = font.render(f"Weapon:{weapon_name}{ammo_str}",True,BLACK_COLOR)
-        screen.blit(weapon_text,(650, UI_FIRST_Y))
+        screen.blit(weapon_text,(650, UI_FIRST_Y + 2 * UI_LINE_HEIGHT))
 
     # debug UI
     player_feet_x, player_feet_y = player.get_logical_rect().midbottom
@@ -163,7 +163,7 @@ def main_draw_ui(game_state):
                 f"Player feet x:{int(player_feet_x)} y:{int(player_feet_y)} State:{player.state} "
                 f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
     player_text = small_font.render(player_str,True, BLACK_COLOR)
-    screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y+2*UI_LINE_HEIGHT))
+    screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y + 3 * UI_LINE_HEIGHT))
     
     if settings.SHOW_COMBAT_BOXES:
         active_slots = 0
@@ -174,9 +174,8 @@ def main_draw_ui(game_state):
                 active_slots += 1
                 max_slots = getattr(enemy, "max_melee_attackers", None) or max_slots
 
-        slot_text = small_font.render(f"Attack Slots: {active_slots}/{max_slots}",
-            True,BLACK_COLOR)
-        screen.blit(slot_text, (UI_FIRST_X, UI_FIRST_Y + 3 * UI_LINE_HEIGHT))
+        slot_text = small_font.render(f"Attack Slots: {active_slots}/{max_slots}",True,BLACK_COLOR)
+        screen.blit(slot_text, (UI_FIRST_X, UI_FIRST_Y + 4 * UI_LINE_HEIGHT))
     
     # end of debug text
 

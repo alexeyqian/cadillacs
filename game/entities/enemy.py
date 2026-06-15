@@ -78,6 +78,11 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         # Enemy releases slot when attack ends, flinches, dies, or clashes
         # Attack limit becomes more reliable and easier to reason about
         self.has_attack_slot = False
+        #  if an enemy is in range but cannot attack because another melee enemy owns the slot, 
+        # it should reposition toward an open side instead of just pressing into the player. 
+        # This makes groups look more intentional.
+        self.flank_target_side = None
+        self.flank_offset_x = 120
 
         # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
         # and the enemy cannot instantly resume pressure either.
@@ -197,3 +202,29 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         if self.x < player.x:
             return "left"
         return "right"
+    
+    def set_flank_target(self, player, enemies):
+        left_count = 0
+        right_count = 0
+
+        for enemy in enemies:
+            if enemy is self:
+                continue
+            if enemy.state in [enemy.DEAD, enemy.GRABBED, enemy.THROWN, enemy.KNOCKDOWN]:
+                continue
+
+            if enemy.x < player.x:
+                left_count += 1
+            else:
+                right_count += 1
+
+        if left_count <= right_count:
+            self.flank_target_side = "left"
+        else:
+            self.flank_target_side = "right"
+
+    def get_flank_target_position(self, player):
+        if self.flank_target_side == "left":
+            return player.x - self.flank_offset_x, player.y
+
+        return player.x + self.flank_offset_x, player.y

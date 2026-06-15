@@ -16,8 +16,8 @@ class EnemyAIMixin:
     def update_patrol(self):
         self.movement.update_patrol(self)
 
-    def update_chasing(self, dx, dy):
-        self.movement.update_chasing(self, dx, dy)
+    def update_chasing(self, player, dx, dy):
+        self.movement.update_chasing(self,player, dx, dy)
 
     def separate_from_other_enemies(self, enemies):
         self.movement.separate_from_other_enemies(self, enemies)

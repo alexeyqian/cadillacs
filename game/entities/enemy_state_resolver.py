@@ -6,11 +6,17 @@ class EnemyStateResolver:
             return
 
         if self.can_attack_player(owner, player, distance_x, distance_y, enemies):
+            owner.flank_target_side = None
             owner.start_attack()
         elif distance_x <= owner.detect_range:
+            if self.should_flank(owner, player, distance_x, distance_y, enemies):
+                owner.set_flank_target(player, enemies)
+            else:
+                owner.flank_target_side = None
             # todo: replace with entry function like: start_chase()
             owner.state = owner.CHASE
         else:
+            owner.flank_target_side = None
             # todo: replace with: start_patrol()
             owner.state = owner.PATROL
 
@@ -25,27 +31,26 @@ class EnemyStateResolver:
             return True
         # only the closest eligible melee enemy should take the slot. 
         # This makes group behavior feel more intentional.
-        if not self.is_closest_melee_attacker(owner, player, enemies):
+        if self.count_active_melee_attackers(enemies) >= self.get_max_melee_attackers(owner):
             return False
         if self.side_already_has_attacker(owner, player, enemies):
             return False
+        if not self.is_closest_melee_attacker_on_side(owner, player, enemies):
+            return False
 
-        return self.count_active_melee_attackers(enemies) < self.get_max_melee_attackers(owner)
+        return True
     
-    def is_closest_melee_attacker(self, owner, player, enemies):
+    def is_closest_melee_attacker_on_side(self, owner, player, enemies):
         closest_enemy = owner
         closest_distance = float("inf")
 
         for enemy in enemies:
             if not self.is_eligible_melee_attacker(enemy, player):
                 continue
-
-            dx = abs(enemy.x - player.x)
-            dy = abs(enemy.y - player.y)
-
-            if dx > enemy.attack_range or dy > enemy.attack_lane_range:
+            if enemy.get_side_of_player(player) != owner.get_side_of_player(player):
                 continue
 
+            dx = abs(enemy.x - player.x)
             if dx < closest_distance:
                 closest_distance = dx
                 closest_enemy = enemy
@@ -94,3 +99,17 @@ class EnemyStateResolver:
             if enemy.has_attack_slot:
                 count += 1
         return count
+    
+    def should_flank(self, owner, player, distance_x, distance_y, enemies):
+        if owner.can_bypass_attack_slot_limit():
+            return False
+        if not owner.uses_melee_attack_slot():
+            return False
+        if distance_x > owner.attack_range:
+            return False
+        if distance_y > owner.attack_lane_range:
+            return False
+        if self.count_active_melee_attackers(enemies) < self.get_max_melee_attackers(owner):
+            return False
+
+        return True
