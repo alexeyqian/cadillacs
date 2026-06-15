@@ -2,11 +2,13 @@ class EnemyCombatController:
     def start_attack(self, owner):
         owner.state = owner.ATTACK
         owner.attack_has_hit = False
+        owner.attack_timer = 0
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
 
     def update_attack(self, owner, player):
         owner.face_player(player)
+        owner.attack_timer += 1
 
         attack_rect = owner.get_attack_rect()
         player_hurt_rect = player.get_hurt_rect()

@@ -8,8 +8,10 @@ class EnemyStateResolver:
             and distance_x <= owner.attack_range
             and distance_y <= owner.attack_lane_range
         ):
-            owner.state = owner.ATTACK
+            owner.start_attack()
         elif distance_x <= owner.detect_range:
+            # todo: replace with entry function like: start_chase()
             owner.state = owner.CHASE
         else:
+            # todo: replace with: start_patrol()
             owner.state = owner.PATROL

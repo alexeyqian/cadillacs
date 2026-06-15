@@ -62,6 +62,16 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.patrol_direction = 1
         self.attack_has_hit = False
         self.attack_cooldown = 0
+        
+        # new design
+        # give every enemy attack a clean timer 
+        # so the next chunk can use windup / active / recovery 
+        # instead of relying only on animation frame position.
+        self.attack_timer = 0
+        self.attack_windup = 20
+        self.attack_active = 8
+        self.attack_recovery = 25
+        
         # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
         # and the enemy cannot instantly resume pressure either.
         self.clash_recovery_timer = 0
@@ -98,10 +108,17 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.speed = config.speed
         self.patrol_distance = config.patrol_distance
         self.detect_range = config.detect_range
+
         self.attack_range = config.attack_range
         self.attack_lane_range = config.attack_lane_range
+
+        self.attack_windup = getattr(config, "attack_windup", self.attack_windup)
+        self.attack_active = getattr(config, "attack_active", self.attack_active)
+        self.attack_recovery = getattr(config, "attack_recovery", self.attack_recovery)
+
         self.attack_damage = config.attack_damage
         self.attack_cooldown_duration = config.attack_cooldown_duration
+
         self.hit_stun_duration = config.hit_stun_duration
         self.hit_interrupt_damage_threshold = config.hit_interrupt_damage_threshold
         self.thrown_damage = config.thrown_damage
