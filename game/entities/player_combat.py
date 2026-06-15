@@ -97,6 +97,15 @@ class PlayerCombat:
         self.already_hit_enemy = False
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
+    # enemy hits should fully cancel the player’s combo.
+    def cancel_attack(self):
+        self.is_attacking = False
+        self.attack_timer = 0
+        self.already_hit_enemy = False
+        self.combo_step = 0
+        self.combo_timer = 0
+        self.attack_recovery_timer = 0
+
     def attack_damage(self, owner):
         base_damage = FIST_DAMAGE
 

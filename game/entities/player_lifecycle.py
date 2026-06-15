@@ -24,6 +24,13 @@ class PlayerLifecycle:
         if owner.state == owner.DEAD:
             return
 
+        # Enemy lands hit -> player attack is canceled
+        # Enemy lands hit -> combo step resets
+        # Enemy lands hit -> grabbed enemy is released
+        # Player must restart pressure after recovering
+        owner.combat.cancel_attack()
+        owner.grab.grabbed_enemy = None
+
         lost_life = owner.health.take_damage(damage)
         owner.state_machine.change_to(owner, owner.HIT)
 
