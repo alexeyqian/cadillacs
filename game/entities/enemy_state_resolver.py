@@ -34,7 +34,7 @@ class EnemyStateResolver:
             return True
         # only the closest eligible melee enemy should take the slot. 
         # This makes group behavior feel more intentional.
-        if self.count_active_melee_attackers(enemies) >= self.get_max_melee_attackers(owner):
+        if self.count_active_melee_attackers(enemies) >= self.get_melee_attack_slot_limit(owner):
             return False
         if self.side_already_has_attacker(owner, player, enemies):
             return False
@@ -94,7 +94,7 @@ class EnemyStateResolver:
         return False
     
     def get_melee_attack_slot_limit(self, owner):
-        return getattr(owner, "melee_attack_slot_limit", MAX_MELEE_ATTACKERS)
+        return getattr(owner, "melee_attack_slot_limit", None) or MAX_MELEE_ATTACKERS
     
     def count_active_melee_attackers(self, enemies):
         count = 0

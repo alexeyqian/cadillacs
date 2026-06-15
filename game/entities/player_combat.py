@@ -93,7 +93,7 @@ class PlayerCombat:
 
                 finished_move = PLAYER_MOVES.get(finished_state)
                 if finished_move and finished_move.action_lock > 0:
-                    self.action_lock_timer = self.third_hit_recovery_duration
+                    self.action_lock_timer = finished_move.action_lock
                     self.combo_timer = 0
                     self.combo_step = 0
 
@@ -172,7 +172,7 @@ class PlayerCombat:
 
     def get_attack_damage(self, owner):
         move_data = PLAYER_MOVES.get(owner.state)
-        base_damage = move_data.get(owner.state, FIST_DAMAGE)
+        base_damage = move_data.damage if move_data else FIST_DAMAGE
 
         weapon = owner.weapon_slot.weapon
         if weapon and not weapon.is_ranged:
