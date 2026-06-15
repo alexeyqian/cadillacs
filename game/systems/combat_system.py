@@ -13,7 +13,7 @@ def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True):
     spark_y = attack_rect.top
     game_state.hit_sparks.append(HitSpark(spark_x, spark_y))
 
-# todo: refactory
+# todo: refactoring to be easy to understand and maintainable
 def handle_player_attack_collision(game_state):
     player = game_state.player
     enemies = game_state.enemies
@@ -43,6 +43,21 @@ def handle_player_attack_collision(game_state):
 
     # attack enemies
     for enemy in enemies:
+        # add a simple clash/parry when player and enemy attack boxes collide.
+        # if the player’s fist meets the enemy’s active fist, nobody takes damage. Both attacks cancel. 
+        # It prevents the player from always winning by punching into enemy attack frames.
+        enemy_attack_rect = enemy.get_attack_rect()
+        if enemy.state == enemy.ATTACK and enemy_attack_rect:
+            if attack_rect.colliderect(enemy_attack_rect):
+                player.combat.cancel_attack()
+                if player.state != player.DEAD:
+                    player.state_machine.change_to(player, player.IDLE)
+                enemy.state = enemy.PATROL
+                enemy.attack_has_hit = False
+                enemy.attack_cooldown = max(enemy.attack_cooldown, 20)
+                create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right)
+                return
+
         enemy_hurt_rect = enemy.get_hurt_rect()
         if enemy_hurt_rect and attack_rect.colliderect(enemy_hurt_rect):
             damage = player.combat.attack_damage(player)

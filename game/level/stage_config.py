@@ -11,23 +11,17 @@ EPISODE_1_STAGES = [
         "waves": [
             {
                 "trigger_x": 900,
-                "max_active": 3,
+                "max_active": 2,
                 "spawns": [
                     {
                         "enemy_type": "ferris",
-                    },
-                    {
-                        "enemy_type": "ferris",
-                    },
-                    {
-                        "enemy_type": "ferris",
-                        "side": "left",
-                    },
+                        "count": 2
+                    }
                 ],
             },
             {
                 "trigger_x": 1600,
-                "max_active": 3,
+                "max_active": 2,
                 "spawns": [
                     {
                         "enemy_type": "ferris",
@@ -35,10 +29,7 @@ EPISODE_1_STAGES = [
                     {
                         "enemy_type": "gneiss",
                         "side": "left",
-                    },
-                    {
-                        "enemy_type": "black_elmer",
-                    },
+                    }
                 ],
             },
             {
@@ -47,11 +38,10 @@ EPISODE_1_STAGES = [
                 "spawns": [
                     {
                         "enemy_type": "gneiss",
-                        "count": 3,
+                        "count": 2,
                     },
                     {
                         "enemy_type": "black_elmer",
-                        "count": 2,
                         "side": "left",
                     },
                 ],

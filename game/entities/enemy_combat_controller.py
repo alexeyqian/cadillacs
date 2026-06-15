@@ -17,8 +17,10 @@ class EnemyCombatController:
                 owner.attack_has_hit = True
 
         animation = owner.animation_controller.get_current_animation()
-
-        if animation.current_frame == len(animation.frames) - 1:
+        is_last_frame = animation.current_frame == len(animation.frames) - 1
+        last_frame_finished = animation.timer >= animation.frame_duration - 1
+        # enemy attack hitbox is active for the visible final attack frame
+        if is_last_frame and last_frame_finished:
             owner.state = owner.PATROL
             owner.attack_has_hit = False
             owner.attack_cooldown = owner.attack_cooldown_duration
