@@ -90,6 +90,7 @@ def main_draw_world(game_state):
     draw_exit_rect(screen, camera, level)
     draw_entity_lane_debug(screen, level, camera, player, enemies)
     draw_player_debug_boxes(screen, level, camera, player)
+    draw_projectile_lane_debug(screen, level, camera, projectiles, enemy_projectiles)
 
 def draw_exit_rect(screen, camera, level):
     if not SHOW_EXIT_RECT:
@@ -375,3 +376,29 @@ def draw_entity_lane_debug(screen, level, camera, player, enemies):
         enemy_lane = lane_system.get_lane_index(enemy.y)
         enemy_label = font.render(f"E LANE {enemy_lane}", True, YELLOW_COLOR)
         screen.blit(enemy_label, (int(enemy.x - camera.x - 30), int(enemy.y + 20)))
+
+def draw_projectile_lane_debug(screen, level, camera, projectiles, enemy_projectiles):
+    if not settings.SHOW_COMBAT_BOXES:
+        return
+
+    font = pygame.font.SysFont(None, 18)
+
+    all_projectiles = []
+    all_projectiles.extend(projectiles)
+    all_projectiles.extend(enemy_projectiles)
+
+    for projectile in all_projectiles:
+        if not projectile.active:
+            continue
+
+        lane_index = level.get_lane_index(projectile.lane_y)
+        label = font.render(
+            f"L{lane_index} R{projectile.lane_reach}",
+            True,
+            YELLOW_COLOR
+        )
+
+        screen.blit(
+            label,
+            (int(projectile.x - camera.x - 18), int(projectile.y - 28))
+        )

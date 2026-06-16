@@ -233,3 +233,19 @@ def handle_player_thrown_enemy_collision(game_state):
                 enemy_rect = enemy.get_logical_rect()
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,150,0)))
                 thrown_enemy.thrown_hit_targets.add(id(enemy))
+
+def handle_enemy_projectile_collision(game_state):
+    player = game_state.player
+    player_hurt_rect = player.get_hurt_rect()
+
+    for projectile in game_state.enemy_projectiles:
+        if not projectile.active:
+            continue
+
+        lane_distance = game_state.level.get_lane_distance(projectile.lane_y, player.y)
+        if lane_distance > projectile.lane_reach:
+            continue
+
+        if projectile.get_rect().colliderect(player_hurt_rect):
+            player.take_damage(projectile.damage)
+            projectile.active = False

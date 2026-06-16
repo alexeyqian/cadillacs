@@ -15,7 +15,6 @@ from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_state_resolver import EnemyStateResolver
-from game.entities.enemy_action_controller import EnemyActionController
 from game.entities.enemy_update_controller import EnemyUpdateController
 from game.entities.enemy_loot_controller import EnemyLootController
 
@@ -114,7 +113,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.reactions = EnemyReactionController()
         self.lifecycle = EnemyLifecycleController()
         self.state_resolver = EnemyStateResolver()
-        self.action_controller = EnemyActionController()
         self.update_controller = EnemyUpdateController()
         self.loot_controller = EnemyLootController()
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
