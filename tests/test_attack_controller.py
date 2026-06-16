@@ -88,6 +88,28 @@ class AttackControllerTests(unittest.TestCase):
         self.assertFalse(controller.attack_connected)
         self.assertFalse(controller.has_hit_target(target))
 
+    def test_target_limit_blocks_extra_targets(self):
+        attack = PlayerAttackData(
+            damage=10,
+            duration=3,
+            phase=AttackPhaseData(windup=0, active=1, recovery=2),
+            max_targets=2,
+        )
+        first_target = object()
+        second_target = object()
+        third_target = object()
+        controller = AttackController()
+
+        controller.start_attack("wide_swing", attack)
+
+        self.assertTrue(controller.can_hit_target(first_target))
+        controller.mark_target_hit(first_target)
+        self.assertFalse(controller.can_hit_target(first_target))
+        self.assertTrue(controller.can_hit_target(second_target))
+        controller.mark_target_hit(second_target)
+        self.assertFalse(controller.can_hit_more_targets())
+        self.assertFalse(controller.can_hit_target(third_target))
+
 
 if __name__ == "__main__":
     unittest.main()

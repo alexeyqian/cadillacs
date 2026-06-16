@@ -10,6 +10,7 @@ class AttackDataValidationTests(unittest.TestCase):
             with self.subTest(attack_name=attack_name):
                 self.assertGreater(attack.duration, 0)
                 self.assertGreater(attack.active, 0)
+                self.assertGreater(attack.max_targets, 0)
                 self.assertLessEqual(attack.phase.total_duration, attack.duration)
 
     def test_player_damaging_attacks_have_positive_hitboxes(self):
@@ -36,6 +37,7 @@ class AttackDataValidationTests(unittest.TestCase):
             with self.subTest(enemy_id=enemy_id):
                 self.assertGreater(config.attack.duration, 0)
                 self.assertGreater(config.attack.active, 0)
+                self.assertGreater(config.attack.max_targets, 0)
                 self.assertEqual(config.attack.phase.total_duration, config.attack.duration)
 
 

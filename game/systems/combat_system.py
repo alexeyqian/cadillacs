@@ -23,7 +23,7 @@ def handle_player_attack_collision(game_state):
     attack_rect = player.get_attack_rect()
     if not attack_rect:
         return
-    if player.combat.attack_connected:
+    if not player.combat.can_hit_more_targets():
         return
 
     player_attack_lane_reach = player.combat.get_attack_lane_reach(player)
@@ -65,7 +65,7 @@ def handle_player_attack_collision(game_state):
 
     if player.state == player.GRAB_KNEE:
         enemy = player.grab.grabbed_enemy
-        if enemy and enemy.state != enemy.DEAD:
+        if enemy and enemy.state != enemy.DEAD and player.combat.can_hit_target(enemy):
             damage = player.combat.get_attack_damage(player)
             enemy.take_grab_knee_damage(damage)
             enemy_rect = enemy.get_logical_rect()
@@ -73,7 +73,7 @@ def handle_player_attack_collision(game_state):
                 FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), YELLOW_COLOR)
             )
             game_state.score_manager.register_hit()
-            player.combat.mark_attack_connected()
+            player.combat.mark_attack_hit(enemy)
             if enemy.state == enemy.DEAD:
                 player.grab.grabbed_enemy = None
         return
@@ -81,6 +81,9 @@ def handle_player_attack_collision(game_state):
 
     # attack enemies
     for enemy in enemies:
+        if not player.combat.can_hit_target(enemy):
+            continue
+
         # CLASH BLOCK
         # add a simple clash/parry when player and enemy attack boxes collide.
         # if the player’s fist meets the enemy’s active fist, nobody takes damage. Both attacks cancel. 
@@ -118,23 +121,27 @@ def handle_player_attack_collision(game_state):
             enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
-            player.combat.mark_attack_connected()
+            player.combat.mark_attack_hit(enemy)
             if enemy.health.hp >0 and enemy.health.max_hp >= 200:
                 heavy_hit_shake(game_state)
             if isinstance(enemy, BossEnemy):
                 boss_hit_shake(game_state)
             enemy_rect = enemy.get_hurt_rect()
             create_hit_spark(game_state, attack_rect, enemy_rect, player.facing_right, WHITE_COLOR)
-            break # ?? useless, only can attack one enemy at a time?
+            if not player.combat.can_hit_more_targets():
+                break
 
     # attack breakables
     for obj in objects:
+        if not player.combat.can_hit_target(obj):
+            continue
         if obj.destroyed:
             continue
         if attack_rect.colliderect(obj.get_rect()):
             obj.take_damage(player.combat.get_attack_damage(player))
-            player.combat.mark_attack_connected()
-            break
+            player.combat.mark_attack_hit(obj)
+            if not player.combat.can_hit_more_targets():
+                break
 
 def handle_player_projectile_collision(game_state):
     player = game_state.player

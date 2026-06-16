@@ -71,6 +71,15 @@ class PlayerCombat:
     def mark_attack_connected(self):
         self.attack_controller.mark_connected()
 
+    def mark_attack_hit(self, target):
+        self.attack_controller.mark_target_hit(target)
+
+    def can_hit_target(self, target):
+        return self.attack_controller.can_hit_target(target)
+
+    def can_hit_more_targets(self):
+        return self.attack_controller.can_hit_more_targets()
+
     def is_attack_active(self):
         return self.attack_controller.is_active()
 

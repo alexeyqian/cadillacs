@@ -38,6 +38,7 @@ class AttackController:
     def is_active(self):
         if not self.current_attack:
             return False
+        # why return true here?
         if not self.has_attack_phases():
             return True
 
@@ -82,6 +83,22 @@ class AttackController:
     def mark_target_hit(self, target):
         self.hit_targets.add(id(target))
         self.mark_connected()
+
+    def get_hit_count(self):
+        return len(self.hit_targets)
+
+    def can_hit_more_targets(self):
+        if not self.current_attack:
+            return False
+        return self.get_hit_count() < self.get_max_targets()
+
+    def can_hit_target(self, target):
+        return self.can_hit_more_targets() and not self.has_hit_target(target)
+
+    def get_max_targets(self):
+        if not self.current_attack:
+            return 0
+        return getattr(self.current_attack, "max_targets", 1)
 
     def finish_attack(self):
         finished_attack_name = self.current_attack_name

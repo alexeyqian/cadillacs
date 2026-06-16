@@ -29,6 +29,7 @@ class PlayerAttackData:
     phase: AttackPhaseData
     hitboxes: tuple = ()
     counter_hurtboxes: tuple = ()
+    max_targets: int = 1
     combo_window: int = 30
     action_lock: int = 0
     lane_reach: int = 0
@@ -60,6 +61,7 @@ class EnemyAttackData:
     hitboxes: tuple = (
         AttackHitboxData(x=72, y=-272, width=120, height=40),
     )
+    max_targets: int = 1
     clash_recovery_duration: int = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
     clash_cooldown_duration: int = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
 

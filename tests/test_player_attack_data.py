@@ -81,6 +81,20 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(combat.attack_timer, 0)
         self.assertEqual(owner.state, owner.IDLE)
 
+    def test_player_combat_uses_per_target_hit_tracking(self):
+        first_target = object()
+        second_target = object()
+        owner = FakeOwner()
+        combat = PlayerCombat()
+
+        combat.start_attack(owner)
+
+        self.assertTrue(combat.can_hit_target(first_target))
+        combat.mark_attack_hit(first_target)
+
+        self.assertFalse(combat.can_hit_target(first_target))
+        self.assertFalse(combat.can_hit_target(second_target))
+
 
 if __name__ == "__main__":
     unittest.main()
