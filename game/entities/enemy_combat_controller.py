@@ -8,6 +8,15 @@ class EnemyCombatController:
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
 
+    def start_clash_recovery(self, owner):
+        owner.state = owner.RECOIL
+        owner.action_lock_remaining = owner.clash_recovery_duration
+        owner.attack_timer = 0
+        owner.attack_decision_timer = 0
+        owner.attack_already_hit = False
+        owner.has_attack_slot = False
+        owner.attack_cooldown = max(owner.attack_cooldown, 20)
+
     # Enemy attack has explicit windup frames
     # Enemy attack only damages during active frames
     # Enemy attack has explicit recovery before it can act again
