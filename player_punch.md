@@ -78,12 +78,17 @@ ATTACK_2 -> attack_2
 ATTACK_3 -> attack_3
 ```
 
-For now, Mustapha's `attack_1`, `attack_2`, and `attack_3` all alias the same
-three-phase punch sheet. This is intentional: the code path is ready for
-distinct combo art, but the current milestone keeps the visual change small.
+Mustapha now has separate three-phase sheets for each combo punch:
 
-Later, each alias can be replaced with its own sprite sheet/config without
-changing combat timing.
+```text
+attack_1 -> assets/player/mustapha_attack_1.png
+attack_2 -> assets/player/mustapha_attack_2.png
+attack_3 -> assets/player/mustapha_attack_3.png
+```
+
+The current art is still conservative and derived from the same base punch, but
+the game now has separate animation data for each combo step. This makes later
+pose refinement much easier.
 
 ## Hitbox Design
 
@@ -138,9 +143,9 @@ should feel better, but it should also be easier to punish if whiffed.
 
 1. Watch the 3-frame punch in game and confirm the recovery posture reads well.
 2. If the punch feels too twitchy, reduce only Mustapha's `attack` FPS to 10.
-3. Replace the current `attack_1`, `attack_2`, and `attack_3` aliases with
-   distinct combo art.
-4. Retune hitboxes after distinct combo silhouettes are available.
+3. Improve the actual silhouettes for `attack_2` and `attack_3` with more
+   hand-drawn body twist and weight.
+4. Retune hitboxes after the distinct combo silhouettes are final.
 5. Consider a tiny forward nudge only on `ATTACK_3`, not on every punch.
 
 ## Non-Goals For Now
