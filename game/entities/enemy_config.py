@@ -11,6 +11,8 @@ class EnemyAttackData:
     windup: int = ENEMY_ATTACK_WINDUP
     active: int = ENEMY_ATTACK_ACTIVE
     recovery: int = ENEMY_ATTACK_RECOVERY
+    clash_recovery: int = ENEMY_ATTACK_CLASH_RECOVERY
+    clash_cooldown: int = ENEMY_ATTACK_CLASH_COOLDOWN
 
 @dataclass(frozen=True)
 class EnemyConfig:

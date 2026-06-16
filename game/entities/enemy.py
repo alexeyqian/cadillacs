@@ -55,10 +55,12 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         # instead of relying only on animation frame position.
         self.attack_timer = 0
         self.attack_decision_timer = 0
-        self.attack_delay = 20
-        self.attack_windup = 20
-        self.attack_active = 8
-        self.attack_recovery = 25
+        self.attack_delay = ENEMY_ATTACK_DELAY
+        self.attack_windup = ENEMY_ATTACK_WINDUP
+        self.attack_active = ENEMY_ATTACK_ACTIVE
+        self.attack_recovery = ENEMY_ATTACK_RECOVERY
+        self.attack_clash_recovery = ENEMY_ATTACK_CLASH_RECOVERY
+        self.attack_clash_cooldown = ENEMY_ATTACK_CLASH_COOLDOWN
 
         self.state = self.IDLE
         self.facing_right = False
@@ -89,10 +91,9 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.flank_decision_remaining = 0
         self.flank_decision_duration = ENEMY_FLANK_DECISION_DURATION
 
-        # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
+        # This keeps the clash fair on both sides: the player cannot instantly re-punch,
         # and the enemy cannot instantly resume pressure either.
         self.action_lock_remaining = 0
-        self.clash_recovery_duration = 12
         # hit reaction # enemy gets briefly white when hit by player
         self.knockback_velocity = 0
         self.hit_stun_remaining = 0
@@ -138,6 +139,8 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.attack_windup = config.attack.windup
         self.attack_active = config.attack.active
         self.attack_recovery = config.attack.recovery
+        self.attack_clash_recovery = config.attack.clash_recovery
+        self.attack_clash_cooldown = config.attack.clash_cooldown
 
         self.hit_stun_duration = config.hit_stun_duration
         self.flinch_damage_threshold = config.flinch_damage_threshold

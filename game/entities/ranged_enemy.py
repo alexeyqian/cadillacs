@@ -14,7 +14,6 @@ class RangedEnemy(Enemy):
 
         # properties special to ranged enemy
         self.pending_projectile = None
-        self.shoot_cooldown = 0
         self.shot_fired = False
 
     def update_attack(self, level, player):
@@ -40,4 +39,3 @@ class RangedEnemy(Enemy):
             self.shot_fired = False
             self.attack_already_hit = False
             self.attack_cooldown = self.attack_cooldown_duration
-            self.shoot_cooldown = 0
