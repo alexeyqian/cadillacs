@@ -161,11 +161,10 @@ Current visual finding:
 
 - The combo is technically separated into three sheets.
 - The 3-phase structure reads clearly.
-- `attack_2` and `attack_3` still look too similar because they are mostly
-  stretched variants of the same punch pose.
-- The next art pass should focus on stronger silhouettes, especially:
-  - `attack_2`: more shoulder rotation or opposite-arm balance
-  - `attack_3`: heavier body twist, more committed stance, stronger recovery
+- `attack_2` has a stronger shoulder/guard variation than the opener.
+- `attack_3` has a heavier body lean and more committed recovery.
+- These sheets are still derived from the same base punch, so the next art pass
+  can improve them further with true hand-drawn body twist and weight.
 
 ## Non-Goals For Now
 
