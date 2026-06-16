@@ -4,7 +4,8 @@ from game.colors import *
 
 class EnemyProjectile:
     def __init__(self, x, y, direction, speed, damage, 
-                lane_reach=0, width=16, height=16, shape='circle'):
+                lane_reach=0, width=16, height=16, shape='circle',
+                lane_y=None):
         # x, y means center of the object rect
         self.x = x
         self.y = y
@@ -13,7 +14,7 @@ class EnemyProjectile:
         self.direction = direction
         self.speed = speed
         self.damage = damage
-        self.lane_y = y
+        self.lane_y = y if lane_y is None else lane_y
         self.lane_reach = lane_reach
         self.shape = shape
         self.active = True
@@ -53,4 +54,3 @@ class EnemyProjectile:
         return pygame.Rect(
             self.x-self.width//2, self.y-self.height//2, 
             self.width, self.height)
-
