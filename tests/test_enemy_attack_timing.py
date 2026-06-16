@@ -2,6 +2,7 @@ import unittest
 
 from game.entities.boss_enemy import BossEnemy
 from game.entities.attack_data import AttackPhaseData, EnemyAttackData
+from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy import Enemy
 from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_reaction_controller import EnemyReactionController
@@ -9,6 +10,7 @@ from game.entities.enemy_state import EnemyState
 from game.entities.enemy_state_resolver import EnemyStateResolver
 from game.entities.raptor_enemy import RaptorEnemy
 from game.entities.ranged_enemy import RangedEnemy
+from game.settings import BAT_DAMAGE
 
 
 class AlwaysCollidingRect:
@@ -27,6 +29,15 @@ class FakeAnimationController:
 
     def reset_current_animation(self):
         self.reset = True
+
+
+class FakeHealth:
+    def __init__(self, hp=100):
+        self.hp = hp
+
+    def take_damage(self, damage):
+        self.hp -= damage
+        return self.hp <= 0
 
 
 class FakeEnemy:
@@ -63,6 +74,12 @@ class FakeEnemy:
         self.attack_already_hit = False
         self.has_attack_slot = False
         self.action_lock_remaining = 0
+        self.health = FakeHealth()
+        self.hit_stun_duration = 15
+        self.hit_stun_remaining = 0
+        self.flinch_damage_threshold = 0
+        self.attack_flinch_damage_threshold = 0
+        self.knockback_velocity = 0
         self.animation_controller = FakeAnimationController()
 
     def face_player(self, player):
@@ -82,6 +99,15 @@ class FakeEnemy:
 
     def start_attack(self):
         EnemyCombatController().start_attack(self)
+
+    def should_knockdown_from_damage(self, damage):
+        return False
+
+    def knockdown(self):
+        EnemyReactionController().knockdown(self)
+
+    def die(self):
+        EnemyReactionController().die(self)
 
 
 class FakePlayer:
@@ -224,6 +250,36 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.attack_timer, 0)
         self.assertFalse(enemy.attack_controller.is_attacking)
         self.assertFalse(enemy.has_attack_slot)
+
+    def test_heavy_attack_poise_ignores_light_flinch_during_attack(self):
+        enemy = FakeEnemy()
+        enemy.flinch_damage_threshold = 10
+        enemy.attack_flinch_damage_threshold = BAT_DAMAGE
+        enemy.start_attack()
+
+        EnemyReactionController().take_damage(enemy, BAT_DAMAGE - 1, attacker_x=-100)
+
+        self.assertEqual(enemy.state, enemy.ATTACK)
+        self.assertTrue(enemy.attack_controller.is_attacking)
+
+        EnemyReactionController().take_damage(enemy, BAT_DAMAGE, attacker_x=-100)
+
+        self.assertEqual(enemy.state, enemy.HIT)
+        self.assertFalse(enemy.attack_controller.is_attacking)
+
+    def test_enemy_configs_raise_pressure_without_removing_archetype_identity(self):
+        ferris = get_enemy_config("ferris")
+        gneiss = get_enemy_config("gneiss")
+        black_elmer = get_enemy_config("black_elmer")
+        ranged = get_enemy_config("ranged")
+
+        self.assertGreater(ferris.attack_range, 90)
+        self.assertLess(ferris.attack.cooldown, 45)
+        self.assertLess(gneiss.attack.delay, ferris.attack.delay)
+        self.assertLess(gneiss.attack.cooldown, ferris.attack.cooldown)
+        self.assertGreater(black_elmer.attack_range, ferris.attack_range)
+        self.assertEqual(black_elmer.attack_flinch_damage_threshold, BAT_DAMAGE)
+        self.assertLess(ranged.attack.cooldown, 90)
 
     def test_ranged_enemy_fires_once_during_active_window(self):
         enemy = FakeRangedEnemy()

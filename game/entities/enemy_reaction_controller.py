@@ -18,7 +18,8 @@ class EnemyReactionController:
 
         owner.attack_decision_timer = 0
         died = owner.health.take_damage(damage)
-        should_flinch = damage >= owner.flinch_damage_threshold
+        flinch_threshold = self.get_flinch_threshold(owner)
+        should_flinch = damage >= flinch_threshold
         if died:
             should_flinch = True
 
@@ -53,6 +54,16 @@ class EnemyReactionController:
 
     def should_knockdown_from_damage(self, damage):
         return damage >= 40
+
+    def get_flinch_threshold(self, owner):
+        if owner.state == owner.ATTACK:
+            return getattr(
+                owner,
+                "attack_flinch_damage_threshold",
+                getattr(owner, "flinch_damage_threshold", 0),
+            )
+
+        return getattr(owner, "flinch_damage_threshold", 0)
 
     def knockdown(self, owner):
         if owner.state == owner.DEAD:

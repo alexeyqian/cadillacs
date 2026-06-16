@@ -143,6 +143,11 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
 
         self.hit_stun_duration = config.hit_stun_duration
         self.flinch_damage_threshold = config.flinch_damage_threshold
+        self.attack_flinch_damage_threshold = (
+            config.attack_flinch_damage_threshold
+            if config.attack_flinch_damage_threshold is not None
+            else config.flinch_damage_threshold
+        )
         self.thrown_damage = config.thrown_damage
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale

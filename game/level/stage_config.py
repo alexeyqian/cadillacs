@@ -15,13 +15,13 @@ EPISODE_1_STAGES = [
                 "spawns": [
                     {
                         "enemy_type": "ferris",
-                        "count": 2
+                        "count": 3
                     }
                 ],
             },
             {
                 "trigger_x": 1600,
-                "max_active": 2,
+                "max_active": 3,
                 "spawns": [
                     {
                         "enemy_type": "ferris",
@@ -29,6 +29,7 @@ EPISODE_1_STAGES = [
                     {
                         "enemy_type": "gneiss",
                         "side": "left",
+                        "count": 2
                     }
                 ],
             },
@@ -54,7 +55,7 @@ EPISODE_1_STAGES = [
         ],
         "objects": [
             #{"kind": "breakable", "x": 880, "y": 500},
-            {"kind": "breakable", "x": 1780, "y": 500},
+            #{"kind": "breakable", "x": 1780, "y": 500},
             #{"kind": "barrel", "x": 1740, "y": 760},
             #{"kind": "breakable", "x": 2320, "y": 760},
         ],
@@ -158,7 +159,7 @@ EPISODE_1_STAGES = [
             },
         ],
         "weapons": [
-            {"type": "knife", "x": 850, "y": 760},
+            #{"type": "knife", "x": 850, "y": 760},
             #{"type": "bat", "x": 1750, "y": 760},
             #{"type": "pistol", "x": 2220, "y": 760},
         ],

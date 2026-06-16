@@ -9,11 +9,12 @@ from game.entities.loot import Loot
 class EnemyLootController:
     def create_loot(self, owner):
         roll = random.randint(1, 100)
+        # todo: design a loot drop system
+        # todo: only some configured enemy should drop loot, not every one.
+        #if roll <= 10:
+        #    return Loot(owner.x, owner.y, "health")
 
-        if roll <= 30:
-            return Loot(owner.x, owner.y, "health")
-
-        if roll <= 50:
-            return Loot(owner.x, owner.y, "ammo")
+        #if roll <= 50:
+        #    return Loot(owner.x, owner.y, "ammo")
 
         return None

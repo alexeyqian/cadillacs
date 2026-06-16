@@ -30,25 +30,42 @@ class EnemyConfig:
     # give heavy enemies poise, so weak punches still deal damage 
     # but do not always interrupt them.
     flinch_damage_threshold: int = 0
+    attack_flinch_damage_threshold: Optional[int] = None
     thrown_damage:int = THROWN_DAMAGE
     score_points: int = ENEMY_SCORE_POINTS
     sprite_scale: int  = 4
 
-# each enemy archetype now has a readable combat rhythm.
+# Each enemy archetype has a readable combat rhythm:
+# Ferris   = basic pressure, fair but less passive.
+# Gneiss   = fast striker, quicker startup and shorter cooldown.
+# Elmer    = heavy bruiser, bigger reach and attack poise.
+# Ranged   = long pressure, shorter pauses between shots.
 ENEMY_CONFIGS = {
     "ferris": EnemyConfig(
         enemy_id="ferris",
-        display_name="Ferris"
+        display_name="Ferris",
+        attack_range=105,
+        attack_lane_range=48,
+        attack=EnemyAttackData(
+            damage=ENEMY_ATTACK_DAMAGE,
+            delay=16,
+            cooldown=35,
+            phase=AttackPhaseData(windup=18, active=8, recovery=22),
+            hitboxes=(AttackHitboxData(x=72, y=-272, width=132, height=44),),
+        ),
     ),
     "gneiss": EnemyConfig(
         enemy_id="gneiss",
         display_name="Gneiss",
         max_hp=int(ENEMY_MAX_HP*1.2),
         speed=int(ENEMY_SPEED * 1.2),
+        attack_range=115,
+        attack_lane_range=50,
         attack=EnemyAttackData(
-            damage=int(ENEMY_ATTACK_DAMAGE * 1.2),
-            delay=12,
-            phase=AttackPhaseData(windup=16, active=8, recovery=22),
+            damage=int(ENEMY_ATTACK_DAMAGE * 0.9),
+            delay=10,
+            cooldown=28,
+            phase=AttackPhaseData(windup=13, active=7, recovery=18),
             hitboxes=(AttackHitboxData(x=144, y=-264, width=120, height=40),),
         ),
         score_points=int(ENEMY_SCORE_POINTS*1.2),
@@ -59,17 +76,21 @@ ENEMY_CONFIGS = {
         archetype="heavy",
         max_hp=ENEMY_MAX_HP*2,
         speed=int(ENEMY_SPEED * 0.75),
+        attack_range=125,
+        attack_lane_range=58,
         attack_lane_reach=1,
         attack=EnemyAttackData(
             damage=ENEMY_ATTACK_DAMAGE * 2,
-            delay=35,
-            phase=AttackPhaseData(windup=26, active=10, recovery=30),
-            hitboxes=(AttackHitboxData(x=128, y=-284, width=120, height=80),),
+            delay=24,
+            cooldown=50,
+            phase=AttackPhaseData(windup=24, active=11, recovery=28),
+            hitboxes=(AttackHitboxData(x=128, y=-284, width=150, height=84),),
         ),
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 4,
+        attack_flinch_damage_threshold=BAT_DAMAGE,
         score_points=int(ENEMY_SCORE_POINTS*2),
     ),
     "raptor": EnemyConfig(
@@ -98,9 +119,9 @@ ENEMY_CONFIGS = {
         attack_lane_range=60,
         attack=EnemyAttackData(
             damage=RANGED_ENEMY_ATTACK_DAMAGE,
-            delay=30,
-            cooldown=90,
-            phase=AttackPhaseData(windup=32, active=4, recovery=40),
+            delay=24,
+            cooldown=70,
+            phase=AttackPhaseData(windup=28, active=4, recovery=34),
             hitboxes=(),
         ),
         score_points=int(ENEMY_SCORE_POINTS * 1.5),
