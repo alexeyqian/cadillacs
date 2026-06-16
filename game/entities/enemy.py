@@ -59,8 +59,8 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.attack_windup = ENEMY_ATTACK_WINDUP
         self.attack_active = ENEMY_ATTACK_ACTIVE
         self.attack_recovery = ENEMY_ATTACK_RECOVERY
-        self.attack_clash_recovery = ENEMY_ATTACK_CLASH_RECOVERY
-        self.attack_clash_cooldown = ENEMY_ATTACK_CLASH_COOLDOWN
+        self.attack_clash_recovery_duration = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
+        self.attack_clash_cooldown_duration = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
 
         self.state = self.IDLE
         self.facing_right = False
@@ -139,8 +139,8 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.attack_windup = config.attack.windup
         self.attack_active = config.attack.active
         self.attack_recovery = config.attack.recovery
-        self.attack_clash_recovery = config.attack.clash_recovery
-        self.attack_clash_cooldown = config.attack.clash_cooldown
+        self.attack_clash_recovery_duration = config.attack.clash_recovery_duration
+        self.attack_clash_cooldown_duration = config.attack.clash_cooldown_duration
 
         self.hit_stun_duration = config.hit_stun_duration
         self.flinch_damage_threshold = config.flinch_damage_threshold
