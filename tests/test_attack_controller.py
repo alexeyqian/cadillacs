@@ -13,18 +13,18 @@ class AttackControllerTests(unittest.TestCase):
         )
         controller = AttackController()
 
-        controller.start_attack("ATTACK_1", attack)
+        controller.start("ATTACK_1", attack)
 
         self.assertTrue(controller.is_attacking)
         self.assertEqual(controller.attack_timer, 0)
         self.assertEqual(controller.attack_remaining, 3)
 
-        self.assertFalse(controller.update_attack_timer())
+        self.assertFalse(controller.advance())
         self.assertEqual(controller.attack_timer, 1)
         self.assertEqual(controller.attack_remaining, 2)
 
-        controller.update_attack_timer()
-        self.assertTrue(controller.update_attack_timer())
+        controller.advance()
+        self.assertTrue(controller.advance())
 
     def test_enemy_attack_phase_controls_active_window(self):
         attack = EnemyAttackData(
@@ -33,16 +33,16 @@ class AttackControllerTests(unittest.TestCase):
         )
         controller = AttackController()
 
-        controller.start_attack("enemy_punch", attack)
+        controller.start("enemy_punch", attack)
 
         self.assertFalse(controller.is_active())
-        controller.update_attack_timer()
+        controller.advance()
         self.assertFalse(controller.is_active())
-        controller.update_attack_timer()
+        controller.advance()
         self.assertTrue(controller.is_active())
-        controller.update_attack_timer()
+        controller.advance()
         self.assertTrue(controller.is_active())
-        controller.update_attack_timer()
+        controller.advance()
         self.assertFalse(controller.is_active())
 
     def test_phase_name_tracks_attack_timing(self):
@@ -52,16 +52,16 @@ class AttackControllerTests(unittest.TestCase):
         )
         controller = AttackController()
 
-        controller.start_attack("enemy_punch", attack)
+        controller.start("enemy_punch", attack)
 
         self.assertEqual(controller.get_phase_name(), "WINDUP")
-        controller.update_attack_timer()
+        controller.advance()
         self.assertEqual(controller.get_phase_name(), "WINDUP")
-        controller.update_attack_timer()
+        controller.advance()
         self.assertEqual(controller.get_phase_name(), "ACTIVE")
-        controller.update_attack_timer()
+        controller.advance()
         self.assertEqual(controller.get_phase_name(), "ACTIVE")
-        controller.update_attack_timer()
+        controller.advance()
         self.assertEqual(controller.get_phase_name(), "RECOVERY")
         self.assertEqual(
             controller.get_timing_label(),
@@ -77,13 +77,13 @@ class AttackControllerTests(unittest.TestCase):
         target = object()
         controller = AttackController()
 
-        controller.start_attack("ATTACK_1", attack)
+        controller.start("ATTACK_1", attack)
         controller.mark_target_hit(target)
 
         self.assertTrue(controller.attack_connected)
         self.assertTrue(controller.has_hit_target(target))
 
-        controller.start_attack("ATTACK_2", attack)
+        controller.start("ATTACK_2", attack)
 
         self.assertFalse(controller.attack_connected)
         self.assertFalse(controller.has_hit_target(target))
@@ -100,7 +100,7 @@ class AttackControllerTests(unittest.TestCase):
         third_target = object()
         controller = AttackController()
 
-        controller.start_attack("wide_swing", attack)
+        controller.start("wide_swing", attack)
 
         self.assertTrue(controller.can_hit_target(first_target))
         controller.mark_target_hit(first_target)

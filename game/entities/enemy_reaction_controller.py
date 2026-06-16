@@ -119,9 +119,9 @@ class EnemyReactionController:
 
     def cancel_attack(self, owner):
         if hasattr(owner, "combat"):
-            owner.combat.cancel_attack_timer(owner)
+            owner.combat.cancel_attack_timing(owner)
         elif hasattr(owner, "attack_controller"):
-            owner.attack_controller.cancel_attack()
+            owner.attack_controller.cancel()
             owner.attack_timer = 0
         else:
             owner.attack_timer = 0

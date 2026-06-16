@@ -25,9 +25,9 @@ class AttackDebugTests(unittest.TestCase):
             max_targets=2,
         )
         controller = AttackController()
-        controller.start_attack("test_punch", attack)
+        controller.start("test_punch", attack)
         for _ in range(4):
-            controller.update_attack_timer()
+            controller.advance()
         controller.mark_target_hit(object())
 
         lines = format_attack_debug_lines(

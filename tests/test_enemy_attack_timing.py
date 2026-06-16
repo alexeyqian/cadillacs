@@ -1,6 +1,8 @@
 import unittest
 
 from game.entities.boss_enemy import BossEnemy
+from game.entities.attack_data import AttackPhaseData, EnemyAttackData
+from game.entities.enemy import Enemy
 from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
@@ -170,12 +172,27 @@ class EnemyAttackTimingTests(unittest.TestCase):
         controller = EnemyCombatController()
 
         enemy.start_attack()
-        controller.update_attack_timer(enemy)
+        controller.advance_attack_timing(enemy)
 
         self.assertTrue(hasattr(enemy, "attack_controller"))
         self.assertEqual(enemy.attack_controller.current_attack_name, enemy.ATTACK)
         self.assertEqual(enemy.attack_controller.attack_timer, 1)
         self.assertEqual(enemy.attack_timer, 1)
+
+    def test_real_enemy_timing_fields_update_attack_data(self):
+        enemy = Enemy.__new__(Enemy)
+        enemy.attack_data = EnemyAttackData(
+            phase=AttackPhaseData(windup=3, active=2, recovery=1)
+        )
+
+        enemy.attack_windup = 5
+        enemy.attack_active = 4
+        enemy.attack_recovery = 3
+
+        self.assertEqual(enemy.attack_data.windup, 5)
+        self.assertEqual(enemy.attack_data.active, 4)
+        self.assertEqual(enemy.attack_data.recovery, 3)
+        self.assertEqual(enemy.get_attack_total_duration(), 12)
 
     def test_clash_recovery_cancels_enemy_attack(self):
         enemy = FakeEnemy()
@@ -199,7 +216,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
     def test_knockdown_cancels_enemy_attack_controller(self):
         enemy = FakeEnemy()
         enemy.start_attack()
-        EnemyCombatController().update_attack_timer(enemy)
+        EnemyCombatController().advance_attack_timing(enemy)
 
         EnemyReactionController().knockdown(enemy)
 

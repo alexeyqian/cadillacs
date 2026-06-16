@@ -1,3 +1,5 @@
+from dataclasses import replace
+
 from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
@@ -58,9 +60,6 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.attack_controller = AttackController()
         self.attack_decision_timer = 0
         self.attack_delay = ENEMY_ATTACK_DELAY
-        self.attack_windup = ENEMY_ATTACK_WINDUP
-        self.attack_active = ENEMY_ATTACK_ACTIVE
-        self.attack_recovery = ENEMY_ATTACK_RECOVERY
         self.attack_clash_recovery_duration = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
         self.attack_clash_cooldown_duration = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
 
@@ -139,9 +138,6 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.attack_damage = config.attack.damage
         self.attack_delay = config.attack.delay
         self.attack_cooldown_duration = config.attack.cooldown
-        self.attack_windup = config.attack.windup
-        self.attack_active = config.attack.active
-        self.attack_recovery = config.attack.recovery
         self.attack_clash_recovery_duration = config.attack.clash_recovery_duration
         self.attack_clash_cooldown_duration = config.attack.clash_cooldown_duration
 
@@ -227,6 +223,39 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
 
     def get_attack_total_duration(self):
         return self.attack_windup + self.attack_active + self.attack_recovery
+
+    @property
+    def attack_windup(self):
+        return self.attack_data.windup
+
+    @attack_windup.setter
+    def attack_windup(self, value):
+        self.attack_data = replace(
+            self.attack_data,
+            phase=replace(self.attack_data.phase, windup=value)
+        )
+
+    @property
+    def attack_active(self):
+        return self.attack_data.active
+
+    @attack_active.setter
+    def attack_active(self, value):
+        self.attack_data = replace(
+            self.attack_data,
+            phase=replace(self.attack_data.phase, active=value)
+        )
+
+    @property
+    def attack_recovery(self):
+        return self.attack_data.recovery
+
+    @attack_recovery.setter
+    def attack_recovery(self, value):
+        self.attack_data = replace(
+            self.attack_data,
+            phase=replace(self.attack_data.phase, recovery=value)
+        )
     
     def get_attack_phase_name(self):
         if self.state != self.ATTACK:

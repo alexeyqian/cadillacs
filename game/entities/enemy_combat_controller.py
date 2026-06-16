@@ -8,14 +8,14 @@ class EnemyCombatController:
         owner.attack_already_hit = False
         owner.has_attack_slot = owner.uses_melee_attack_slot()
         owner.attack_decision_timer = 0
-        self.start_attack_timer(owner)
+        self.start_attack_timing(owner)
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
 
     def start_clash_recovery(self, owner):
         owner.state = owner.RECOIL
         owner.action_lock_remaining = owner.attack_clash_recovery_duration
-        self.cancel_attack_timer(owner)
+        self.cancel_attack_timing(owner)
         owner.attack_decision_timer = 0
         owner.attack_already_hit = False
         owner.has_attack_slot = False
@@ -29,7 +29,7 @@ class EnemyCombatController:
     # Enemy attack has explicit recovery before it can act again
     def update_attack(self, owner, level, player):
         owner.face_player(player)
-        attack_finished = self.update_attack_timer(owner)
+        attack_finished = self.advance_attack_timing(owner)
 
         attack_rect = owner.get_attack_rect()
         player_hurt_rect = player.get_hurt_rect()
@@ -46,28 +46,28 @@ class EnemyCombatController:
         if attack_finished:
             self.finish_attack(owner)
 
-    def start_attack_timer(self, owner):
+    def start_attack_timing(self, owner):
         controller = self.get_attack_controller(owner)
-        controller.start_attack(owner.ATTACK, self.get_attack_data(owner))
+        controller.start(owner.ATTACK, self.get_attack_data(owner))
         owner.attack_timer = controller.attack_timer
 
-    def update_attack_timer(self, owner):
+    def advance_attack_timing(self, owner):
         controller = self.get_attack_controller(owner)
         if not controller.is_attacking:
-            controller.start_attack(owner.ATTACK, self.get_attack_data(owner))
+            controller.start(owner.ATTACK, self.get_attack_data(owner))
             controller.attack_timer = getattr(owner, "attack_timer", 0)
 
-        attack_finished = controller.update_attack_timer()
+        attack_finished = controller.advance()
         owner.attack_timer = controller.attack_timer
         return attack_finished
 
-    def cancel_attack_timer(self, owner):
+    def cancel_attack_timing(self, owner):
         controller = self.get_attack_controller(owner)
-        controller.cancel_attack()
+        controller.cancel()
         owner.attack_timer = 0
 
     def finish_attack(self, owner):
-        self.cancel_attack_timer(owner)
+        self.cancel_attack_timing(owner)
         owner.state = owner.PATROL
         owner.attack_already_hit = False
         owner.has_attack_slot = False
@@ -115,3 +115,13 @@ class EnemyCombatController:
             clash_recovery_duration=owner.attack_clash_recovery_duration,
             clash_cooldown_duration=owner.attack_clash_cooldown_duration,
         )
+
+    # Compatibility aliases for older call sites while migration continues.
+    def start_attack_timer(self, owner):
+        self.start_attack_timing(owner)
+
+    def update_attack_timer(self, owner):
+        return self.advance_attack_timing(owner)
+
+    def cancel_attack_timer(self, owner):
+        self.cancel_attack_timing(owner)

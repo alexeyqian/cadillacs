@@ -2,8 +2,8 @@ class AttackController:
     def __init__(self):
         self.current_attack_name = None
         self.current_attack = None
-        self.attack_timer = 0
-        self.attack_connected = False
+        self.elapsed_frames = 0
+        self.has_connected = False
         self.hit_targets = set()
 
     @property
@@ -11,29 +11,49 @@ class AttackController:
         return self.current_attack is not None
 
     @property
-    def attack_remaining(self):
+    def remaining_frames(self):
         if not self.current_attack:
             return 0
-        return max(0, self.get_attack_duration() - self.attack_timer)
+        return max(0, self.get_attack_duration() - self.elapsed_frames)
 
-    def start_attack(self, attack_name, attack_data):
+    @property
+    def attack_timer(self):
+        return self.elapsed_frames
+
+    @attack_timer.setter
+    def attack_timer(self, value):
+        self.elapsed_frames = value
+
+    @property
+    def attack_remaining(self):
+        return self.remaining_frames
+
+    @property
+    def attack_connected(self):
+        return self.has_connected
+
+    @attack_connected.setter
+    def attack_connected(self, value):
+        self.has_connected = value
+
+    def start(self, attack_name, attack_data):
         self.current_attack_name = attack_name
         self.current_attack = attack_data
-        self.attack_timer = 0
-        self.attack_connected = False
+        self.elapsed_frames = 0
+        self.has_connected = False
         self.hit_targets = set()
 
-    def update_attack_timer(self):
+    def advance(self):
         if not self.current_attack:
             return False
 
-        self.attack_timer += 1
+        self.elapsed_frames += 1
         return self.is_finished()
 
     def is_finished(self):
         if not self.current_attack:
             return False
-        return self.attack_timer >= self.get_attack_duration()
+        return self.elapsed_frames >= self.get_attack_duration()
 
     def is_active(self):
         if not self.current_attack:
@@ -44,7 +64,7 @@ class AttackController:
 
         active_start = self.current_attack.windup
         active_end = self.current_attack.windup + self.current_attack.active
-        return active_start <= self.attack_timer < active_end
+        return active_start <= self.elapsed_frames < active_end
 
     def get_phase_name(self):
         if not self.current_attack:
@@ -52,14 +72,14 @@ class AttackController:
         if not self.has_attack_phases():
             return "ACTIVE"
 
-        if self.attack_timer < self.current_attack.windup:
+        if self.elapsed_frames < self.current_attack.windup:
             return "WINDUP"
 
         active_end = self.current_attack.windup + self.current_attack.active
-        if self.attack_timer < active_end:
+        if self.elapsed_frames < active_end:
             return "ACTIVE"
 
-        if self.attack_timer < self.get_attack_duration():
+        if self.elapsed_frames < self.get_attack_duration():
             return "RECOVERY"
 
         return "DONE"
@@ -71,11 +91,11 @@ class AttackController:
         return (
             f"{self.current_attack_name} "
             f"{self.get_phase_name()} "
-            f"{self.attack_timer}/{self.get_attack_duration()}"
+            f"{self.elapsed_frames}/{self.get_attack_duration()}"
         )
 
     def mark_connected(self):
-        self.attack_connected = True
+        self.has_connected = True
 
     def has_hit_target(self, target):
         return id(target) in self.hit_targets
@@ -100,18 +120,18 @@ class AttackController:
             return 0
         return getattr(self.current_attack, "max_targets", 1)
 
-    def finish_attack(self):
+    def finish(self):
         finished_attack_name = self.current_attack_name
         finished_attack = self.current_attack
-        attack_connected = self.attack_connected
-        self.cancel_attack()
+        attack_connected = self.has_connected
+        self.cancel()
         return finished_attack_name, finished_attack, attack_connected
 
-    def cancel_attack(self):
+    def cancel(self):
         self.current_attack_name = None
         self.current_attack = None
-        self.attack_timer = 0
-        self.attack_connected = False
+        self.elapsed_frames = 0
+        self.has_connected = False
         self.hit_targets = set()
 
     def get_attack_duration(self):
@@ -124,3 +144,16 @@ class AttackController:
             hasattr(self.current_attack, field_name)
             for field_name in ["windup", "active", "recovery"]
         )
+
+    # Compatibility aliases for older call sites while migration continues.
+    def start_attack(self, attack_name, attack_data):
+        self.start(attack_name, attack_data)
+
+    def update_attack_timer(self):
+        return self.advance()
+
+    def finish_attack(self):
+        return self.finish()
+
+    def cancel_attack(self):
+        self.cancel()

@@ -7,7 +7,7 @@ def format_attack_debug_lines(label, controller, damage=None, lane_reach=None):
         (
             f"{label}: {controller.current_attack_name} "
             f"{controller.get_phase_name()} "
-            f"{controller.attack_timer}/{controller.get_attack_duration()}"
+            f"{controller.elapsed_frames}/{controller.get_attack_duration()}"
         )
     ]
 

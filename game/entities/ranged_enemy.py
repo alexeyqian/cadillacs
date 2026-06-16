@@ -24,7 +24,7 @@ class RangedEnemy(Enemy):
     def update_attack(self, level, player):
         self.face_player(player)
         combat = getattr(self, "combat", None) or EnemyCombatController()
-        attack_finished = combat.update_attack_timer(self)
+        attack_finished = combat.advance_attack_timing(self)
 
         if self.is_attack_active() and not self.shot_fired:
             direction = 1 if player.x > self.x else -1
