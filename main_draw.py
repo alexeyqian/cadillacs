@@ -4,6 +4,7 @@ import game.settings as settings
 from game.settings import *
 from game.colors import *
 from game.level.lane import LaneSystem
+from game.entities.attack_debug import format_attack_debug_lines
 
 # draw order: 
 # far background, mid background, ground layer, decorations behind player,
@@ -200,6 +201,38 @@ def main_draw_ui(game_state):
 
         slot_text = small_font.render(f"Attack Slots: {active_slots}/{max_slots}",True,BLACK_COLOR)
         screen.blit(slot_text, (left_x, debug_y))
+        debug_y += small_line
+
+        attack_debug_lines = format_attack_debug_lines(
+            "Player attack",
+            player.combat.attack_controller,
+            damage=player.combat.get_attack_damage(player),
+            lane_reach=player.combat.get_attack_lane_reach(player),
+        )
+        for debug_line in attack_debug_lines:
+            debug_text = small_font.render(debug_line, True, BLACK_COLOR)
+            screen.blit(debug_text, (left_x, debug_y))
+            debug_y += small_line
+
+        active_enemy_debug_count = 0
+        for enemy in enemies:
+            if active_enemy_debug_count >= 3:
+                break
+            if enemy.state != enemy.ATTACK:
+                continue
+
+            enemy_debug_lines = format_attack_debug_lines(
+                enemy.display_name,
+                enemy.attack_controller,
+                damage=enemy.attack_damage,
+                lane_reach=enemy.attack_lane_reach,
+            )
+            for debug_line in enemy_debug_lines:
+                debug_text = small_font.render(debug_line, True, BLACK_COLOR)
+                screen.blit(debug_text, (left_x, debug_y))
+                debug_y += small_line
+
+            active_enemy_debug_count += 1
     
     # end of debug text
 
