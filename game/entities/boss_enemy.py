@@ -164,7 +164,13 @@ class BossEnemy(Enemy):
             lane_y=self.y,
         )
 
-    def take_damage(self, damage, attacker_x, knockback_velocity=3):
+    def take_damage(
+        self,
+        damage,
+        attacker_x,
+        knockback_velocity=3,
+        hit_stun_duration=None,
+    ):
         if self.state == self.DEAD:
             return
 
@@ -177,7 +183,10 @@ class BossEnemy(Enemy):
 
         if should_flinch:
             self.cancel_special_attack_warning()
-            self.lifecycle_state.hit_stun_remaining = 8
+            boss_hit_stun_duration = 8
+            if hit_stun_duration and hit_stun_duration > 15:
+                boss_hit_stun_duration = 12
+            self.lifecycle_state.hit_stun_remaining = boss_hit_stun_duration
             self.state = self.HIT
 
             # boss barely moves when hit

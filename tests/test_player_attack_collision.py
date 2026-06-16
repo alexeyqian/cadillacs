@@ -84,6 +84,7 @@ class FakeEnemy:
         self.health = FakeHealth()
         self.damage_taken = 0
         self.knockback_velocity_taken = None
+        self.hit_stun_duration_taken = None
 
     def get_attack_rect(self):
         return None
@@ -94,9 +95,16 @@ class FakeEnemy:
     def get_logical_rect(self):
         return self.get_hurt_rect()
 
-    def take_damage(self, damage, attacker_x, knockback_velocity=10):
+    def take_damage(
+        self,
+        damage,
+        attacker_x,
+        knockback_velocity=10,
+        hit_stun_duration=None,
+    ):
         self.damage_taken += damage
         self.knockback_velocity_taken = knockback_velocity
+        self.hit_stun_duration_taken = hit_stun_duration
 
 
 class FakeLevel:
@@ -154,6 +162,20 @@ class PlayerAttackCollisionTests(unittest.TestCase):
         self.assertGreater(
             game_state.enemies[0].knockback_velocity_taken,
             normal_knockback,
+        )
+
+    def test_run_attack_uses_longer_enemy_hit_stun(self):
+        game_state = FakeGameState()
+        normal_hit_stun = game_state.player.combat.get_attack_enemy_hit_stun_duration(
+            game_state.player
+        )
+        game_state.player.start_running_attack()
+
+        handle_player_attack_collision(game_state)
+
+        self.assertGreater(
+            game_state.enemies[0].hit_stun_duration_taken,
+            normal_hit_stun,
         )
 
 

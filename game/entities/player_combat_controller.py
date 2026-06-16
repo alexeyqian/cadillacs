@@ -230,6 +230,10 @@ class PlayerCombatController:
         attack_data = self.get_current_or_state_attack_data(owner)
         return attack_data.knockback_velocity if attack_data else 10
 
+    def get_attack_enemy_hit_stun_duration(self, owner):
+        attack_data = self.get_current_or_state_attack_data(owner)
+        return attack_data.enemy_hit_stun_duration if attack_data else 15
+
     def get_current_or_state_attack_data(self, owner):
         if self.attack_controller.current_attack:
             return self.attack_controller.current_attack

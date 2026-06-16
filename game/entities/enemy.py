@@ -148,8 +148,20 @@ class Enemy:
     def is_ready_to_remove(self):
         return self.lifecycle.is_ready_to_remove(self)
 
-    def take_damage(self, damage, attacker_x, knockback_velocity=10):
-        self.reactions.take_damage(self, damage, attacker_x, knockback_velocity)
+    def take_damage(
+        self,
+        damage,
+        attacker_x,
+        knockback_velocity=10,
+        hit_stun_duration=None,
+    ):
+        self.reactions.take_damage(
+            self,
+            damage,
+            attacker_x,
+            knockback_velocity,
+            hit_stun_duration,
+        )
 
     def grabbed_by_player(self):
         self.reactions.grabbed_by_player(self)

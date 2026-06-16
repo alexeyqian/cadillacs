@@ -9,10 +9,24 @@ class EnemyReactionController:
         self.release_attack_slot(owner)
 
     # temp for renaming
-    def take_damage(self, owner, damage, attacker_x, knockback_velocity=10):
-        self.apply_hit(owner, damage, attacker_x, knockback_velocity)
+    def take_damage(
+        self,
+        owner,
+        damage,
+        attacker_x,
+        knockback_velocity=10,
+        hit_stun_duration=None,
+    ):
+        self.apply_hit(owner, damage, attacker_x, knockback_velocity, hit_stun_duration)
 
-    def apply_hit(self, owner, damage, attacker_x, knockback_velocity=10):
+    def apply_hit(
+        self,
+        owner,
+        damage,
+        attacker_x,
+        knockback_velocity=10,
+        hit_stun_duration=None,
+    ):
         if owner.state == owner.DEAD:
             return
 
@@ -35,7 +49,9 @@ class EnemyReactionController:
 
         if should_flinch:
             self.reset_attack_decision(owner)
-            self.set_hit_stun_remaining(owner, owner.hit_stun_duration)
+            if hit_stun_duration is None:
+                hit_stun_duration = owner.hit_stun_duration
+            self.set_hit_stun_remaining(owner, hit_stun_duration)
             owner.state = owner.HIT
             # So if an enemy is interrupted, it releases the slot.
             self.cancel_attack(owner)

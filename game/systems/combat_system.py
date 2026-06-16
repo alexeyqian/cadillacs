@@ -123,7 +123,8 @@ def handle_player_attack_collision(game_state):
         if enemy_hurt_rect and attack_rect.colliderect(enemy_hurt_rect):
             damage = player.combat.get_attack_damage(player)
             knockback_velocity = player.combat.get_attack_knockback_velocity(player)
-            enemy.take_damage(damage, player.x, knockback_velocity)
+            hit_stun_duration = player.combat.get_attack_enemy_hit_stun_duration(player)
+            enemy.take_damage(damage, player.x, knockback_velocity, hit_stun_duration)
             enemy_rect = get_enemy_frame_rect(enemy)
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score

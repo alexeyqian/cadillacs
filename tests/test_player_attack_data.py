@@ -83,6 +83,12 @@ class PlayerAttackDataTests(unittest.TestCase):
             PLAYER_ATTACKS["ATTACK_1"].knockback_velocity,
         )
 
+    def test_running_attack_has_longer_enemy_hit_stun_than_normal_punch(self):
+        self.assertGreater(
+            PLAYER_ATTACKS["RUN_ATTACK"].enemy_hit_stun_duration,
+            PLAYER_ATTACKS["ATTACK_1"].enemy_hit_stun_duration,
+        )
+
     def test_jump_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         owner.movement.is_jumping = True
