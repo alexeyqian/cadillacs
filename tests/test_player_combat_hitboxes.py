@@ -1,7 +1,7 @@
 import unittest
 
 from game.entities.attack_data import PLAYER_ATTACKS
-from game.entities.player_combat import PlayerCombat
+from game.entities.player_combat_controller import PlayerCombatController
 from game.entities.player_hitboxes import PlayerHitboxes
 
 
@@ -41,10 +41,10 @@ class FakeOwner:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.animation_controller = FakeAnimationController()
-        self.combat = PlayerCombat()
+        self.combat = PlayerCombatController()
 
 
-class PlayerCombatHitboxTests(unittest.TestCase):
+class PlayerCombatControllerHitboxTests(unittest.TestCase):
     def test_animation_attack_rect_is_ignored_during_windup(self):
         owner = FakeOwner()
         hitboxes = PlayerHitboxes()

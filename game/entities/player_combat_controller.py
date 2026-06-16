@@ -8,7 +8,7 @@ from game.entities.attack_data import (
 from game.entities.attack_controller import AttackController
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
-class PlayerCombat:
+class PlayerCombatController:
     def __init__(self):
         self.attack_controller = AttackController()
 

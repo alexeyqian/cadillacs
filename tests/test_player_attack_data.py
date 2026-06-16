@@ -1,7 +1,7 @@
 import unittest
 
 from game.entities.attack_data import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
-from game.entities.player_combat import PlayerCombat
+from game.entities.player_combat_controller import PlayerCombatController
 
 
 class FakeMovement:
@@ -45,7 +45,7 @@ class FakeOwner:
 class PlayerAttackDataTests(unittest.TestCase):
     def test_standing_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
-        combat = PlayerCombat()
+        combat = PlayerCombatController()
 
         combat.start_attack(owner)
 
@@ -57,7 +57,7 @@ class PlayerAttackDataTests(unittest.TestCase):
     def test_running_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         owner.movement.is_running = True
-        combat = PlayerCombat()
+        combat = PlayerCombatController()
 
         combat.start_attack(owner)
 
@@ -68,7 +68,7 @@ class PlayerAttackDataTests(unittest.TestCase):
     def test_jump_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         owner.movement.is_jumping = True
-        combat = PlayerCombat()
+        combat = PlayerCombatController()
 
         combat.start_jump_attack(owner)
 
@@ -78,7 +78,7 @@ class PlayerAttackDataTests(unittest.TestCase):
 
     def test_attack_timer_counts_up_until_attack_finishes(self):
         owner = FakeOwner()
-        combat = PlayerCombat()
+        combat = PlayerCombatController()
 
         combat.start_attack(owner)
         combat.update_timers(owner)
@@ -93,11 +93,11 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(combat.attack_timer, 0)
         self.assertEqual(owner.state, owner.IDLE)
 
-    def test_player_combat_uses_per_target_hit_tracking(self):
+    def test_player_combat_controller_uses_per_target_hit_tracking(self):
         first_target = object()
         second_target = object()
         owner = FakeOwner()
-        combat = PlayerCombat()
+        combat = PlayerCombatController()
 
         combat.start_attack(owner)
 
@@ -110,7 +110,7 @@ class PlayerAttackDataTests(unittest.TestCase):
     def test_knife_attack_uses_weapon_attack_data(self):
         owner = FakeOwner()
         owner.weapon_slot.weapon = FakeWeapon("knife")
-        combat = PlayerCombat()
+        combat = PlayerCombatController()
 
         combat.start_attack(owner)
 
@@ -127,7 +127,7 @@ class PlayerAttackDataTests(unittest.TestCase):
     def test_bat_attack_can_hit_two_targets_from_weapon_attack_data(self):
         owner = FakeOwner()
         owner.weapon_slot.weapon = FakeWeapon("bat")
-        combat = PlayerCombat()
+        combat = PlayerCombatController()
 
         combat.start_attack(owner)
 
@@ -140,7 +140,7 @@ class PlayerAttackDataTests(unittest.TestCase):
     def test_ranged_weapon_does_not_change_melee_attack_data(self):
         owner = FakeOwner()
         owner.weapon_slot.weapon = FakeWeapon("pistol", is_ranged=True)
-        combat = PlayerCombat()
+        combat = PlayerCombatController()
 
         combat.start_attack(owner)
 

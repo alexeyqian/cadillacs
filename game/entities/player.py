@@ -4,7 +4,7 @@ from game.entities.player_hitboxes import PlayerHitboxes
 from game.entities.player_health import PlayerHealth
 from game.entities.player_weapon_slot import PlayerWeaponSlot
 from game.entities.player_movement import PlayerMovement
-from game.entities.player_combat import PlayerCombat
+from game.entities.player_combat_controller import PlayerCombatController
 from game.entities.player_grab_controller import PlayerGrabController
 from game.entities.player_animation_controller import PlayerAnimationController
 from game.entities.player_render import PlayerRenderer
@@ -54,7 +54,7 @@ class Player:
         self.attack_pressed = False
         self.jump_attack_pressed = False
 
-        self.combat = PlayerCombat()
+        self.combat = PlayerCombatController()
         self.weapon_slot = PlayerWeaponSlot()
         self.events = PlayerEvents()
         self.action_controller = PlayerActionController()

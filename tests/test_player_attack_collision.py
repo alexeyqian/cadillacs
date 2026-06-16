@@ -2,7 +2,7 @@ import unittest
 
 import pygame
 
-from game.entities.player_combat import PlayerCombat
+from game.entities.player_combat_controller import PlayerCombatController
 from game.systems.combat_system import handle_player_attack_collision
 
 
@@ -43,7 +43,7 @@ class FakePlayer:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot(weapon)
-        self.combat = PlayerCombat()
+        self.combat = PlayerCombatController()
         self.combat.start_attack(self)
         while not self.combat.is_attack_active():
             self.combat.update_timers(self)
