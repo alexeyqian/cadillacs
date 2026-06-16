@@ -4,7 +4,6 @@ from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_boxes import EnemyBoxMixin
-from game.entities.enemy_combat import EnemyCombatMixin
 from game.entities.enemy_lifecycle import EnemyLifecycleMixin
 from game.entities.enemy_reactions import EnemyReactionMixin
 from game.entities.enemy_health import EnemyHealth
@@ -26,8 +25,7 @@ from game.entities.attack_controller import AttackController
 # Enemy is a small coordinator. Components own movement, combat,
 # reactions, lifecycle, state decisions, loot, animation, and rendering.
 
-class Enemy(EnemyBoxMixin, EnemyCombatMixin,
-            EnemyReactionMixin, EnemyLifecycleMixin):
+class Enemy(EnemyBoxMixin, EnemyReactionMixin, EnemyLifecycleMixin):
     IDLE = EnemyState.IDLE
     WALK = EnemyState.WALK
     PATROL = EnemyState.PATROL
@@ -201,6 +199,15 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
             self.movement.separate_from_other_enemies(self, enemies)
         elif self.state == self.ATTACK:
             self.update_attack(level, player)
+
+    def start_attack(self):
+        self.combat.start_attack(self)
+
+    def start_clash_recovery(self):
+        self.combat.start_clash_recovery(self)
+
+    def update_attack(self, level, player):
+        self.combat.update_attack(self, level, player)
 
     def create_loot(self):
         return self.loot_controller.create_loot(self)
