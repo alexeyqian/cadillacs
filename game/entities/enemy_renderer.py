@@ -2,36 +2,40 @@ import pygame
 import game.settings as settings
 from game.settings import SHOW_COMBAT_BOXES
 from game.colors import *
-
+from game.level.lane import LaneSystem
 
 class EnemyRenderer:
     def draw(self, owner, screen, camera_x):
         frame = owner.get_current_frame_data()
-
         if not frame:
             raise ValueError(f"Missing frame data for enemy state: {owner.state}")
 
         image = owner.animation_controller.get_image()
-
         scale = owner.sprite_scale
-        image = pygame.transform.scale(
-            image,
-            (
-                image.get_width() * scale,
-                image.get_height() * scale
-            )
-        )
-
+        image = pygame.transform.scale(image,
+            (image.get_width() * scale,
+            image.get_height() * scale))
         if not owner.facing_right:
             image = pygame.transform.flip(image, True, False)
 
         frame_rect = owner.get_frame_rect()
         screen.blit(image, (frame_rect.x - camera_x, frame_rect.y))
+        self.draw_health_bar(owner, screen, camera_x, frame_rect)
 
         if settings.SHOW_COMBAT_BOXES:
             self.draw_debug_boxes(owner, screen, camera_x)
 
-        self.draw_health_bar(owner, screen, camera_x, frame_rect)
+    def draw_health_bar(self, owner, screen, camera_x, frame_rect):
+        bar_width = 50
+        bar_x = int(owner.x - camera_x - bar_width / 2)
+        hp_width = int(bar_width * (owner.health.hp / owner.health.max_hp))
+        hp_height = 12
+
+        pygame.draw.rect(screen,(120, 120, 120),
+            (bar_x, frame_rect.y - hp_height, bar_width, 6)
+        )
+        pygame.draw.rect(screen,(255, 0, 0),
+            (bar_x, frame_rect.y - hp_height, hp_width, 6))
 
     # todo: dup? merge with player's same function
     def draw_debug_boxes(self, owner, screen, camera_x):
@@ -91,20 +95,3 @@ class EnemyRenderer:
             font = pygame.font.SysFont(None, 20)
             label = font.render(f"FLANK {owner.flank_target_side.upper()}", True, WHITE_COLOR)
             screen.blit(label, (int(owner.x - camera_x - 42), int(owner.y - 225)))
-
-    def draw_health_bar(self, owner, screen, camera_x, frame_rect):
-        bar_width = 50
-        bar_x = int(owner.x - camera_x - bar_width / 2)
-        hp_width = int(bar_width * (owner.health.hp / owner.health.max_hp))
-        hp_height = 12
-
-        pygame.draw.rect(
-            screen,
-            (120, 120, 120),
-            (bar_x, frame_rect.y - hp_height, bar_width, 6)
-        )
-        pygame.draw.rect(
-            screen,
-            (255, 0, 0),
-            (bar_x, frame_rect.y - hp_height, hp_width, 6)
-        )
