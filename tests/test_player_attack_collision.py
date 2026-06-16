@@ -9,6 +9,10 @@ from game.systems.combat_system import handle_player_attack_collision
 class FakeMovement:
     def __init__(self):
         self.is_running = False
+        self.can_run_attack = False
+
+    def can_start_run_attack(self):
+        return self.can_run_attack
 
     def start_run_attack_momentum(self, owner):
         pass
@@ -56,6 +60,7 @@ class FakePlayer:
     def start_running_attack(self):
         self.combat.cancel_attack()
         self.movement.is_running = True
+        self.movement.can_run_attack = True
         self.combat.start_attack(self)
         while not self.combat.is_attack_active():
             self.combat.update_timers(self)

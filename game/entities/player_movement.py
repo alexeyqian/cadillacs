@@ -1,4 +1,4 @@
-from game.settings import WORLD_WIDTH, RUN_DOUBLE_TAP_TIME, FPS
+from game.settings import WORLD_WIDTH, RUN_DOUBLE_TAP_TIME, FPS, RUN_ATTACK_REQUIRED_DISTANCE
 
 
 class PlayerMovement:
@@ -8,6 +8,8 @@ class PlayerMovement:
         self.run_direction = 0
         self.run_tap_remaining = 0
         self.run_tap_window = max(1, int(RUN_DOUBLE_TAP_TIME * FPS))
+        self.run_distance = 0
+        self.run_attack_required_distance = RUN_ATTACK_REQUIRED_DISTANCE
         self.left_pressed = False
         self.right_pressed = False
 
@@ -51,21 +53,27 @@ class PlayerMovement:
         elif right_down and not left_down:
             horizontal_direction = 1
 
+        previous_run_direction = self.run_direction
         self.update_run_input(left_down, right_down, horizontal_direction)
         self.is_running = horizontal_direction != 0 and (
             shift_down or self.run_active
         )
 
         move_speed = owner.run_speed if self.is_running else owner.speed
+        horizontal_run_distance = 0
 
         if left_down:
             owner.x -= move_speed
             owner.facing_right = False
             moving = True
+            if self.is_running:
+                horizontal_run_distance += move_speed
         if right_down:
             owner.x += move_speed
             owner.facing_right = True
             moving = True
+            if self.is_running:
+                horizontal_run_distance += move_speed
         if up_down:
             owner.y -= move_speed
             moving = True
@@ -73,7 +81,25 @@ class PlayerMovement:
             owner.y += move_speed
             moving = True
 
+        self.update_run_distance(horizontal_run_distance, previous_run_direction)
+
         return moving
+
+    def update_run_distance(self, horizontal_run_distance, previous_run_direction):
+        if not self.is_running or horizontal_run_distance <= 0:
+            self.run_distance = 0
+            return
+
+        if self.run_direction != previous_run_direction:
+            self.run_distance = 0
+
+        self.run_distance += horizontal_run_distance
+
+    def can_start_run_attack(self):
+        return (
+            self.is_running
+            and self.run_distance >= self.run_attack_required_distance
+        )
 
     def start_run_attack_momentum(self, owner):
         direction = self.run_direction
@@ -83,6 +109,7 @@ class PlayerMovement:
         self.run_attack_momentum_direction = direction
         self.run_attack_momentum_remaining = 30
         self.run_attack_momentum_speed = max(owner.speed, owner.run_speed * 0.75)
+        self.run_distance = 0
 
     def update_run_attack_momentum(self, owner):
         if self.run_attack_momentum_remaining <= 0:

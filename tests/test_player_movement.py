@@ -76,6 +76,32 @@ class PlayerMovementTests(unittest.TestCase):
         self.assertEqual(owner.x, 300 + owner.run_speed)
         self.assertEqual(owner.y, 500 - owner.run_speed)
 
+    def test_run_attack_requires_configured_run_distance(self):
+        owner = FakeOwner()
+        movement = PlayerMovement(owner.speed)
+        movement.run_attack_required_distance = owner.run_speed * 2
+
+        movement.update_movement(owner, FakeInput(right=True, run=True))
+
+        self.assertFalse(movement.can_start_run_attack())
+
+        movement.update_movement(owner, FakeInput(right=True, run=True))
+
+        self.assertTrue(movement.can_start_run_attack())
+
+    def test_run_attack_distance_resets_when_player_stops_running(self):
+        owner = FakeOwner()
+        movement = PlayerMovement(owner.speed)
+        movement.run_attack_required_distance = owner.run_speed
+
+        movement.update_movement(owner, FakeInput(right=True, run=True))
+        self.assertTrue(movement.can_start_run_attack())
+
+        movement.update_movement(owner, FakeInput())
+
+        self.assertFalse(movement.can_start_run_attack())
+        self.assertEqual(movement.run_distance, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

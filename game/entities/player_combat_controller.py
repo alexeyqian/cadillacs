@@ -156,7 +156,7 @@ class PlayerCombatController:
         if self.action_lock_remaining > 0:
             return
 
-        if owner.movement.is_running:
+        if owner.movement.can_start_run_attack():
             move_data = self.get_attack_data(owner, owner.RUN_ATTACK)
             self.attack_controller.start(owner.RUN_ATTACK, move_data)
             owner.movement.start_run_attack_momentum(owner)

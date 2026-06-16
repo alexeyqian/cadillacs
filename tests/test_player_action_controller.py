@@ -11,9 +11,13 @@ class FakeMovement:
         self.is_jumping = False
         self.jump_pressed = False
         self.run_attack_momentum_started = False
+        self.can_run_attack = True
 
     def start_jump(self, player_input):
         pass
+
+    def can_start_run_attack(self):
+        return self.can_run_attack
 
     def start_run_attack_momentum(self, owner):
         self.run_attack_momentum_started = True

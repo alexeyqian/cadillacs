@@ -10,6 +10,10 @@ class FakeMovement:
         self.is_running = False
         self.is_jumping = False
         self.run_attack_momentum_started = False
+        self.can_run_attack = False
+
+    def can_start_run_attack(self):
+        return self.can_run_attack
 
     def start_run_attack_momentum(self, owner):
         self.run_attack_momentum_started = True
@@ -68,6 +72,7 @@ class PlayerAttackDataTests(unittest.TestCase):
     def test_running_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         owner.movement.is_running = True
+        owner.movement.can_run_attack = True
         combat = PlayerCombatController()
 
         combat.start_attack(owner)
@@ -76,6 +81,18 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(combat.current_attack_name, owner.RUN_ATTACK)
         self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["RUN_ATTACK"].duration)
         self.assertTrue(owner.movement.run_attack_momentum_started)
+
+    def test_running_attack_requires_enough_run_distance(self):
+        owner = FakeOwner()
+        owner.movement.is_running = True
+        owner.movement.can_run_attack = False
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+
+        self.assertEqual(owner.state, owner.ATTACK_1)
+        self.assertEqual(combat.current_attack_name, owner.ATTACK_1)
+        self.assertFalse(owner.movement.run_attack_momentum_started)
 
     def test_running_attack_has_stronger_knockback_than_normal_punch(self):
         self.assertGreater(

@@ -9,6 +9,9 @@ class FakeMovement:
     is_running = False
     is_jumping = False
 
+    def can_start_run_attack(self):
+        return False
+
 
 class FakeStateMachine:
     def change_to(self, owner, state):
