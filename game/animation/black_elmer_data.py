@@ -113,8 +113,3 @@ BLACK_ELMER_ANIM_FPS = {
     "dizzy": 8,
 }
 
-BLACK_ELMER_ATTACK_TIMING = {
-    "windup": 26,
-    "active": 10,
-    "recovery": 25,
-}
