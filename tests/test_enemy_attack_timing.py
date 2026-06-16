@@ -2,6 +2,7 @@ import unittest
 
 from game.entities.boss_enemy import BossEnemy
 from game.entities.enemy_combat_controller import EnemyCombatController
+from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_state_resolver import EnemyStateResolver
 from game.entities.raptor_enemy import RaptorEnemy
@@ -164,6 +165,18 @@ class EnemyAttackTimingTests(unittest.TestCase):
         controller.update_attack(enemy, level, player)
         self.assertEqual(player.damage_taken, enemy.attack_damage)
 
+    def test_enemy_attack_uses_shared_attack_controller_timer(self):
+        enemy = FakeEnemy()
+        controller = EnemyCombatController()
+
+        enemy.start_attack()
+        controller.update_attack_timer(enemy)
+
+        self.assertTrue(hasattr(enemy, "attack_controller"))
+        self.assertEqual(enemy.attack_controller.current_attack_name, enemy.ATTACK)
+        self.assertEqual(enemy.attack_controller.attack_timer, 1)
+        self.assertEqual(enemy.attack_timer, 1)
+
     def test_clash_recovery_cancels_enemy_attack(self):
         enemy = FakeEnemy()
         enemy.state = enemy.ATTACK
@@ -182,6 +195,18 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertFalse(enemy.attack_already_hit)
         self.assertFalse(enemy.has_attack_slot)
         self.assertEqual(enemy.attack_cooldown, enemy.attack_clash_cooldown_duration)
+
+    def test_knockdown_cancels_enemy_attack_controller(self):
+        enemy = FakeEnemy()
+        enemy.start_attack()
+        EnemyCombatController().update_attack_timer(enemy)
+
+        EnemyReactionController().knockdown(enemy)
+
+        self.assertEqual(enemy.state, enemy.KNOCKDOWN)
+        self.assertEqual(enemy.attack_timer, 0)
+        self.assertFalse(enemy.attack_controller.is_attacking)
+        self.assertFalse(enemy.has_attack_slot)
 
     def test_ranged_enemy_fires_once_during_active_window(self):
         enemy = FakeRangedEnemy()

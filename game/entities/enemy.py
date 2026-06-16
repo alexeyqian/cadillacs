@@ -15,6 +15,7 @@ from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_state_resolver import EnemyStateResolver
 from game.entities.enemy_loot_controller import EnemyLootController
+from game.entities.attack_controller import AttackController
 
 # State resolver: decides what state the enemy wants
 # Movement: changes x/y/facing
@@ -54,6 +55,7 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         # so the next chunk can use windup / active / recovery 
         # instead of relying only on animation frame position.
         self.attack_timer = 0
+        self.attack_controller = AttackController()
         self.attack_decision_timer = 0
         self.attack_delay = ENEMY_ATTACK_DELAY
         self.attack_windup = ENEMY_ATTACK_WINDUP
@@ -133,6 +135,7 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.attack_lane_range = config.attack_lane_range
         self.attack_lane_reach = config.attack_lane_reach
 
+        self.attack_data = config.attack
         self.attack_damage = config.attack.damage
         self.attack_delay = config.attack.delay
         self.attack_cooldown_duration = config.attack.cooldown
@@ -220,9 +223,7 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         return self.hitboxes.get_attack_rect(self)
     
     def is_attack_active(self):
-        active_start = self.attack_windup
-        active_end = self.attack_windup + self.attack_active
-        return active_start <= self.attack_timer < active_end
+        return self.combat.is_attack_active(self)
 
     def get_attack_total_duration(self):
         return self.attack_windup + self.attack_active + self.attack_recovery

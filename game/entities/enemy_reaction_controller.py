@@ -1,5 +1,6 @@
 class EnemyReactionController:
     def die(self, owner):
+        self.cancel_attack(owner)
         owner.health.hp = 0
         owner.state = owner.DEAD
         owner.death_remaining = 30
@@ -25,6 +26,7 @@ class EnemyReactionController:
             owner.hit_stun_remaining = owner.hit_stun_duration
             owner.state = owner.HIT
             # So if an enemy is interrupted, it releases the slot.
+            self.cancel_attack(owner)
             owner.has_attack_slot = False
 
             if attacker_x < owner.x:
@@ -60,6 +62,7 @@ class EnemyReactionController:
         owner.state = owner.KNOCKDOWN
         owner.knockdown_remaining = 60
         owner.knockback_velocity = 0
+        self.cancel_attack(owner)
         owner.has_attack_slot = False
 
     def grabbed_by_player(self, owner):
@@ -70,6 +73,7 @@ class EnemyReactionController:
         owner.state = owner.GRABBED
         owner.knockback_velocity = 0
         owner.hit_stun_remaining = 0
+        self.cancel_attack(owner)
         owner.has_attack_slot = False
 
     def thrown_by_player(self, owner, direction):
@@ -82,6 +86,7 @@ class EnemyReactionController:
         owner.thrown_velocity_x = 14 * direction
         owner.thrown_remaining = 30
         owner.thrown_hit_targets.clear()
+        self.cancel_attack(owner)
         owner.has_attack_slot = False
         owner.take_thrown_damage(owner.thrown_damage)
 
@@ -96,6 +101,7 @@ class EnemyReactionController:
             owner.die()
             return
 
+        self.cancel_attack(owner)
         owner.has_attack_slot = False
         owner.state = owner.GRABBED
 
@@ -103,9 +109,19 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
         owner.attack_decision_timer = 0
+        self.cancel_attack(owner)
         owner.has_attack_slot = False
 
         died = owner.health.take_damage(damage)
 
         if died:
             owner.die()
+
+    def cancel_attack(self, owner):
+        if hasattr(owner, "combat"):
+            owner.combat.cancel_attack_timer(owner)
+        elif hasattr(owner, "attack_controller"):
+            owner.attack_controller.cancel_attack()
+            owner.attack_timer = 0
+        else:
+            owner.attack_timer = 0

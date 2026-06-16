@@ -292,3 +292,7 @@ On takeoff and landing frames:
 
 make combat timing data independent from sprite frames.
 So the animation becomes the “skin”, while the attack definition becomes the “gameplay truth”.
+
+The important idea:
+Attack timing uses seconds / normalized time.
+Animation uses frames.

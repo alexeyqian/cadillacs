@@ -1,5 +1,6 @@
 from game.animation.ferris_data import FERRIS_ANIMATIONS, FERRIS_ANIM_FPS
 from game.entities.enemy import Enemy
+from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_projectile import EnemyProjectile
 from game.settings import PROJECTILE_SPEED
 
@@ -22,7 +23,8 @@ class RangedEnemy(Enemy):
 
     def update_attack(self, level, player):
         self.face_player(player)
-        self.attack_timer += 1
+        combat = getattr(self, "combat", None) or EnemyCombatController()
+        attack_finished = combat.update_attack_timer(self)
 
         if self.is_attack_active() and not self.shot_fired:
             direction = 1 if player.x > self.x else -1
@@ -37,12 +39,8 @@ class RangedEnemy(Enemy):
             )
 
             self.shot_fired = True
-            self.attack_already_hit = True
+            combat.mark_attack_hit(self, player)
 
-        if self.attack_timer >= self.get_attack_total_duration():
-            self.state = self.PATROL
-            self.attack_timer = 0
+        if attack_finished:
+            combat.finish_attack(self)
             self.shot_fired = False
-            self.attack_already_hit = False
-            self.has_attack_slot = False
-            self.attack_cooldown = self.attack_cooldown_duration
