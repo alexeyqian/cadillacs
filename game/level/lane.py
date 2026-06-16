@@ -1,5 +1,5 @@
 class LaneSystem:
-    def __init__(self, lane_top, lane_bottom, lane_count=4):
+    def __init__(self, lane_top, lane_bottom, lane_count=3):
         self.lane_top = lane_top
         self.lane_bottom = lane_bottom
         self.lane_count = lane_count

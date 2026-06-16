@@ -89,7 +89,9 @@ class EnemyLifecycleController:
         owner.update_animation()
 
     def update_timers(self, owner):
-        if owner.attack_cooldown > 0:
+        if hasattr(owner, "attack_state"):
+            owner.attack_state.update_timers()
+        elif owner.attack_cooldown > 0:
             owner.attack_cooldown -= 1
         owner.flanking.update_timers()
 

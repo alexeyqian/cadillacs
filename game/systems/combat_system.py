@@ -38,7 +38,7 @@ def handle_player_attack_collision(game_state):
             if enemy.state != enemy.ATTACK:
                 continue
             # prevent the same enemy attack from counter-hitting more than once.
-            if enemy.attack_already_hit:
+            if enemy.combat.has_attack_hit(enemy):
                 continue
 
             enemy_attack_rect = enemy.get_attack_rect()
@@ -51,7 +51,7 @@ def handle_player_attack_collision(game_state):
                 and enemy_attack_rect.colliderect(counter_hurt_rect)):
                 # hit stun bonus here: A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
                 player.take_damage(enemy.attack_damage, hit_stun_bonus=PLAYER_COUNTER_HIT_STUN_BONUS)
-                enemy.attack_already_hit = True
+                enemy.combat.mark_attack_already_hit(enemy)
                 create_hit_spark(game_state, enemy_attack_rect, counter_hurt_rect, enemy.facing_right, ORANGE_COLOR)
                 # used for debug, remove in production
                 # Design note: this will make tuning much easier. 

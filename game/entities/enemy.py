@@ -7,12 +7,12 @@ from game.entities.enemy_animation_controller import EnemyAnimationController
 from game.entities.enemy_renderer import EnemyRenderer
 from game.entities.enemy_movement import EnemyMovement
 from game.entities.enemy_flanking import EnemyFlanking
+from game.entities.enemy_attack_state import EnemyAttackState
 from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_state_resolver import EnemyStateResolver
 from game.entities.enemy_loot_controller import EnemyLootController
-from game.entities.attack_controller import AttackController
 
 # State resolver: decides what state the enemy wants
 # Movement: changes x/y/facing
@@ -51,26 +51,10 @@ class Enemy:
         self.state = self.IDLE
         self.facing_right = False
 
-        # new design
-        # give every enemy attack a clean timer 
-        # so the next chunk can use windup / active / recovery 
-        # instead of relying only on animation frame position.
-        self.attack_timer = 0
-        self.attack_controller = AttackController()
-        self.attack_decision_timer = 0
         self.attack_delay = ENEMY_ATTACK_DELAY
-        self.attack_already_hit = False
-        self.attack_cooldown = 0
         self.attack_clash_recovery_duration = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
         self.attack_clash_cooldown_duration = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
-
-        # todo: add enemy coordination layer in future
-        # attack slot reservation system
-        # expected behavior:
-        # Enemy reserves a melee attack slot when attack starts
-        # Enemy releases slot when attack ends, flinches, dies, or clashes
-        # Attack limit becomes more reliable and easier to reason about
-        self.has_attack_slot = False
+        self.attack_state = EnemyAttackState()
 
         # Movement
         self.patrol_direction = 1
@@ -131,6 +115,7 @@ class Enemy:
         self.attack_lane_reach = config.attack_lane_reach
 
         self.attack_data = config.attack
+        self.attack_state.data = config.attack
         self.attack_damage = config.attack.damage
         self.attack_delay = config.attack.delay
         self.attack_cooldown_duration = config.attack.cooldown
@@ -226,17 +211,23 @@ class Enemy:
         return self.combat.is_attack_active(self)
 
     def get_attack_total_duration(self):
+        if hasattr(self, "attack_state") and self.attack_state.data:
+            return self.attack_state.data.total_duration
         return self.attack_data.total_duration
 
     def get_attack_phase_name(self):
         if self.state != self.ATTACK:
             return ""
-        return self.attack_controller.get_phase_name()
+        if not hasattr(self, "attack_state"):
+            return ""
+        return self.attack_state.controller.get_phase_name()
 
     def get_attack_timing_label(self):
         if self.state != self.ATTACK:
             return ""
-        return self.attack_controller.get_timing_label()
+        if not hasattr(self, "attack_state"):
+            return ""
+        return self.attack_state.controller.get_timing_label()
 
     # Rendering / animation / geometry
     def draw(self, screen, camera_x):

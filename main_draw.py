@@ -195,7 +195,13 @@ def main_draw_ui(game_state):
         max_slots = MAX_MELEE_ATTACKERS
 
         for enemy in enemies:
-            if enemy.has_attack_slot:
+            attack_state = getattr(enemy, "attack_state", None)
+            has_attack_slot = (
+                attack_state.has_slot
+                if attack_state
+                else getattr(enemy, "has_attack_slot", False)
+            )
+            if has_attack_slot:
                 active_slots += 1
                 max_slots = getattr(enemy, "melee_attack_slot_limit", None) or max_slots
 
@@ -221,9 +227,18 @@ def main_draw_ui(game_state):
             if enemy.state != enemy.ATTACK:
                 continue
 
+            attack_state = getattr(enemy, "attack_state", None)
+            attack_controller = (
+                attack_state.controller
+                if attack_state
+                else getattr(enemy, "attack_controller", None)
+            )
+            if not attack_controller:
+                continue
+
             enemy_debug_lines = format_attack_debug_lines(
                 enemy.display_name,
-                enemy.attack_controller,
+                attack_controller,
                 damage=enemy.attack_damage,
                 lane_reach=enemy.attack_lane_reach,
             )
