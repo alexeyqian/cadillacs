@@ -4,7 +4,7 @@
 
 ## Goal
 
-Build a simple, easy-to-understand Cadillacs and Dinosaurs style beat'em up using:
+Build easy-to-understand Cadillacs and Dinosaurs style beat'em up using:
 
 - Python
 - PyGame
@@ -17,6 +17,7 @@ Build a simple, easy-to-understand Cadillacs and Dinosaurs style beat'em up usin
 - Should support choose different players
 - Should support level editing in future
 - Try not to remove code comments, these are added by myself for code understanding
+- Try to make it more like production scale project, not educational any more.
 
 The codebase should easy to understand and easy to maintain. 
 You can do refactoring if needed, including: rename variables, rename functions, move functions into different files. Prefer to write code in the way easy to write test in future.

@@ -7,7 +7,7 @@ class EnemyStateResolver:
 
         if self.can_attack_player(owner, level, player, distance_x, distance_y, enemies):
             owner.flanking.clear_target()
-            self.prepare_or_start_attack(owner)
+            self.prepare_or_start_attack(owner, player)
         elif distance_x <= owner.detect_range:
             self.reset_attack_decision(owner)
             if self.should_flank(owner, player, distance_x, distance_y, enemies):
@@ -22,10 +22,10 @@ class EnemyStateResolver:
             # todo: replace with: start_patrol()
             owner.state = owner.PATROL
 
-    def prepare_or_start_attack(self, owner):
+    def prepare_or_start_attack(self, owner, player=None):
         self.increment_attack_decision(owner)
 
-        if self.get_attack_decision(owner) >= owner.attack_delay:
+        if self.get_attack_decision(owner) >= self.get_required_attack_delay(owner, player):
             owner.start_attack()
             return
 
@@ -151,6 +151,26 @@ class EnemyStateResolver:
         if attack_state:
             return attack_state.decision_timer
         return owner.attack_decision_timer
+
+    def get_required_attack_delay(self, owner, player=None):
+        if not self.is_player_in_attack_recovery(player):
+            return owner.attack_delay
+
+        # During player recovery, enemies need fewer decision frames before
+        # attacking. They still count up normally, so this creates a punish
+        # opportunity without making enemy reactions instant.
+        multiplier = getattr(owner, "recovery_punish_delay_multiplier", 0.5)
+        return max(1, int(owner.attack_delay * multiplier))
+
+    def is_player_in_attack_recovery(self, player):
+        if not player:
+            return False
+
+        combat = getattr(player, "combat", None)
+        if not combat or not combat.is_attacking:
+            return False
+
+        return combat.get_attack_phase_name() == "RECOVERY"
 
     def get_attack_cooldown(self, owner):
         attack_state = self.get_attack_state(owner)

@@ -17,6 +17,7 @@ class EnemyLifecycleState:
         self.recent_hit_count = 0
         self.recent_hit_timer = 0
         self.stun_resistance_remaining = 0
+        self.breakout_velocity_x = 0
 
         # grab/throw
         self.thrown_velocity_x = 0

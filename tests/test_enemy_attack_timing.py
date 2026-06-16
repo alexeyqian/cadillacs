@@ -5,6 +5,7 @@ from game.entities.attack_data import AttackPhaseData, EnemyAttackData
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy import Enemy
 from game.entities.enemy_combat_controller import EnemyCombatController
+from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_state_resolver import EnemyStateResolver
@@ -83,6 +84,10 @@ class FakeEnemy:
         self.anti_stunlock_hit_window = 90
         self.stun_resistance_duration = 45
         self.resisted_hit_stun_duration = 4
+        self.breakout_recoil_duration = 10
+        self.breakout_velocity = 6
+        self.breakout_velocity_x = 0
+        self.recovery_punish_delay_multiplier = 0.5
         self.knockback_velocity = 0
         self.animation_controller = FakeAnimationController()
 
@@ -104,6 +109,9 @@ class FakeEnemy:
     def start_attack(self):
         EnemyCombatController().start_attack(self)
 
+    def update_animation(self):
+        self.animation_controller.play(self.state)
+
     def should_knockdown_from_damage(self, damage):
         return False
 
@@ -119,12 +127,22 @@ class FakePlayer:
         self.x = 10
         self.y = 0
         self.damage_taken = 0
+        self.combat = None
 
     def get_hurt_rect(self):
         return AlwaysCollidingRect()
 
     def take_damage(self, damage):
         self.damage_taken += damage
+
+
+class FakePlayerCombat:
+    def __init__(self, phase_name):
+        self.phase_name = phase_name
+        self.is_attacking = True
+
+    def get_attack_phase_name(self):
+        return self.phase_name
 
 
 class FakeRangedEnemy(FakeEnemy):
@@ -264,7 +282,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.state, enemy.HIT)
         self.assertFalse(enemy.attack_controller.is_attacking)
 
-    def test_repeated_hits_activate_stun_resistance_and_reduce_hit_stun(self):
+    def test_repeated_hits_activate_stun_resistance_and_clear_hit_stun(self):
         enemy = FakeEnemy()
         reactions = EnemyReactionController()
 
@@ -274,7 +292,24 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
         self.assertEqual(enemy.health.hp, 70)
         self.assertGreater(enemy.stun_resistance_remaining, 0)
-        self.assertEqual(enemy.hit_stun_remaining, enemy.resisted_hit_stun_duration)
+        self.assertEqual(enemy.hit_stun_remaining, 0)
+
+    def test_repeated_hits_trigger_breakout_recoil_step(self):
+        enemy = FakeEnemy()
+        enemy.x = 100
+        reactions = EnemyReactionController()
+
+        reactions.take_damage(enemy, 10, attacker_x=50)
+        reactions.take_damage(enemy, 10, attacker_x=50)
+        reactions.take_damage(enemy, 10, attacker_x=50)
+
+        self.assertEqual(enemy.state, enemy.RECOIL)
+        self.assertEqual(enemy.action_lock_remaining, enemy.breakout_recoil_duration)
+        self.assertGreater(enemy.breakout_velocity_x, 0)
+
+        EnemyLifecycleController().update_special_states(enemy)
+
+        self.assertGreater(enemy.x, 100)
 
     def test_stun_resistance_prevents_light_hit_from_canceling_enemy_attack(self):
         enemy = FakeEnemy()
@@ -288,11 +323,28 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.state, enemy.ATTACK)
         self.assertTrue(enemy.attack_controller.is_attacking)
 
+    def test_enemy_uses_shorter_attack_delay_during_player_recovery(self):
+        enemy = FakeEnemy()
+        player = FakePlayer()
+        player.combat = FakePlayerCombat("RECOVERY")
+        resolver = EnemyStateResolver()
+
+        self.assertEqual(resolver.get_required_attack_delay(enemy, player), 1)
+
+    def test_enemy_attack_delay_stays_normal_outside_player_recovery(self):
+        enemy = FakeEnemy()
+        player = FakePlayer()
+        player.combat = FakePlayerCombat("ACTIVE")
+        resolver = EnemyStateResolver()
+
+        self.assertEqual(resolver.get_required_attack_delay(enemy, player), enemy.attack_delay)
+
     def test_enemy_configs_raise_pressure_without_removing_archetype_identity(self):
         ferris = get_enemy_config("ferris")
         gneiss = get_enemy_config("gneiss")
         black_elmer = get_enemy_config("black_elmer")
         ranged = get_enemy_config("ranged")
+        boss = get_enemy_config("boss")
 
         self.assertGreater(ferris.attack_range, 90)
         self.assertLess(ferris.attack.cooldown, 45)
@@ -300,6 +352,9 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertLess(gneiss.attack.cooldown, ferris.attack.cooldown)
         self.assertGreater(black_elmer.attack_range, ferris.attack_range)
         self.assertEqual(black_elmer.attack_flinch_damage_threshold, BAT_DAMAGE)
+        self.assertEqual(black_elmer.anti_stunlock_hit_limit, 2)
+        self.assertEqual(boss.attack_flinch_damage_threshold, BAT_DAMAGE)
+        self.assertEqual(boss.anti_stunlock_hit_limit, 2)
         self.assertLess(ranged.attack.cooldown, 90)
 
     def test_ranged_enemy_fires_once_during_active_window(self):

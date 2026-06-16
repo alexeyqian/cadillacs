@@ -17,7 +17,7 @@ class EnemyReactionController:
             return
 
         died = owner.health.take_damage(damage)
-        self.register_recent_hit(owner)
+        self.register_recent_hit(owner, attacker_x)
 
         if owner.health.hp > 0 and self.should_knockdown_from_damage(damage):
             self.knockdown(owner)
@@ -50,7 +50,7 @@ class EnemyReactionController:
         if self.is_stun_resistant(owner):
             self.apply_resisted_hit(owner)
 
-    def register_recent_hit(self, owner):
+    def register_recent_hit(self, owner, attacker_x):
         hit_window = getattr(owner, "anti_stunlock_hit_window", 90)
         hit_limit = getattr(owner, "anti_stunlock_hit_limit", 3)
 
@@ -64,10 +64,30 @@ class EnemyReactionController:
                 owner,
                 getattr(owner, "stun_resistance_duration", 45),
             )
+            self.start_breakout_recoil(owner, attacker_x)
             self.set_recent_hit_count(owner, 0)
 
     def is_stun_resistant(self, owner):
         return self.get_stun_resistance_remaining(owner) > 0
+
+    def start_breakout_recoil(self, owner, attacker_x):
+        if owner.state == owner.ATTACK:
+            return
+
+        # Breakout gives the enemy a tiny "get off me" step after repeated
+        # hits. It does not damage the player; it simply creates room so the
+        # enemy AI can resume instead of being held in HIT forever.
+        direction = 1 if owner.x >= attacker_x else -1
+        self.set_breakout_velocity_x(
+            owner,
+            getattr(owner, "breakout_velocity", 6) * direction,
+        )
+        self.set_action_lock_remaining(
+            owner,
+            getattr(owner, "breakout_recoil_duration", 10),
+        )
+        self.set_hit_stun_remaining(owner, 0)
+        owner.state = owner.RECOIL
 
     def apply_resisted_hit(self, owner):
         resisted_stun = getattr(owner, "resisted_hit_stun_duration", 4)
@@ -290,3 +310,17 @@ class EnemyReactionController:
             state.stun_resistance_remaining = value
         else:
             owner.stun_resistance_remaining = value
+
+    def set_action_lock_remaining(self, owner, value):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            state.action_lock_remaining = value
+        else:
+            owner.action_lock_remaining = value
+
+    def set_breakout_velocity_x(self, owner, value):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            state.breakout_velocity_x = value
+        else:
+            owner.breakout_velocity_x = value

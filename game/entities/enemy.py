@@ -116,6 +116,9 @@ class Enemy:
         self.anti_stunlock_hit_window = config.anti_stunlock_hit_window
         self.stun_resistance_duration = config.stun_resistance_duration
         self.resisted_hit_stun_duration = config.resisted_hit_stun_duration
+        self.breakout_recoil_duration = config.breakout_recoil_duration
+        self.breakout_velocity = config.breakout_velocity
+        self.recovery_punish_delay_multiplier = config.recovery_punish_delay_multiplier
         self.thrown_damage = config.thrown_damage
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale

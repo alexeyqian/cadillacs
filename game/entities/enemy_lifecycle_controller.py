@@ -11,6 +11,7 @@ class EnemyLifecycleController:
                 self.get_action_lock_remaining(owner) - 1,
             )
             owner.state = owner.RECOIL
+            self.update_breakout_movement(owner)
             owner.update_animation()
             return True
         
@@ -113,6 +114,20 @@ class EnemyLifecycleController:
                 owner,
                 self.get_stun_resistance_remaining(owner) - 1,
             )
+
+    def update_breakout_movement(self, owner):
+        # Breakout recoil is a tiny defensive step after repeated hits. It is
+        # intentionally separate from knockback, because knockback means "hit
+        # reaction" while breakout means "stop the infinite pressure loop."
+        velocity_x = self.get_breakout_velocity_x(owner)
+        if velocity_x == 0:
+            return
+
+        owner.x += velocity_x
+        self.set_breakout_velocity_x(owner, velocity_x * 0.75)
+
+        if abs(self.get_breakout_velocity_x(owner)) < 0.5:
+            self.set_breakout_velocity_x(owner, 0)
 
     def is_ready_to_remove(self, owner):
         return owner.state == owner.DEAD and self.get_death_remaining(owner) <= 0
@@ -242,3 +257,16 @@ class EnemyLifecycleController:
             state.stun_resistance_remaining = value
         else:
             owner.stun_resistance_remaining = value
+
+    def get_breakout_velocity_x(self, owner):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            return state.breakout_velocity_x
+        return getattr(owner, "breakout_velocity_x", 0)
+
+    def set_breakout_velocity_x(self, owner, value):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            state.breakout_velocity_x = value
+        else:
+            owner.breakout_velocity_x = value

@@ -39,6 +39,9 @@ class EnemyConfig:
     anti_stunlock_hit_window: int = 90
     stun_resistance_duration: int = 45
     resisted_hit_stun_duration: int = 4
+    breakout_recoil_duration: int = 10
+    breakout_velocity: float = 6
+    recovery_punish_delay_multiplier: float = 0.5
     thrown_damage:int = THROWN_DAMAGE
     score_points: int = ENEMY_SCORE_POINTS
     sprite_scale: int  = 4
@@ -99,6 +102,7 @@ ENEMY_CONFIGS = {
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 4,
         attack_flinch_damage_threshold=BAT_DAMAGE,
+        anti_stunlock_hit_limit=2,
         score_points=int(ENEMY_SCORE_POINTS*2),
     ),
     "raptor": EnemyConfig(
@@ -149,6 +153,8 @@ ENEMY_CONFIGS = {
             hitboxes=(AttackHitboxData(x=128, y=-284, width=120, height=80),),
         ),
         flinch_damage_threshold=FIST_DAMAGE + 4,
+        attack_flinch_damage_threshold=BAT_DAMAGE,
+        anti_stunlock_hit_limit=2,
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         score_points=int(ENEMY_SCORE_POINTS*10),
     ),
