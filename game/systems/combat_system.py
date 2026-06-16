@@ -98,7 +98,7 @@ def handle_player_attack_collision(game_state):
                 # No one takes damage
                 player.combat.start_clash_recovery(player)
                 #enemy.state = enemy.IDLE
-                #enemy.action_lock_timer = enemy.clash_recovery_duration
+                #enemy.action_lock_remaining = enemy.clash_recovery_duration
                 enemy.attack_already_hit = False
                 enemy.attack_cooldown = max(enemy.attack_cooldown, 20)
                 enemy.has_attack_slot = False

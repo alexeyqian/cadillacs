@@ -1,5 +1,4 @@
 from game.settings import *
-from game.tuning import scale_frames
 from game.entities.player_config import get_player_config
 from game.entities.player_hitboxes import PlayerHitboxes
 from game.entities.player_health import PlayerHealth
@@ -53,7 +52,6 @@ class Player:
         # Press J, release, press J: combo advances
         # Mashing J: combo still works, but requires timing/input
         self.attack_pressed = False
-        self.run_attack_timer = 0
         self.run_attack_duration = 18
         self.jump_attack_pressed = False
         self.jump_attack_duration = self.run_attack_duration
@@ -84,7 +82,7 @@ class Player:
         self.run_attack_damage = config.run_attack_damage
         self.jump_attack_damage = config.jump_attack_damage
         self.grab_range = config.grab_range
-        self.hit_stun_duration = scale_frames(config.hit_stun_duration)
+        self.hit_stun_duration = config.hit_stun_duration
         self.sprite_scale = config.sprite_scale
 
     # update() works in world coordinates

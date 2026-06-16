@@ -8,10 +8,10 @@ class PlayerLifecycle:
         owner.animation_controller.update(owner)
 
     def update_hit_state(self, owner):
-        if owner.health.hit_timer <= 0:
+        if owner.health.hit_stun_remaining <= 0:
             return False
 
-        still_in_hit_stun = owner.health.update_hit_timer()
+        still_in_hit_stun = owner.health.update_hit_stun()
         if still_in_hit_stun:
             owner.state_machine.change_to(owner, owner.HIT)
         else:
@@ -45,7 +45,7 @@ class PlayerLifecycle:
             return
         if owner.health.lives <= 0:
             return
-        if owner.health.update_respawn_timer():
+        if owner.health.update_respawn():
             self.respawn(owner)
 
     def respawn(self, owner):

@@ -5,7 +5,6 @@ from game.colors import *
 from game.entities.enemy import Enemy
 from game.entities.enemy_projectile import EnemyProjectile
 from game.animation.animation_config import *
-from game.tuning import scale_frames
 from game.animation.boss_data import BOSS_ANIMATIONS, BOSS_ANIM_FPS
 
 # boss phase system
@@ -29,10 +28,10 @@ class BossEnemy(Enemy):
         self.speed = BOSS_ENEMY_SPEED
 
         # properties special to boss enemy
-        self.special_attack_cooldown_duration = scale_frames(300)
+        self.special_attack_cooldown_duration = 300
         self.special_attack_cooldown = self.special_attack_cooldown_duration
         self.phase = 1
-        self.phase_message_timer = 0
+        self.phase_message_remaining = 0
         self.phase_message = ""
 
         self.base_speed = self.speed
@@ -53,8 +52,8 @@ class BossEnemy(Enemy):
             return
 
         self.update_phase()
-        if self.phase_message_timer > 0:
-            self.phase_message_timer -= 1
+        if self.phase_message_remaining > 0:
+            self.phase_message_remaining -= 1
 
         if self.special_attack_cooldown > 0:
             self.special_attack_cooldown -= 1
@@ -81,7 +80,7 @@ class BossEnemy(Enemy):
             f"PHASE {self.phase}",True,(255, 255, 255))
         screen.blit(phase_text,(screen_x,self.y - 45))
 
-        if self.phase_message_timer > 0:
+        if self.phase_message_remaining > 0:
             warning = font.render(self.phase_message, True, (255, 0, 0))
             screen.blit(warning, (screen_x - 60, self.y - 70))
 
@@ -119,7 +118,7 @@ class BossEnemy(Enemy):
             should_flinch = True
 
         if should_flinch:
-            self.hit_timer = 8
+            self.hit_stun_remaining = 8
             self.state = self.HIT
 
             # boss barely moves when hit
@@ -147,7 +146,7 @@ class BossEnemy(Enemy):
                 self.apply_phase_stats()
                 
     def apply_phase_stats(self):
-        self.phase_message_timer = 120
+        self.phase_message_remaining = 120
 
         if self.phase == 1:
             self.phase_message = "BOSS PHASE 1"

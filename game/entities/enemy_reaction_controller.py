@@ -2,8 +2,8 @@ class EnemyReactionController:
     def die(self, owner):
         owner.health.hp = 0
         owner.state = owner.DEAD
-        owner.death_timer = 30
-        owner.death_timer_started = False
+        owner.death_remaining = 30
+        owner.death_countdown_started = False
         owner.has_attack_slot = False
 
     # temp for renaming
@@ -20,7 +20,7 @@ class EnemyReactionController:
             should_flinch = True
 
         if should_flinch:
-            owner.hit_timer = owner.hit_stun_duration
+            owner.hit_stun_remaining = owner.hit_stun_duration
             owner.state = owner.HIT
             # So if an enemy is interrupted, it releases the slot.
             owner.has_attack_slot = False
@@ -55,7 +55,7 @@ class EnemyReactionController:
             return
 
         owner.state = owner.KNOCKDOWN
-        owner.knockdown_timer = 60
+        owner.knockdown_remaining = 60
         owner.knockback_velocity = 0
         owner.has_attack_slot = False
 
@@ -65,7 +65,7 @@ class EnemyReactionController:
 
         owner.state = owner.GRABBED
         owner.knockback_velocity = 0
-        owner.hit_timer = 0
+        owner.hit_stun_remaining = 0
         owner.has_attack_slot = False
 
     def thrown_by_player(self, owner, direction):
@@ -75,7 +75,7 @@ class EnemyReactionController:
         owner.state = owner.THROWN
         owner.facing_right = direction > 0
         owner.thrown_velocity_x = 14 * direction
-        owner.thrown_timer = 30
+        owner.thrown_remaining = 30
         owner.thrown_hit_targets.clear()
         owner.has_attack_slot = False
         owner.take_thrown_damage(owner.thrown_damage)

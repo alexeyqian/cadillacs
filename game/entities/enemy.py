@@ -62,8 +62,8 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.facing_right = False
         self.hitboxes = EnemyHitboxes()
         self.loot_generated = False
-        self.death_timer = 30
-        self.death_timer_started = False
+        self.death_remaining = 30
+        self.death_countdown_started = False
 
         self.patrol_direction = 1
         self.attack_already_hit = False
@@ -84,24 +84,24 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.flank_offset_y = ENEMY_FLANK_OFFSET_Y
         # avoid make enemies jitter between left/right if counts are close. 
         # give each flank decision a short commitment timer.
-        self.flank_decision_timer = 0
+        self.flank_decision_remaining = 0
         self.flank_decision_duration = ENEMY_FLANK_DECISION_DURATION
 
         # This keeps the clash fair on both sides: the player cannot instantly re-punch, 
         # and the enemy cannot instantly resume pressure either.
-        self.action_lock_timer = 0
+        self.action_lock_remaining = 0
         self.clash_recovery_duration = 12
         # hit reaction # enemy gets briefly white when hit by player
         self.knockback_velocity = 0
-        self.hit_timer = 0
+        self.hit_stun_remaining = 0
         self.hit_stun_duration = 15
         # grab/throw
         self.thrown_velocity_x = 0
-        self.thrown_timer = 0
+        self.thrown_remaining = 0
         self.thrown_hit_targets = set()
         #knockdown/getup
-        self.knockdown_timer = 0
-        self.getup_timer = 0
+        self.knockdown_remaining = 0
+        self.getup_remaining = 0
 
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
@@ -243,7 +243,7 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         return "right"
     
     def set_flank_target(self, player, enemies):
-        if self.flank_decision_timer > 0 and self.flank_target_side:
+        if self.flank_decision_remaining > 0 and self.flank_target_side:
             return
 
         left_count = 0
@@ -271,12 +271,12 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         else:
             self.flank_target_y_offset = self.flank_offset_y
 
-        self.flank_decision_timer = self.flank_decision_duration
+        self.flank_decision_remaining = self.flank_decision_duration
 
     def clear_flank_target(self):
         self.flank_target_side = None
         self.flank_target_y_offset = 0
-        self.flank_decision_timer = 0
+        self.flank_decision_remaining = 0
 
     def get_flank_target_position(self, player):
         target_y = player.y + self.flank_target_y_offset

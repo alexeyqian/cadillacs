@@ -6,7 +6,7 @@ class PlayerMovement:
         self.is_running = False
         self.run_active = False
         self.run_direction = 0
-        self.run_tap_timer = 0
+        self.run_tap_remaining = 0
         self.run_tap_window = max(1, int(RUN_DOUBLE_TAP_TIME * FPS))
         self.left_pressed = False
         self.right_pressed = False
@@ -22,8 +22,8 @@ class PlayerMovement:
         self.air_friction = 0.92
 
     def update_timers(self):
-        if self.run_tap_timer > 0:
-            self.run_tap_timer -= 1
+        if self.run_tap_remaining > 0:
+            self.run_tap_remaining -= 1
 
     # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):
@@ -91,11 +91,11 @@ class PlayerMovement:
         self.right_pressed = right_down
 
     def check_run_double_tap(self, direction):
-        if self.run_direction == direction and self.run_tap_timer > 0:
+        if self.run_direction == direction and self.run_tap_remaining > 0:
             self.run_active = True
 
         self.run_direction = direction
-        self.run_tap_timer = self.run_tap_window
+        self.run_tap_remaining = self.run_tap_window
 
     def update_jump_physics(self, owner, player_input):
         if not self.is_jumping:

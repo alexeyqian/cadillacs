@@ -9,20 +9,20 @@ class PlayerGrabController:
         self.failed_grab_recovery_duration = 8
         self.failed_grab_feedback = False
 
-        self.throw_timer = 0
+        self.throw_remaining = 0
         self.throw_duration = 14
 
-        self.grab_knee_timer = 0
+        self.grab_knee_remaining = 0
         self.grab_knee_duration = PLAYER_GRAB_KNEE_DURATION
         self.grab_knee_hit_frame = PLAYER_GRAB_KNEE_HIT_FRAME
 
     def update_timers(self, owner):
-        if self.throw_timer > 0:
-            self.throw_timer -= 1
+        if self.throw_remaining > 0:
+            self.throw_remaining -= 1
 
-        if self.grab_knee_timer > 0:
-            self.grab_knee_timer -= 1
-            if self.grab_knee_timer <= 0:
+        if self.grab_knee_remaining > 0:
+            self.grab_knee_remaining -= 1
+            if self.grab_knee_remaining <= 0:
                 owner.combat.is_attacking = False
                 owner.combat.attack_connected = False
                 # expected behavior
@@ -95,5 +95,5 @@ class PlayerGrabController:
         self.grabbed_enemy.thrown_by_player(direction)
         self.grabbed_enemy = None
 
-        self.throw_timer = self.throw_duration
+        self.throw_remaining = self.throw_duration
         owner.state_machine.change_to(owner, owner.THROW)

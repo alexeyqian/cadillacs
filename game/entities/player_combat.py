@@ -153,7 +153,7 @@ class PlayerCombat:
 
         self.is_attacking = True
         self.attack_remaining = owner.grab.grab_knee_duration
-        owner.grab.grab_knee_timer = owner.grab.grab_knee_duration
+        owner.grab.grab_knee_remaining = owner.grab.grab_knee_duration
         self.attack_connected = False
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 

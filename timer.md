@@ -74,7 +74,7 @@ Elapsed timers are best when an action has multiple phases.
 Countdown timers count downward.
 
 ```python
-self.hit_timer -= 1
+self.hit_stun_remaining -= 1
 ```
 
 Use countdown timers when you only care about how much time remains.
@@ -127,42 +127,51 @@ Countdown timers are best when a state just needs to expire.
 
 Timer names should make the direction obvious.
 
+Project convention:
+
+```python
+*_timer       # elapsed timer, counts upward with += 1
+*_cooldown    # cooldown countdown, counts downward with -= 1
+*_remaining   # non-cooldown countdown, counts downward with -= 1
+*_duration    # fixed duration value
+*_window      # fixed input/combo window value
+```
+
 ### Good Names For Elapsed Timers
 
 Use these when counting upward:
 
 ```python
 attack_timer
-combo_timer
-throw_timer
-grab_knee_timer
 phase_timer
 animation_timer
 ```
 
-These names imply "how long this action has been running."
+These names imply "how long this action has been running." Keep `_timer`
+for elapsed timers only.
 
 ### Good Names For Countdown Timers
 
-Use these when counting downward:
+Use `_cooldown` for cooldowns that count downward:
 
 ```python
 attack_cooldown
-hit_stun_remaining
-invulnerable_timer
-death_timer
-respawn_timer
-message_timer
-spawn_delay
+shoot_cooldown
+special_attack_cooldown
 ```
 
-For maximum clarity, prefer names like:
+Use `_remaining` for other timers that count downward:
 
 ```python
-attack_cooldown_remaining
-hit_stun_frames_remaining
-invulnerable_frames_remaining
-death_cleanup_frames_remaining
+hit_stun_remaining
+respawn_remaining
+death_remaining
+action_lock_remaining
+throw_remaining
+grab_knee_remaining
+knockdown_remaining
+getup_remaining
+phase_message_remaining
 ```
 
 Long names are acceptable when they prevent confusion.
@@ -185,7 +194,7 @@ For countdown timers:
 ```python
 def take_damage(self):
     self.state = self.HIT
-    self.hit_timer = 15
+    self.hit_stun_remaining = 15
 ```
 
 Avoid resetting timers every frame while already in the state. That causes the state to never finish.
@@ -197,29 +206,29 @@ Countdown timers often go below zero if not clamped.
 This is usually okay:
 
 ```python
-if self.hit_timer > 0:
-    self.hit_timer -= 1
+if self.hit_stun_remaining > 0:
+    self.hit_stun_remaining -= 1
 ```
 
 This is also okay:
 
 ```python
-self.hit_timer -= 1
-if self.hit_timer <= 0:
+self.hit_stun_remaining -= 1
+if self.hit_stun_remaining <= 0:
     finish_hit_state()
 ```
 
 But avoid using exact equality:
 
 ```python
-if self.hit_timer == 0:
+if self.hit_stun_remaining == 0:
     finish_hit_state()
 ```
 
 Prefer:
 
 ```python
-if self.hit_timer <= 0:
+if self.hit_stun_remaining <= 0:
     finish_hit_state()
 ```
 
@@ -325,48 +334,34 @@ Hit-stun and invulnerability usually work best as countdown timers.
 Example:
 
 ```python
-if self.hit_timer > 0:
-    self.hit_timer -= 1
+if self.hit_stun_remaining > 0:
+    self.hit_stun_remaining -= 1
     return
 ```
 
 Example:
 
 ```python
-if self.invulnerable_timer > 0:
-    self.invulnerable_timer -= 1
+if self.invulnerable_remaining > 0:
+    self.invulnerable_remaining -= 1
 ```
 
 Then collision can check:
 
 ```python
-if self.invulnerable_timer <= 0:
+if self.invulnerable_remaining <= 0:
     self.take_damage(damage)
 ```
 
 ## Frame Scaling
 
-Use `game.tuning.scale_frames()` for timers that should respond to global game timing.
+Do not use global frame scaling for gameplay timers right now.
 
-Example:
-
-```python
-from game.tuning import scale_frames
-
-self.hit_timer = scale_frames(15)
-self.attack_cooldown_duration = scale_frames(45)
-```
-
-Use `scale_timing()` for attack timing blocks:
+Keep fixed values explicit:
 
 ```python
-from game.tuning import scale_timing
-
-timing = scale_timing(20, 8, 25)
-self.attack_windup = timing["windup"]
-self.attack_active = timing["active"]
-self.attack_recovery = timing["recovery"]
-self.attack_total_duration = timing["total"]
+self.hit_stun_remaining = 15
+self.attack_cooldown_duration = 45
 ```
 
 ## Common Mistakes
@@ -379,7 +374,7 @@ self.attack_total_duration = timing["total"]
 | Attack sometimes misses unfairly | Active window too short | Increase `attack_active` or minimum active frames |
 | One-frame event fires repeatedly | Missing boolean guard | Add `projectile_spawned`, `attack_has_hit`, or similar |
 | Timer check fails after going negative | Used `== 0` | Use `<= 0` for countdown completion |
-| Game speed preset feels uneven | Some timers bypass scaling | Use `scale_frames()` or `scale_timing()` for gameplay timers |
+| Timer names are confusing | Countdown timer uses `_timer` suffix | Rename cooldowns to `_cooldown` and other countdowns to `_remaining` |
 
 ## Recommended Pattern
 
@@ -413,11 +408,11 @@ For a simple temporary state:
 ```python
 def start_hit_stun(self):
     self.state = self.HIT
-    self.hit_timer = scale_frames(15)
+    self.hit_stun_remaining = 15
 
 def update_hit_state(self):
-    self.hit_timer -= 1
-    if self.hit_timer <= 0:
+    self.hit_stun_remaining -= 1
+    if self.hit_stun_remaining <= 0:
         self.state = self.IDLE
 ```
 
