@@ -2,6 +2,7 @@ import unittest
 
 from game.entities.attack_data import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.entities.player_combat_controller import PlayerCombatController
+from game.ui.score_manager import ScoreManager
 
 
 class FakeMovement:
@@ -33,6 +34,7 @@ class FakeOwner:
     ATTACK_3 = "ATTACK_3"
     RUN_ATTACK = "RUN_ATTACK"
     JUMP_ATTACK = "JUMP_ATTACK"
+    RECOIL = "RECOIL"
     DEAD = "DEAD"
 
     def __init__(self):
@@ -43,6 +45,11 @@ class FakeOwner:
 
 
 class PlayerAttackDataTests(unittest.TestCase):
+    def finish_connected_attack(self, combat, owner):
+        combat.mark_attack_connected()
+        for _ in range(combat.attack_remaining):
+            combat.update_timers(owner)
+
     def test_standing_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         combat = PlayerCombatController()
@@ -145,6 +152,87 @@ class PlayerAttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(combat.attack_controller.current_attack, PLAYER_ATTACKS["ATTACK_1"])
+
+    def test_second_combo_hit_allows_moderate_followup_delay(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        for _ in range(13):
+            combat.update_timers(owner)
+        combat.start_attack(owner)
+
+        self.assertEqual(owner.state, owner.ATTACK_2)
+
+    def test_second_combo_hit_resets_when_followup_is_too_late(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        for _ in range(14):
+            combat.update_timers(owner)
+        combat.start_attack(owner)
+
+        self.assertEqual(owner.state, owner.ATTACK_1)
+
+    def test_third_combo_hit_requires_tighter_followup_delay(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        for _ in range(6):
+            combat.update_timers(owner)
+        combat.start_attack(owner)
+
+        self.assertEqual(owner.state, owner.ATTACK_3)
+
+    def test_third_combo_hit_resets_when_followup_is_too_late(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        for _ in range(7):
+            combat.update_timers(owner)
+        combat.start_attack(owner)
+
+        self.assertEqual(owner.state, owner.ATTACK_1)
+
+    def test_combo_chain_restarts_after_third_hit_recovery(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        combat.start_attack(owner)
+        self.finish_connected_attack(combat, owner)
+        combat.start_attack(owner)
+
+        self.assertEqual(owner.state, owner.IDLE)
+
+        for _ in range(24):
+            combat.update_timers(owner)
+        combat.start_attack(owner)
+
+        self.assertEqual(owner.state, owner.ATTACK_1)
+
+    def test_score_combo_caps_at_three_multiplier(self):
+        score_manager = ScoreManager()
+
+        for _ in range(6):
+            score_manager.register_hit()
+
+        self.assertEqual(score_manager.combo_count, 3)
+        self.assertEqual(score_manager.get_multiplier(), 3)
 
 
 if __name__ == "__main__":

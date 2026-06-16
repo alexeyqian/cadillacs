@@ -87,8 +87,10 @@ class EnemyAttackData:
 
 
 PLAYER_COUNTER_HIT_STUN_BONUS = 10
-PLAYER_COMBO_WINDOW = 30
-PLAYER_THIRD_HIT_RECOVERY = 10
+PLAYER_COMBO_WINDOW = 26
+PLAYER_FIRST_TO_SECOND_COMBO_WINDOW = 26
+PLAYER_SECOND_TO_THIRD_COMBO_WINDOW = 19
+PLAYER_THIRD_HIT_RECOVERY = 24
 PLAYER_CLASH_RECOVERY = 8
 
 PLAYER_ATTACKS = {
@@ -98,6 +100,7 @@ PLAYER_ATTACKS = {
         phase=AttackPhaseData(windup=8, active=4, recovery=0),
         hitboxes=(AttackHitboxData(x=94, y=-300, width=160, height=40),),
         counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
+        combo_window=PLAYER_FIRST_TO_SECOND_COMBO_WINDOW,
     ),
     "ATTACK_2": PlayerAttackData(
         damage=FIST_DAMAGE,
@@ -105,6 +108,7 @@ PLAYER_ATTACKS = {
         phase=AttackPhaseData(windup=8, active=4, recovery=0),
         hitboxes=(AttackHitboxData(x=94, y=-300, width=160, height=40),),
         counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
+        combo_window=PLAYER_SECOND_TO_THIRD_COMBO_WINDOW,
     ),
     "ATTACK_3": PlayerAttackData(
         damage=FIST_DAMAGE + 4,
