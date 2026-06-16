@@ -1,17 +1,9 @@
 import pygame
+
 from game.entities.combat_geometry import combat_box_to_world_rect
 
 
 class EnemyHitboxes:
-    # beat'em up lane limits creates the illusion of depth
-    # player walks on a horizontal strip, not full screen
-    def apply_world_bounds(self, owner, world_width, lane_top, lane_bottom):
-        half_w = owner.collision_box_w // 2
-        owner.x = max(half_w, owner.x)
-        owner.x = min(owner.x, world_width - half_w)
-        owner.y = max(lane_top, owner.y)
-        owner.y = min(lane_bottom, owner.y)
-
     def get_collision_rect(self, owner):
         return pygame.Rect(
             int(owner.x - owner.collision_box_w / 2),

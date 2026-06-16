@@ -3,7 +3,6 @@ from dataclasses import replace
 from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
-from game.entities.enemy_boxes import EnemyBoxMixin
 from game.entities.enemy_lifecycle import EnemyLifecycleMixin
 from game.entities.enemy_reactions import EnemyReactionMixin
 from game.entities.enemy_health import EnemyHealth
@@ -25,7 +24,7 @@ from game.entities.attack_controller import AttackController
 # Enemy is a small coordinator. Components own movement, combat,
 # reactions, lifecycle, state decisions, loot, animation, and rendering.
 
-class Enemy(EnemyBoxMixin, EnemyReactionMixin, EnemyLifecycleMixin):
+class Enemy(EnemyReactionMixin, EnemyLifecycleMixin):
     IDLE = EnemyState.IDLE
     WALK = EnemyState.WALK
     PATROL = EnemyState.PATROL
@@ -215,6 +214,9 @@ class Enemy(EnemyBoxMixin, EnemyReactionMixin, EnemyLifecycleMixin):
     def draw(self, screen, camera_x):
         self.renderer.draw(self, screen, camera_x)
 
+    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
+        self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
+
     # returns the whole visible sprite frame in world space:
     def get_frame_rect(self):
         return self.hitboxes.get_frame_rect(self)
@@ -222,6 +224,8 @@ class Enemy(EnemyBoxMixin, EnemyReactionMixin, EnemyLifecycleMixin):
     def get_logical_rect(self):
         return self.get_frame_rect()
 
+    def get_collision_rect(self):
+        return self.hitboxes.get_collision_rect(self)
 
     def get_hurt_rect(self):
         return self.hitboxes.get_hurt_rect(self)

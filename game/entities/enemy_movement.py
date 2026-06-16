@@ -1,3 +1,6 @@
+from game.settings import WORLD_WIDTH
+
+
 class EnemyMovement:
     def get_player_distance(self, owner, player):
         dx = player.x - owner.x
@@ -86,3 +89,15 @@ class EnemyMovement:
                 owner.y += owner.speed * 0.75
             else:
                 owner.y -= owner.speed * 0.75
+
+    def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
+        if world_width is None:
+            world_width = WORLD_WIDTH
+        if lane_top is None or lane_bottom is None:
+            raise ValueError("Enemy.apply_world_bounds requires lane_top and lane_bottom")
+
+        half_w = owner.collision_box_w // 2
+        owner.x = max(half_w, owner.x)
+        owner.x = min(owner.x, world_width - half_w)
+        owner.y = max(lane_top, owner.y)
+        owner.y = min(lane_bottom, owner.y)
