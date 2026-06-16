@@ -1,5 +1,4 @@
 import unittest
-from dataclasses import replace
 
 import pygame
 
@@ -17,7 +16,14 @@ class FakeStateMachine:
 
 
 class FakeWeaponSlot:
-    weapon = None
+    def __init__(self, weapon=None):
+        self.weapon = weapon
+
+
+class FakeWeapon:
+    def __init__(self, weapon_type, is_ranged=False):
+        self.weapon_type = weapon_type
+        self.is_ranged = is_ranged
 
 
 class FakePlayer:
@@ -29,14 +35,14 @@ class FakePlayer:
     GRAB_KNEE = "GRAB_KNEE"
     DEAD = "DEAD"
 
-    def __init__(self):
+    def __init__(self, weapon=None):
         self.x = 100
         self.y = 100
         self.state = self.ATTACK_1
         self.facing_right = True
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
-        self.weapon_slot = FakeWeaponSlot()
+        self.weapon_slot = FakeWeaponSlot(weapon)
         self.combat = PlayerCombat()
         self.combat.start_attack(self)
         while not self.combat.is_attack_active():
@@ -94,8 +100,8 @@ class FakeScoreManager:
 
 
 class FakeGameState:
-    def __init__(self):
-        self.player = FakePlayer()
+    def __init__(self, player_weapon=None):
+        self.player = FakePlayer(player_weapon)
         self.enemies = [FakeEnemy(), FakeEnemy()]
         self.objects = []
         self.level = FakeLevel()
@@ -115,9 +121,7 @@ class PlayerAttackCollisionTests(unittest.TestCase):
         self.assertEqual(game_state.score_manager.hit_count, 1)
 
     def test_player_attack_can_hit_multiple_targets_when_data_allows_it(self):
-        game_state = FakeGameState()
-        controller = game_state.player.combat.attack_controller
-        controller.current_attack = replace(controller.current_attack, max_targets=2)
+        game_state = FakeGameState(player_weapon=FakeWeapon("bat"))
 
         handle_player_attack_collision(game_state)
 

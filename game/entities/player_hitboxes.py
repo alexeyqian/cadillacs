@@ -64,13 +64,6 @@ class PlayerHitboxes:
         combat_hitbox = owner.combat.get_active_hitbox_data()
         if combat_hitbox:
             return self._combat_rect_to_world(owner, combat_hitbox)
-        if owner.combat.is_attacking:
-            return None
-
-        frame = owner.animation_controller.get_current_frame()
-        if frame and frame.attack_rect:
-            local_x, local_y, w, h = frame.attack_rect
-            return self._frame_local_rect_to_world(owner, frame, local_x, local_y, w, h)
 
         return None
 

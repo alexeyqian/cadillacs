@@ -43,27 +43,7 @@ class PlayerRenderer:
         sprite_y = owner.y + offset_y
         screen.blit(image, (sprite_world_x - camera_x, sprite_y))
 
-        #self.draw_weapon_debug(owner, screen, screen_x)
         self.draw_health_bar(owner, screen, screen_x)
-
-    def draw_weapon_debug(self, owner, screen, screen_x):
-        weapon = owner.weapon_slot.weapon
-        if not weapon:
-            return
-
-        weapon_len = 20
-        if not weapon.is_ranged:
-            weapon_len += weapon.hitbox_w_bonus
-
-        weapon_x = screen_x + owner.width
-        if not owner.facing_right:
-            weapon_x = screen_x - weapon_len
-
-        pygame.draw.rect(
-            screen,
-            (255, 255, 0),
-            (weapon_x, owner.y + 30, weapon_len, 5)
-        )
 
     def draw_health_bar(self, owner, screen, screen_x):
         hb_w = owner.width

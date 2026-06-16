@@ -1,16 +1,11 @@
 from game.settings import FIST_DAMAGE
 from game.entities.attack_data import (
-    PLAYER_ATTACKS,
     PLAYER_CLASH_RECOVERY,
     PLAYER_COMBO_WINDOW,
     PLAYER_COUNTER_HIT_STUN_BONUS,
-    PlayerAttackData,
+    get_player_attack_data,
 )
 from game.entities.attack_controller import AttackController
-
-# Backward-compatible names while the combat system is migrated in small steps.
-PlayerMoveData = PlayerAttackData
-PLAYER_MOVES = PLAYER_ATTACKS
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombat:
@@ -162,7 +157,8 @@ class PlayerCombat:
             return
 
         if owner.movement.is_running:
-            self.attack_controller.start(owner.RUN_ATTACK, PLAYER_ATTACKS["RUN_ATTACK"])
+            move_data = self.get_attack_data(owner, owner.RUN_ATTACK)
+            self.attack_controller.start(owner.RUN_ATTACK, move_data)
             self.combo_window_remaining = 0
             self.combo_step = 0
             owner.state_machine.change_to(owner, owner.RUN_ATTACK)
@@ -181,7 +177,7 @@ class PlayerCombat:
         else:
             owner.state_machine.change_to(owner, owner.ATTACK_3)
 
-        move_data = PLAYER_MOVES.get(owner.state)
+        move_data = self.get_attack_data(owner, owner.state)
         self.attack_controller.start(owner.state, move_data)
         self.combo_window_remaining = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
 
@@ -191,7 +187,8 @@ class PlayerCombat:
         if self.is_attacking:
             return
 
-        self.attack_controller.start(owner.JUMP_ATTACK, PLAYER_ATTACKS["JUMP_ATTACK"])
+        move_data = self.get_attack_data(owner, owner.JUMP_ATTACK)
+        self.attack_controller.start(owner.JUMP_ATTACK, move_data)
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
     def start_grab_knee_attack(self, owner):
@@ -200,7 +197,8 @@ class PlayerCombat:
         if self.is_attacking:
             return
 
-        self.attack_controller.start(owner.GRAB_KNEE, PLAYER_ATTACKS["GRAB_KNEE"])
+        move_data = self.get_attack_data(owner, owner.GRAB_KNEE)
+        self.attack_controller.start(owner.GRAB_KNEE, move_data)
         owner.grab.grab_knee_remaining = owner.grab.grab_knee_duration
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
@@ -217,19 +215,22 @@ class PlayerCombat:
         self.action_lock_remaining = 0
 
     def get_attack_damage(self, owner):
-        move_data = PLAYER_MOVES.get(owner.state)
-        base_damage = move_data.damage if move_data else FIST_DAMAGE
+        attack_data = self.get_current_or_state_attack_data(owner)
+        if not attack_data:
+            return int(FIST_DAMAGE)
 
-        weapon = owner.weapon_slot.weapon
-        if weapon and not weapon.is_ranged:
-            base_damage += weapon.damage
-
-        return int(base_damage)
+        return int(attack_data.damage)
     
     def get_attack_lane_reach(self, owner):
-        move_data = PLAYER_MOVES.get(owner.state)
-        lane_reach = move_data.lane_reach if move_data else 0
-        weapon = owner.weapon_slot.weapon
-        if weapon and not weapon.is_ranged:
-            lane_reach = max(lane_reach, 1)
-        return lane_reach
+        attack_data = self.get_current_or_state_attack_data(owner)
+        return attack_data.lane_reach if attack_data else 0
+
+    def get_current_or_state_attack_data(self, owner):
+        if self.attack_controller.current_attack:
+            return self.attack_controller.current_attack
+        return self.get_attack_data(owner, owner.state)
+
+    def get_attack_data(self, owner, attack_name):
+        weapon_slot = getattr(owner, "weapon_slot", None)
+        weapon = getattr(weapon_slot, "weapon", None)
+        return get_player_attack_data(attack_name, weapon)

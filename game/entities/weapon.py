@@ -31,24 +31,16 @@ class Weapon:
         if weapon_type == "knife":
             self.width = PLAYER_W*0.5
             self.damage = KNIFE_DAMAGE
-            self.hitbox_w_bonus = 20
-            self.hitbox_h_bonus = 0
         elif weapon_type == "bat":
             self.width = PLAYER_W
             self.damage = BAT_DAMAGE
-            self.hitbox_w_bonus = 45
-            self.hitbox_h_bonus = 10
         elif weapon_type == "pistol":
             self.width = PLAYER_W
             self.damage = PISTOL_DAMAGE
             self.is_ranged = True
             self.ammo = 10
-            self.hitbox_w_bonus = 0
-            self.hitbox_h_bonus = 0
         else:
             self.damage = FIST_DAMAGE
-            self.hitbox_w_bonus = 0
-            self.hitbox_h_bonus = 0
 
     def _load_knife_image(self):
         return AssetManager.load_image(KNIFE_IMAGE_FILE, alpha=True)
@@ -129,15 +121,17 @@ class Weapon:
                     self._knife_image,
                     (self.width * 2, self.height * 2)
                 )
+                icon_x = self.x - camera_x - icon.get_width() // 2
+                icon_y = self.y - icon.get_height()
             else:
                 # Fallback if the image file is missing or cannot be loaded.
                 if self._icon_knife is None:
                     self._icon_knife = self._create_knife_icon()
-                    icon = pygame.transform.scale(self._icon_knife,
-                        (self.width * 2, self.height * 2))
-                    icon_x = self.x - camera_x - icon.get_width() // 2
-                    icon_y = self.y - icon.get_height()
-                screen.blit(icon, (icon_x, icon_y))
+                icon = pygame.transform.scale(self._icon_knife,
+                    (self.width * 2, self.height * 2))
+                icon_x = self.x - camera_x - icon.get_width() // 2
+                icon_y = self.y - icon.get_height()
+            screen.blit(icon, (icon_x, icon_y))
         elif self.weapon_type == "bat":
             if self._icon_bat is None:
                 self._icon_bat = self._create_bat_icon()
@@ -162,4 +156,3 @@ class Weapon:
 
     def get_rect(self):
         return pygame.Rect(self.get_left(),self.get_top(),self.width, self.height)
-

@@ -8,7 +8,6 @@ class FrameData:
     image: pygame.Surface
     offset: tuple
     hurt_rect: Optional[tuple]
-    attack_rect: Optional[tuple]
     # This is the foundation for real counter-hit. 
     # The idea is: during an attack, 
     # the player’s extended arm can be vulnerable without making the whole attack box count as body damage.
@@ -72,7 +71,6 @@ def load_frame_animation(animation_data, animation_key):
             image=image,
             offset=frame_config["offset"],
             hurt_rect = frame_config.get("hurt_rect"),
-            attack_rect = frame_config.get("attack_rect"),
             counter_hurt_rect=frame_config.get("counter_hurt_rect")))
     if not frames:
         raise ValueError(f"No frames loaded for animation: {animation_key}")

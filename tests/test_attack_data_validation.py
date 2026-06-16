@@ -1,6 +1,6 @@
 import unittest
 
-from game.entities.attack_data import PLAYER_ATTACKS
+from game.entities.attack_data import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.entities.enemy_config import ENEMY_CONFIGS
 
 
@@ -16,6 +16,22 @@ class AttackDataValidationTests(unittest.TestCase):
     def test_player_damaging_attacks_have_positive_hitboxes(self):
         for attack_name, attack in PLAYER_ATTACKS.items():
             with self.subTest(attack_name=attack_name):
+                self.assertTrue(attack.hitboxes)
+                for hitbox in attack.hitboxes:
+                    self.assertGreater(hitbox.width, 0)
+                    self.assertGreater(hitbox.height, 0)
+
+    def test_weapon_player_attack_phase_fits_duration(self):
+        for attack_key, attack in WEAPON_PLAYER_ATTACKS.items():
+            with self.subTest(attack_key=attack_key):
+                self.assertGreater(attack.duration, 0)
+                self.assertGreater(attack.active, 0)
+                self.assertGreater(attack.max_targets, 0)
+                self.assertLessEqual(attack.phase.total_duration, attack.duration)
+
+    def test_weapon_player_attacks_have_positive_hitboxes(self):
+        for attack_key, attack in WEAPON_PLAYER_ATTACKS.items():
+            with self.subTest(attack_key=attack_key):
                 self.assertTrue(attack.hitboxes)
                 for hitbox in attack.hitboxes:
                     self.assertGreater(hitbox.width, 0)

@@ -59,11 +59,7 @@ class EnemyHitboxes:
                 )
             return None
 
-        frame = owner.get_current_frame_data()
-        if not frame or not frame.attack_rect:
-            return None
-
-        return self._get_in_frame_box_rect(owner, frame.attack_rect)
+        return None
 
     def _get_in_frame_box_rect(self, owner, local_rect):
         frame = owner.get_current_frame_data()

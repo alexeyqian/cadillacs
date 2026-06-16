@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from game.settings import *
 
@@ -135,3 +135,55 @@ PLAYER_ATTACKS = {
         hitboxes=(AttackHitboxData(x=50, y=-190, width=60, height=60),),
     ),
 }
+
+WEAPON_PLAYER_ATTACKS = {
+    ("knife", "ATTACK_1"): replace(
+        PLAYER_ATTACKS["ATTACK_1"],
+        damage=PLAYER_ATTACKS["ATTACK_1"].damage + KNIFE_DAMAGE,
+        hitboxes=(AttackHitboxData(x=90, y=-304, width=200, height=44),),
+        lane_reach=1,
+    ),
+    ("knife", "ATTACK_2"): replace(
+        PLAYER_ATTACKS["ATTACK_2"],
+        damage=PLAYER_ATTACKS["ATTACK_2"].damage + KNIFE_DAMAGE,
+        hitboxes=(AttackHitboxData(x=90, y=-304, width=200, height=44),),
+        lane_reach=1,
+    ),
+    ("knife", "ATTACK_3"): replace(
+        PLAYER_ATTACKS["ATTACK_3"],
+        damage=PLAYER_ATTACKS["ATTACK_3"].damage + KNIFE_DAMAGE,
+        hitboxes=(AttackHitboxData(x=90, y=-304, width=210, height=48),),
+        lane_reach=1,
+    ),
+    ("bat", "ATTACK_1"): replace(
+        PLAYER_ATTACKS["ATTACK_1"],
+        damage=PLAYER_ATTACKS["ATTACK_1"].damage + BAT_DAMAGE,
+        hitboxes=(AttackHitboxData(x=80, y=-316, width=250, height=64),),
+        lane_reach=1,
+        max_targets=2,
+    ),
+    ("bat", "ATTACK_2"): replace(
+        PLAYER_ATTACKS["ATTACK_2"],
+        damage=PLAYER_ATTACKS["ATTACK_2"].damage + BAT_DAMAGE,
+        hitboxes=(AttackHitboxData(x=80, y=-316, width=250, height=64),),
+        lane_reach=1,
+        max_targets=2,
+    ),
+    ("bat", "ATTACK_3"): replace(
+        PLAYER_ATTACKS["ATTACK_3"],
+        damage=PLAYER_ATTACKS["ATTACK_3"].damage + BAT_DAMAGE,
+        hitboxes=(AttackHitboxData(x=72, y=-320, width=280, height=72),),
+        lane_reach=1,
+        max_targets=2,
+    ),
+}
+
+
+def get_player_attack_data(attack_name, weapon=None):
+    if weapon and not getattr(weapon, "is_ranged", False):
+        weapon_type = getattr(weapon, "weapon_type", None)
+        weapon_attack = WEAPON_PLAYER_ATTACKS.get((weapon_type, attack_name))
+        if weapon_attack:
+            return weapon_attack
+
+    return PLAYER_ATTACKS.get(attack_name)

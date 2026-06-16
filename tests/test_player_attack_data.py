@@ -1,6 +1,6 @@
 import unittest
 
-from game.entities.attack_data import PLAYER_ATTACKS
+from game.entities.attack_data import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.entities.player_combat import PlayerCombat
 
 
@@ -13,6 +13,17 @@ class FakeMovement:
 class FakeStateMachine:
     def change_to(self, owner, state):
         owner.state = state
+
+
+class FakeWeapon:
+    def __init__(self, weapon_type, is_ranged=False):
+        self.weapon_type = weapon_type
+        self.is_ranged = is_ranged
+
+
+class FakeWeaponSlot:
+    def __init__(self):
+        self.weapon = None
 
 
 class FakeOwner:
@@ -28,6 +39,7 @@ class FakeOwner:
         self.state = self.IDLE
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
+        self.weapon_slot = FakeWeaponSlot()
 
 
 class PlayerAttackDataTests(unittest.TestCase):
@@ -94,6 +106,45 @@ class PlayerAttackDataTests(unittest.TestCase):
 
         self.assertFalse(combat.can_hit_target(first_target))
         self.assertFalse(combat.can_hit_target(second_target))
+
+    def test_knife_attack_uses_weapon_attack_data(self):
+        owner = FakeOwner()
+        owner.weapon_slot.weapon = FakeWeapon("knife")
+        combat = PlayerCombat()
+
+        combat.start_attack(owner)
+
+        self.assertEqual(
+            combat.attack_controller.current_attack,
+            WEAPON_PLAYER_ATTACKS[("knife", owner.ATTACK_1)],
+        )
+        self.assertEqual(
+            combat.get_attack_damage(owner),
+            WEAPON_PLAYER_ATTACKS[("knife", owner.ATTACK_1)].damage,
+        )
+        self.assertEqual(combat.get_attack_lane_reach(owner), 1)
+
+    def test_bat_attack_can_hit_two_targets_from_weapon_attack_data(self):
+        owner = FakeOwner()
+        owner.weapon_slot.weapon = FakeWeapon("bat")
+        combat = PlayerCombat()
+
+        combat.start_attack(owner)
+
+        self.assertEqual(
+            combat.attack_controller.current_attack,
+            WEAPON_PLAYER_ATTACKS[("bat", owner.ATTACK_1)],
+        )
+        self.assertEqual(combat.attack_controller.current_attack.max_targets, 2)
+
+    def test_ranged_weapon_does_not_change_melee_attack_data(self):
+        owner = FakeOwner()
+        owner.weapon_slot.weapon = FakeWeapon("pistol", is_ranged=True)
+        combat = PlayerCombat()
+
+        combat.start_attack(owner)
+
+        self.assertEqual(combat.attack_controller.current_attack, PLAYER_ATTACKS["ATTACK_1"])
 
 
 if __name__ == "__main__":
