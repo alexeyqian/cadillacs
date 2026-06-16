@@ -40,7 +40,7 @@ class EnemyRenderer:
     # todo: dup? merge with player's same function
     def draw_debug_boxes(self, owner, screen, camera_x):
         collision_rect = owner.get_collision_rect()
-        body_rect = owner.get_logical_rect()
+        body_rect = owner.get_frame_rect()
         hurt_rect = owner.get_hurt_rect()
         attack_rect = owner.get_attack_rect()
 

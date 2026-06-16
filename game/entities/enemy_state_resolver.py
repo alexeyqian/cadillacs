@@ -40,7 +40,7 @@ class EnemyStateResolver:
         lane_distance = level.get_lane_distance(owner.y, player.y)
         if lane_distance > owner.attack_lane_reach:
             return False
-        if owner.can_bypass_attack_slot_limit():
+        if self.can_bypass_attack_slot_limit(owner):
             return True
         # only the closest eligible melee enemy should take the slot. 
         # This makes group behavior feel more intentional.
@@ -60,7 +60,7 @@ class EnemyStateResolver:
         for enemy in enemies:
             if not self.is_eligible_melee_attacker(enemy, player):
                 continue
-            if enemy.get_side_of_player(player) != owner.get_side_of_player(player):
+            if self.get_side_of_player(enemy, player) != self.get_side_of_player(owner, player):
                 continue
 
             dx = abs(enemy.x - player.x)
@@ -71,7 +71,7 @@ class EnemyStateResolver:
         return closest_enemy is owner
 
     def is_eligible_melee_attacker(self, enemy, player):
-        if not enemy.uses_melee_attack_slot():
+        if not self.uses_melee_attack_slot(enemy):
             return False
         if self.get_attack_cooldown(enemy) > 0:
             return False
@@ -91,14 +91,14 @@ class EnemyStateResolver:
     #  enemies prefer opposite sides
     # This prevents same-side dogpiles
     def side_already_has_attacker(self, owner, player, enemies):
-        owner_side = owner.get_side_of_player(player)
+        owner_side = self.get_side_of_player(owner, player)
 
         for enemy in enemies:
             if enemy is owner:
                 continue
             if not self.has_attack_slot(enemy):
                 continue
-            if enemy.get_side_of_player(player) == owner_side:
+            if self.get_side_of_player(enemy, player) == owner_side:
                 return True
 
         return False
@@ -114,9 +114,9 @@ class EnemyStateResolver:
         return count
     
     def should_flank(self, owner, player, distance_x, distance_y, enemies):
-        if owner.can_bypass_attack_slot_limit():
+        if self.can_bypass_attack_slot_limit(owner):
             return False
-        if not owner.uses_melee_attack_slot():
+        if not self.uses_melee_attack_slot(owner):
             return False
         if distance_x > owner.attack_range:
             return False
@@ -163,3 +163,18 @@ class EnemyStateResolver:
         if attack_state:
             return attack_state.has_slot
         return owner.has_attack_slot
+
+    def uses_melee_attack_slot(self, owner):
+        if hasattr(owner, "coordination"):
+            return owner.coordination.uses_melee_attack_slot(owner)
+        return owner.uses_melee_attack_slot()
+
+    def can_bypass_attack_slot_limit(self, owner):
+        if hasattr(owner, "coordination"):
+            return owner.coordination.can_bypass_attack_slot_limit(owner)
+        return owner.can_bypass_attack_slot_limit()
+
+    def get_side_of_player(self, owner, player):
+        if hasattr(owner, "coordination"):
+            return owner.coordination.get_side_of_player(owner, player)
+        return owner.get_side_of_player(player)

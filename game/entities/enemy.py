@@ -2,12 +2,14 @@ from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_health import EnemyHealth
-from game.entities.enemy_hitboxes import EnemyHitboxes
+from game.entities.enemy_geometry import EnemyGeometry
 from game.entities.enemy_animation_controller import EnemyAnimationController
 from game.entities.enemy_renderer import EnemyRenderer
 from game.entities.enemy_movement import EnemyMovement
 from game.entities.enemy_flanking import EnemyFlanking
 from game.entities.enemy_attack_state import EnemyAttackState
+from game.entities.enemy_lifecycle_state import EnemyLifecycleState
+from game.entities.enemy_coordination import EnemyCoordination
 from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
@@ -55,34 +57,15 @@ class Enemy:
         self.attack_clash_recovery_duration = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
         self.attack_clash_cooldown_duration = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
         self.attack_state = EnemyAttackState()
+        self.lifecycle_state = EnemyLifecycleState()
 
         # Movement
         self.patrol_direction = 1
 
-        # Lifecycle
-        self.death_remaining = 30
-        self.death_countdown_started = False
-        # This keeps the clash fair on both sides: the player cannot instantly re-punch,
-        # and the enemy cannot instantly resume pressure either.
-        self.action_lock_remaining = 0
-
-        # Reactions
-        # hit reaction # enemy gets briefly white when hit by player
-        self.knockback_velocity = 0
-        self.hit_stun_remaining = 0
         self.hit_stun_duration = 15
 
-        # grab/throw
-        self.thrown_velocity_x = 0
-        self.thrown_remaining = 0
-        self.thrown_hit_targets = set()
-
-        #knockdown/getup
-        self.knockdown_remaining = 0
-        self.getup_remaining = 0
-
         # Rendering / collision / loot
-        self.hitboxes = EnemyHitboxes()
+        self.geometry = EnemyGeometry()
         self.loot_generated = False
 
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
@@ -95,6 +78,7 @@ class Enemy:
         self.lifecycle = EnemyLifecycleController()
         self.state_resolver = EnemyStateResolver()
         self.loot_controller = EnemyLootController()
+        self.coordination = EnemyCoordination()
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
 
@@ -114,7 +98,6 @@ class Enemy:
         self.attack_lane_range = config.attack_lane_range
         self.attack_lane_reach = config.attack_lane_reach
 
-        self.attack_data = config.attack
         self.attack_state.data = config.attack
         self.attack_damage = config.attack.damage
         self.attack_delay = config.attack.delay
@@ -213,7 +196,9 @@ class Enemy:
     def get_attack_total_duration(self):
         if hasattr(self, "attack_state") and self.attack_state.data:
             return self.attack_state.data.total_duration
-        return self.attack_data.total_duration
+        if hasattr(self, "attack_data"):
+            return self.attack_data.total_duration
+        return self.combat.get_attack_data(self).total_duration
 
     def get_attack_phase_name(self):
         if self.state != self.ATTACK:
@@ -241,33 +226,17 @@ class Enemy:
 
     # returns the whole visible sprite frame in world space:
     def get_frame_rect(self):
-        return self.hitboxes.get_frame_rect(self)
-
-    def get_logical_rect(self):
-        return self.get_frame_rect()
+        return self.geometry.get_frame_rect(self)
 
     def get_collision_rect(self):
-        return self.hitboxes.get_collision_rect(self)
+        return self.geometry.get_collision_rect(self)
 
     def get_hurt_rect(self):
-        return self.hitboxes.get_hurt_rect(self)
+        return self.geometry.get_hurt_rect(self)
 
     def get_attack_rect(self):
-        return self.hitboxes.get_attack_rect(self)
+        return self.geometry.get_attack_rect(self)
 
     # Loot
     def create_loot(self):
         return self.loot_controller.create_loot(self)
-
-    # Enemy coordination
-    # Later we can upgrade it into an “attack reservation” system
-    def uses_melee_attack_slot(self):
-        return self.archetype not in ["ranged", "boss"]
-
-    def can_bypass_attack_slot_limit(self):
-        return self.archetype in ["boss", "ranged"]
-    
-    def get_side_of_player(self, player):
-        if self.x < player.x:
-            return "left"
-        return "right"

@@ -177,14 +177,14 @@ class BossEnemy(Enemy):
 
         if should_flinch:
             self.cancel_special_attack_warning()
-            self.hit_stun_remaining = 8
+            self.lifecycle_state.hit_stun_remaining = 8
             self.state = self.HIT
 
             # boss barely moves when hit
             if attacker_x < self.x:
-                self.knockback_velocity = 3
+                self.lifecycle_state.knockback_velocity = 3
             else:
-                self.knockback_velocity = -3
+                self.lifecycle_state.knockback_velocity = -3
 
         if died:
             self.state = self.DEAD

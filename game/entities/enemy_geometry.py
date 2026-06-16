@@ -3,7 +3,7 @@ import pygame
 from game.entities.combat_geometry import combat_box_to_world_rect
 
 
-class EnemyHitboxes:
+class EnemyGeometry:
     def get_collision_rect(self, owner):
         return pygame.Rect(
             int(owner.x - owner.collision_box_w / 2),

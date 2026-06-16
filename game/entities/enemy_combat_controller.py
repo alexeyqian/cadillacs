@@ -6,7 +6,7 @@ class EnemyCombatController:
     def start_attack(self, owner):
         owner.state = owner.ATTACK
         self.clear_hit_state(owner)
-        self.reserve_attack_slot(owner, owner.uses_melee_attack_slot())
+        self.reserve_attack_slot(owner, self.uses_melee_attack_slot(owner))
         self.reset_decision_timer(owner)
         self.start_attack_timing(owner)
         owner.animation_controller.play(owner.ATTACK)
@@ -14,7 +14,7 @@ class EnemyCombatController:
 
     def start_clash_recovery(self, owner):
         owner.state = owner.RECOIL
-        owner.action_lock_remaining = owner.attack_clash_recovery_duration
+        self.set_action_lock_remaining(owner, owner.attack_clash_recovery_duration)
         self.cancel_attack_timing(owner)
         self.reset_decision_timer(owner)
         self.clear_hit_state(owner)
@@ -181,6 +181,17 @@ class EnemyCombatController:
             clash_recovery_duration=owner.attack_clash_recovery_duration,
             clash_cooldown_duration=owner.attack_clash_cooldown_duration,
         )
+
+    def uses_melee_attack_slot(self, owner):
+        if hasattr(owner, "coordination"):
+            return owner.coordination.uses_melee_attack_slot(owner)
+        return owner.uses_melee_attack_slot()
+
+    def set_action_lock_remaining(self, owner, value):
+        if hasattr(owner, "lifecycle_state"):
+            owner.lifecycle_state.action_lock_remaining = value
+        else:
+            owner.action_lock_remaining = value
 
     # Compatibility aliases for older call sites while migration continues.
     def start_attack_timer(self, owner):
