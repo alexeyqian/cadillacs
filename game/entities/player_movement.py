@@ -20,6 +20,9 @@ class PlayerMovement:
         self.gravity = 2
         self.air_speed = speed * 1.2
         self.air_friction = 0.92
+        self.run_attack_momentum_remaining = 0
+        self.run_attack_momentum_direction = 0
+        self.run_attack_momentum_speed = 0
 
     def update_timers(self):
         if self.run_tap_remaining > 0:
@@ -31,6 +34,9 @@ class PlayerMovement:
         if self.is_jumping:
             return False
         if owner.combat.is_attacking:
+            if owner.combat.current_attack_name == owner.RUN_ATTACK:
+                return self.update_run_attack_momentum(owner)
+            self.cancel_run_attack_momentum()
             return False
 
         left_down = player_input.left
@@ -61,13 +67,35 @@ class PlayerMovement:
             owner.facing_right = True
             moving = True
         if up_down:
-            owner.y -= owner.speed
+            owner.y -= move_speed
             moving = True
         if down_down:
-            owner.y += owner.speed
+            owner.y += move_speed
             moving = True
 
         return moving
+
+    def start_run_attack_momentum(self, owner):
+        direction = self.run_direction
+        if direction == 0:
+            direction = 1 if owner.facing_right else -1
+
+        self.run_attack_momentum_direction = direction
+        self.run_attack_momentum_remaining = 20
+        self.run_attack_momentum_speed = max(owner.speed, owner.run_speed * 0.75)
+
+    def update_run_attack_momentum(self, owner):
+        if self.run_attack_momentum_remaining <= 0:
+            return False
+
+        owner.x += self.run_attack_momentum_direction * self.run_attack_momentum_speed
+        self.run_attack_momentum_remaining -= 1
+        return True
+
+    def cancel_run_attack_momentum(self):
+        self.run_attack_momentum_remaining = 0
+        self.run_attack_momentum_direction = 0
+        self.run_attack_momentum_speed = 0
 
     def update_run_input(self, left_down, right_down, horizontal_direction):
         if horizontal_direction == 0:

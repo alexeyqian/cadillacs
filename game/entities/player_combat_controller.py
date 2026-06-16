@@ -159,6 +159,7 @@ class PlayerCombatController:
         if owner.movement.is_running:
             move_data = self.get_attack_data(owner, owner.RUN_ATTACK)
             self.attack_controller.start(owner.RUN_ATTACK, move_data)
+            owner.movement.start_run_attack_momentum(owner)
             self.combo_window_remaining = 0
             self.combo_step = 0
             owner.state_machine.change_to(owner, owner.RUN_ATTACK)

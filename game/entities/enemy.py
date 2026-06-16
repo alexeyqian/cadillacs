@@ -53,9 +53,6 @@ class Enemy:
         self.state = self.IDLE
         self.facing_right = False
 
-        self.attack_delay = ENEMY_ATTACK_DELAY
-        self.attack_clash_recovery_duration = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
-        self.attack_clash_cooldown_duration = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
         self.attack_state = EnemyAttackState()
         self.lifecycle_state = EnemyLifecycleState()
 

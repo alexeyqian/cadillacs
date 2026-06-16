@@ -9,6 +9,10 @@ class FakeMovement:
     def __init__(self):
         self.is_running = False
         self.is_jumping = False
+        self.run_attack_momentum_started = False
+
+    def start_run_attack_momentum(self, owner):
+        self.run_attack_momentum_started = True
 
 
 class FakeStateMachine:
@@ -71,6 +75,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(owner.state, owner.RUN_ATTACK)
         self.assertEqual(combat.current_attack_name, owner.RUN_ATTACK)
         self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["RUN_ATTACK"].duration)
+        self.assertTrue(owner.movement.run_attack_momentum_started)
 
     def test_jump_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
