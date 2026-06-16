@@ -126,9 +126,3 @@ FERRIS_ANIM_FPS = {
     "hit": 10,
     "dead": 12,
 }
-
-FERRIS_ATTACK_TIMING = {
-    "windup": 20,
-    "active": 8,
-    "recovery": 25,
-}

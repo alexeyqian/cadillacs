@@ -171,9 +171,12 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
             self.face_player(player)
 
         self.choose_state(level, player, distance_x, distance_y, enemies)
-        self.execute_state(level, player, enemies, dx, dy)
-
-        self.update_animation()
+        if self.state == self.ATTACK:
+            self.update_animation()
+            self.execute_state(level, player, enemies, dx, dy)
+        else:
+            self.execute_state(level, player, enemies, dx, dy)
+            self.update_animation()
 
     def get_player_distance(self, player):
         return self.movement.get_player_distance(self, player)

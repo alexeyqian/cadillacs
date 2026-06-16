@@ -110,13 +110,7 @@ GNEISS_ANIMATIONS = {
 GNEISS_ANIM_FPS = {
     "idle": 6,
     "walk": 6,
-    "attack": 6,
+    "attack": 7,
     "hit": 12,
     "dead": 12,
-}
-
-GNEISS_ATTACK_TIMING = {
-    "windup": 20,
-    "active": 8,
-    "recovery": 25,
 }

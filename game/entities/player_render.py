@@ -43,7 +43,7 @@ class PlayerRenderer:
         sprite_y = owner.y + offset_y
         screen.blit(image, (sprite_world_x - camera_x, sprite_y))
 
-        self.draw_weapon_debug(owner, screen, screen_x)
+        #self.draw_weapon_debug(owner, screen, screen_x)
         self.draw_health_bar(owner, screen, screen_x)
 
     def draw_weapon_debug(self, owner, screen, screen_x):
