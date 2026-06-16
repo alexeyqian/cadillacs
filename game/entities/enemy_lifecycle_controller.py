@@ -68,7 +68,7 @@ class EnemyLifecycleController:
             return False
 
         owner.hit_stun_remaining -= 1
-        owner.apply_knockback()
+        owner.reactions.apply_knockback(owner)
 
         if owner.hit_stun_remaining <= 0:
             owner.state = owner.IDLE

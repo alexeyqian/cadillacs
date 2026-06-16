@@ -65,15 +65,15 @@ class BossEnemy(Enemy):
         self.update_special_attack(player)
 
     def update_during_special_attack_warning(self, player):
-        if self.update_special_states():
+        if self.lifecycle.update_special_states(self):
             return
 
-        self.update_timers()
+        self.lifecycle.update_timers(self)
 
-        if self.update_hit_state():
+        if self.lifecycle.update_hit_state(self):
             return
 
-        self.apply_knockback()
+        self.reactions.apply_knockback(self)
         self.state = self.IDLE
         self.update_phase()
 

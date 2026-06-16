@@ -3,7 +3,6 @@ from dataclasses import replace
 from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
-from game.entities.enemy_reactions import EnemyReactionMixin
 from game.entities.enemy_health import EnemyHealth
 from game.entities.enemy_hitboxes import EnemyHitboxes
 from game.entities.enemy_animation_controller import EnemyAnimationController
@@ -23,7 +22,7 @@ from game.entities.attack_controller import AttackController
 # Enemy is a small coordinator. Components own movement, combat,
 # reactions, lifecycle, state decisions, loot, animation, and rendering.
 
-class Enemy(EnemyReactionMixin):
+class Enemy:
     IDLE = EnemyState.IDLE
     WALK = EnemyState.WALK
     PATROL = EnemyState.PATROL
@@ -154,40 +153,31 @@ class Enemy(EnemyReactionMixin):
     def update_animation(self):
         self.animation_controller.update(self)
 
-    def update_special_states(self):
-        return self.lifecycle.update_special_states(self)
-
-    def update_thrown_state(self):
-        self.lifecycle.update_thrown_state(self)
-
-    def update_knockdown_state(self):
-        self.lifecycle.update_knockdown_state(self)
-
-    def update_getup_state(self):
-        self.lifecycle.update_getup_state(self)
-
-    def update_hit_state(self):
-        return self.lifecycle.update_hit_state(self)
-
-    def update_dead_state(self):
-        self.lifecycle.update_dead_state(self)
-
-    def update_timers(self):
-        self.lifecycle.update_timers(self)
-
     def is_ready_to_remove(self):
         return self.lifecycle.is_ready_to_remove(self)
 
+    def take_damage(self, damage, attacker_x):
+        self.reactions.take_damage(self, damage, attacker_x)
+
+    def grabbed_by_player(self):
+        self.reactions.grabbed_by_player(self)
+
+    def thrown_by_player(self, direction):
+        self.reactions.thrown_by_player(self, direction)
+
+    def take_grab_knee_damage(self, damage):
+        self.reactions.take_grab_knee_damage(self, damage)
+
     def update(self, level, player, enemies):
-        if self.update_special_states():
+        if self.lifecycle.update_special_states(self):
             return
 
-        self.update_timers()
+        self.lifecycle.update_timers(self)
 
-        if self.update_hit_state():
+        if self.lifecycle.update_hit_state(self):
             return
 
-        self.apply_knockback()
+        self.reactions.apply_knockback(self)
 
         dx, dy, distance_x, distance_y = self.get_player_distance(player)
 

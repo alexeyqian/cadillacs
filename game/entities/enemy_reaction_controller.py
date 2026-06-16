@@ -35,12 +35,12 @@ class EnemyReactionController:
             else:
                 owner.knockback_velocity = -10
 
-        if owner.health.hp > 0 and owner.should_knockdown_from_damage(damage):
-            owner.knockdown()
+        if owner.health.hp > 0 and self.should_knockdown_from_damage(damage):
+            self.knockdown(owner)
             return
 
         if died:
-            owner.die()
+            self.die(owner)
 
     def apply_knockback(self, owner):
         if owner.knockback_velocity == 0:
@@ -99,7 +99,7 @@ class EnemyReactionController:
         owner.thrown_hit_targets.clear()
         self.cancel_attack(owner)
         owner.has_attack_slot = False
-        owner.take_thrown_damage(owner.thrown_damage)
+        self.take_thrown_damage(owner, owner.thrown_damage)
 
     def take_grab_knee_damage(self, owner, damage):
         if owner.state == owner.DEAD:
@@ -109,7 +109,7 @@ class EnemyReactionController:
         died = owner.health.take_damage(damage)
 
         if died:
-            owner.die()
+            self.die(owner)
             return
 
         self.cancel_attack(owner)
@@ -126,7 +126,7 @@ class EnemyReactionController:
         died = owner.health.take_damage(damage)
 
         if died:
-            owner.die()
+            self.die(owner)
 
     def cancel_attack(self, owner):
         if hasattr(owner, "combat"):
