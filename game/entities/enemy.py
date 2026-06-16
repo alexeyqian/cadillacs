@@ -3,7 +3,6 @@ from dataclasses import replace
 from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
-from game.entities.enemy_lifecycle import EnemyLifecycleMixin
 from game.entities.enemy_reactions import EnemyReactionMixin
 from game.entities.enemy_health import EnemyHealth
 from game.entities.enemy_hitboxes import EnemyHitboxes
@@ -24,7 +23,7 @@ from game.entities.attack_controller import AttackController
 # Enemy is a small coordinator. Components own movement, combat,
 # reactions, lifecycle, state decisions, loot, animation, and rendering.
 
-class Enemy(EnemyReactionMixin, EnemyLifecycleMixin):
+class Enemy(EnemyReactionMixin):
     IDLE = EnemyState.IDLE
     WALK = EnemyState.WALK
     PATROL = EnemyState.PATROL
@@ -154,6 +153,30 @@ class Enemy(EnemyReactionMixin, EnemyLifecycleMixin):
 
     def update_animation(self):
         self.animation_controller.update(self)
+
+    def update_special_states(self):
+        return self.lifecycle.update_special_states(self)
+
+    def update_thrown_state(self):
+        self.lifecycle.update_thrown_state(self)
+
+    def update_knockdown_state(self):
+        self.lifecycle.update_knockdown_state(self)
+
+    def update_getup_state(self):
+        self.lifecycle.update_getup_state(self)
+
+    def update_hit_state(self):
+        return self.lifecycle.update_hit_state(self)
+
+    def update_dead_state(self):
+        self.lifecycle.update_dead_state(self)
+
+    def update_timers(self):
+        self.lifecycle.update_timers(self)
+
+    def is_ready_to_remove(self):
+        return self.lifecycle.is_ready_to_remove(self)
 
     def update(self, level, player, enemies):
         if self.update_special_states():
