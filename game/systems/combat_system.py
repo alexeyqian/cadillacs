@@ -154,7 +154,7 @@ def handle_player_projectile_collision(game_state):
         for enemy in enemies:
             # So player bullets hit same-lane enemies only.
             lane_distance = game_state.level.get_lane_distance(projectile.lane_y, enemy.y)
-            if lane_distance > 0:
+            if lane_distance > projectile.lane_reach:
                 continue
             enemy_hurt_rect = enemy.get_hurt_rect()
             if enemy_hurt_rect and projectile_rect.colliderect(enemy_hurt_rect):

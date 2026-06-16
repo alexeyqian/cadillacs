@@ -3,7 +3,7 @@ from game.settings import *
 from game.colors import *
 
 from game.entities.enemy import Enemy
-from game.entities.boss_projectile import BossProjectile
+from game.entities.enemy_projectile import EnemyProjectile
 from game.animation.animation_config import *
 from game.tuning import scale_frames
 from game.animation.boss_data import BOSS_ANIMATIONS, BOSS_ANIM_FPS
@@ -96,8 +96,17 @@ class BossEnemy(Enemy):
         elif self.phase == 3:
             damage *= 3
 
-        self.pending_projectile = BossProjectile(self.x-15, self.get_top()+120,
-            direction, self.speed * 2, damage)
+        self.pending_projectile = EnemyProjectile(
+            self.x - 15,
+            self.get_top() + 120,
+            direction,
+            self.speed * 2,
+            damage,
+            lane_reach=1,
+            width=30,
+            height=15,
+            shape="ellipse",
+        )
 
     def take_damage(self, damage, attacker_x):
         if self.state == self.DEAD:

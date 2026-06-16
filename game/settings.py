@@ -56,7 +56,7 @@ UI_FONT_SIZE=36
 # orange = counter-hurtbox / extended limb vulnerability
 # yellow = active enemy attack timing indicator
 # module import is the right choice for mutable runtime flags.
-SHOW_COMBAT_BOXES=True
+SHOW_COMBAT_BOXES=False
 SHOW_EXIT_RECT=True
 
 PLAYER_LIVES=3

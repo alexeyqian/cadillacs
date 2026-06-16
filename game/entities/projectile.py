@@ -2,7 +2,7 @@ import pygame
 from game.settings import *
 from game.colors import *
 class Projectile:
-    def __init__(self, x, y, direction, speed, damage):
+    def __init__(self, x, y, direction, speed, damage, lane_reach=0):
         self.x = x
         self.y = y
         self.width = 12
@@ -13,6 +13,7 @@ class Projectile:
         self.active = True
         # projectiles remember the lane/depth where they were fired.
         self.lane_y = y
+        self.lane_reach = lane_reach
 
     def update(self, world_width=WORLD_WIDTH):
         self.x += self.speed * self.direction

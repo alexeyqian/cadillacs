@@ -22,6 +22,9 @@ def update_projectiles(game_state):
     for projectile in game_state.enemy_projectiles:
         projectile.update(game_state.level.world_width)
 
+
+# move to enemy_projectile.py or enemy_combat?
+# please find a better place for this function, so system is consistent.
 def handle_enemy_projectile_collision(game_state):
     player = game_state.player
     player_hurt_rect = player.get_hurt_rect()
@@ -30,7 +33,7 @@ def handle_enemy_projectile_collision(game_state):
         if not projectile.active:
             continue
         lane_distance = game_state.level.get_lane_distance(projectile.lane_y, player.y)
-        if lane_distance > 0:
+        if lane_distance > projectile.lane_reach:
             continue
 
         if projectile.get_rect().colliderect(player_hurt_rect):
