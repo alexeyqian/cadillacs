@@ -117,27 +117,53 @@ def main_draw_ui(game_state):
     big_font = pygame.font.SysFont(None, int(UI_FONT_SIZE*1.2))
 
     ############### HUD ###############
-    # score
+    left_x = UI_FIRST_X
+    right_x = screen.get_width() - UI_FIRST_X
+    top_y = UI_FIRST_Y
+    row_gap = 8
+    small_line = small_font.get_linesize()
+    font_line = font.get_linesize()
+
     score_text = font.render(
         f"SCORE {score_manager.score} | HI {score_manager.high_score}",True,BLACK_COLOR)
-    screen.blit(score_text,(UI_FIRST_X, UI_FIRST_Y))
+    score_rect = score_text.get_rect(topleft=(left_x, top_y))
 
-    # credits and lives
-    next_life_text = small_font.render(
-        f"CREDITS {game_state.credits} | LIVES: {player.health.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
+    status_text = small_font.render(
+        f"CREDITS {game_state.credits} | LIVES {player.health.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
         True, BLACK_COLOR)
-    screen.blit(next_life_text, (400, UI_FIRST_Y))
+    status_rect = status_text.get_rect(topright=(right_x, top_y))
+    if status_rect.left <= score_rect.right + 24:
+        status_rect.top = score_rect.bottom + row_gap
+
+    screen.blit(score_text, score_rect)
+    screen.blit(status_text, status_rect)
 
     # health UI
-    pygame.draw.rect(screen,(100,100,100), (UI_FIRST_X,UI_FIRST_Y+UI_LINE_HEIGHT,200,20))
-    hp_width = int(200 * (player.health.hp / player.health.max_hp))
-    pygame.draw.rect(screen, GREEN_COLOR, (UI_FIRST_X,UI_FIRST_Y+UI_LINE_HEIGHT,hp_width,20))
+    hp_bar_w = 220
+    hp_bar_h = 20
+    hp_y = max(score_rect.bottom, status_rect.bottom) + row_gap
+    pygame.draw.rect(screen, (100, 100, 100), (left_x, hp_y, hp_bar_w, hp_bar_h))
+    hp_ratio = max(0.0, min(1.0, player.health.hp / player.health.max_hp))
+    hp_width = int(hp_bar_w * hp_ratio)
+    pygame.draw.rect(screen, GREEN_COLOR, (left_x, hp_y, hp_width, hp_bar_h))
     hp_text = font.render(f"HP: {int(player.health.hp)}/{player.health.max_hp}", True, BLACK_COLOR)
-    screen.blit(hp_text, (240, UI_FIRST_Y + UI_LINE_HEIGHT))
+    hp_text_rect = hp_text.get_rect(topleft=(left_x + hp_bar_w + 16, hp_y - 4))
+    screen.blit(hp_text, hp_text_rect)
 
     # control
     #control_text = small_font.render("Run: Shift, Attack:J, Shoot:K, Grab/Throw:L, Drop:Q", True, BLACK_COLOR)
     #screen.blit(control_text, (UI_FIRST_X + 450, UI_FIRST_Y+UI_LINE_HEIGHT))
+
+    right_panel_y = status_rect.bottom + row_gap
+
+    # Weapon UI
+    weapon = player.weapon_slot.weapon
+    if weapon:
+        weapon_name = weapon.weapon_type
+        ammo_str = f" Ammo:{weapon.ammo}" if weapon.is_ranged else ""
+        weapon_text = font.render(f"Weapon: {weapon_name}{ammo_str}", True, BLACK_COLOR)
+        screen.blit(weapon_text, weapon_text.get_rect(topright=(right_x, right_panel_y)))
+        right_panel_y += font_line + row_gap
 
     # combo UI
     combo = game_state.score_manager.combo_count
@@ -146,26 +172,21 @@ def main_draw_ui(game_state):
         combo_text = font.render(
             f"{combo} HIT COMBO x{multiplier}",
             True,BLACK_COLOR)
-        screen.blit(combo_text,(450, UI_FIRST_Y))
-
-    # Weapon UI
-    weapon_name = ""
-    ammo_str = ""
-    weapon = player.weapon_slot.weapon
-    if weapon:
-        weapon_name = weapon.weapon_type
-        if weapon.is_ranged:
-            ammo_str = f" Ammo:{weapon.ammo}"
-        weapon_text = font.render(f"Weapon:{weapon_name}{ammo_str}",True,BLACK_COLOR)
-        screen.blit(weapon_text,(650, UI_FIRST_Y + 2 * UI_LINE_HEIGHT))
+        screen.blit(combo_text, combo_text.get_rect(
+            midtop=(screen.get_width() // 2, hp_y)))
 
     # debug UI
     player_feet_x, player_feet_y = player.get_logical_rect().midbottom
-    player_str = (f"Stage: {level.stage_name} Camera x:{int(camera.x)} "
-                f"Player feet x:{int(player_feet_x)} y:{int(player_feet_y)} State:{player.state} "
-                f"Wave:{level.current_wave + 1} Enemies:{len(enemies)}")
-    player_text = small_font.render(player_str,True, BLACK_COLOR)
-    screen.blit(player_text, (UI_FIRST_X, UI_FIRST_Y + 3 * UI_LINE_HEIGHT))
+    debug_y = max(hp_y + hp_bar_h, hp_text_rect.bottom) + row_gap
+    debug_lines = [
+        f"Stage: {level.stage_name} | Camera x:{int(camera.x)} | Wave:{level.current_wave + 1} | Enemies:{len(enemies)}",
+        f"Player feet x:{int(player_feet_x)} y:{int(player_feet_y)} | State:{player.state}",
+    ]
+
+    for debug_line in debug_lines:
+        debug_text = small_font.render(debug_line, True, BLACK_COLOR)
+        screen.blit(debug_text, (left_x, debug_y))
+        debug_y += small_line
     
     if settings.SHOW_COMBAT_BOXES:
         active_slots = 0
@@ -177,7 +198,7 @@ def main_draw_ui(game_state):
                 max_slots = getattr(enemy, "melee_attack_slot_limit", None) or max_slots
 
         slot_text = small_font.render(f"Attack Slots: {active_slots}/{max_slots}",True,BLACK_COLOR)
-        screen.blit(slot_text, (UI_FIRST_X, UI_FIRST_Y + 4 * UI_LINE_HEIGHT))
+        screen.blit(slot_text, (left_x, debug_y))
     
     # end of debug text
 

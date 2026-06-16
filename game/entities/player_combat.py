@@ -184,7 +184,7 @@ class PlayerCombat:
     def get_attack_lane_reach(self, owner):
         move_data = PLAYER_MOVES.get(owner.state)
         lane_reach = move_data.lane_reach if move_data else 0
-        weapon = owner.weapon_slot_weapon
+        weapon = owner.weapon_slot.weapon
         if weapon and not weapon.is_ranged:
             lane_reach = max(lane_reach, 1)
         return lane_reach
