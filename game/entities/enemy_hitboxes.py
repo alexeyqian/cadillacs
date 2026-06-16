@@ -1,4 +1,5 @@
 import pygame
+from game.entities.combat_geometry import combat_box_to_world_rect
 
 
 class EnemyHitboxes:
@@ -47,6 +48,17 @@ class EnemyHitboxes:
         return self._get_in_frame_box_rect(owner, frame.hurt_rect)
 
     def get_attack_rect(self, owner):
+        if owner.state == owner.ATTACK:
+            combat_hitbox = owner.combat.get_active_hitbox_data(owner)
+            if combat_hitbox:
+                return combat_box_to_world_rect(
+                    owner.x,
+                    owner.y,
+                    owner.facing_right,
+                    combat_hitbox
+                )
+            return None
+
         frame = owner.get_current_frame_data()
         if not frame or not frame.attack_rect:
             return None

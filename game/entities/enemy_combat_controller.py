@@ -79,6 +79,16 @@ class EnemyCombatController:
             return owner.attack_windup <= owner.attack_timer < owner.attack_windup + owner.attack_active
         return controller.is_active()
 
+    def get_active_hitbox_data(self, owner):
+        if not self.is_attack_active(owner):
+            return None
+
+        attack_data = self.get_attack_data(owner)
+        if not attack_data.hitboxes:
+            return None
+
+        return attack_data.hitboxes[0]
+
     def mark_attack_hit(self, owner, target):
         controller = self.get_attack_controller(owner)
         controller.mark_target_hit(target)

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from game.settings import *
-from game.entities.attack_data import AttackPhaseData, EnemyAttackData
+from game.entities.attack_data import AttackHitboxData, AttackPhaseData, EnemyAttackData
 
 @dataclass(frozen=True)
 class EnemyConfig:
@@ -49,6 +49,7 @@ ENEMY_CONFIGS = {
             damage=int(ENEMY_ATTACK_DAMAGE * 1.2),
             delay=12,
             phase=AttackPhaseData(windup=16, active=8, recovery=22),
+            hitboxes=(AttackHitboxData(x=144, y=-264, width=120, height=40),),
         ),
         score_points=int(ENEMY_SCORE_POINTS*1.2),
     ),
@@ -63,6 +64,7 @@ ENEMY_CONFIGS = {
             damage=ENEMY_ATTACK_DAMAGE * 2,
             delay=35,
             phase=AttackPhaseData(windup=26, active=10, recovery=30),
+            hitboxes=(AttackHitboxData(x=128, y=-284, width=120, height=80),),
         ),
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         # So Black Elmer only flinches from the heavy punch
@@ -83,6 +85,7 @@ ENEMY_CONFIGS = {
             delay=14,
             cooldown=60,
             phase=AttackPhaseData(windup=18, active=8, recovery=22),
+            hitboxes=(AttackHitboxData(x=20, y=-448, width=132, height=96),),
         ),
         score_points=int(ENEMY_SCORE_POINTS * 2),
     ),
@@ -98,6 +101,7 @@ ENEMY_CONFIGS = {
             delay=30,
             cooldown=90,
             phase=AttackPhaseData(windup=32, active=4, recovery=40),
+            hitboxes=(),
         ),
         score_points=int(ENEMY_SCORE_POINTS * 1.5),
     ),
@@ -113,6 +117,7 @@ ENEMY_CONFIGS = {
             delay=30,
             cooldown=60,
             phase=AttackPhaseData(windup=30, active=12, recovery=35),
+            hitboxes=(AttackHitboxData(x=128, y=-284, width=120, height=80),),
         ),
         flinch_damage_threshold=FIST_DAMAGE + 4,
         collision_box_w=int(ENEMY_COLLISION_W * 2),

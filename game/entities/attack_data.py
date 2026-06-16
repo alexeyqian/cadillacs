@@ -57,6 +57,9 @@ class EnemyAttackData:
         active=ENEMY_ATTACK_ACTIVE,
         recovery=ENEMY_ATTACK_RECOVERY,
     )
+    hitboxes: tuple = (
+        AttackHitboxData(x=72, y=-272, width=120, height=40),
+    )
     clash_recovery_duration: int = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
     clash_cooldown_duration: int = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
 
