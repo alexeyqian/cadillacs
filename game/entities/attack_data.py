@@ -102,14 +102,16 @@ PLAYER_THIRD_HIT_RECOVERY = 24
 PLAYER_CLASH_RECOVERY = 8
 
 PLAYER_ATTACKS = {
+    # shorter quick jab hitbox
     "ATTACK_1": PlayerAttackData(
         damage=FIST_DAMAGE - 2,
         duration=8 + 4 + PLAYER_ATTACK_1_RECOVERY,
         phase=AttackPhaseData(windup=8, active=4, recovery=PLAYER_ATTACK_1_RECOVERY),
-        hitboxes=(AttackHitboxData(x=94, y=-300, width=160, height=40),),
-        counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
+        hitboxes=(AttackHitboxData(x=92, y=-300, width=135, height=38),),
+        counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=34, height=38),),
         combo_window=PLAYER_FIRST_TO_SECOND_COMBO_WINDOW,
     ),
+    # medium baseline hitbox
     "ATTACK_2": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=8 + 4 + PLAYER_ATTACK_2_RECOVERY,
@@ -118,12 +120,13 @@ PLAYER_ATTACKS = {
         counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
         combo_window=PLAYER_SECOND_TO_THIRD_COMBO_WINDOW,
     ),
+    # wider/taller finisher hitbox
     "ATTACK_3": PlayerAttackData(
         damage=FIST_DAMAGE + 4,
         duration=8 + 4 + PLAYER_ATTACK_3_RECOVERY,
         phase=AttackPhaseData(windup=8, active=4, recovery=PLAYER_ATTACK_3_RECOVERY),
-        hitboxes=(AttackHitboxData(x=94, y=-300, width=160, height=40),),
-        counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
+        hitboxes=(AttackHitboxData(x=96, y=-304, width=185, height=48),),
+        counter_hurtboxes=(AttackHitboxData(x=52, y=-304, width=48, height=48),),
         combo_window=0,
         action_lock=PLAYER_THIRD_HIT_RECOVERY,
     ),

@@ -87,22 +87,24 @@ changing combat timing.
 
 ## Hitbox Design
 
-Current fist attacks share one hitbox:
+Current fist attacks use a light progression:
 
 ```python
-AttackHitboxData(x=94, y=-300, width=160, height=40)
+ATTACK_1: AttackHitboxData(x=92, y=-300, width=135, height=38)
+ATTACK_2: AttackHitboxData(x=94, y=-300, width=160, height=40)
+ATTACK_3: AttackHitboxData(x=96, y=-304, width=185, height=48)
 ```
 
-This is easy to tune and forgiving, but it makes the three combo steps feel too
-similar. Long term, each combo step should have its own reach and shape.
+This keeps the opener quick and focused, preserves the second hit as the medium
+baseline, and makes the finisher visibly/mechanically larger.
 
-Recommended future hitbox direction:
+Applied hitbox direction:
 
 | Attack | Suggested Hitbox Feel |
 | --- | --- |
 | ATTACK_1 | shorter, quick jab |
 | ATTACK_2 | medium straight punch |
-| ATTACK_3 | slightly wider/taller finisher |
+| ATTACK_3 | wider/taller finisher |
 
 ## Counter-Hurtbox Design
 
@@ -135,14 +137,11 @@ should feel better, but it should also be easier to punish if whiffed.
 ## Next Recommended Steps
 
 1. Watch the 3-frame punch in game and confirm the recovery posture reads well.
-2. If the punch feels slow, keep `attack` at 12 FPS.
-3. If it feels too twitchy, reduce only Mustapha's `attack` FPS to 10.
-4. Later, split one shared `attack` animation into combo-specific animations:
-   - `attack_1`
-   - `attack_2`
-   - `attack_3`
-5. Tune each combo step's hitbox after the animation silhouettes are distinct.
-6. Consider a tiny forward nudge only on `ATTACK_3`, not on every punch.
+2. If the punch feels too twitchy, reduce only Mustapha's `attack` FPS to 10.
+3. Replace the current `attack_1`, `attack_2`, and `attack_3` aliases with
+   distinct combo art.
+4. Retune hitboxes after distinct combo silhouettes are available.
+5. Consider a tiny forward nudge only on `ATTACK_3`, not on every punch.
 
 ## Non-Goals For Now
 

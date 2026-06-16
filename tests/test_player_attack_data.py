@@ -181,6 +181,15 @@ class PlayerAttackDataTests(unittest.TestCase):
             attack = PLAYER_ATTACKS[attack_name]
             self.assertEqual(attack.duration, attack.phase.total_duration)
 
+    def test_standing_combo_hitboxes_progress_from_jab_to_finisher(self):
+        attack_1_hitbox = PLAYER_ATTACKS["ATTACK_1"].hitboxes[0]
+        attack_2_hitbox = PLAYER_ATTACKS["ATTACK_2"].hitboxes[0]
+        attack_3_hitbox = PLAYER_ATTACKS["ATTACK_3"].hitboxes[0]
+
+        self.assertLess(attack_1_hitbox.width, attack_2_hitbox.width)
+        self.assertGreater(attack_3_hitbox.width, attack_2_hitbox.width)
+        self.assertGreater(attack_3_hitbox.height, attack_2_hitbox.height)
+
     def test_player_attack_is_inactive_during_recovery(self):
         owner = FakeOwner()
         combat = PlayerCombatController()
