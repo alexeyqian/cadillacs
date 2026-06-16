@@ -342,12 +342,19 @@ MUSTAPHA_ANIMATIONS = {
     },
 }
 
+MUSTAPHA_ANIMATIONS["attack_1"] = MUSTAPHA_ANIMATIONS["attack"]
+MUSTAPHA_ANIMATIONS["attack_2"] = MUSTAPHA_ANIMATIONS["attack"]
+MUSTAPHA_ANIMATIONS["attack_3"] = MUSTAPHA_ANIMATIONS["attack"]
+
 MUSTAPHA_ANIM_FPS = {
     "idle": 6,
     "walk": 6,
     "run": 6,
     "jump": 6,
     "attack": 12,
+    "attack_1": 12,
+    "attack_2": 12,
+    "attack_3": 12,
     "run_attack": 6,
     "jump_attack": 6,
     "grab": 6,

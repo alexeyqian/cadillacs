@@ -32,6 +32,9 @@ class PlayerAnimationController:
         run_frames = load_frame_animation(self.animation_data, "run")
         jump_frames = load_frame_animation(self.animation_data, "jump")
         attack_frames = load_frame_animation(self.animation_data, "attack")
+        attack_1_frames = load_frame_animation(self.animation_data, "attack_1")
+        attack_2_frames = load_frame_animation(self.animation_data, "attack_2")
+        attack_3_frames = load_frame_animation(self.animation_data, "attack_3")
         run_attack_frames = load_frame_animation(self.animation_data, "run_attack")
         jump_attack_frames = load_frame_animation(self.animation_data, "jump_attack")
         grab_frames = load_frame_animation(self.animation_data, "grab")
@@ -45,6 +48,9 @@ class PlayerAnimationController:
         run_dur = self.frame_duration("run")
         jump_dur = self.frame_duration("jump")
         attack_dur = self.frame_duration("attack")
+        attack_1_dur = self.frame_duration("attack_1")
+        attack_2_dur = self.frame_duration("attack_2")
+        attack_3_dur = self.frame_duration("attack_3")
         run_attack_dur = self.frame_duration("run_attack")
         jump_attack_dur = self.frame_duration("jump_attack")
         grab_dur = self.frame_duration("grab")
@@ -61,6 +67,9 @@ class PlayerAnimationController:
         self.animation_manager.add_animation(owner.RUN, FrameAnimation(run_frames, run_dur))
         self.animation_manager.add_animation(owner.JUMP, FrameAnimation(jump_frames, jump_dur))
         self.animation_manager.add_animation(owner.ATTACK, FrameAnimation(attack_frames, attack_dur))
+        self.animation_manager.add_animation(owner.ATTACK_1, FrameAnimation(attack_1_frames, attack_1_dur))
+        self.animation_manager.add_animation(owner.ATTACK_2, FrameAnimation(attack_2_frames, attack_2_dur))
+        self.animation_manager.add_animation(owner.ATTACK_3, FrameAnimation(attack_3_frames, attack_3_dur))
         self.animation_manager.add_animation(owner.RUN_ATTACK, FrameAnimation(run_attack_frames, run_attack_dur))
         self.animation_manager.add_animation(owner.JUMP_ATTACK, FrameAnimation(jump_attack_frames, jump_attack_dur))
         self.animation_manager.add_animation(owner.GRAB, FrameAnimation(grab_frames, grab_dur))
@@ -82,8 +91,12 @@ class PlayerAnimationController:
             self.animation_manager.play(owner.RUN)
         elif owner.state == owner.JUMP:
             self.animation_manager.play(owner.JUMP)
-        elif owner.state in [owner.ATTACK_1, owner.ATTACK_2, owner.ATTACK_3]:
-            self.animation_manager.play(owner.ATTACK)
+        elif owner.state == owner.ATTACK_1:
+            self.animation_manager.play(owner.ATTACK_1)
+        elif owner.state == owner.ATTACK_2:
+            self.animation_manager.play(owner.ATTACK_2)
+        elif owner.state == owner.ATTACK_3:
+            self.animation_manager.play(owner.ATTACK_3)
         elif owner.state == owner.RUN_ATTACK:
             self.animation_manager.play(owner.RUN_ATTACK)
         elif owner.state == owner.JUMP_ATTACK:

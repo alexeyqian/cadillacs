@@ -68,6 +68,23 @@ Recommended animation speed:
 
 This keeps the punch snappy while still showing the recovery posture.
 
+## Combo Animation Slots
+
+The player animation controller supports separate combo animation states:
+
+```text
+ATTACK_1 -> attack_1
+ATTACK_2 -> attack_2
+ATTACK_3 -> attack_3
+```
+
+For now, Mustapha's `attack_1`, `attack_2`, and `attack_3` all alias the same
+three-phase punch sheet. This is intentional: the code path is ready for
+distinct combo art, but the current milestone keeps the visual change small.
+
+Later, each alias can be replaced with its own sprite sheet/config without
+changing combat timing.
+
 ## Hitbox Design
 
 Current fist attacks share one hitbox:
