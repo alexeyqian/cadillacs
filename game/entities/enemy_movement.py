@@ -38,8 +38,8 @@ class EnemyMovement:
     # Enemies without slots flank toward less crowded side
     # Flanking movement code is easier to read
     def update_chasing(self, owner, player, dx, dy):
-        if owner.flank_target_side:
-            target_x, target_y = owner.get_flank_target_position(player)
+        if owner.flanking.has_target():
+            target_x, target_y = owner.flanking.get_target_position(player)
             self.move_toward_point(owner, target_x, target_y)
             return
 

@@ -91,8 +91,7 @@ class EnemyLifecycleController:
     def update_timers(self, owner):
         if owner.attack_cooldown > 0:
             owner.attack_cooldown -= 1
-        if owner.flank_decision_remaining > 0:
-            owner.flank_decision_remaining -= 1
+        owner.flanking.update_timers()
 
     def is_ready_to_remove(self, owner):
         return owner.state == owner.DEAD and owner.death_remaining <= 0

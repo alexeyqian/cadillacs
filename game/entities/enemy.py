@@ -8,6 +8,7 @@ from game.entities.enemy_hitboxes import EnemyHitboxes
 from game.entities.enemy_animation_controller import EnemyAnimationController
 from game.entities.enemy_renderer import EnemyRenderer
 from game.entities.enemy_movement import EnemyMovement
+from game.entities.enemy_flanking import EnemyFlanking
 from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
@@ -75,17 +76,6 @@ class Enemy:
         # Enemy releases slot when attack ends, flinches, dies, or clashes
         # Attack limit becomes more reliable and easier to reason about
         self.has_attack_slot = False
-        #  if an enemy is in range but cannot attack because another melee enemy owns the slot, 
-        # it should reposition toward an open side instead of just pressing into the player. 
-        # This makes groups look more intentional.
-        self.flank_target_side = None
-        self.flank_target_y_offset = 0
-        self.flank_offset_x = ENEMY_FLANK_OFFSET_X
-        self.flank_offset_y = ENEMY_FLANK_OFFSET_Y
-        # avoid make enemies jitter between left/right if counts are close. 
-        # give each flank decision a short commitment timer.
-        self.flank_decision_remaining = 0
-        self.flank_decision_duration = ENEMY_FLANK_DECISION_DURATION
 
         # This keeps the clash fair on both sides: the player cannot instantly re-punch,
         # and the enemy cannot instantly resume pressure either.
@@ -105,6 +95,7 @@ class Enemy:
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
         self.movement = EnemyMovement()
+        self.flanking = EnemyFlanking()
         self.combat = EnemyCombatController()
         self.reactions = EnemyReactionController()
         self.lifecycle = EnemyLifecycleController()
@@ -307,46 +298,3 @@ class Enemy:
         if self.x < player.x:
             return "left"
         return "right"
-    
-    def set_flank_target(self, player, enemies):
-        if self.flank_decision_remaining > 0 and self.flank_target_side:
-            return
-
-        left_count = 0
-        right_count = 0
-
-        for enemy in enemies:
-            if enemy is self:
-                continue
-            if enemy.state in [enemy.DEAD, enemy.GRABBED, enemy.THROWN, enemy.KNOCKDOWN]:
-                continue
-
-            if enemy.x < player.x:
-                left_count += 1
-            else:
-                right_count += 1
-
-        if left_count <= right_count:
-            self.flank_target_side = "left"
-        else:
-            self.flank_target_side = "right"
-            
-        same_side_count = left_count if self.flank_target_side == "left" else right_count
-        if same_side_count % 2 == 0:
-            self.flank_target_y_offset = -self.flank_offset_y
-        else:
-            self.flank_target_y_offset = self.flank_offset_y
-
-        self.flank_decision_remaining = self.flank_decision_duration
-
-    def clear_flank_target(self):
-        self.flank_target_side = None
-        self.flank_target_y_offset = 0
-        self.flank_decision_remaining = 0
-
-    def get_flank_target_position(self, player):
-        target_y = player.y + self.flank_target_y_offset
-        if self.flank_target_side == "left":
-            return player.x - self.flank_offset_x, target_y
-
-        return player.x + self.flank_offset_x, target_y

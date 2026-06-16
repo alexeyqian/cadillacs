@@ -6,19 +6,19 @@ class EnemyStateResolver:
             return
 
         if self.can_attack_player(owner, level, player, distance_x, distance_y, enemies):
-            owner.clear_flank_target()
+            owner.flanking.clear_target()
             self.prepare_or_start_attack(owner)
         elif distance_x <= owner.detect_range:
             owner.attack_decision_timer = 0
             if self.should_flank(owner, player, distance_x, distance_y, enemies):
-                owner.set_flank_target(player, enemies)
+                owner.flanking.set_target(owner, player, enemies)
             else:
-                owner.clear_flank_target()
+                owner.flanking.clear_target()
             # todo: replace with entry function like: start_chase()
             owner.state = owner.CHASE
         else:
             owner.attack_decision_timer = 0
-            owner.clear_flank_target()
+            owner.flanking.clear_target()
             # todo: replace with: start_patrol()
             owner.state = owner.PATROL
 
