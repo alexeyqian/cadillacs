@@ -120,13 +120,14 @@ PLAYER_ATTACKS = {
         counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
         combo_window=PLAYER_SECOND_TO_THIRD_COMBO_WINDOW,
     ),
-    # wider/taller finisher hitbox
+    # wider/taller finisher hitbox. Keep it larger than ATTACK_2, but avoid
+    # overextending it because ATTACK_3 also gets a small forward nudge.
     "ATTACK_3": PlayerAttackData(
         damage=FIST_DAMAGE + 4,
         duration=8 + 4 + PLAYER_ATTACK_3_RECOVERY,
         phase=AttackPhaseData(windup=8, active=4, recovery=PLAYER_ATTACK_3_RECOVERY),
-        hitboxes=(AttackHitboxData(x=96, y=-304, width=185, height=48),),
-        counter_hurtboxes=(AttackHitboxData(x=52, y=-304, width=48, height=48),),
+        hitboxes=(AttackHitboxData(x=98, y=-304, width=176, height=46),),
+        counter_hurtboxes=(AttackHitboxData(x=52, y=-304, width=46, height=46),),
         combo_window=0,
         action_lock=PLAYER_THIRD_HIT_RECOVERY,
     ),

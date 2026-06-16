@@ -97,11 +97,12 @@ Current fist attacks use a light progression:
 ```python
 ATTACK_1: AttackHitboxData(x=92, y=-300, width=135, height=38)
 ATTACK_2: AttackHitboxData(x=94, y=-300, width=160, height=40)
-ATTACK_3: AttackHitboxData(x=96, y=-304, width=185, height=48)
+ATTACK_3: AttackHitboxData(x=98, y=-304, width=176, height=46)
 ```
 
 This keeps the opener quick and focused, preserves the second hit as the medium
-baseline, and makes the finisher visibly/mechanically larger.
+baseline, and makes the finisher visibly/mechanically larger without giving it
+too much raw reach on top of its forward nudge.
 
 Applied hitbox direction:
 

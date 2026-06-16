@@ -193,6 +193,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertLess(attack_1_hitbox.width, attack_2_hitbox.width)
         self.assertGreater(attack_3_hitbox.width, attack_2_hitbox.width)
         self.assertGreater(attack_3_hitbox.height, attack_2_hitbox.height)
+        self.assertLessEqual(attack_3_hitbox.width, attack_2_hitbox.width + 20)
 
     def test_player_attack_is_inactive_during_recovery(self):
         owner = FakeOwner()
