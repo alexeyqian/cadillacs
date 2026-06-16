@@ -148,6 +148,25 @@ should feel better, but it should also be easier to punish if whiffed.
 4. Retune hitboxes after the distinct combo silhouettes are final.
 5. Consider a tiny forward nudge only on `ATTACK_3`, not on every punch.
 
+## Visual Preview Notes
+
+Generated preview assets:
+
+```text
+assets/player/mustapha_attack_combo_preview_labeled.png
+assets/player/mustapha_attack_combo_preview_12fps.gif
+```
+
+Current visual finding:
+
+- The combo is technically separated into three sheets.
+- The 3-phase structure reads clearly.
+- `attack_2` and `attack_3` still look too similar because they are mostly
+  stretched variants of the same punch pose.
+- The next art pass should focus on stronger silhouettes, especially:
+  - `attack_2`: more shoulder rotation or opposite-arm balance
+  - `attack_3`: heavier body twist, more committed stance, stronger recovery
+
 ## Non-Goals For Now
 
 - Do not build a complex ECS combat system.
