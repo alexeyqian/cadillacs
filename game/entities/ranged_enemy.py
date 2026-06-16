@@ -18,11 +18,6 @@ class RangedEnemy(Enemy):
         self.shot_fired = False
 
     def update_attack(self, level, player):
-        if self.shoot_cooldown > 0:
-            self.shoot_cooldown -= 1
-            self.state = self.PATROL
-            return
-
         self.face_player(player)
 
         # when attack animation reaches middle frame, fire projectile
@@ -44,4 +39,5 @@ class RangedEnemy(Enemy):
             self.state = self.PATROL
             self.shot_fired = False
             self.attack_already_hit = False
-            self.shoot_cooldown = self.attack_cooldown_duration
+            self.attack_cooldown = self.attack_cooldown_duration
+            self.shoot_cooldown = 0

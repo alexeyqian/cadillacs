@@ -7,8 +7,9 @@ class EnemyStateResolver:
 
         if self.can_attack_player(owner, level, player, distance_x, distance_y, enemies):
             owner.clear_flank_target()
-            owner.start_attack()
+            self.prepare_or_start_attack(owner)
         elif distance_x <= owner.detect_range:
+            owner.attack_decision_timer = 0
             if self.should_flank(owner, player, distance_x, distance_y, enemies):
                 owner.set_flank_target(player, enemies)
             else:
@@ -16,9 +17,20 @@ class EnemyStateResolver:
             # todo: replace with entry function like: start_chase()
             owner.state = owner.CHASE
         else:
+            owner.attack_decision_timer = 0
             owner.clear_flank_target()
             # todo: replace with: start_patrol()
             owner.state = owner.PATROL
+
+    def prepare_or_start_attack(self, owner):
+        owner.attack_decision_timer += 1
+
+        if owner.attack_decision_timer >= owner.attack_delay:
+            owner.start_attack()
+            return
+
+        # A short readable pause before windup makes attack commitment fairer.
+        owner.state = owner.IDLE
 
     def can_attack_player(self, owner, level, player, distance_x, distance_y, enemies):
         if owner.attack_cooldown > 0:

@@ -111,6 +111,7 @@ class BossEnemy(Enemy):
         if self.state == self.DEAD:
             return
 
+        self.attack_decision_timer = 0
         died = self.health.take_damage(damage)
 
         should_flinch = damage >= self.flinch_damage_threshold

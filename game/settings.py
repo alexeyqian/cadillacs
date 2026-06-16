@@ -123,6 +123,7 @@ ENEMY_DETECT_RANGE=SCREEN_WIDTH*0.50
 ######## enemy attack timing ########
 # windup:prepare -> active attack (hit player once) 
 # -> recovery (enemy cannot move)->cooldown(frame cooldown before next attack)
+ENEMY_ATTACK_DELAY=20
 ENEMY_ATTACK_WINDUP=20 
 ENEMY_ATTACK_ACTIVE=8
 ENEMY_ATTACK_RECOVERY=25

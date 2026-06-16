@@ -4,6 +4,7 @@ class EnemyReactionController:
         owner.state = owner.DEAD
         owner.death_remaining = 30
         owner.death_countdown_started = False
+        owner.attack_decision_timer = 0
         owner.has_attack_slot = False
 
     # temp for renaming
@@ -14,6 +15,7 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
 
+        owner.attack_decision_timer = 0
         died = owner.health.take_damage(damage)
         should_flinch = damage >= owner.flinch_damage_threshold
         if died:
@@ -54,6 +56,7 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
 
+        owner.attack_decision_timer = 0
         owner.state = owner.KNOCKDOWN
         owner.knockdown_remaining = 60
         owner.knockback_velocity = 0
@@ -63,6 +66,7 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
 
+        owner.attack_decision_timer = 0
         owner.state = owner.GRABBED
         owner.knockback_velocity = 0
         owner.hit_stun_remaining = 0
@@ -72,6 +76,7 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
 
+        owner.attack_decision_timer = 0
         owner.state = owner.THROWN
         owner.facing_right = direction > 0
         owner.thrown_velocity_x = 14 * direction
@@ -84,6 +89,7 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
 
+        owner.attack_decision_timer = 0
         died = owner.health.take_damage(damage)
 
         if died:
@@ -96,6 +102,7 @@ class EnemyReactionController:
     def take_thrown_damage(self, owner, damage):
         if owner.state == owner.DEAD:
             return
+        owner.attack_decision_timer = 0
         owner.has_attack_slot = False
 
         died = owner.health.take_damage(damage)

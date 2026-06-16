@@ -54,6 +54,8 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         # so the next chunk can use windup / active / recovery 
         # instead of relying only on animation frame position.
         self.attack_timer = 0
+        self.attack_decision_timer = 0
+        self.attack_delay = 20
         self.attack_windup = 20
         self.attack_active = 8
         self.attack_recovery = 25
@@ -131,6 +133,7 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
         self.attack_lane_reach = config.attack_lane_reach
 
         self.attack_damage = config.attack.damage
+        self.attack_delay = config.attack.delay
         self.attack_cooldown_duration = config.attack.cooldown
         self.attack_windup = config.attack.windup
         self.attack_active = config.attack.active

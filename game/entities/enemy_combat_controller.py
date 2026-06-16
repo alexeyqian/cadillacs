@@ -3,6 +3,7 @@ class EnemyCombatController:
         owner.state = owner.ATTACK
         owner.attack_already_hit = False
         owner.has_attack_slot = owner.uses_melee_attack_slot()
+        owner.attack_decision_timer = 0
         owner.attack_timer = 0
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
