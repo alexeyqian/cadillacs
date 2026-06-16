@@ -25,7 +25,9 @@ def handle_player_attack_collision(game_state):
         return
     if player.combat.attack_connected:
         return
-    
+
+    player_attack_lane_reach = player.combat.get_attack_lane_reach(player)
+
     # COUNTER-HIT BLOCK
     # Rule: if the player is attacking and an enemy active attack overlaps the player’s counter_hurt_rect, 
     # the player gets hit and their combo cancels. 
@@ -43,7 +45,9 @@ def handle_player_attack_collision(game_state):
             if not enemy_attack_rect:
                 continue
 
-            if (enemy.is_attack_active() 
+            lane_distance = game_state.level.get_lane_distance(enemy.y, player.y)
+            if (lane_distance <= enemy.attack_lane_reach
+                and enemy.is_attack_active() 
                 and enemy_attack_rect.colliderect(counter_hurt_rect)):
                 # hit stun bonus here: A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
                 player.take_damage(enemy.attack_damage, hit_stun_bonus=PLAYER_COUNTER_HIT_STUN_BONUS)
@@ -77,12 +81,16 @@ def handle_player_attack_collision(game_state):
 
     # attack enemies
     for enemy in enemies:
+        # CLASH BLOCK
         # add a simple clash/parry when player and enemy attack boxes collide.
         # if the player’s fist meets the enemy’s active fist, nobody takes damage. Both attacks cancel. 
         # It prevents the player from always winning by punching into enemy attack frames.
         enemy_attack_rect = enemy.get_attack_rect()
         if enemy.state == enemy.ATTACK and enemy_attack_rect:
-            if attack_rect.colliderect(enemy_attack_rect):
+            lane_distance = game_state.level.get_lane_distance(player.y, enemy.y)
+            clash_lane_reach = max(player_attack_lane_reach, enemy.attack_lane_reach)
+            if (lane_distance <= clash_lane_reach
+                and attack_rect.colliderect(enemy_attack_rect)):
                 # Expected behavior
                 # Clash -> player gets 8 frames recovery
                 # Clash -> enemy gets 12 frames recovery
@@ -102,6 +110,10 @@ def handle_player_attack_collision(game_state):
                         "CLASH", YELLOW_COLOR))
                 return
 
+        # NORMAL DAMAGE BLOCK
+        lane_distance = game_state.level.get_lane_distance(player.y, enemy.y)
+        if lane_distance > player_attack_lane_reach:
+            continue
         enemy_hurt_rect = enemy.get_hurt_rect()
         if enemy_hurt_rect and attack_rect.colliderect(enemy_hurt_rect):
             damage = player.combat.get_attack_damage(player)

@@ -25,6 +25,11 @@ class EnemyConfig:
     detect_range: float = ENEMY_DETECT_RANGE
     attack_range:int = 90 
     attack_lane_range:int = 45
+    # Normal melee enemies must be in the same lane to start attack
+    # Boss/ranged can keep wider behavior for now
+    # 0 = same lane only
+    # 1 = same or adjacent lane
+    attack_lane_reach: int = 0
     attack: EnemyAttackData = EnemyAttackData()
     melee_attack_slot_limit: Optional[int] = None
 
@@ -61,6 +66,7 @@ ENEMY_CONFIGS = {
         archetype="heavy",
         max_hp=ENEMY_MAX_HP*2,
         speed=int(ENEMY_SPEED * 0.75),
+        attack_lane_reach=1,
         attack=EnemyAttackData(
             damage=ENEMY_ATTACK_DAMAGE * 2,
             windup=26,
@@ -109,6 +115,7 @@ ENEMY_CONFIGS = {
         archetype="boss",
         max_hp=ENEMY_MAX_HP*10,
         speed=int(ENEMY_SPEED * 0.5),
+        attack_lane_reach=1,
         attack=EnemyAttackData(
             damage=ENEMY_ATTACK_DAMAGE * 3,
             cooldown=60,

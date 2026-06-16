@@ -10,7 +10,7 @@ class EnemyCombatController:
     # Enemy attack has explicit windup frames
     # Enemy attack only damages during active frames
     # Enemy attack has explicit recovery before it can act again
-    def update_attack(self, owner, player):
+    def update_attack(self, owner, level, player):
         owner.face_player(player)
         owner.attack_timer += 1
 
@@ -20,7 +20,9 @@ class EnemyCombatController:
         if (owner.is_attack_active() 
             and attack_rect and player_hurt_rect 
             and not owner.attack_already_hit):
-            if attack_rect.colliderect(player_hurt_rect):
+            lane_distance = level.get_lane_distance(owner.y, player.y)
+            if (lane_distance <= owner.attack_lane_reach 
+                and  attack_rect.colliderect(player_hurt_rect)):
                 player.take_damage(owner.attack_damage)
                 owner.attack_already_hit = True
 

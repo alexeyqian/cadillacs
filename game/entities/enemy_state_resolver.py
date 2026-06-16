@@ -1,11 +1,11 @@
 from game.settings import *
 
 class EnemyStateResolver:
-    def choose_state(self, owner, player, distance_x, distance_y, enemies):
+    def choose_state(self, owner, level, player, distance_x, distance_y, enemies):
         if owner.state == owner.ATTACK:
             return
 
-        if self.can_attack_player(owner, player, distance_x, distance_y, enemies):
+        if self.can_attack_player(owner, level, player, distance_x, distance_y, enemies):
             owner.clear_flank_target()
             owner.start_attack()
         elif distance_x <= owner.detect_range:
@@ -20,12 +20,13 @@ class EnemyStateResolver:
             # todo: replace with: start_patrol()
             owner.state = owner.PATROL
 
-    def can_attack_player(self, owner, player, distance_x, distance_y, enemies):
+    def can_attack_player(self, owner, level, player, distance_x, distance_y, enemies):
         if owner.attack_cooldown > 0:
             return False
         if distance_x > owner.attack_range:
             return False
-        if distance_y > owner.attack_lane_range:
+        lane_distance = level.get_lane_distance(owner.y, player.y)
+        if lane_distance > owner.attack_lane_reach:
             return False
         if owner.can_bypass_attack_slot_limit():
             return True

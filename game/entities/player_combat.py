@@ -10,6 +10,7 @@ class PlayerMoveData:
     damage: int
     combo_window: int = PLAYER_COMBO_WINDOW
     action_lock: int = 0
+    lane_reach: int = 0
     counter_hit_stun_bonus: int = 0
 
 PLAYER_MOVES = {
@@ -179,3 +180,11 @@ class PlayerCombat:
             base_damage += weapon.damage
 
         return int(base_damage)
+    
+    def get_attack_lane_reach(self, owner):
+        move_data = PLAYER_MOVES.get(owner.state)
+        lane_reach = move_data.lane_reach if move_data else 0
+        weapon = owner.weapon_slot_weapon
+        if weapon and not weapon.is_ranged:
+            lane_reach = max(lane_reach, 1)
+        return lane_reach

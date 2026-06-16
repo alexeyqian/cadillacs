@@ -318,25 +318,6 @@ def draw_player_debug_boxes(screen, level, camera, player):
         ), 2)
 
 
-def draw_lane_debug(screen, level):
-    if not settings.SHOW_COMBAT_BOXES:
-        return
-
-    lane_system = LaneSystem(level.lane_top, level.lane_bottom)
-
-    font = pygame.font.SysFont(None, 18)
-
-    for lane_index in range(lane_system.lane_count):
-        top, bottom = lane_system.get_lane_bounds(lane_index)
-        center_y = lane_system.get_lane_center(lane_index)
-
-        pygame.draw.line(screen, (80, 80, 80), (0, int(top)), (SCREEN_WIDTH, int(top)), 1)
-        pygame.draw.line(screen, (80, 80, 80), (0, int(bottom)), (SCREEN_WIDTH, int(bottom)), 1)
-        pygame.draw.line(screen, YELLOW_COLOR, (0, int(center_y)), (SCREEN_WIDTH, int(center_y)), 1)
-
-        label = font.render(f"LANE {lane_index}", True, YELLOW_COLOR)
-        screen.blit(label, (8, int(center_y) - 8))
-
 def draw_entity_lane_debug(screen, level, camera, player, enemies):
     if not settings.SHOW_COMBAT_BOXES:
         return
@@ -348,7 +329,7 @@ def draw_entity_lane_debug(screen, level, camera, player, enemies):
         (0, level.lane_bottom),
         (SCREEN_WIDTH, level.lane_bottom),2)
 
-    lane_system = LaneSystem(level.lane_top, level.lane_bottom)
+    lane_system = level.lane_system
     font = pygame.font.SysFont(None, 20)
 
     # draw multiple lanes

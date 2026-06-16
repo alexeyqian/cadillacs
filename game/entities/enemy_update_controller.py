@@ -1,5 +1,5 @@
 class EnemyUpdateController:
-    def update(self, owner, player, enemies):
+    def update(self, owner, level, player, enemies):
         if owner.update_special_states():
             return
 
@@ -15,8 +15,8 @@ class EnemyUpdateController:
         if distance_x <= owner.detect_range:
             owner.face_player(player)
 
-        owner.choose_state(player, distance_x, distance_y, enemies)
-        owner.execute_state(player, enemies, dx, dy)
+        owner.choose_state(level, player, distance_x, distance_y, enemies)
+        owner.execute_state(level, player, enemies, dx, dy)
 
         # owner.apply_world_bounds()
         owner.update_animation()

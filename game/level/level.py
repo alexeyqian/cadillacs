@@ -1,7 +1,9 @@
 from game.settings import *
+from game.level.lane import LaneSystem
 from game.level.background import Background
 from game.level.prop import Prop
 from game.level.wave import *
+
 
 # background image, far layer, ground layer foreground layer
 class Level:
@@ -12,6 +14,7 @@ class Level:
         self.world_height = stage_data["world_height"]
         self.lane_top = stage_data["lane_top"]
         self.lane_bottom = stage_data["lane_bottom"]
+        self.lane_system = LaneSystem(self.lane_top, self.lane_bottom)
         self.background = Background(stage_data["background"])
         self.wave_configs = stage_data["waves"]
         self.exit_rect = stage_data["exit_rect"]
@@ -76,12 +79,24 @@ class Level:
         #        Prop(self.prop5_x,LANE_BOTTOM,
         #            "game/assets/props/bush.png",layer="front",scale=1.4),]
 
+    def get_lane_index(self, y):
+        return self.lane_system.get_lane_index(y)
+
+    def get_lane_center(self, lane_index):
+        return self.lane_system.get_lane_center(lane_index)
+
+    def get_lane_distance(self, y_a, y_b):
+        return self.lane_system.get_lane_distance(y_a, y_b)
+
+    def get_lane_bounds(self, lane_index):
+        return self.lane_system.get_lane_bounds(lane_index)
+
     def get_current_wave(self):
         if self.current_wave >= len(self.waves):
             return None
 
         return self.waves[self.current_wave]
-    
+
     #def draw_props(self, screen, camera_x, layer):
     #    for prop in self.props:
     #        if prop.layer == layer:

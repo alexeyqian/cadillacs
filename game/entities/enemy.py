@@ -134,6 +134,7 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
 
         self.attack_range = config.attack_range
         self.attack_lane_range = config.attack_lane_range
+        self.attack_lane_reach = config.attack_lane_reach
 
         self.attack_damage = config.attack.damage
         self.attack_cooldown_duration = config.attack.cooldown
@@ -153,8 +154,8 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
     def update_animation(self):
         self.animation_controller.update(self)
 
-    def update(self, player, enemies):
-        self.update_controller.update(self, player, enemies)
+    def update(self, level, player, enemies):
+        self.update_controller.update(self, level, player, enemies)
 
     def create_loot(self):
         return self.loot_controller.create_loot(self)

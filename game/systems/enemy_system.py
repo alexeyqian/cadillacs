@@ -4,7 +4,7 @@ def update_enemy_system(game_state):
     player = game_state.player
 
     for enemy in game_state.enemies:
-        enemy.update(player, game_state.enemies)
+        enemy.update(game_state.level, player, game_state.enemies)
         enemy.apply_world_bounds(
             game_state.level.world_width,
             game_state.level.lane_top,
