@@ -44,8 +44,8 @@ class BossEnemy(Enemy):
 
         self.pending_projectile = None
 
-    def update(self, player, enemies):
-        super().update(player, enemies)
+    def update(self, level, player, enemies):
+        super().update(level, player, enemies)
 
         if self.state == self.DEAD:
             return

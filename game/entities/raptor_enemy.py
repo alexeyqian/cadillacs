@@ -19,37 +19,23 @@ class RaptorEnemy(Enemy):
         self.leap_speed = 12
         self.has_leaped_this_attack = False
 
-    def update(self, player, enemies):
+    def update(self, level, player, enemies):
         if self.leap_cooldown > 0:
             self.leap_cooldown -= 1
 
-        super().update(player, enemies)
+        super().update(level, player, enemies)
 
-    def choose_state(self, distance_x, distance_y):
-        if self.state == self.ATTACK:
-            return
+    def start_attack(self):
+        super().start_attack()
+        self.has_leaped_this_attack = False
 
-        can_attack = (
-            self.attack_cooldown <= 0
-            and distance_x <= self.attack_range
-            and distance_y <= self.attack_lane_range
-        )
-
-        if can_attack:
-            self.state = self.ATTACK
-            self.has_leaped_this_attack = False
-        elif distance_x <= self.detect_range:
-            self.state = self.CHASE
-        else:
-            self.state = self.PATROL
-
-    def update_attack(self, player):
+    def update_attack(self, level, player):
         if self.leap_cooldown <= 0 and not self.has_leaped_this_attack:
             self.leap_toward_player(player)
             self.leap_cooldown = 120
             self.has_leaped_this_attack = True
 
-        super().update_attack(player)
+        super().update_attack(level, player)
 
         if self.state != self.ATTACK:
             self.has_leaped_this_attack = False

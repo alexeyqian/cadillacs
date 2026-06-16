@@ -17,7 +17,7 @@ class RangedEnemy(Enemy):
         self.shoot_cooldown = 0
         self.shot_fired = False
 
-    def update_attack(self, player):
+    def update_attack(self, level, player):
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
             self.state = self.PATROL

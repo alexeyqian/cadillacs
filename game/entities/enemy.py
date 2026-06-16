@@ -2,7 +2,6 @@ from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_boxes import EnemyBoxMixin
-from game.entities.enemy_ai import EnemyAIMixin
 from game.entities.enemy_combat import EnemyCombatMixin
 from game.entities.enemy_lifecycle import EnemyLifecycleMixin
 from game.entities.enemy_reactions import EnemyReactionMixin
@@ -15,18 +14,16 @@ from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_state_resolver import EnemyStateResolver
-from game.entities.enemy_update_controller import EnemyUpdateController
 from game.entities.enemy_loot_controller import EnemyLootController
 
 # State resolver: decides what state the enemy wants
-# Action executor: runs behavior for the current state
 # Movement: changes x/y/facing
 # Combat: handles attack hit detection
 # Lifecycle: advances temporary states
 # Enemy is a small coordinator. Components own movement, combat,
 # reactions, lifecycle, state decisions, loot, animation, and rendering.
 
-class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
+class Enemy(EnemyBoxMixin, EnemyCombatMixin,
             EnemyReactionMixin, EnemyLifecycleMixin):
     IDLE = EnemyState.IDLE
     WALK = EnemyState.WALK
@@ -113,7 +110,6 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.reactions = EnemyReactionController()
         self.lifecycle = EnemyLifecycleController()
         self.state_resolver = EnemyStateResolver()
-        self.update_controller = EnemyUpdateController()
         self.loot_controller = EnemyLootController()
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
@@ -153,7 +149,54 @@ class Enemy(EnemyBoxMixin, EnemyAIMixin, EnemyCombatMixin,
         self.animation_controller.update(self)
 
     def update(self, level, player, enemies):
-        self.update_controller.update(self, level, player, enemies)
+        if self.update_special_states():
+            return
+
+        self.update_timers()
+
+        if self.update_hit_state():
+            return
+
+        self.apply_knockback()
+
+        dx, dy, distance_x, distance_y = self.get_player_distance(player)
+
+        if distance_x <= self.detect_range:
+            self.face_player(player)
+
+        self.choose_state(level, player, distance_x, distance_y, enemies)
+        self.execute_state(level, player, enemies, dx, dy)
+
+        self.update_animation()
+
+    def get_player_distance(self, player):
+        return self.movement.get_player_distance(self, player)
+
+    def face_player(self, player):
+        self.movement.face_player(self, player)
+
+    def choose_state(self, level, player, distance_x, distance_y, enemies):
+        self.state_resolver.choose_state(
+            self, level, player, distance_x, distance_y, enemies
+        )
+
+    def execute_state(self, level, player, enemies, dx, dy):
+        if self.state == self.PATROL:
+            self.update_patrol()
+        elif self.state == self.CHASE:
+            self.update_chasing(player, dx, dy)
+            self.separate_from_other_enemies(enemies)
+        elif self.state == self.ATTACK:
+            self.update_attack(level, player)
+
+    def update_patrol(self):
+        self.movement.update_patrol(self)
+
+    def update_chasing(self, player, dx, dy):
+        self.movement.update_chasing(self, player, dx, dy)
+
+    def separate_from_other_enemies(self, enemies):
+        self.movement.separate_from_other_enemies(self, enemies)
 
     def create_loot(self):
         return self.loot_controller.create_loot(self)
