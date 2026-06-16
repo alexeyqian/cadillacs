@@ -110,10 +110,11 @@ def scale_timing(windup, active, recovery, scale=None, minimum_active=3):
     Returns a dictionary so callers can keep code explicit:
 
         timing = scale_timing(20, 8, 25)
-        self.attack_windup = timing["windup"]
-        self.attack_active = timing["active"]
-        self.attack_recovery = timing["recovery"]
-        self.attack_total_duration = timing["total"]
+        phase = AttackPhaseData(
+            windup=timing["windup"],
+            active=timing["active"],
+            recovery=timing["recovery"],
+        )
     """
 
     if scale is None:

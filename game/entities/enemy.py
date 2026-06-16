@@ -1,5 +1,3 @@
-from dataclasses import replace
-
 from game.settings import *
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
@@ -228,7 +226,7 @@ class Enemy:
         return self.combat.is_attack_active(self)
 
     def get_attack_total_duration(self):
-        return self.attack_windup + self.attack_active + self.attack_recovery
+        return self.attack_data.total_duration
 
     def get_attack_phase_name(self):
         if self.state != self.ATTACK:
@@ -269,40 +267,6 @@ class Enemy:
     # Loot
     def create_loot(self):
         return self.loot_controller.create_loot(self)
-
-    # Attack timing data
-    @property
-    def attack_windup(self):
-        return self.attack_data.windup
-
-    @attack_windup.setter
-    def attack_windup(self, value):
-        self.attack_data = replace(
-            self.attack_data,
-            phase=replace(self.attack_data.phase, windup=value)
-        )
-
-    @property
-    def attack_active(self):
-        return self.attack_data.active
-
-    @attack_active.setter
-    def attack_active(self, value):
-        self.attack_data = replace(
-            self.attack_data,
-            phase=replace(self.attack_data.phase, active=value)
-        )
-
-    @property
-    def attack_recovery(self):
-        return self.attack_data.recovery
-
-    @attack_recovery.setter
-    def attack_recovery(self, value):
-        self.attack_data = replace(
-            self.attack_data,
-            phase=replace(self.attack_data.phase, recovery=value)
-        )
 
     # Enemy coordination
     # Later we can upgrade it into an “attack reservation” system

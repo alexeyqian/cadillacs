@@ -205,20 +205,13 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.attack_controller.attack_timer, 1)
         self.assertEqual(enemy.attack_timer, 1)
 
-    def test_real_enemy_timing_fields_update_attack_data(self):
+    def test_real_enemy_total_duration_comes_from_attack_data(self):
         enemy = Enemy.__new__(Enemy)
         enemy.attack_data = EnemyAttackData(
             phase=AttackPhaseData(windup=3, active=2, recovery=1)
         )
 
-        enemy.attack_windup = 5
-        enemy.attack_active = 4
-        enemy.attack_recovery = 3
-
-        self.assertEqual(enemy.attack_data.windup, 5)
-        self.assertEqual(enemy.attack_data.active, 4)
-        self.assertEqual(enemy.attack_data.recovery, 3)
-        self.assertEqual(enemy.get_attack_total_duration(), 12)
+        self.assertEqual(enemy.get_attack_total_duration(), 6)
 
     def test_clash_recovery_cancels_enemy_attack(self):
         enemy = FakeEnemy()
