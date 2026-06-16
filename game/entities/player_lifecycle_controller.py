@@ -1,4 +1,4 @@
-class PlayerLifecycle:
+class PlayerLifecycleController:
     def __init__(self, respawn_x, respawn_y):
         self.respawn_x = respawn_x
         self.respawn_y = respawn_y

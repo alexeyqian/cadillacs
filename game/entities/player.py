@@ -10,7 +10,7 @@ from game.entities.player_animation_controller import PlayerAnimationController
 from game.entities.player_render import PlayerRenderer
 from game.entities.player_action_controller import PlayerActionController
 from game.entities.player_state_resolver import PlayerStateResolver
-from game.entities.player_lifecycle import PlayerLifecycle
+from game.entities.player_lifecycle_controller import PlayerLifecycleController
 from game.entities.player_events import PlayerEvents
 from game.entities.player_state_machine import PlayerStateMachine
 
@@ -61,7 +61,7 @@ class Player:
         self.grab = PlayerGrabController()
         self.hitboxes = PlayerHitboxes()
         self.state_resolver = PlayerStateResolver()
-        self.lifecycle = PlayerLifecycle(self.x, self.y)
+        self.lifecycle = PlayerLifecycleController(self.x, self.y)
 
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
