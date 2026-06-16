@@ -1,4 +1,5 @@
 import pygame
+from game.entities.combat_geometry import combat_box_to_world_rect
 
 
 class PlayerHitboxes:
@@ -96,15 +97,4 @@ class PlayerHitboxes:
         return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
 
     def _combat_rect_to_world(self, owner, box):
-        if owner.facing_right:
-            world_x = owner.x + box.x
-        else:
-            world_x = owner.x - box.x - box.width
-
-        world_y = owner.y + box.y
-        return pygame.Rect(
-            int(world_x),
-            int(world_y),
-            int(box.width),
-            int(box.height)
-        )
+        return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)

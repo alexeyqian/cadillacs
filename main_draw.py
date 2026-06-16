@@ -339,6 +339,12 @@ def draw_player_debug_boxes(screen, level, camera, player):
             attack_rect.height
         ), 2)
 
+    timing_label = player.combat.get_attack_timing_label()
+    if timing_label:
+        font = pygame.font.SysFont(None, 20)
+        label = font.render(timing_label, True, YELLOW_COLOR)
+        screen.blit(label, (int(player.x - camera.x - 42), int(player.y - 210)))
+
 
 def draw_entity_lane_debug(screen, level, camera, player, enemies):
     if not settings.SHOW_COMBAT_BOXES:

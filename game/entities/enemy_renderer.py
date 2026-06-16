@@ -85,10 +85,10 @@ class EnemyRenderer:
                 attack_rect.height
             ), 1)
             
-        phase_name = owner.get_attack_phase_name()
-        if phase_name:
+        timing_label = owner.get_attack_timing_label()
+        if timing_label:
             font = pygame.font.SysFont(None, 20)
-            label = font.render(phase_name, True, YELLOW_COLOR)
+            label = font.render(timing_label, True, YELLOW_COLOR)
             screen.blit(label, (int(owner.x - camera_x - 28), int(owner.y - 180)))
             
         if owner.flank_target_side:

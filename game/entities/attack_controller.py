@@ -45,6 +45,34 @@ class AttackController:
         active_end = self.current_attack.windup + self.current_attack.active
         return active_start <= self.attack_timer < active_end
 
+    def get_phase_name(self):
+        if not self.current_attack:
+            return ""
+        if not self.has_attack_phases():
+            return "ACTIVE"
+
+        if self.attack_timer < self.current_attack.windup:
+            return "WINDUP"
+
+        active_end = self.current_attack.windup + self.current_attack.active
+        if self.attack_timer < active_end:
+            return "ACTIVE"
+
+        if self.attack_timer < self.get_attack_duration():
+            return "RECOVERY"
+
+        return "DONE"
+
+    def get_timing_label(self):
+        if not self.current_attack:
+            return ""
+
+        return (
+            f"{self.current_attack_name} "
+            f"{self.get_phase_name()} "
+            f"{self.attack_timer}/{self.get_attack_duration()}"
+        )
+
     def mark_connected(self):
         self.attack_connected = True
 

@@ -74,6 +74,12 @@ class PlayerCombat:
     def is_attack_active(self):
         return self.attack_controller.is_active()
 
+    def get_attack_phase_name(self):
+        return self.attack_controller.get_phase_name()
+
+    def get_attack_timing_label(self):
+        return self.attack_controller.get_timing_label()
+
     def get_active_hitbox_data(self):
         if not self.is_attack_active():
             return None

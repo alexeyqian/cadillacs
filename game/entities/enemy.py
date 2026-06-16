@@ -231,14 +231,12 @@ class Enemy(EnemyBoxMixin, EnemyCombatMixin,
     def get_attack_phase_name(self):
         if self.state != self.ATTACK:
             return ""
+        return self.attack_controller.get_phase_name()
 
-        if self.attack_timer < self.attack_windup:
-            return "WINDUP"
-
-        if self.attack_timer < self.attack_windup + self.attack_active:
-            return "ACTIVE"
-
-        return "RECOVERY"
+    def get_attack_timing_label(self):
+        if self.state != self.ATTACK:
+            return ""
+        return self.attack_controller.get_timing_label()
 
     # Later we can upgrade it into an “attack reservation” system
     def uses_melee_attack_slot(self):

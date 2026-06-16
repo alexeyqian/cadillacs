@@ -45,6 +45,29 @@ class AttackControllerTests(unittest.TestCase):
         controller.update_attack_timer()
         self.assertFalse(controller.is_active())
 
+    def test_phase_name_tracks_attack_timing(self):
+        attack = EnemyAttackData(
+            damage=10,
+            phase=AttackPhaseData(windup=2, active=2, recovery=2),
+        )
+        controller = AttackController()
+
+        controller.start_attack("enemy_punch", attack)
+
+        self.assertEqual(controller.get_phase_name(), "WINDUP")
+        controller.update_attack_timer()
+        self.assertEqual(controller.get_phase_name(), "WINDUP")
+        controller.update_attack_timer()
+        self.assertEqual(controller.get_phase_name(), "ACTIVE")
+        controller.update_attack_timer()
+        self.assertEqual(controller.get_phase_name(), "ACTIVE")
+        controller.update_attack_timer()
+        self.assertEqual(controller.get_phase_name(), "RECOVERY")
+        self.assertEqual(
+            controller.get_timing_label(),
+            "enemy_punch RECOVERY 4/6"
+        )
+
     def test_hit_targets_are_tracked_per_attack(self):
         attack = PlayerAttackData(
             damage=10,
