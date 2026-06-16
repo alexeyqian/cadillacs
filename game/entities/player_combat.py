@@ -29,18 +29,18 @@ PLAYER_MOVES = {
 class PlayerCombat:
     def __init__(self):
         self.is_attacking = False
-        self.attack_timer = 0
+        self.attack_remaining = 0
         self.attack_duration = 12
         self.attack_connected = False
 
         # classic combo system
         # J punch 1, J punch 2, J punch 3
         self.combo_step = 0
-        self.combo_timer = 0
+        self.combo_window_remaining = 0
         # add a short lockout after ATTACK_3, 
         # so the finisher cannot immediately loop back into ATTACK_1.
         # expected feel: ATTACK_1 -> ATTACK_2 -> ATTACK_3 -> tiny recovery pause
-        self.action_lock_timer = 0
+        self.action_lock_remaining = 0
 
         # make clash create a tiny recovery pause 
         # where the player cannot attack again instantly.
@@ -48,17 +48,17 @@ class PlayerCombat:
         # add a short recovery after a knee so the player cannot mash knee as freely.
         self.grab_knee_recovery_duration = 6
 
-    # Avoiding the combo step advances when the player presses attack inside the combo timer, 
+    # Avoiding the combo step advances when the player presses attack inside the combo window, 
     # even if the previous punch hit nothing. 
     # That means the player can “charge” into ATTACK_3 by punching air, 
     # then walk in and land the stronger hit. 
     # The combo damage has to be earned.
     def update_timers(self, owner):
-        # action lock timer means:  the player cannot start a new action yet.
-        if self.action_lock_timer > 0:
-            self.action_lock_timer -= 1
+        # action lock remaining means: the player cannot start a new action yet.
+        if self.action_lock_remaining > 0:
+            self.action_lock_remaining -= 1
             if owner.state == owner.RECOIL:
-                if self.action_lock_timer <= 0:
+                if self.action_lock_remaining <= 0:
                     owner.state_machine.change_to(owner, owner.IDLE)
                 # Why return?
                 # During recoil, we do not want combo timers or attack ending logic to also manipulate state.
@@ -68,14 +68,14 @@ class PlayerCombat:
                 # Then returns to IDLE
                 return
 
-        if self.combo_timer > 0:
-            self.combo_timer -= 1
+        if self.combo_window_remaining > 0:
+            self.combo_window_remaining -= 1
         else:
             self.combo_step = 0
 
         if self.is_attacking:
-            self.attack_timer -= 1
-            if self.attack_timer <= 0:
+            self.attack_remaining -= 1
+            if self.attack_remaining <= 0:
                 finished_state = owner.state
 
                 # expected behavior:
@@ -87,15 +87,15 @@ class PlayerCombat:
                     and not self.attack_connected
                 )
                 if attack_missed:
-                    self.combo_timer = 0
+                    self.combo_window_remaining = 0
                     self.combo_step = 0
 
                 self.is_attacking = False
 
                 finished_move = PLAYER_MOVES.get(finished_state)
                 if finished_move and finished_move.action_lock > 0:
-                    self.action_lock_timer = finished_move.action_lock
-                    self.combo_timer = 0
+                    self.action_lock_remaining = finished_move.action_lock
+                    self.combo_window_remaining = 0
                     self.combo_step = 0
 
                 if owner.state != owner.DEAD:
@@ -104,21 +104,21 @@ class PlayerCombat:
     def start_attack(self, owner):
         if self.is_attacking:
             return
-        if self.action_lock_timer > 0:
+        if self.action_lock_remaining > 0:
             return
 
         self.is_attacking = True
-        self.attack_timer = self.attack_duration
+        self.attack_remaining = self.attack_duration
         self.attack_connected = False
 
         if owner.movement.is_running:
-            self.attack_timer = owner.run_attack_duration
-            self.combo_timer = 0
+            self.attack_remaining = owner.run_attack_duration
+            self.combo_window_remaining = 0
             self.combo_step = 0
             owner.state_machine.change_to(owner, owner.RUN_ATTACK)
             return
 
-        if self.combo_timer > 0:
+        if self.combo_window_remaining > 0:
             self.combo_step += 1
         else:
             self.combo_step = 1
@@ -132,7 +132,7 @@ class PlayerCombat:
             owner.state_machine.change_to(owner, owner.ATTACK_3)
 
         move_data = PLAYER_MOVES.get(owner.state)
-        self.combo_timer = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
+        self.combo_window_remaining = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
 
     def start_jump_attack(self, owner):
         if not owner.movement.is_jumping:
@@ -141,7 +141,7 @@ class PlayerCombat:
             return
 
         self.is_attacking = True
-        self.attack_timer = owner.jump_attack_duration
+        self.attack_remaining = owner.jump_attack_duration
         self.attack_connected = False
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
@@ -152,24 +152,24 @@ class PlayerCombat:
             return
 
         self.is_attacking = True
-        self.attack_timer = owner.grab.grab_knee_duration
+        self.attack_remaining = owner.grab.grab_knee_duration
         owner.grab.grab_knee_timer = owner.grab.grab_knee_duration
         self.attack_connected = False
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
     def start_clash_recovery(self, owner):
         self.cancel_attack()
-        self.action_lock_timer = self.clash_recovery_duration
+        self.action_lock_remaining = self.clash_recovery_duration
         owner.state_machine.change_to(owner, owner.RECOIL)
 
     # enemy hits should fully cancel the player’s combo.
     def cancel_attack(self):
         self.is_attacking = False
-        self.attack_timer = 0
+        self.attack_remaining = 0
         self.attack_connected = False
         self.combo_step = 0
-        self.combo_timer = 0
-        self.action_lock_timer = 0
+        self.combo_window_remaining = 0
+        self.action_lock_remaining = 0
 
     def get_attack_damage(self, owner):
         move_data = PLAYER_MOVES.get(owner.state)
