@@ -397,28 +397,54 @@ def draw_player_debug_boxes(screen, level, camera, player):
 def draw_entity_lane_debug(screen, level, camera, player, enemies):
     if not settings.SHOW_COMBAT_BOXES:
         return
-    # draw lane top and bottom
-    pygame.draw.line(screen,GREEN_COLOR,
-        (0, level.lane_top),
-        (SCREEN_WIDTH, level.lane_top),2)
-    pygame.draw.line(screen,GREEN_COLOR,
-        (0, level.lane_bottom),
-        (SCREEN_WIDTH, level.lane_bottom),2)
 
     lane_system = level.lane_system
     font = pygame.font.SysFont(None, 20)
+    lane_overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
 
-    # draw multiple lanes
+    lane_debug_rows = []
+
+    # Each lane has equal height. Draw lane areas and boundaries clearly;
+    # center lines are only the ideal standing/depth positions.
     for lane_index in range(lane_system.lane_count):
         top, bottom = lane_system.get_lane_bounds(lane_index)
         center_y = lane_system.get_lane_center(lane_index)
+        top = int(top)
+        bottom = int(bottom)
+        center_y = int(center_y)
+        lane_height = bottom - top
 
-        pygame.draw.line(screen, (80, 80, 80), (0, int(top)), (SCREEN_WIDTH, int(top)), 1)
-        pygame.draw.line(screen, (80, 80, 80), (0, int(bottom)), (SCREEN_WIDTH, int(bottom)), 1)
-        pygame.draw.line(screen, YELLOW_COLOR, (0, int(center_y)), (SCREEN_WIDTH, int(center_y)), 1)
+        band_color = (255, 255, 0, 20) if lane_index % 2 == 0 else (0, 255, 0, 14)
+        pygame.draw.rect(lane_overlay, band_color, (0, top, SCREEN_WIDTH, lane_height))
+        lane_debug_rows.append((lane_index, top, center_y, lane_height))
 
-        label = font.render(f"LANE {lane_index}", True, YELLOW_COLOR)
-        screen.blit(label, (8, int(center_y) - 8))
+    screen.blit(lane_overlay, (0, 0))
+
+    for lane_index, top, center_y, lane_height in lane_debug_rows:
+        pygame.draw.line(screen, YELLOW_COLOR, (0, top), (SCREEN_WIDTH, top), 2)
+
+        for dash_x in range(0, SCREEN_WIDTH, 36):
+            pygame.draw.line(
+                screen,
+                (220, 220, 120),
+                (dash_x, center_y),
+                (min(dash_x + 18, SCREEN_WIDTH), center_y),
+                1
+            )
+
+        label = font.render(f"LANE {lane_index}  {lane_height}px", True, YELLOW_COLOR)
+        screen.blit(label, (8, center_y - 8))
+
+    # Draw walkable bounds last so the full top-to-bottom range is obvious.
+    pygame.draw.line(screen, GREEN_COLOR,
+        (0, int(level.lane_top)),
+        (SCREEN_WIDTH, int(level.lane_top)), 3)
+    pygame.draw.line(screen, GREEN_COLOR,
+        (0, int(level.lane_bottom)),
+        (SCREEN_WIDTH, int(level.lane_bottom)), 3)
+    pygame.draw.line(screen, YELLOW_COLOR,
+        (0, int(level.lane_bottom)),
+        (SCREEN_WIDTH, int(level.lane_bottom)), 2)
 
     # draw player lane
     player_lane = lane_system.get_lane_index(player.y)
