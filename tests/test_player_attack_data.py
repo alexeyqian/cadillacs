@@ -100,6 +100,28 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(combat.attack_timer, 0)
         self.assertEqual(owner.state, owner.IDLE)
 
+    def test_standing_combo_attacks_have_recovery_frames(self):
+        self.assertEqual(PLAYER_ATTACKS["ATTACK_1"].recovery, 3)
+        self.assertEqual(PLAYER_ATTACKS["ATTACK_2"].recovery, 5)
+        self.assertEqual(PLAYER_ATTACKS["ATTACK_3"].recovery, 6)
+
+        for attack_name in ["ATTACK_1", "ATTACK_2", "ATTACK_3"]:
+            attack = PLAYER_ATTACKS[attack_name]
+            self.assertEqual(attack.duration, attack.phase.total_duration)
+
+    def test_player_attack_is_inactive_during_recovery(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+        attack = PLAYER_ATTACKS["ATTACK_1"]
+
+        combat.start_attack(owner)
+        for _ in range(attack.windup + attack.active):
+            combat.update_timers(owner)
+
+        self.assertTrue(combat.is_attacking)
+        self.assertFalse(combat.is_attack_active())
+        self.assertEqual(combat.get_attack_phase_name(), "RECOVERY")
+
     def test_player_combat_controller_uses_per_target_hit_tracking(self):
         first_target = object()
         second_target = object()
