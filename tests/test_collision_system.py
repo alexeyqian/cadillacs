@@ -2,7 +2,10 @@ import unittest
 
 import pygame
 
-from game.systems.collision_system import resolve_player_enemy_collisions
+from game.systems.collision_system import (
+    resolve_enemy_enemy_collisions,
+    resolve_player_enemy_collisions,
+)
 
 
 class FakePlayer:
@@ -78,6 +81,33 @@ class CollisionSystemTests(unittest.TestCase):
         resolve_player_enemy_collisions(game_state, old_player_x=90, old_player_y=500)
 
         self.assertTrue(player.get_collision_rect().colliderect(enemy.get_collision_rect()))
+
+    def test_enemies_are_pushed_apart_when_collision_boxes_overlap(self):
+        enemy = FakeEnemy(100, 500)
+        other = FakeEnemy(125, 500)
+        game_state = FakeGameState(FakePlayer(300, 500), [enemy, other])
+
+        resolve_enemy_enemy_collisions(game_state)
+
+        self.assertEqual(enemy.get_collision_rect().right, other.get_collision_rect().left)
+
+    def test_enemies_are_pushed_apart_vertically_when_depth_overlap_is_smallest(self):
+        enemy = FakeEnemy(100, 500)
+        other = FakeEnemy(100, 510)
+        game_state = FakeGameState(FakePlayer(300, 500), [enemy, other])
+
+        resolve_enemy_enemy_collisions(game_state)
+
+        self.assertEqual(enemy.get_collision_rect().bottom, other.get_collision_rect().top)
+
+    def test_thrown_enemy_does_not_block_other_enemies(self):
+        enemy = FakeEnemy(100, 500)
+        other = FakeEnemy(110, 500, state=FakeEnemy.THROWN)
+        game_state = FakeGameState(FakePlayer(300, 500), [enemy, other])
+
+        resolve_enemy_enemy_collisions(game_state)
+
+        self.assertTrue(enemy.get_collision_rect().colliderect(other.get_collision_rect()))
 
 
 if __name__ == "__main__":

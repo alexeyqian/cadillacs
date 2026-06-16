@@ -26,6 +26,13 @@ def update_gameplay(game_state, keys):
     game_state.player.apply_world_bounds(game_state.level.world_width,
         game_state.level.lane_top, game_state.level.lane_bottom)
     update_enemy_system(game_state)
+    resolve_enemy_enemy_collisions(game_state)
+    for enemy in game_state.enemies:
+        enemy.apply_world_bounds(
+            game_state.level.world_width,
+            game_state.level.lane_top,
+            game_state.level.lane_bottom
+        )
     resolve_player_enemy_collisions(game_state, old_x, old_y)
     game_state.player.apply_world_bounds(game_state.level.world_width,
         game_state.level.lane_top, game_state.level.lane_bottom)
