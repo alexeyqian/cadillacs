@@ -34,18 +34,22 @@ class Player:
     THROW = "THROW"
 
     def __init__(self, player_type, animation_data, anim_fps):
+        # Identity / position
         self.x = 300
         self.y = 500
         self.player_type = player_type
+
+        # Core state
         self.state = self.IDLE
         self.state_machine = PlayerStateMachine(self)
         self.facing_right = True
+
         self.apply_player_config(get_player_config(player_type))
 
+        # Health
         self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
 
-        self.movement = PlayerMovement(self.speed)
-        self.movement.ground_y = self.y
+        # Input edge flags
         # stop the “hold attack to auto-combo” problem.
         # expected gameplay for attack and attack combo:
         # Hold J: one punch only
@@ -54,18 +58,21 @@ class Player:
         self.attack_pressed = False
         self.jump_attack_pressed = False
 
+        # Components
+        self.movement = PlayerMovement(self.speed)
+        self.movement.ground_y = self.y
         self.combat = PlayerCombatController()
-        self.weapon_slot = PlayerWeaponSlot()
-        self.events = PlayerEvents()
         self.action_controller = PlayerActionController()
         self.grab = PlayerGrabController()
-        self.hitboxes = PlayerHitboxes()
         self.state_resolver = PlayerStateResolver()
         self.lifecycle = PlayerLifecycleController(self.x, self.y)
-
+        self.weapon_slot = PlayerWeaponSlot()
+        self.events = PlayerEvents()
+        self.hitboxes = PlayerHitboxes()
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 
+    # Config
     def apply_player_config(self, config):
         self.player_id = config.player_id
         self.display_name = config.display_name
@@ -85,6 +92,7 @@ class Player:
 
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x
+    # Update flow
     def update(self, player_input):
         if self.state == self.DEAD:
             self.lifecycle.update_dead_state(self)
@@ -102,9 +110,25 @@ class Player:
         self.animation_controller.update(self)
 
 
+    # Timers
+    def update_timers(self):
+        self.combat.update_timers(self)
+        self.grab.update_timers(self)
+        self.movement.update_timers()
+
+    # Lifecycle / damage
+    def take_damage(self, damage, hit_stun_bonus=0):
+        self.lifecycle.take_damage(self, damage, hit_stun_bonus)
+
+    # Movement / bounds
+    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
+        self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
+
+    # Rendering
     def draw(self, screen, camera_x):
         self.renderer.draw(self, screen, camera_x)
 
+    # Geometry
     def get_left(self):
         return self.get_frame_rect().left
 
@@ -137,14 +161,3 @@ class Player:
     # hit box
     def get_attack_rect(self):
         return self.hitboxes.get_attack_rect(self)
-
-    def update_timers(self):
-        self.combat.update_timers(self)
-        self.grab.update_timers(self)
-        self.movement.update_timers()
-
-    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
-        self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
-
-    def take_damage(self, damage, hit_stun_bonus=0):
-        self.lifecycle.take_damage(self, damage, hit_stun_bonus)
