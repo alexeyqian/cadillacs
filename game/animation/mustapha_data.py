@@ -347,7 +347,7 @@ MUSTAPHA_ANIM_FPS = {
     "walk": 6,
     "run": 6,
     "jump": 6,
-    "attack": 6,
+    "attack": 12,
     "run_attack": 6,
     "jump_attack": 6,
     "grab": 6,
