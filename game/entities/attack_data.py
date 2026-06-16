@@ -129,12 +129,14 @@ PLAYER_ATTACKS = {
     ),
     "RUN_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,
-        duration=18,
-        phase=AttackPhaseData(windup=8, active=6, recovery=4),
+        duration=4 + 10 + 4,
+        phase=AttackPhaseData(windup=4, active=10, recovery=4),
         hitboxes=(AttackHitboxData(x=40, y=-220, width=160, height=80),),
+        counter_hurtboxes=(AttackHitboxData(x=-24, y=-240, width=120, height=104),),
         max_targets=3,
-        knockback_velocity=18,
-        enemy_hit_stun_duration=24,
+        action_lock=RUN_ATTACK_LANDING_RECOVERY,
+        knockback_velocity=RUN_ATTACK_BASE_KNOCKBACK,
+        enemy_hit_stun_duration=RUN_ATTACK_BASE_ENEMY_HIT_STUN,
     ),
     "JUMP_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,

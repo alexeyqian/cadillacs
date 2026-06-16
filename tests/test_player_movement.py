@@ -1,5 +1,6 @@
 import unittest
 
+from game.settings import RUN_ATTACK_MOMENTUM_FRAMES, RUN_ATTACK_MOMENTUM_SPEED_SCALE
 from game.entities.player_movement import PlayerMovement
 
 
@@ -42,6 +43,11 @@ class PlayerMovementTests(unittest.TestCase):
         starting_momentum = movement.run_attack_momentum_remaining
         moved = movement.update_movement(owner, FakeInput())
 
+        self.assertEqual(starting_momentum, RUN_ATTACK_MOMENTUM_FRAMES)
+        self.assertEqual(
+            movement.run_attack_momentum_speed,
+            max(owner.speed, owner.run_speed * RUN_ATTACK_MOMENTUM_SPEED_SCALE),
+        )
         self.assertTrue(moved)
         self.assertGreater(owner.x, 300)
         self.assertEqual(
@@ -100,6 +106,16 @@ class PlayerMovementTests(unittest.TestCase):
         movement.update_movement(owner, FakeInput())
 
         self.assertFalse(movement.can_start_run_attack())
+        self.assertEqual(movement.run_distance, 0)
+
+    def test_run_attack_records_run_distance_before_consuming_it(self):
+        owner = FakeOwner()
+        movement = PlayerMovement(owner.speed)
+        movement.run_distance = 180
+
+        movement.start_run_attack_momentum(owner)
+
+        self.assertEqual(movement.last_run_attack_distance, 180)
         self.assertEqual(movement.run_distance, 0)
 
 

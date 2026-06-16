@@ -1,4 +1,11 @@
-from game.settings import WORLD_WIDTH, RUN_DOUBLE_TAP_TIME, FPS, RUN_ATTACK_REQUIRED_DISTANCE
+from game.settings import (
+    WORLD_WIDTH,
+    RUN_DOUBLE_TAP_TIME,
+    FPS,
+    RUN_ATTACK_REQUIRED_DISTANCE,
+    RUN_ATTACK_MOMENTUM_FRAMES,
+    RUN_ATTACK_MOMENTUM_SPEED_SCALE,
+)
 
 
 class PlayerMovement:
@@ -9,6 +16,7 @@ class PlayerMovement:
         self.run_tap_remaining = 0
         self.run_tap_window = max(1, int(RUN_DOUBLE_TAP_TIME * FPS))
         self.run_distance = 0
+        self.last_run_attack_distance = 0
         self.run_attack_required_distance = RUN_ATTACK_REQUIRED_DISTANCE
         self.left_pressed = False
         self.right_pressed = False
@@ -107,8 +115,12 @@ class PlayerMovement:
             direction = 1 if owner.facing_right else -1
 
         self.run_attack_momentum_direction = direction
-        self.run_attack_momentum_remaining = 30
-        self.run_attack_momentum_speed = max(owner.speed, owner.run_speed * 0.75)
+        self.run_attack_momentum_remaining = RUN_ATTACK_MOMENTUM_FRAMES
+        self.run_attack_momentum_speed = max(
+            owner.speed,
+            owner.run_speed * RUN_ATTACK_MOMENTUM_SPEED_SCALE,
+        )
+        self.last_run_attack_distance = self.run_distance
         self.run_distance = 0
 
     def update_run_attack_momentum(self, owner):

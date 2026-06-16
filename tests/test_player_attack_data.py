@@ -3,6 +3,11 @@ import unittest
 from game.entities.attack_data import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.entities.player_combat_controller import PlayerCombatController
 from game.ui.score_manager import ScoreManager
+from game.settings import (
+    RUN_ATTACK_FULL_POWER_DISTANCE,
+    RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
+    RUN_ATTACK_LANDING_RECOVERY,
+)
 
 
 class FakeMovement:
@@ -11,6 +16,7 @@ class FakeMovement:
         self.is_jumping = False
         self.run_attack_momentum_started = False
         self.can_run_attack = False
+        self.last_run_attack_distance = 0
 
     def can_start_run_attack(self):
         return self.can_run_attack
@@ -82,6 +88,18 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["RUN_ATTACK"].duration)
         self.assertTrue(owner.movement.run_attack_momentum_started)
 
+    def test_running_attack_has_arcade_style_timing_and_landing_recovery(self):
+        attack = PLAYER_ATTACKS["RUN_ATTACK"]
+
+        self.assertEqual(attack.windup, 4)
+        self.assertEqual(attack.active, 10)
+        self.assertEqual(attack.recovery, 4)
+        self.assertEqual(attack.duration, attack.phase.total_duration)
+        self.assertEqual(attack.action_lock, RUN_ATTACK_LANDING_RECOVERY)
+
+    def test_running_attack_has_counter_hurtbox_for_committed_flying_kick(self):
+        self.assertTrue(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtboxes)
+
     def test_running_attack_requires_enough_run_distance(self):
         owner = FakeOwner()
         owner.movement.is_running = True
@@ -93,6 +111,20 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(owner.state, owner.ATTACK_1)
         self.assertEqual(combat.current_attack_name, owner.ATTACK_1)
         self.assertFalse(owner.movement.run_attack_momentum_started)
+
+    def test_running_attack_knockback_scales_with_run_distance(self):
+        owner = FakeOwner()
+        owner.movement.can_run_attack = True
+        owner.movement.last_run_attack_distance = RUN_ATTACK_FULL_POWER_DISTANCE
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+
+        self.assertEqual(
+            combat.get_attack_knockback_velocity(owner),
+            PLAYER_ATTACKS["RUN_ATTACK"].knockback_velocity
+            + RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
+        )
 
     def test_running_attack_has_stronger_knockback_than_normal_punch(self):
         self.assertGreater(

@@ -1,4 +1,10 @@
 from game.settings import FIST_DAMAGE
+from game.settings import (
+    RUN_ATTACK_FULL_POWER_DISTANCE,
+    RUN_ATTACK_REQUIRED_DISTANCE,
+    RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
+    RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
+)
 from game.entities.attack_data import (
     PLAYER_CLASH_RECOVERY,
     PLAYER_COMBO_WINDOW,
@@ -228,11 +234,32 @@ class PlayerCombatController:
 
     def get_attack_knockback_velocity(self, owner):
         attack_data = self.get_current_or_state_attack_data(owner)
-        return attack_data.knockback_velocity if attack_data else 10
+        if not attack_data:
+            return 10
+        return int(attack_data.knockback_velocity + self.get_run_attack_power_bonus(
+            owner,
+            RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
+        ))
 
     def get_attack_enemy_hit_stun_duration(self, owner):
         attack_data = self.get_current_or_state_attack_data(owner)
-        return attack_data.enemy_hit_stun_duration if attack_data else 15
+        if not attack_data:
+            return 15
+        return int(attack_data.enemy_hit_stun_duration + self.get_run_attack_power_bonus(
+            owner,
+            RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
+        ))
+
+    def get_run_attack_power_bonus(self, owner, full_power_bonus):
+        if self.current_attack_name != owner.RUN_ATTACK:
+            return 0
+
+        movement = getattr(owner, "movement", None)
+        run_distance = getattr(movement, "last_run_attack_distance", 0)
+        bonus_distance = max(1, RUN_ATTACK_FULL_POWER_DISTANCE - RUN_ATTACK_REQUIRED_DISTANCE)
+        bonus_ratio = (run_distance - RUN_ATTACK_REQUIRED_DISTANCE) / bonus_distance
+        bonus_ratio = max(0, min(1, bonus_ratio))
+        return full_power_bonus * bonus_ratio
 
     def get_current_or_state_attack_data(self, owner):
         if self.attack_controller.current_attack:
