@@ -73,7 +73,7 @@ def handle_player_attack_collision(game_state):
                 FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), YELLOW_COLOR)
             )
             game_state.score_manager.register_hit()
-            player.combat.attack_connected = True
+            player.combat.mark_attack_connected()
             if enemy.state == enemy.DEAD:
                 player.grab.grabbed_enemy = None
         return
@@ -118,7 +118,7 @@ def handle_player_attack_collision(game_state):
             enemy_rect = enemy.get_logical_rect()
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
-            player.combat.attack_connected = True
+            player.combat.mark_attack_connected()
             if enemy.health.hp >0 and enemy.health.max_hp >= 200:
                 heavy_hit_shake(game_state)
             if isinstance(enemy, BossEnemy):
@@ -133,7 +133,7 @@ def handle_player_attack_collision(game_state):
             continue
         if attack_rect.colliderect(obj.get_rect()):
             obj.take_damage(player.combat.get_attack_damage(player))
-            player.combat.attack_connected = True
+            player.combat.mark_attack_connected()
             break
 
 def handle_player_projectile_collision(game_state):

@@ -4,9 +4,9 @@ from game.entities.attack_data import (
     PLAYER_CLASH_RECOVERY,
     PLAYER_COMBO_WINDOW,
     PLAYER_COUNTER_HIT_STUN_BONUS,
-    PLAYER_THIRD_HIT_RECOVERY,
     PlayerAttackData,
 )
+from game.entities.attack_controller import AttackController
 
 # Backward-compatible names while the combat system is migrated in small steps.
 PlayerMoveData = PlayerAttackData
@@ -15,10 +15,8 @@ PLAYER_MOVES = PLAYER_ATTACKS
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombat:
     def __init__(self):
-        self.is_attacking = False
-        self.attack_remaining = 0
+        self.attack_controller = AttackController()
         self.attack_duration = PLAYER_ATTACKS["ATTACK_1"].duration
-        self.attack_connected = False
 
         # classic combo system
         # J punch 1, J punch 2, J punch 3
@@ -34,6 +32,44 @@ class PlayerCombat:
         self.clash_recovery_duration = PLAYER_CLASH_RECOVERY
         # add a short recovery after a knee so the player cannot mash knee as freely.
         self.grab_knee_recovery_duration = 6
+
+    @property
+    def is_attacking(self):
+        return self.attack_controller.is_attacking
+
+    @is_attacking.setter
+    def is_attacking(self, value):
+        if not value:
+            self.attack_controller.cancel_attack()
+
+    @property
+    def attack_timer(self):
+        return self.attack_controller.attack_timer
+
+    @property
+    def attack_remaining(self):
+        return self.attack_controller.attack_remaining
+
+    @attack_remaining.setter
+    def attack_remaining(self, value):
+        # Kept only for old callers during the migration.
+        if value <= 0:
+            self.attack_controller.cancel_attack()
+
+    @property
+    def attack_connected(self):
+        return self.attack_controller.attack_connected
+
+    @attack_connected.setter
+    def attack_connected(self, value):
+        self.attack_controller.attack_connected = value
+
+    @property
+    def current_attack_name(self):
+        return self.attack_controller.current_attack_name
+
+    def mark_attack_connected(self):
+        self.attack_controller.mark_connected()
 
     # Avoiding the combo step advances when the player presses attack inside the combo window, 
     # even if the previous punch hit nothing. 
@@ -61,25 +97,23 @@ class PlayerCombat:
             self.combo_step = 0
 
         if self.is_attacking:
-            self.attack_remaining -= 1
-            if self.attack_remaining <= 0:
-                finished_state = owner.state
+            if self.attack_controller.update_attack_timer():
+                finished_attack_name, finished_move, attack_connected = (
+                    self.attack_controller.finish_attack()
+                )
 
                 # expected behavior:
                 # Punch hits enemy -> combo can continue
                 # Punch misses enemy -> combo resets
                 # Player cannot build third hit by punching empty space
                 attack_missed = (
-                    finished_state in [owner.ATTACK_1, owner.ATTACK_2, owner.ATTACK_3]
-                    and not self.attack_connected
+                    finished_attack_name in [owner.ATTACK_1, owner.ATTACK_2, owner.ATTACK_3]
+                    and not attack_connected
                 )
                 if attack_missed:
                     self.combo_window_remaining = 0
                     self.combo_step = 0
 
-                self.is_attacking = False
-
-                finished_move = PLAYER_MOVES.get(finished_state)
                 if finished_move and finished_move.action_lock > 0:
                     self.action_lock_remaining = finished_move.action_lock
                     self.combo_window_remaining = 0
@@ -94,11 +128,8 @@ class PlayerCombat:
         if self.action_lock_remaining > 0:
             return
 
-        self.is_attacking = True
-        self.attack_connected = False
-
         if owner.movement.is_running:
-            self.attack_remaining = PLAYER_ATTACKS["RUN_ATTACK"].duration
+            self.attack_controller.start_attack(owner.RUN_ATTACK, PLAYER_ATTACKS["RUN_ATTACK"])
             self.combo_window_remaining = 0
             self.combo_step = 0
             owner.state_machine.change_to(owner, owner.RUN_ATTACK)
@@ -118,7 +149,7 @@ class PlayerCombat:
             owner.state_machine.change_to(owner, owner.ATTACK_3)
 
         move_data = PLAYER_MOVES.get(owner.state)
-        self.attack_remaining = move_data.duration if move_data else self.attack_duration
+        self.attack_controller.start_attack(owner.state, move_data)
         self.combo_window_remaining = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
 
     def start_jump_attack(self, owner):
@@ -127,9 +158,7 @@ class PlayerCombat:
         if self.is_attacking:
             return
 
-        self.is_attacking = True
-        self.attack_remaining = PLAYER_ATTACKS["JUMP_ATTACK"].duration
-        self.attack_connected = False
+        self.attack_controller.start_attack(owner.JUMP_ATTACK, PLAYER_ATTACKS["JUMP_ATTACK"])
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
     def start_grab_knee_attack(self, owner):
@@ -138,10 +167,8 @@ class PlayerCombat:
         if self.is_attacking:
             return
 
-        self.is_attacking = True
-        self.attack_remaining = PLAYER_ATTACKS["GRAB_KNEE"].duration
+        self.attack_controller.start_attack(owner.GRAB_KNEE, PLAYER_ATTACKS["GRAB_KNEE"])
         owner.grab.grab_knee_remaining = owner.grab.grab_knee_duration
-        self.attack_connected = False
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
     def start_clash_recovery(self, owner):
@@ -151,9 +178,7 @@ class PlayerCombat:
 
     # enemy hits should fully cancel the player’s combo.
     def cancel_attack(self):
-        self.is_attacking = False
-        self.attack_remaining = 0
-        self.attack_connected = False
+        self.attack_controller.cancel_attack()
         self.combo_step = 0
         self.combo_window_remaining = 0
         self.action_lock_remaining = 0

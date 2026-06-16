@@ -53,6 +53,10 @@ class EnemyAttackData:
     def total_duration(self):
         return self.phase.total_duration
 
+    @property
+    def duration(self):
+        return self.total_duration
+
 
 PLAYER_COUNTER_HIT_STUN_BONUS = 10
 PLAYER_COMBO_WINDOW = 30

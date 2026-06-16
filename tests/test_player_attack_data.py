@@ -22,6 +22,7 @@ class FakeOwner:
     ATTACK_3 = "ATTACK_3"
     RUN_ATTACK = "RUN_ATTACK"
     JUMP_ATTACK = "JUMP_ATTACK"
+    DEAD = "DEAD"
 
     def __init__(self):
         self.state = self.IDLE
@@ -37,6 +38,8 @@ class PlayerAttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK_1)
+        self.assertEqual(combat.current_attack_name, owner.ATTACK_1)
+        self.assertEqual(combat.attack_timer, 0)
         self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["ATTACK_1"].duration)
 
     def test_running_attack_duration_comes_from_attack_data(self):
@@ -47,6 +50,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.RUN_ATTACK)
+        self.assertEqual(combat.current_attack_name, owner.RUN_ATTACK)
         self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["RUN_ATTACK"].duration)
 
     def test_jump_attack_duration_comes_from_attack_data(self):
@@ -57,7 +61,25 @@ class PlayerAttackDataTests(unittest.TestCase):
         combat.start_jump_attack(owner)
 
         self.assertEqual(owner.state, owner.JUMP_ATTACK)
+        self.assertEqual(combat.current_attack_name, owner.JUMP_ATTACK)
         self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["JUMP_ATTACK"].duration)
+
+    def test_attack_timer_counts_up_until_attack_finishes(self):
+        owner = FakeOwner()
+        combat = PlayerCombat()
+
+        combat.start_attack(owner)
+        combat.update_timers(owner)
+
+        self.assertEqual(combat.attack_timer, 1)
+        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["ATTACK_1"].duration - 1)
+
+        for _ in range(PLAYER_ATTACKS["ATTACK_1"].duration - 1):
+            combat.update_timers(owner)
+
+        self.assertFalse(combat.is_attacking)
+        self.assertEqual(combat.attack_timer, 0)
+        self.assertEqual(owner.state, owner.IDLE)
 
 
 if __name__ == "__main__":
