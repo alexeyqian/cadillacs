@@ -2,7 +2,7 @@ import pygame
 from game.entities.combat_geometry import combat_box_to_world_rect
 
 
-class PlayerHitboxes:
+class PlayerGeometry:
     def get_frame_rect(self, owner):
         frame = owner.animation_controller.get_current_frame()
         if not frame:

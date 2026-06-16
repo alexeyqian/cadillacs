@@ -178,7 +178,7 @@ def main_draw_ui(game_state):
             midtop=(screen.get_width() // 2, hp_y)))
 
     # debug UI
-    player_feet_x, player_feet_y = player.get_logical_rect().midbottom
+    player_feet_x, player_feet_y = player.get_frame_rect().midbottom
     debug_y = max(hp_y + hp_bar_h, hp_text_rect.bottom) + row_gap
     debug_lines = [
         f"Stage: {level.stage_name} | Camera x:{int(camera.x)} | Wave:{level.current_wave + 1} | Enemies:{len(enemies)}",
@@ -332,7 +332,7 @@ def draw_player_debug_boxes(screen, level, camera, player):
         return
 
     collision_rect = player.get_collision_rect()
-    body_rect = player.get_logical_rect()
+    body_rect = player.get_frame_rect()
     hurt_rect = player.get_hurt_rect()
     counter_hurt_rect = player.get_counter_hurt_rect()
     attack_rect = player.get_attack_rect()

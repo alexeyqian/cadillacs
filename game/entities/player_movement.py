@@ -118,7 +118,7 @@ class PlayerMovement:
             self.vx = 0
             self.vy = 0
             self.is_jumping = False
-            owner.jump_attack_pressed = False
+            owner.input_state.jump_attack_pressed = False
 
             if owner.state in [owner.JUMP, owner.JUMP_ATTACK]:
                 owner.state_machine.change_to(owner, owner.IDLE)

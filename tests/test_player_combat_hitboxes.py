@@ -2,7 +2,7 @@ import unittest
 
 from game.entities.attack_data import PLAYER_ATTACKS
 from game.entities.player_combat_controller import PlayerCombatController
-from game.entities.player_hitboxes import PlayerHitboxes
+from game.entities.player_geometry import PlayerGeometry
 
 
 class FakeMovement:
@@ -47,7 +47,7 @@ class FakeOwner:
 class PlayerCombatControllerHitboxTests(unittest.TestCase):
     def test_animation_attack_rect_is_ignored_during_windup(self):
         owner = FakeOwner()
-        hitboxes = PlayerHitboxes()
+        hitboxes = PlayerGeometry()
 
         owner.combat.start_attack(owner)
 
@@ -55,7 +55,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
     def test_attack_rect_comes_from_attack_data_during_active_window(self):
         owner = FakeOwner()
-        hitboxes = PlayerHitboxes()
+        hitboxes = PlayerGeometry()
         attack_data = PLAYER_ATTACKS["ATTACK_1"]
 
         owner.combat.start_attack(owner)
@@ -72,7 +72,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
     def test_attack_rect_mirrors_around_player_anchor_when_facing_left(self):
         owner = FakeOwner()
         owner.facing_right = False
-        hitboxes = PlayerHitboxes()
+        hitboxes = PlayerGeometry()
         attack_data = PLAYER_ATTACKS["ATTACK_1"]
 
         owner.combat.start_attack(owner)
@@ -88,7 +88,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
     def test_counter_hurtbox_uses_attack_data_active_window(self):
         owner = FakeOwner()
-        hitboxes = PlayerHitboxes()
+        hitboxes = PlayerGeometry()
         attack_data = PLAYER_ATTACKS["ATTACK_1"]
 
         owner.combat.start_attack(owner)

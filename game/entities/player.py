@@ -1,18 +1,19 @@
 from game.settings import *
 from game.entities.player_config import get_player_config
-from game.entities.player_hitboxes import PlayerHitboxes
+from game.entities.player_geometry import PlayerGeometry
 from game.entities.player_health import PlayerHealth
 from game.entities.player_weapon_slot import PlayerWeaponSlot
 from game.entities.player_movement import PlayerMovement
 from game.entities.player_combat_controller import PlayerCombatController
 from game.entities.player_grab_controller import PlayerGrabController
 from game.entities.player_animation_controller import PlayerAnimationController
-from game.entities.player_render import PlayerRenderer
+from game.entities.player_renderer import PlayerRenderer
 from game.entities.player_action_controller import PlayerActionController
 from game.entities.player_state_resolver import PlayerStateResolver
 from game.entities.player_lifecycle_controller import PlayerLifecycleController
 from game.entities.player_events import PlayerEvents
 from game.entities.player_state_machine import PlayerStateMachine
+from game.entities.player_input_state import PlayerInputState
 
 class Player:
     IDLE = "IDLE"
@@ -55,8 +56,7 @@ class Player:
         # Hold J: one punch only
         # Press J, release, press J: combo advances
         # Mashing J: combo still works, but requires timing/input
-        self.attack_pressed = False
-        self.jump_attack_pressed = False
+        self.input_state = PlayerInputState()
 
         # Components
         self.movement = PlayerMovement(self.speed)
@@ -68,7 +68,7 @@ class Player:
         self.lifecycle = PlayerLifecycleController(self.x, self.y)
         self.weapon_slot = PlayerWeaponSlot()
         self.events = PlayerEvents()
-        self.hitboxes = PlayerHitboxes()
+        self.geometry = PlayerGeometry()
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 
@@ -109,7 +109,6 @@ class Player:
         self.grab.update_grabbed_enemy_position(self)
         self.animation_controller.update(self)
 
-
     # Timers
     def update_timers(self):
         self.combat.update_timers(self)
@@ -142,22 +141,18 @@ class Player:
         return self.get_frame_rect().bottom
 
     def get_frame_rect(self):
-        return self.hitboxes.get_frame_rect(self)
-
-    # TODO: deprecated
-    def get_logical_rect(self):
-        return self.get_frame_rect()
+        return self.geometry.get_frame_rect(self)
 
     def get_hurt_rect(self):
-        return self.hitboxes.get_hurt_rect(self)
+        return self.geometry.get_hurt_rect(self)
 
     def get_counter_hurt_rect(self):
-        return self.hitboxes.get_counter_hurt_rect(self)
+        return self.geometry.get_counter_hurt_rect(self)
 
     # on bottom center
     def get_collision_rect(self):
-        return self.hitboxes.get_collision_rect(self)
+        return self.geometry.get_collision_rect(self)
 
     # hit box
     def get_attack_rect(self):
-        return self.hitboxes.get_attack_rect(self)
+        return self.geometry.get_attack_rect(self)
