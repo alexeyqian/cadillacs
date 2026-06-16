@@ -9,10 +9,10 @@ class EnemyReactionController:
         self.release_attack_slot(owner)
 
     # temp for renaming
-    def take_damage(self, owner, damage, attacker_x):
-        self.apply_hit(owner, damage, attacker_x)
+    def take_damage(self, owner, damage, attacker_x, knockback_velocity=10):
+        self.apply_hit(owner, damage, attacker_x, knockback_velocity)
 
-    def apply_hit(self, owner, damage, attacker_x):
+    def apply_hit(self, owner, damage, attacker_x, knockback_velocity=10):
         if owner.state == owner.DEAD:
             return
 
@@ -42,9 +42,9 @@ class EnemyReactionController:
             self.release_attack_slot(owner)
 
             if attacker_x < owner.x:
-                self.set_knockback_velocity(owner, 10)
+                self.set_knockback_velocity(owner, knockback_velocity)
             else:
-                self.set_knockback_velocity(owner, -10)
+                self.set_knockback_velocity(owner, -knockback_velocity)
             return
 
         if self.is_stun_resistant(owner):

@@ -7,7 +7,11 @@ from game.systems.combat_system import handle_player_attack_collision
 
 
 class FakeMovement:
-    is_running = False
+    def __init__(self):
+        self.is_running = False
+
+    def start_run_attack_momentum(self, owner):
+        pass
 
 
 class FakeStateMachine:
@@ -49,6 +53,13 @@ class FakePlayer:
             self.combat.update_timers(self)
         self.grab = type("FakeGrab", (), {"grabbed_enemy": None})()
 
+    def start_running_attack(self):
+        self.combat.cancel_attack()
+        self.movement.is_running = True
+        self.combat.start_attack(self)
+        while not self.combat.is_attack_active():
+            self.combat.update_timers(self)
+
     def get_attack_rect(self):
         return pygame.Rect(100, 100, 100, 100)
 
@@ -72,6 +83,7 @@ class FakeEnemy:
         self.attack_lane_reach = 0
         self.health = FakeHealth()
         self.damage_taken = 0
+        self.knockback_velocity_taken = None
 
     def get_attack_rect(self):
         return None
@@ -82,8 +94,9 @@ class FakeEnemy:
     def get_logical_rect(self):
         return self.get_hurt_rect()
 
-    def take_damage(self, damage, attacker_x):
+    def take_damage(self, damage, attacker_x, knockback_velocity=10):
         self.damage_taken += damage
+        self.knockback_velocity_taken = knockback_velocity
 
 
 class FakeLevel:
@@ -128,6 +141,20 @@ class PlayerAttackCollisionTests(unittest.TestCase):
         self.assertGreater(game_state.enemies[0].damage_taken, 0)
         self.assertGreater(game_state.enemies[1].damage_taken, 0)
         self.assertEqual(game_state.score_manager.hit_count, 2)
+
+    def test_run_attack_uses_stronger_enemy_knockback(self):
+        game_state = FakeGameState()
+        normal_knockback = game_state.player.combat.get_attack_knockback_velocity(
+            game_state.player
+        )
+        game_state.player.start_running_attack()
+
+        handle_player_attack_collision(game_state)
+
+        self.assertGreater(
+            game_state.enemies[0].knockback_velocity_taken,
+            normal_knockback,
+        )
 
 
 if __name__ == "__main__":

@@ -282,6 +282,20 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.state, enemy.HIT)
         self.assertFalse(enemy.attack_controller.is_attacking)
 
+    def test_enemy_reaction_uses_custom_knockback_velocity(self):
+        enemy = FakeEnemy()
+        enemy.x = 100
+
+        EnemyReactionController().take_damage(
+            enemy,
+            10,
+            attacker_x=50,
+            knockback_velocity=18,
+        )
+
+        self.assertEqual(enemy.state, enemy.HIT)
+        self.assertEqual(enemy.knockback_velocity, 18)
+
     def test_repeated_hits_activate_stun_resistance_and_clear_hit_stun(self):
         enemy = FakeEnemy()
         reactions = EnemyReactionController()

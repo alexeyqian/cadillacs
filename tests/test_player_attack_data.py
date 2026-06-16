@@ -77,6 +77,12 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["RUN_ATTACK"].duration)
         self.assertTrue(owner.movement.run_attack_momentum_started)
 
+    def test_running_attack_has_stronger_knockback_than_normal_punch(self):
+        self.assertGreater(
+            PLAYER_ATTACKS["RUN_ATTACK"].knockback_velocity,
+            PLAYER_ATTACKS["ATTACK_1"].knockback_velocity,
+        )
+
     def test_jump_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         owner.movement.is_jumping = True

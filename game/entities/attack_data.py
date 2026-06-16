@@ -34,6 +34,7 @@ class PlayerAttackData:
     action_lock: int = 0
     lane_reach: int = 0
     counter_hit_stun_bonus: int = 0
+    knockback_velocity: int = 10
 
     @property
     def windup(self):
@@ -130,6 +131,7 @@ PLAYER_ATTACKS = {
         duration=18,
         phase=AttackPhaseData(windup=8, active=6, recovery=4),
         hitboxes=(AttackHitboxData(x=40, y=-220, width=160, height=80),),
+        knockback_velocity=18,
     ),
     "JUMP_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,

@@ -81,7 +81,7 @@ class PlayerMovement:
             direction = 1 if owner.facing_right else -1
 
         self.run_attack_momentum_direction = direction
-        self.run_attack_momentum_remaining = 20
+        self.run_attack_momentum_remaining = 30
         self.run_attack_momentum_speed = max(owner.speed, owner.run_speed * 0.75)
 
     def update_run_attack_momentum(self, owner):

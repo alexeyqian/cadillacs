@@ -164,7 +164,7 @@ class BossEnemy(Enemy):
             lane_y=self.y,
         )
 
-    def take_damage(self, damage, attacker_x):
+    def take_damage(self, damage, attacker_x, knockback_velocity=3):
         if self.state == self.DEAD:
             return
 
@@ -181,10 +181,14 @@ class BossEnemy(Enemy):
             self.state = self.HIT
 
             # boss barely moves when hit
+            boss_knockback_velocity = 3
+            if knockback_velocity > 10:
+                boss_knockback_velocity = 5
+
             if attacker_x < self.x:
-                self.lifecycle_state.knockback_velocity = 3
+                self.lifecycle_state.knockback_velocity = boss_knockback_velocity
             else:
-                self.lifecycle_state.knockback_velocity = -3
+                self.lifecycle_state.knockback_velocity = -boss_knockback_velocity
 
         if died:
             self.state = self.DEAD
