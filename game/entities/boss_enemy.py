@@ -30,6 +30,9 @@ class BossEnemy(Enemy):
         # properties special to boss enemy
         self.special_attack_cooldown_duration = 300
         self.special_attack_cooldown = self.special_attack_cooldown_duration
+        self.special_attack_warning_duration = BOSS_SPECIAL_ATTACK_WARNING_DURATION
+        self.special_attack_warning_remaining = 0
+        self.special_attack_warning_text = ""
         self.phase = 1
         self.phase_message_remaining = 0
         self.phase_message = ""
@@ -44,6 +47,10 @@ class BossEnemy(Enemy):
         self.pending_projectile = None
 
     def update(self, level, player, enemies):
+        if self.special_attack_warning_remaining > 0:
+            self.update_during_special_attack_warning(player)
+            return
+
         super().update(level, player, enemies)
 
         if self.state == self.DEAD:
@@ -55,11 +62,55 @@ class BossEnemy(Enemy):
         if self.phase_message_remaining > 0:
             self.phase_message_remaining -= 1
 
+        self.update_special_attack(player)
+
+    def update_during_special_attack_warning(self, player):
+        if self.update_special_states():
+            return
+
+        self.update_timers()
+
+        if self.update_hit_state():
+            return
+
+        self.apply_knockback()
+        self.state = self.IDLE
+        self.update_phase()
+
+        if self.phase_message_remaining > 0:
+            self.phase_message_remaining -= 1
+
+        self.update_special_attack(player)
+        self.update_animation()
+
+    def update_special_attack(self, player):
+        if self.special_attack_warning_remaining > 0:
+            self.face_player(player)
+            self.special_attack_warning_remaining -= 1
+
+            if self.special_attack_warning_remaining <= 0:
+                self.perform_special_attack(player)
+                self.special_attack_cooldown = self.special_attack_cooldown_duration
+            return
+
         if self.special_attack_cooldown > 0:
             self.special_attack_cooldown -= 1
         else:
-            self.perform_special_attack(player)
-            self.special_attack_cooldown = self.special_attack_cooldown_duration
+            self.start_special_attack_warning()
+
+    def start_special_attack_warning(self):
+        self.special_attack_warning_remaining = self.special_attack_warning_duration
+        self.special_attack_warning_text = "BOSS SPECIAL"
+
+    def cancel_special_attack_warning(self):
+        if self.special_attack_warning_remaining <= 0:
+            return
+
+        self.special_attack_warning_remaining = 0
+        self.special_attack_cooldown = max(
+            self.special_attack_cooldown,
+            self.special_attack_cooldown_duration // 2
+        )
 
     def draw(self, screen, camera_x):
         super().draw(screen, camera_x)
@@ -84,6 +135,11 @@ class BossEnemy(Enemy):
             warning = font.render(self.phase_message, True, (255, 0, 0))
             screen.blit(warning, (screen_x - 60, self.y - 70))
 
+        if self.special_attack_warning_remaining > 0:
+            special_warning = font.render(
+                self.special_attack_warning_text, True, ORANGE_COLOR)
+            screen.blit(special_warning, (screen_x - 72, self.y - 96))
+
     def perform_special_attack(self, player):
         direction = 1
         if player.x < self.x:
@@ -105,6 +161,7 @@ class BossEnemy(Enemy):
             width=30,
             height=15,
             shape="ellipse",
+            lane_y=self.y,
         )
 
     def take_damage(self, damage, attacker_x):
@@ -119,6 +176,7 @@ class BossEnemy(Enemy):
             should_flinch = True
 
         if should_flinch:
+            self.cancel_special_attack_warning()
             self.hit_stun_remaining = 8
             self.state = self.HIT
 
