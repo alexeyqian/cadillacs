@@ -289,3 +289,6 @@ takeoff -> feet/floor contact
 airborne -> pelvis center projected down
 landing -> feet/floor contact
 On takeoff and landing frames:
+
+make combat timing data independent from sprite frames.
+So the animation becomes the “skin”, while the attack definition becomes the “gameplay truth”.

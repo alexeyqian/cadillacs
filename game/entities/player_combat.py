@@ -1,36 +1,23 @@
-from dataclasses import dataclass
-from game.settings import FIST_DAMAGE, PLAYER_GRAB_KNEE_DAMAGE
+from game.settings import FIST_DAMAGE
+from game.entities.attack_data import (
+    PLAYER_ATTACKS,
+    PLAYER_CLASH_RECOVERY,
+    PLAYER_COMBO_WINDOW,
+    PLAYER_COUNTER_HIT_STUN_BONUS,
+    PLAYER_THIRD_HIT_RECOVERY,
+    PlayerAttackData,
+)
 
-PLAYER_COUNTER_HIT_STUN_BONUS = 10
-PLAYER_COMBO_WINDOW = 30
-PLAYER_THIRD_HIT_RECOVERY = 10
-PLAYER_CLASH_RECOVERY = 8
-@dataclass(frozen=True)
-class PlayerMoveData:
-    damage: int
-    combo_window: int = PLAYER_COMBO_WINDOW
-    action_lock: int = 0
-    lane_reach: int = 0
-    counter_hit_stun_bonus: int = 0
-
-PLAYER_MOVES = {
-    "ATTACK_1": PlayerMoveData(damage=FIST_DAMAGE - 2),
-    "ATTACK_2": PlayerMoveData(damage=FIST_DAMAGE),
-    "ATTACK_3": PlayerMoveData(damage=FIST_DAMAGE + 4,
-                combo_window=0,
-                action_lock=PLAYER_THIRD_HIT_RECOVERY),
-    "RUN_ATTACK": PlayerMoveData(damage=FIST_DAMAGE),
-    "JUMP_ATTACK": PlayerMoveData(damage=FIST_DAMAGE),
-    # Grab knee is safe once a grab succeeds, so keep it below combo finisher damage.
-    "GRAB_KNEE": PlayerMoveData(damage=FIST_DAMAGE),
-}
+# Backward-compatible names while the combat system is migrated in small steps.
+PlayerMoveData = PlayerAttackData
+PLAYER_MOVES = PLAYER_ATTACKS
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombat:
     def __init__(self):
         self.is_attacking = False
         self.attack_remaining = 0
-        self.attack_duration = 12
+        self.attack_duration = PLAYER_ATTACKS["ATTACK_1"].duration
         self.attack_connected = False
 
         # classic combo system
@@ -108,11 +95,10 @@ class PlayerCombat:
             return
 
         self.is_attacking = True
-        self.attack_remaining = self.attack_duration
         self.attack_connected = False
 
         if owner.movement.is_running:
-            self.attack_remaining = owner.run_attack_duration
+            self.attack_remaining = PLAYER_ATTACKS["RUN_ATTACK"].duration
             self.combo_window_remaining = 0
             self.combo_step = 0
             owner.state_machine.change_to(owner, owner.RUN_ATTACK)
@@ -132,6 +118,7 @@ class PlayerCombat:
             owner.state_machine.change_to(owner, owner.ATTACK_3)
 
         move_data = PLAYER_MOVES.get(owner.state)
+        self.attack_remaining = move_data.duration if move_data else self.attack_duration
         self.combo_window_remaining = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
 
     def start_jump_attack(self, owner):
@@ -141,7 +128,7 @@ class PlayerCombat:
             return
 
         self.is_attacking = True
-        self.attack_remaining = owner.jump_attack_duration
+        self.attack_remaining = PLAYER_ATTACKS["JUMP_ATTACK"].duration
         self.attack_connected = False
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
@@ -152,7 +139,7 @@ class PlayerCombat:
             return
 
         self.is_attacking = True
-        self.attack_remaining = owner.grab.grab_knee_duration
+        self.attack_remaining = PLAYER_ATTACKS["GRAB_KNEE"].duration
         owner.grab.grab_knee_remaining = owner.grab.grab_knee_duration
         self.attack_connected = False
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)

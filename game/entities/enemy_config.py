@@ -2,17 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from game.settings import *
-
-@dataclass(frozen=True)
-class EnemyAttackData:
-    damage: float = ENEMY_ATTACK_DAMAGE
-    delay: int = ENEMY_ATTACK_DELAY
-    cooldown: int = ENEMY_ATTACK_COOLDOWN
-    windup: int = ENEMY_ATTACK_WINDUP
-    active: int = ENEMY_ATTACK_ACTIVE
-    recovery: int = ENEMY_ATTACK_RECOVERY
-    clash_recovery_duration: int = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
-    clash_cooldown_duration: int = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
+from game.entities.attack_data import AttackPhaseData, EnemyAttackData
 
 @dataclass(frozen=True)
 class EnemyConfig:
@@ -58,9 +48,7 @@ ENEMY_CONFIGS = {
         attack=EnemyAttackData(
             damage=int(ENEMY_ATTACK_DAMAGE * 1.2),
             delay=12,
-            windup=16,
-            active=8,
-            recovery=22,
+            phase=AttackPhaseData(windup=16, active=8, recovery=22),
         ),
         score_points=int(ENEMY_SCORE_POINTS*1.2),
     ),
@@ -74,9 +62,7 @@ ENEMY_CONFIGS = {
         attack=EnemyAttackData(
             damage=ENEMY_ATTACK_DAMAGE * 2,
             delay=35,
-            windup=26,
-            active=10,
-            recovery=30,
+            phase=AttackPhaseData(windup=26, active=10, recovery=30),
         ),
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         # So Black Elmer only flinches from the heavy punch
@@ -96,9 +82,7 @@ ENEMY_CONFIGS = {
             damage=RAPTOR_ENEMY_ATTACK_DAMAGE,
             delay=14,
             cooldown=60,
-            windup=18,
-            active=8,
-            recovery=22,
+            phase=AttackPhaseData(windup=18, active=8, recovery=22),
         ),
         score_points=int(ENEMY_SCORE_POINTS * 2),
     ),
@@ -113,9 +97,7 @@ ENEMY_CONFIGS = {
             damage=RANGED_ENEMY_ATTACK_DAMAGE,
             delay=30,
             cooldown=90,
-            windup=32,
-            active=4,
-            recovery=40,
+            phase=AttackPhaseData(windup=32, active=4, recovery=40),
         ),
         score_points=int(ENEMY_SCORE_POINTS * 1.5),
     ),
@@ -130,9 +112,7 @@ ENEMY_CONFIGS = {
             damage=ENEMY_ATTACK_DAMAGE * 3,
             delay=30,
             cooldown=60,
-            windup=30,
-            active=12,
-            recovery=35,
+            phase=AttackPhaseData(windup=30, active=12, recovery=35),
         ),
         flinch_damage_threshold=FIST_DAMAGE + 4,
         collision_box_w=int(ENEMY_COLLISION_W * 2),

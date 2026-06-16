@@ -13,6 +13,7 @@ from game.entities.player_state_resolver import PlayerStateResolver
 from game.entities.player_lifecycle import PlayerLifecycle
 from game.entities.player_events import PlayerEvents
 from game.entities.player_state_machine import PlayerStateMachine
+from game.entities.attack_data import PLAYER_ATTACKS
 
 class Player:
     IDLE = "IDLE"
@@ -52,9 +53,9 @@ class Player:
         # Press J, release, press J: combo advances
         # Mashing J: combo still works, but requires timing/input
         self.attack_pressed = False
-        self.run_attack_duration = 18
+        self.run_attack_duration = PLAYER_ATTACKS["RUN_ATTACK"].duration
         self.jump_attack_pressed = False
-        self.jump_attack_duration = self.run_attack_duration
+        self.jump_attack_duration = PLAYER_ATTACKS["JUMP_ATTACK"].duration
 
         self.combat = PlayerCombat()
         self.weapon_slot = PlayerWeaponSlot()
