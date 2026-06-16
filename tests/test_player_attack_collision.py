@@ -126,9 +126,9 @@ class FakeScoreManager:
 
 
 class FakeGameState:
-    def __init__(self, player_weapon=None):
+    def __init__(self, player_weapon=None, enemy_count=2):
         self.player = FakePlayer(player_weapon)
-        self.enemies = [FakeEnemy(), FakeEnemy()]
+        self.enemies = [FakeEnemy() for _ in range(enemy_count)]
         self.objects = []
         self.level = FakeLevel()
         self.floating_texts = []
@@ -182,6 +182,16 @@ class PlayerAttackCollisionTests(unittest.TestCase):
             game_state.enemies[0].hit_stun_duration_taken,
             normal_hit_stun,
         )
+
+    def test_run_attack_can_hit_multiple_attackable_enemies(self):
+        game_state = FakeGameState(enemy_count=3)
+        game_state.player.start_running_attack()
+
+        handle_player_attack_collision(game_state)
+
+        for enemy in game_state.enemies:
+            self.assertGreater(enemy.damage_taken, 0)
+        self.assertEqual(game_state.score_manager.hit_count, 3)
 
 
 if __name__ == "__main__":

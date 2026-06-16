@@ -132,6 +132,7 @@ PLAYER_ATTACKS = {
         duration=18,
         phase=AttackPhaseData(windup=8, active=6, recovery=4),
         hitboxes=(AttackHitboxData(x=40, y=-220, width=160, height=80),),
+        max_targets=3,
         knockback_velocity=18,
         enemy_hit_stun_duration=24,
     ),

@@ -106,6 +106,12 @@ class PlayerAttackDataTests(unittest.TestCase):
             PLAYER_ATTACKS["ATTACK_1"].enemy_hit_stun_duration,
         )
 
+    def test_running_attack_can_hit_multiple_targets(self):
+        self.assertGreater(
+            PLAYER_ATTACKS["RUN_ATTACK"].max_targets,
+            PLAYER_ATTACKS["ATTACK_1"].max_targets,
+        )
+
     def test_jump_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         owner.movement.is_jumping = True
