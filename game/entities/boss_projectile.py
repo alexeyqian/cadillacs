@@ -11,6 +11,7 @@ class BossProjectile:
         self.width = 30
         self.height = 15
         self.active = True
+        self.lane_y = y
 
     def update(self, world_width):
         self.x += self.speed * self.direction

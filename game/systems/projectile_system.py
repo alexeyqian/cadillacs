@@ -29,6 +29,9 @@ def handle_enemy_projectile_collision(game_state):
     for projectile in game_state.enemy_projectiles:
         if not projectile.active:
             continue
+        lane_distance = game_state.level.get_lane_distance(projectile.lane_y, player.y)
+        if lane_distance > 0:
+            continue
 
         if projectile.get_rect().colliderect(player_hurt_rect):
             player.take_damage(projectile.damage)

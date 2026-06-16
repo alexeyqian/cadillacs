@@ -12,6 +12,7 @@ class EnemyProjectile:
         self.direction = direction
         self.speed = speed
         self.damage = damage
+        self.lane_y = y
 
         self.active = True
 

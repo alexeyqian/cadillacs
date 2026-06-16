@@ -152,6 +152,10 @@ def handle_player_projectile_collision(game_state):
         projectile_rect = projectile.get_rect()
         # projectile hit enemy
         for enemy in enemies:
+            # So player bullets hit same-lane enemies only.
+            lane_distance = game_state.level.get_lane_distance(projectile.lane_y, enemy.y)
+            if lane_distance > 0:
+                continue
             enemy_hurt_rect = enemy.get_hurt_rect()
             if enemy_hurt_rect and projectile_rect.colliderect(enemy_hurt_rect):
                 damage = projectile.damage
@@ -191,7 +195,7 @@ def handle_player_grab_or_throw(game_state, keys):
             return
         
         for enemy in game_state.enemies:
-            if player.grab.can_grab_enemy(player, enemy):
+            if player.grab.can_grab_enemy(player, enemy, game_state.level):
                 player.grab.grab_enemy(player, enemy)
                 break
     else:
@@ -214,8 +218,12 @@ def handle_player_thrown_enemy_collision(game_state):
                 continue
             if enemy.state == enemy.DEAD:
                 continue
-            # avoid process already hitted enemies because of thrown
+            # avoid process already hit enemies because of thrown
             if id(enemy) in thrown_enemy.thrown_hit_targets:
+                continue
+            # throw collision only hits enemies in the same lane for now.
+            lane_distance = game_state.level.get_lane_distance(thrown_enemy.y, enemy.y)
+            if lane_distance > 0:
                 continue
 
             enemy_hurt_rect = enemy.get_hurt_rect()

@@ -11,6 +11,8 @@ class Projectile:
         self.speed = speed
         self.damage = damage
         self.active = True
+        # projectiles remember the lane/depth where they were fired.
+        self.lane_y = y
 
     def update(self, world_width=WORLD_WIDTH):
         self.x += self.speed * self.direction

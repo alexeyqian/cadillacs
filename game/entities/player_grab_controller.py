@@ -51,7 +51,7 @@ class PlayerGrabController:
 
         self.grabbed_enemy.y = owner.y
 
-    def can_grab_enemy(self, owner, enemy):
+    def can_grab_enemy(self, owner, enemy, level):
         if enemy.state == enemy.DEAD:
             return False
         if enemy.state == enemy.GRABBED:
@@ -76,8 +76,8 @@ class PlayerGrabController:
                 return False
 
         dx = abs(enemy.x - owner.x)
-        dy = abs(enemy.y - owner.y)
-        return dx <= owner.grab_range and dy <= 40
+        lane_distance = level.get_lane_distance(owner.y, enemy.y)
+        return dx <= owner.grab_range and lane_distance == 0
 
     def grab_enemy(self, owner, enemy):
         self.grabbed_enemy = enemy
