@@ -23,15 +23,25 @@ class PlayerActionController:
                     owner.combat.start_jump_attack(owner)
                     owner.input_state.jump_attack_pressed = True
             else:
+                if (
+                    owner.movement.is_running
+                    and owner.input_state.run_attack_requires_attack_release
+                ):
+                    owner.input_state.attack_pressed = True
+                    return
+
                 if not owner.input_state.attack_pressed:
                     if owner.grab.grabbed_enemy:
                         owner.combat.start_grab_knee_attack(owner)
                     else:
                         owner.combat.start_attack(owner)
+                        if owner.combat.current_attack_name == owner.RUN_ATTACK:
+                            owner.input_state.run_attack_requires_attack_release = True
                     owner.input_state.attack_pressed = True
         else:
             owner.input_state.attack_pressed = False
             owner.input_state.jump_attack_pressed = False
+            owner.input_state.run_attack_requires_attack_release = False
 
     def update_fire_input(self, owner, player_input):
         if player_input.fire:
