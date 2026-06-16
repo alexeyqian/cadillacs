@@ -31,6 +31,14 @@ class EnemyConfig:
     # but do not always interrupt them.
     flinch_damage_threshold: int = 0
     attack_flinch_damage_threshold: Optional[int] = None
+    # Anti-stunlock tuning:
+    # If the player lands this many quick hits inside the window, the enemy gets
+    # a short stun-resistance window. Hits still deal damage, but light punches
+    # stop resetting HIT forever, giving the enemy a chance to move or attack.
+    anti_stunlock_hit_limit: int = 3
+    anti_stunlock_hit_window: int = 90
+    stun_resistance_duration: int = 45
+    resisted_hit_stun_duration: int = 4
     thrown_damage:int = THROWN_DAMAGE
     score_points: int = ENEMY_SCORE_POINTS
     sprite_scale: int  = 4

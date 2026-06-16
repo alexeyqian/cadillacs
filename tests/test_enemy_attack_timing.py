@@ -79,6 +79,10 @@ class FakeEnemy:
         self.hit_stun_remaining = 0
         self.flinch_damage_threshold = 0
         self.attack_flinch_damage_threshold = 0
+        self.anti_stunlock_hit_limit = 3
+        self.anti_stunlock_hit_window = 90
+        self.stun_resistance_duration = 45
+        self.resisted_hit_stun_duration = 4
         self.knockback_velocity = 0
         self.animation_controller = FakeAnimationController()
 
@@ -259,6 +263,30 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
         self.assertEqual(enemy.state, enemy.HIT)
         self.assertFalse(enemy.attack_controller.is_attacking)
+
+    def test_repeated_hits_activate_stun_resistance_and_reduce_hit_stun(self):
+        enemy = FakeEnemy()
+        reactions = EnemyReactionController()
+
+        reactions.take_damage(enemy, 10, attacker_x=-100)
+        reactions.take_damage(enemy, 10, attacker_x=-100)
+        reactions.take_damage(enemy, 10, attacker_x=-100)
+
+        self.assertEqual(enemy.health.hp, 70)
+        self.assertGreater(enemy.stun_resistance_remaining, 0)
+        self.assertEqual(enemy.hit_stun_remaining, enemy.resisted_hit_stun_duration)
+
+    def test_stun_resistance_prevents_light_hit_from_canceling_enemy_attack(self):
+        enemy = FakeEnemy()
+        reactions = EnemyReactionController()
+
+        reactions.take_damage(enemy, 10, attacker_x=-100)
+        reactions.take_damage(enemy, 10, attacker_x=-100)
+        enemy.start_attack()
+        reactions.take_damage(enemy, 10, attacker_x=-100)
+
+        self.assertEqual(enemy.state, enemy.ATTACK)
+        self.assertTrue(enemy.attack_controller.is_attacking)
 
     def test_enemy_configs_raise_pressure_without_removing_archetype_identity(self):
         ferris = get_enemy_config("ferris")

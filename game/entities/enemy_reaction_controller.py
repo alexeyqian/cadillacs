@@ -16,14 +16,25 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
 
-        self.reset_attack_decision(owner)
         died = owner.health.take_damage(damage)
-        flinch_threshold = self.get_flinch_threshold(owner)
-        should_flinch = damage >= flinch_threshold
+        self.register_recent_hit(owner)
+
+        if owner.health.hp > 0 and self.should_knockdown_from_damage(damage):
+            self.knockdown(owner)
+            return
+
         if died:
-            should_flinch = True
+            self.die(owner)
+            return
+
+        flinch_threshold = self.get_flinch_threshold(owner)
+        should_flinch = (
+            damage >= flinch_threshold
+            and not self.is_stun_resistant(owner)
+        )
 
         if should_flinch:
+            self.reset_attack_decision(owner)
             self.set_hit_stun_remaining(owner, owner.hit_stun_duration)
             owner.state = owner.HIT
             # So if an enemy is interrupted, it releases the slot.
@@ -34,13 +45,44 @@ class EnemyReactionController:
                 self.set_knockback_velocity(owner, 10)
             else:
                 self.set_knockback_velocity(owner, -10)
-
-        if owner.health.hp > 0 and self.should_knockdown_from_damage(damage):
-            self.knockdown(owner)
             return
 
-        if died:
-            self.die(owner)
+        if self.is_stun_resistant(owner):
+            self.apply_resisted_hit(owner)
+
+    def register_recent_hit(self, owner):
+        hit_window = getattr(owner, "anti_stunlock_hit_window", 90)
+        hit_limit = getattr(owner, "anti_stunlock_hit_limit", 3)
+
+        # A quick-hit window is easier to reason about than permanent armor:
+        # pressure builds resistance, but backing off lets the enemy reset.
+        self.set_recent_hit_count(owner, self.get_recent_hit_count(owner) + 1)
+        self.set_recent_hit_timer(owner, hit_window)
+
+        if self.get_recent_hit_count(owner) >= hit_limit:
+            self.set_stun_resistance_remaining(
+                owner,
+                getattr(owner, "stun_resistance_duration", 45),
+            )
+            self.set_recent_hit_count(owner, 0)
+
+    def is_stun_resistant(self, owner):
+        return self.get_stun_resistance_remaining(owner) > 0
+
+    def apply_resisted_hit(self, owner):
+        resisted_stun = getattr(owner, "resisted_hit_stun_duration", 4)
+        current_stun = self.get_hit_stun_remaining(owner)
+
+        # During resistance, damage still lands, but we stop refreshing a full
+        # HIT state. This is the actual anti-stunlock moment: the enemy can
+        # finish the tiny reaction and return to AI instead of being pinned.
+        if owner.state != owner.HIT:
+            self.set_hit_stun_remaining(owner, 0)
+        elif current_stun > resisted_stun:
+            self.set_hit_stun_remaining(owner, resisted_stun)
+
+        if owner.state == owner.HIT and resisted_stun <= 0:
+            owner.state = owner.IDLE
 
     def apply_knockback(self, owner):
         knockback_velocity = self.get_knockback_velocity(owner)
@@ -171,6 +213,10 @@ class EnemyReactionController:
         else:
             owner.hit_stun_remaining = value
 
+    def get_hit_stun_remaining(self, owner):
+        state = self.get_lifecycle_state(owner)
+        return state.hit_stun_remaining if state else owner.hit_stun_remaining
+
     def set_death_remaining(self, owner, value):
         state = self.get_lifecycle_state(owner)
         if state:
@@ -209,3 +255,38 @@ class EnemyReactionController:
     def get_thrown_hit_targets(self, owner):
         state = self.get_lifecycle_state(owner)
         return state.thrown_hit_targets if state else owner.thrown_hit_targets
+
+    def get_recent_hit_count(self, owner):
+        state = self.get_lifecycle_state(owner)
+        return state.recent_hit_count if state else getattr(owner, "recent_hit_count", 0)
+
+    def set_recent_hit_count(self, owner, value):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            state.recent_hit_count = value
+        else:
+            owner.recent_hit_count = value
+
+    def get_recent_hit_timer(self, owner):
+        state = self.get_lifecycle_state(owner)
+        return state.recent_hit_timer if state else getattr(owner, "recent_hit_timer", 0)
+
+    def set_recent_hit_timer(self, owner, value):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            state.recent_hit_timer = value
+        else:
+            owner.recent_hit_timer = value
+
+    def get_stun_resistance_remaining(self, owner):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            return state.stun_resistance_remaining
+        return getattr(owner, "stun_resistance_remaining", 0)
+
+    def set_stun_resistance_remaining(self, owner, value):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            state.stun_resistance_remaining = value
+        else:
+            owner.stun_resistance_remaining = value
