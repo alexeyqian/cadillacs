@@ -43,10 +43,15 @@ class Enemy:
     # outside this range, enemy ignores player
     def __init__(self, x, y, enemy_type, 
                 animation_data, anim_fps, sprite_scale=4):
+        # Identity / position
         self.x = x
         self.y = y
         self.spawn_x = x # enemy remembers where it spawned
         self.enemy_type = enemy_type
+
+        # Core state
+        self.state = self.IDLE
+        self.facing_right = False
 
         # new design
         # give every enemy attack a clean timer 
@@ -56,19 +61,11 @@ class Enemy:
         self.attack_controller = AttackController()
         self.attack_decision_timer = 0
         self.attack_delay = ENEMY_ATTACK_DELAY
+        self.attack_already_hit = False
+        self.attack_cooldown = 0
         self.attack_clash_recovery_duration = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
         self.attack_clash_cooldown_duration = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
 
-        self.state = self.IDLE
-        self.facing_right = False
-        self.hitboxes = EnemyHitboxes()
-        self.loot_generated = False
-        self.death_remaining = 30
-        self.death_countdown_started = False
-
-        self.patrol_direction = 1
-        self.attack_already_hit = False
-        self.attack_cooldown = 0
         # todo: add enemy coordination layer in future
         # attack slot reservation system
         # expected behavior:
@@ -77,23 +74,38 @@ class Enemy:
         # Attack limit becomes more reliable and easier to reason about
         self.has_attack_slot = False
 
+        # Movement
+        self.patrol_direction = 1
+
+        # Lifecycle
+        self.death_remaining = 30
+        self.death_countdown_started = False
         # This keeps the clash fair on both sides: the player cannot instantly re-punch,
         # and the enemy cannot instantly resume pressure either.
         self.action_lock_remaining = 0
+
+        # Reactions
         # hit reaction # enemy gets briefly white when hit by player
         self.knockback_velocity = 0
         self.hit_stun_remaining = 0
         self.hit_stun_duration = 15
+
         # grab/throw
         self.thrown_velocity_x = 0
         self.thrown_remaining = 0
         self.thrown_hit_targets = set()
+
         #knockdown/getup
         self.knockdown_remaining = 0
         self.getup_remaining = 0
 
+        # Rendering / collision / loot
+        self.hitboxes = EnemyHitboxes()
+        self.loot_generated = False
+
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
+        # Components
         self.movement = EnemyMovement()
         self.flanking = EnemyFlanking()
         self.combat = EnemyCombatController()
@@ -138,27 +150,6 @@ class Enemy:
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale
 
-    def get_current_frame_data(self):
-        return self.animation_controller.get_current_frame_data()
-
-    def update_animation(self):
-        self.animation_controller.update(self)
-
-    def is_ready_to_remove(self):
-        return self.lifecycle.is_ready_to_remove(self)
-
-    def take_damage(self, damage, attacker_x):
-        self.reactions.take_damage(self, damage, attacker_x)
-
-    def grabbed_by_player(self):
-        self.reactions.grabbed_by_player(self)
-
-    def thrown_by_player(self, direction):
-        self.reactions.thrown_by_player(self, direction)
-
-    def take_grab_knee_damage(self, damage):
-        self.reactions.take_grab_knee_damage(self, damage)
-
     def update(self, level, player, enemies):
         if self.lifecycle.update_special_states(self):
             return
@@ -183,6 +174,23 @@ class Enemy:
             self.execute_state(level, player, enemies, dx, dy)
             self.update_animation()
 
+    # Lifecycle / reactions
+    def is_ready_to_remove(self):
+        return self.lifecycle.is_ready_to_remove(self)
+
+    def take_damage(self, damage, attacker_x):
+        self.reactions.take_damage(self, damage, attacker_x)
+
+    def grabbed_by_player(self):
+        self.reactions.grabbed_by_player(self)
+
+    def thrown_by_player(self, direction):
+        self.reactions.thrown_by_player(self, direction)
+
+    def take_grab_knee_damage(self, damage):
+        self.reactions.take_grab_knee_damage(self, damage)
+
+    # Movement / state decisions
     def get_player_distance(self, player):
         return self.movement.get_player_distance(self, player)
 
@@ -203,6 +211,10 @@ class Enemy:
         elif self.state == self.ATTACK:
             self.update_attack(level, player)
 
+    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
+        self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
+
+    # Combat
     def start_attack(self):
         self.combat.start_attack(self)
 
@@ -212,14 +224,31 @@ class Enemy:
     def update_attack(self, level, player):
         self.combat.update_attack(self, level, player)
 
-    def create_loot(self):
-        return self.loot_controller.create_loot(self)
+    def is_attack_active(self):
+        return self.combat.is_attack_active(self)
 
+    def get_attack_total_duration(self):
+        return self.attack_windup + self.attack_active + self.attack_recovery
+
+    def get_attack_phase_name(self):
+        if self.state != self.ATTACK:
+            return ""
+        return self.attack_controller.get_phase_name()
+
+    def get_attack_timing_label(self):
+        if self.state != self.ATTACK:
+            return ""
+        return self.attack_controller.get_timing_label()
+
+    # Rendering / animation / geometry
     def draw(self, screen, camera_x):
         self.renderer.draw(self, screen, camera_x)
 
-    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
-        self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
+    def get_current_frame_data(self):
+        return self.animation_controller.get_current_frame_data()
+
+    def update_animation(self):
+        self.animation_controller.update(self)
 
     # returns the whole visible sprite frame in world space:
     def get_frame_rect(self):
@@ -234,16 +263,14 @@ class Enemy:
     def get_hurt_rect(self):
         return self.hitboxes.get_hurt_rect(self)
 
-
     def get_attack_rect(self):
         return self.hitboxes.get_attack_rect(self)
-    
-    def is_attack_active(self):
-        return self.combat.is_attack_active(self)
 
-    def get_attack_total_duration(self):
-        return self.attack_windup + self.attack_active + self.attack_recovery
+    # Loot
+    def create_loot(self):
+        return self.loot_controller.create_loot(self)
 
+    # Attack timing data
     @property
     def attack_windup(self):
         return self.attack_data.windup
@@ -276,17 +303,8 @@ class Enemy:
             self.attack_data,
             phase=replace(self.attack_data.phase, recovery=value)
         )
-    
-    def get_attack_phase_name(self):
-        if self.state != self.ATTACK:
-            return ""
-        return self.attack_controller.get_phase_name()
 
-    def get_attack_timing_label(self):
-        if self.state != self.ATTACK:
-            return ""
-        return self.attack_controller.get_timing_label()
-
+    # Enemy coordination
     # Later we can upgrade it into an “attack reservation” system
     def uses_melee_attack_slot(self):
         return self.archetype not in ["ranged", "boss"]
