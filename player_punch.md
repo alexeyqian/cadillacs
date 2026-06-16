@@ -146,7 +146,8 @@ should feel better, but it should also be easier to punish if whiffed.
 3. Improve the actual silhouettes for `attack_2` and `attack_3` with more
    hand-drawn body twist and weight.
 4. Retune hitboxes after the distinct combo silhouettes are final.
-5. Consider a tiny forward nudge only on `ATTACK_3`, not on every punch.
+5. `ATTACK_3` has a tiny forward nudge to make the finisher feel like the body
+   drives into the punch without affecting ATTACK_1 or ATTACK_2.
 
 ## Visual Preview Notes
 

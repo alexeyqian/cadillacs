@@ -183,6 +183,7 @@ class PlayerCombatController:
             owner.state_machine.change_to(owner, owner.ATTACK_2)
         else:
             owner.state_machine.change_to(owner, owner.ATTACK_3)
+            owner.movement.start_attack_3_nudge(owner)
 
         move_data = self.get_attack_data(owner, owner.state)
         self.attack_controller.start(owner.state, move_data)

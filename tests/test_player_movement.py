@@ -12,6 +12,7 @@ class FakeCombat:
 
 class FakeOwner:
     RUN_ATTACK = "RUN_ATTACK"
+    ATTACK_3 = "ATTACK_3"
 
     def __init__(self):
         self.x = 300
@@ -117,6 +118,31 @@ class PlayerMovementTests(unittest.TestCase):
 
         self.assertEqual(movement.last_run_attack_distance, 180)
         self.assertEqual(movement.run_distance, 0)
+
+    def test_attack_3_nudge_moves_forward_briefly(self):
+        owner = FakeOwner()
+        movement = PlayerMovement(owner.speed)
+        owner.combat.is_attacking = True
+        owner.combat.current_attack_name = owner.ATTACK_3
+
+        movement.start_attack_3_nudge(owner)
+        starting_nudge = movement.attack_nudge_remaining
+        moved = movement.update_movement(owner, FakeInput())
+
+        self.assertTrue(moved)
+        self.assertGreater(owner.x, 300)
+        self.assertEqual(movement.attack_nudge_remaining, starting_nudge - 1)
+
+    def test_attack_3_nudge_can_be_canceled(self):
+        owner = FakeOwner()
+        movement = PlayerMovement(owner.speed)
+
+        movement.start_attack_3_nudge(owner)
+        movement.cancel_attack_nudge()
+
+        self.assertEqual(movement.attack_nudge_remaining, 0)
+        self.assertEqual(movement.attack_nudge_direction, 0)
+        self.assertEqual(movement.attack_nudge_speed, 0)
 
 
 if __name__ == "__main__":
