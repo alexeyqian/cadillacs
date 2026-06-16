@@ -6,7 +6,11 @@ from game.entities.attack_data import AttackPhaseData, EnemyAttackData, PlayerAt
 
 class AttackControllerTests(unittest.TestCase):
     def test_player_attack_uses_elapsed_timer_and_duration(self):
-        attack = PlayerAttackData(damage=10, duration=3)
+        attack = PlayerAttackData(
+            damage=10,
+            duration=3,
+            phase=AttackPhaseData(windup=0, active=1, recovery=2),
+        )
         controller = AttackController()
 
         controller.start_attack("ATTACK_1", attack)
@@ -42,7 +46,11 @@ class AttackControllerTests(unittest.TestCase):
         self.assertFalse(controller.is_active())
 
     def test_hit_targets_are_tracked_per_attack(self):
-        attack = PlayerAttackData(damage=10, duration=3)
+        attack = PlayerAttackData(
+            damage=10,
+            duration=3,
+            phase=AttackPhaseData(windup=0, active=1, recovery=2),
+        )
         target = object()
         controller = AttackController()
 

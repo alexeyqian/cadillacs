@@ -71,6 +71,25 @@ class PlayerCombat:
     def mark_attack_connected(self):
         self.attack_controller.mark_connected()
 
+    def is_attack_active(self):
+        return self.attack_controller.is_active()
+
+    def get_active_hitbox_data(self):
+        if not self.is_attack_active():
+            return None
+        attack = self.attack_controller.current_attack
+        if not attack or not attack.hitboxes:
+            return None
+        return attack.hitboxes[0]
+
+    def get_active_counter_hurtbox_data(self):
+        if not self.is_attack_active():
+            return None
+        attack = self.attack_controller.current_attack
+        if not attack or not attack.counter_hurtboxes:
+            return None
+        return attack.counter_hurtboxes[0]
+
     # Avoiding the combo step advances when the player presses attack inside the combo window, 
     # even if the previous punch hit nothing. 
     # That means the player can “charge” into ATTACK_3 by punching air, 

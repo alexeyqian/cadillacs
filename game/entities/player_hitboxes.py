@@ -35,6 +35,12 @@ class PlayerHitboxes:
         return self._frame_local_rect_to_world(owner, frame, local_x, local_y, w, h)
     
     def get_counter_hurt_rect(self, owner):
+        combat_counter_hurtbox = owner.combat.get_active_counter_hurtbox_data()
+        if combat_counter_hurtbox:
+            return self._combat_rect_to_world(owner, combat_counter_hurtbox)
+        if owner.combat.is_attacking:
+            return None
+
         frame = owner.animation_controller.get_current_frame()
         if not frame or not frame.counter_hurt_rect:
             return None
@@ -52,6 +58,12 @@ class PlayerHitboxes:
 
     def get_attack_rect(self, owner):
         if not owner.combat.is_attacking:
+            return None
+
+        combat_hitbox = owner.combat.get_active_hitbox_data()
+        if combat_hitbox:
+            return self._combat_rect_to_world(owner, combat_hitbox)
+        if owner.combat.is_attacking:
             return None
 
         frame = owner.animation_controller.get_current_frame()
@@ -82,3 +94,17 @@ class PlayerHitboxes:
 
         world_y = owner.y + offset_y + local_y
         return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
+
+    def _combat_rect_to_world(self, owner, box):
+        if owner.facing_right:
+            world_x = owner.x + box.x
+        else:
+            world_x = owner.x - box.x - box.width
+
+        world_y = owner.y + box.y
+        return pygame.Rect(
+            int(world_x),
+            int(world_y),
+            int(box.width),
+            int(box.height)
+        )

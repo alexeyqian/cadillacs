@@ -15,13 +15,36 @@ class AttackPhaseData:
 
 
 @dataclass(frozen=True)
+class AttackHitboxData:
+    x: int
+    y: int
+    width: int
+    height: int
+
+
+@dataclass(frozen=True)
 class PlayerAttackData:
     damage: int
     duration: int
+    phase: AttackPhaseData
+    hitboxes: tuple = ()
+    counter_hurtboxes: tuple = ()
     combo_window: int = 30
     action_lock: int = 0
     lane_reach: int = 0
     counter_hit_stun_bonus: int = 0
+
+    @property
+    def windup(self):
+        return self.phase.windup
+
+    @property
+    def active(self):
+        return self.phase.active
+
+    @property
+    def recovery(self):
+        return self.phase.recovery
 
 
 @dataclass(frozen=True)
@@ -67,28 +90,43 @@ PLAYER_ATTACKS = {
     "ATTACK_1": PlayerAttackData(
         damage=FIST_DAMAGE - 2,
         duration=12,
+        phase=AttackPhaseData(windup=8, active=4, recovery=0),
+        hitboxes=(AttackHitboxData(x=94, y=-300, width=160, height=40),),
+        counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
     ),
     "ATTACK_2": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=12,
+        phase=AttackPhaseData(windup=8, active=4, recovery=0),
+        hitboxes=(AttackHitboxData(x=94, y=-300, width=160, height=40),),
+        counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
     ),
     "ATTACK_3": PlayerAttackData(
         damage=FIST_DAMAGE + 4,
         duration=12,
+        phase=AttackPhaseData(windup=8, active=4, recovery=0),
+        hitboxes=(AttackHitboxData(x=94, y=-300, width=160, height=40),),
+        counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
         combo_window=0,
         action_lock=PLAYER_THIRD_HIT_RECOVERY,
     ),
     "RUN_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=18,
+        phase=AttackPhaseData(windup=8, active=6, recovery=4),
+        hitboxes=(AttackHitboxData(x=40, y=-220, width=160, height=80),),
     ),
     "JUMP_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=18,
+        phase=AttackPhaseData(windup=8, active=6, recovery=4),
+        hitboxes=(AttackHitboxData(x=40, y=-220, width=160, height=80),),
     ),
     # Grab knee is safe once a grab succeeds, so keep it below combo finisher damage.
     "GRAB_KNEE": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=PLAYER_GRAB_KNEE_DURATION,
+        phase=AttackPhaseData(windup=6, active=4, recovery=4),
+        hitboxes=(AttackHitboxData(x=50, y=-190, width=60, height=60),),
     ),
 }
