@@ -59,6 +59,7 @@ class AttackController:
         if not self.current_attack:
             return False
         # why return true here?
+        # It is a fallback for older/simple attack data that does not define windup, active, and recovery.
         if not self.has_attack_phases():
             return True
 

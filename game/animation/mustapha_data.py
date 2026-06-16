@@ -222,7 +222,7 @@ MUSTAPHA_ANIMATIONS = {
                 "offset": (-63, -168),
                 "hurt_rect": (40, 0, 45, 110),
                 "counter_hurt_rect": (90, 18, 20, 20),
-                "attack_rect": (110, 18, 80, 20)
+                "attack_rect": (110, 18, 60, 20)
             }
         ]
     },
