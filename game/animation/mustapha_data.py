@@ -8,37 +8,37 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 6,
         "frames": [
             {
-                "frame_rect": (0, 0, 98, 178),
+                "frame_rect": (0, 0, 94, 178),
                 "offset": (-50, -178),
                 "hurt_rect": (30, 10, 4, 110),
                 "attack_rect": None
             },
             {
-                "frame_rect": (98, 0, 98, 178),
+                "frame_rect": (94, 0, 96, 178),
                 "offset": (-50, -178),
                 "hurt_rect": (30, 10, 45, 110),
                 "attack_rect": None
             },
             {
-                "frame_rect": (196, 0, 120, 178),
+                "frame_rect": (190, 0, 119, 178),
                 "offset": (-50, -178),
                 "hurt_rect": (30, 10, 45, 110),
                 "attack_rect": None
             },
             {
-                "frame_rect": (316, 0, 120, 178),
+                "frame_rect": (309, 0, 120, 178),
                 "offset": (-50, -178),
                 "hurt_rect": (30, 10, 45, 110),
                 "attack_rect": None
             },
             {
-                "frame_rect": (436, 0, 120, 178),
+                "frame_rect": (429, 0, 119, 178),
                 "offset": (-50, -178),
                 "hurt_rect": (30, 10, 45, 110),
                 "attack_rect": None
             },
             {
-                "frame_rect": (556, 0, 120, 178),
+                "frame_rect": (548, 0, 98, 178),
                 "offset": (-50, -178),
                 "hurt_rect": (30, 10, 45, 110),
                 "attack_rect": None
@@ -208,7 +208,7 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
     "attack": {
-        "file": "assets/player/mustapha_attack_3phase_preview.png",
+        "file": "assets/player/mustapha_attack.png",
         "frames_count": 3,
         "frames": [
             {
