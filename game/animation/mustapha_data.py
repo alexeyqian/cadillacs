@@ -146,25 +146,31 @@ MUSTAPHA_ANIMATIONS = {
                 "attack_rect": None
             },
             {
-                "frame_rect": (610, 0, 156, 153),
+                "frame_rect": (610, 0, 158, 153),
                 "offset": (-64, -153),
                 "hurt_rect": (80, 0, 70, 90),
                 "attack_rect": None
             },
             {
-                "frame_rect": (766, 0, 142, 153),
+                "frame_rect": (768, 0, 156, 153),
                 "offset": (-20, -153),
                 "hurt_rect": (45, 0, 70, 90),
                 "attack_rect": None
             },
             {
-                "frame_rect": (908, 0, 159, 153),
+                "frame_rect": (924, 0, 143, 153),
                 "offset": (-60, -153),
                 "hurt_rect": (70, 0, 70, 90),
                 "attack_rect": None
             },
             {
-                "frame_rect": (1067, 0, 172, 153),
+                "frame_rect": (1067, 0, 158, 153),
+                "offset": (-70, -153),
+                "hurt_rect": (80, 0, 70, 90),
+                "attack_rect": None
+            },
+            {
+                "frame_rect": (1225, 0, 172, 153),
                 "offset": (-70, -153),
                 "hurt_rect": (80, 0, 70, 90),
                 "attack_rect": None
