@@ -23,6 +23,10 @@ class RunState(PlayerState):
     name = "RUN"
 
 
+class JumpTakeoffState(PlayerState):
+    name = "JUMP_TAKEOFF"
+
+
 class JumpState(PlayerState):
     name = "JUMP"
 
@@ -49,6 +53,10 @@ class RunAttackState(PlayerState):
 
 class JumpAttackState(PlayerState):
     name = "JUMP_ATTACK"
+
+
+class LandingState(PlayerState):
+    name = "LANDING"
 
 
 class HitState(PlayerState):
@@ -80,6 +88,7 @@ class PlayerStateMachine:
             owner.IDLE: IdleState(),
             owner.WALK: WalkState(),
             owner.RUN: RunState(),
+            owner.JUMP_TAKEOFF: JumpTakeoffState(),
             owner.JUMP: JumpState(),
             owner.ATTACK: AttackState(),
             owner.ATTACK_1: Attack1State(),
@@ -87,6 +96,7 @@ class PlayerStateMachine:
             owner.ATTACK_3: Attack3State(),
             owner.RUN_ATTACK: RunAttackState(),
             owner.JUMP_ATTACK: JumpAttackState(),
+            owner.LANDING: LandingState(),
             owner.HIT: HitState(),
             owner.RECOIL: RecoilState(),
             owner.DEAD: DeadState(),

@@ -47,12 +47,14 @@ class FakeWeaponSlot:
 
 class FakeOwner:
     IDLE = "IDLE"
+    JUMP_TAKEOFF = "JUMP_TAKEOFF"
     ATTACK_1 = "ATTACK_1"
     ATTACK_2 = "ATTACK_2"
     ATTACK_3 = "ATTACK_3"
     RUN_ATTACK = "RUN_ATTACK"
     JUMP_ATTACK = "JUMP_ATTACK"
     RECOIL = "RECOIL"
+    LANDING = "LANDING"
     DEAD = "DEAD"
 
     def __init__(self):
@@ -60,6 +62,7 @@ class FakeOwner:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot()
+        self.air = None
 
 
 class PlayerAttackDataTests(unittest.TestCase):
@@ -158,6 +161,54 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(owner.state, owner.JUMP_ATTACK)
         self.assertEqual(combat.current_attack_name, owner.JUMP_ATTACK)
         self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["JUMP_ATTACK"].duration)
+
+    def test_jump_attack_cannot_start_during_takeoff(self):
+        class FakeAir:
+            def can_start_jump_attack(self):
+                return False
+
+        owner = FakeOwner()
+        owner.state = owner.JUMP_TAKEOFF
+        owner.movement.is_jumping = True
+        owner.air = FakeAir()
+        combat = PlayerCombatController()
+
+        combat.start_jump_attack(owner)
+
+        self.assertEqual(owner.state, owner.JUMP_TAKEOFF)
+        self.assertIsNone(combat.current_attack_name)
+
+    def test_jump_attack_can_only_start_once_per_jump(self):
+        class FakeAir:
+            def __init__(self):
+                self.has_used_jump_attack = False
+
+            def can_start_jump_attack(self):
+                return not self.has_used_jump_attack
+
+            def mark_jump_attack_used(self):
+                self.has_used_jump_attack = True
+
+        owner = FakeOwner()
+        owner.movement.is_jumping = True
+        owner.air = FakeAir()
+        combat = PlayerCombatController()
+
+        combat.start_jump_attack(owner)
+        combat.cancel_attack()
+        combat.start_jump_attack(owner)
+
+        self.assertEqual(owner.state, owner.JUMP_ATTACK)
+        self.assertIsNone(combat.current_attack_name)
+        self.assertTrue(owner.air.has_used_jump_attack)
+
+    def test_jump_attack_uses_flying_kick_timing(self):
+        attack = PLAYER_ATTACKS["JUMP_ATTACK"]
+
+        self.assertEqual(attack.windup, 4)
+        self.assertEqual(attack.active, 8)
+        self.assertEqual(attack.recovery, 6)
+        self.assertTrue(attack.counter_hurtboxes)
 
     def test_attack_timer_counts_up_until_attack_finishes(self):
         owner = FakeOwner()

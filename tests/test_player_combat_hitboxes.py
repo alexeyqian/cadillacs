@@ -34,6 +34,7 @@ class FakeOwner:
     ATTACK_2 = "ATTACK_2"
     ATTACK_3 = "ATTACK_3"
     RUN_ATTACK = "RUN_ATTACK"
+    JUMP_ATTACK = "JUMP_ATTACK"
     DEAD = "DEAD"
 
     def __init__(self):
@@ -45,6 +46,7 @@ class FakeOwner:
         self.state_machine = FakeStateMachine()
         self.animation_controller = FakeAnimationController()
         self.combat = PlayerCombatController()
+        self.air = None
 
 
 class PlayerCombatControllerHitboxTests(unittest.TestCase):
@@ -104,6 +106,26 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         self.assertEqual(counter_rect.x, owner.x + attack_data.counter_hurtboxes[0].x)
         self.assertEqual(counter_rect.y, owner.y + attack_data.counter_hurtboxes[0].y)
+
+    def test_jump_attack_rect_uses_visual_air_height(self):
+        class FakeAir:
+            z = 40
+
+            def get_visual_y(self, ground_y):
+                return ground_y - self.z
+
+        owner = FakeOwner()
+        owner.air = FakeAir()
+        hitboxes = PlayerGeometry()
+        attack_data = PLAYER_ATTACKS["JUMP_ATTACK"]
+
+        owner.combat.attack_controller.start(owner.JUMP_ATTACK, attack_data)
+        for _ in range(attack_data.windup):
+            owner.combat.update_timers(owner)
+
+        attack_rect = hitboxes.get_attack_rect(owner)
+
+        self.assertEqual(attack_rect.y, owner.y - owner.air.z + attack_data.hitboxes[0].y)
 
 
 if __name__ == "__main__":

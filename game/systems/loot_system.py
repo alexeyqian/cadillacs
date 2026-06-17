@@ -42,6 +42,9 @@ def create_object_loot(game_state):
 def update_loot_pickup(game_state):
     player = game_state.player
     loot_items = game_state.loot_items
+    air = getattr(player, "air", None)
+    if air and not air.is_grounded:
+        return
 
     # inflate for easy to pickup
     player_rect = player.get_collision_rect().inflate(40, 40)

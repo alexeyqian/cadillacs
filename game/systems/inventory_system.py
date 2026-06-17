@@ -9,6 +9,9 @@ def weapon_power(weapon):
 def update_player_weapon_interaction(game_state, keys):
     player = game_state.player
     weapons = game_state.weapons
+    air = getattr(player, "air", None)
+    if air and not air.is_grounded:
+        return
 
     player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
     for weapon in weapons:

@@ -145,8 +145,9 @@ PLAYER_ATTACKS = {
     "JUMP_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=18,
-        phase=AttackPhaseData(windup=8, active=6, recovery=4),
-        hitboxes=(AttackHitboxData(x=40, y=-220, width=160, height=80),),
+        phase=AttackPhaseData(windup=4, active=8, recovery=6),
+        hitboxes=(AttackHitboxData(x=86, y=-224, width=118, height=58),),
+        counter_hurtboxes=(AttackHitboxData(x=-16, y=-268, width=104, height=116),),
     ),
     # Grab knee is safe once a grab succeeds, so keep it below combo finisher damage.
     "GRAB_KNEE": PlayerAttackData(

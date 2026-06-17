@@ -14,6 +14,7 @@ from game.entities.player_lifecycle_controller import PlayerLifecycleController
 from game.entities.player_events import PlayerEvents
 from game.entities.player_state_machine import PlayerStateMachine
 from game.entities.player_input_state import PlayerInputState
+from game.entities.player_air_state import PlayerAirState
 
 class Player:
     IDLE = "IDLE"
@@ -21,8 +22,10 @@ class Player:
     RUN="RUN"
     ATTACK = "ATTACK" # including 1,2,3
     RUN_ATTACK="RUN_ATTACK"
+    JUMP_TAKEOFF = "JUMP_TAKEOFF"
     JUMP = "JUMP"
     JUMP_ATTACK="JUMP_ATTACK"
+    LANDING = "LANDING"
     # punch combo
     ATTACK_1 = "ATTACK_1"
     ATTACK_2 = "ATTACK_2"
@@ -46,6 +49,13 @@ class Player:
         self.facing_right = True
 
         self.apply_player_config(get_player_config(player_type))
+        self.air = PlayerAirState(
+            self.jump_power,
+            self.jump_gravity,
+            self.air_move_speed,
+            self.jump_takeoff_frames,
+            self.landing_recovery_frames,
+        )
 
         # Health
         self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
@@ -59,7 +69,7 @@ class Player:
         self.input_state = PlayerInputState()
 
         # Components
-        self.movement = PlayerMovement(self.speed)
+        self.movement = PlayerMovement(self.speed, self.air)
         self.movement.ground_y = self.y
         self.combat = PlayerCombatController()
         self.action_controller = PlayerActionController()
@@ -89,6 +99,11 @@ class Player:
         self.grab_range = config.grab_range
         self.hit_stun_duration = config.hit_stun_duration
         self.sprite_scale = config.sprite_scale
+        self.jump_power = config.jump_power
+        self.jump_gravity = config.jump_gravity
+        self.air_move_speed = config.air_move_speed
+        self.jump_takeoff_frames = config.jump_takeoff_frames
+        self.landing_recovery_frames = config.landing_recovery_frames
 
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x

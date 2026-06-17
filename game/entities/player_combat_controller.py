@@ -153,13 +153,19 @@ class PlayerCombatController:
                     self.combo_window_remaining = 0
                     self.combo_step = 0
 
-                if owner.state != owner.DEAD:
+                air = getattr(owner, "air", None)
+                if air and air.is_landing and owner.state != owner.DEAD:
+                    owner.state_machine.change_to(owner, owner.LANDING)
+                elif owner.state != owner.DEAD:
                     owner.state_machine.change_to(owner, owner.IDLE)
 
     def start_attack(self, owner):
         if self.is_attacking:
             return
         if self.action_lock_remaining > 0:
+            return
+        air = getattr(owner, "air", None)
+        if air and air.is_landing:
             return
 
         if owner.movement.can_start_run_attack():
@@ -192,11 +198,16 @@ class PlayerCombatController:
     def start_jump_attack(self, owner):
         if not owner.movement.is_jumping:
             return
+        air = getattr(owner, "air", None)
+        if air and not air.can_start_jump_attack():
+            return
         if self.is_attacking:
             return
 
         move_data = self.get_attack_data(owner, owner.JUMP_ATTACK)
         self.attack_controller.start(owner.JUMP_ATTACK, move_data)
+        if air:
+            air.mark_jump_attack_used()
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
     def start_grab_knee_attack(self, owner):

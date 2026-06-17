@@ -3,8 +3,13 @@ class PlayerStateResolver:
         if owner.combat.is_attacking:
             return
 
+        air = getattr(owner, "air", None)
+        if air and air.is_landing:
+            owner.state_machine.change_to(owner, owner.LANDING)
+            return
+
         if owner.movement.is_jumping:
-            if owner.state != owner.JUMP_ATTACK:
+            if owner.state not in [owner.JUMP_TAKEOFF, owner.JUMP_ATTACK]:
                 owner.state_machine.change_to(owner, owner.JUMP)
             return
 

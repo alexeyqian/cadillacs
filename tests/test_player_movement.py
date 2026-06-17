@@ -1,6 +1,7 @@
 import unittest
 
 from game.settings import RUN_ATTACK_MOMENTUM_FRAMES, RUN_ATTACK_MOMENTUM_SPEED_SCALE
+from game.entities.player_air_state import PlayerAirState
 from game.entities.player_movement import PlayerMovement
 
 
@@ -9,18 +10,44 @@ class FakeCombat:
         self.is_attacking = False
         self.current_attack_name = None
 
+    def cancel_attack(self):
+        self.is_attacking = False
+        self.current_attack_name = None
+
 
 class FakeOwner:
+    IDLE = "IDLE"
+    JUMP_TAKEOFF = "JUMP_TAKEOFF"
+    JUMP = "JUMP"
+    JUMP_ATTACK = "JUMP_ATTACK"
+    LANDING = "LANDING"
     RUN_ATTACK = "RUN_ATTACK"
     ATTACK_3 = "ATTACK_3"
 
     def __init__(self):
         self.x = 300
         self.y = 500
+        self.state = self.IDLE
         self.speed = 5
         self.run_speed = 9
         self.facing_right = True
         self.combat = FakeCombat()
+        self.grab = FakeGrab()
+        self.input_state = FakeInputState()
+        self.state_machine = FakeStateMachine()
+
+
+class FakeGrab:
+    grabbed_enemy = None
+
+
+class FakeInputState:
+    jump_attack_pressed = False
+
+
+class FakeStateMachine:
+    def change_to(self, owner, state):
+        owner.state = state
 
 
 class FakeInput:
@@ -33,6 +60,12 @@ class FakeInput:
 
 
 class PlayerMovementTests(unittest.TestCase):
+    def update_until_state(self, movement, owner, state, max_frames=30):
+        for _ in range(max_frames):
+            movement.update_jump_physics(owner, FakeInput())
+            if owner.state == state:
+                return
+
     def test_run_attack_keeps_sliding_forward_for_a_short_time(self):
         owner = FakeOwner()
         movement = PlayerMovement(owner.speed)
@@ -118,6 +151,129 @@ class PlayerMovementTests(unittest.TestCase):
 
         self.assertEqual(movement.last_run_attack_distance, 180)
         self.assertEqual(movement.run_distance, 0)
+
+    def test_jump_starts_with_takeoff_state_and_preserves_ground_y(self):
+        owner = FakeOwner()
+        air = PlayerAirState(
+            jump_power=12,
+            gravity=0.7,
+            air_move_speed=3,
+            takeoff_frames=2,
+            landing_recovery_frames=6,
+        )
+        movement = PlayerMovement(owner.speed, air)
+
+        movement.start_jump(owner, FakeInput(right=True))
+
+        self.assertEqual(owner.state, owner.JUMP_TAKEOFF)
+        self.assertTrue(movement.is_jumping)
+        self.assertEqual(owner.y, 500)
+        self.assertEqual(air.z, 0)
+        self.assertEqual(air.direction_x, 1)
+
+    def test_jump_uses_z_height_without_changing_ground_y(self):
+        owner = FakeOwner()
+        air = PlayerAirState(
+            jump_power=4,
+            gravity=1,
+            air_move_speed=3,
+            takeoff_frames=1,
+            landing_recovery_frames=6,
+        )
+        movement = PlayerMovement(owner.speed, air)
+
+        movement.start_jump(owner, FakeInput())
+        movement.update_jump_physics(owner, FakeInput())
+        self.assertEqual(owner.state, owner.JUMP)
+
+        movement.update_jump_physics(owner, FakeInput())
+
+        self.assertEqual(owner.y, 500)
+        self.assertGreater(air.z, 0)
+        self.assertFalse(air.is_grounded)
+
+    def test_jump_lands_back_on_same_ground_anchor(self):
+        owner = FakeOwner()
+        air = PlayerAirState(
+            jump_power=3,
+            gravity=2,
+            air_move_speed=3,
+            takeoff_frames=1,
+            landing_recovery_frames=6,
+        )
+        movement = PlayerMovement(owner.speed, air)
+
+        movement.start_jump(owner, FakeInput())
+        for _ in range(20):
+            movement.update_jump_physics(owner, FakeInput())
+
+        self.assertEqual(owner.y, 500)
+        self.assertEqual(air.z, 0)
+        self.assertTrue(air.is_grounded)
+        self.assertFalse(movement.is_jumping)
+        self.assertEqual(owner.state, owner.IDLE)
+
+    def test_air_movement_uses_captured_jump_direction(self):
+        owner = FakeOwner()
+        air = PlayerAirState(
+            jump_power=4,
+            gravity=1,
+            air_move_speed=3,
+            takeoff_frames=1,
+            landing_recovery_frames=6,
+        )
+        movement = PlayerMovement(owner.speed, air)
+
+        movement.start_jump(owner, FakeInput(right=True, up=True))
+        movement.update_jump_physics(owner, FakeInput())
+        movement.update_jump_physics(owner, FakeInput())
+
+        self.assertEqual(owner.x, 303)
+        self.assertAlmostEqual(owner.y, 500 - 1.8)
+
+    def test_landing_recovery_holds_landing_state_before_idle(self):
+        owner = FakeOwner()
+        air = PlayerAirState(
+            jump_power=3,
+            gravity=2,
+            air_move_speed=3,
+            takeoff_frames=1,
+            landing_recovery_frames=3,
+        )
+        movement = PlayerMovement(owner.speed, air)
+
+        movement.start_jump(owner, FakeInput())
+        self.update_until_state(movement, owner, owner.LANDING)
+
+        self.assertEqual(owner.state, owner.LANDING)
+        self.assertTrue(air.is_landing)
+
+        for _ in range(3):
+            movement.update_jump_physics(owner, FakeInput())
+
+        self.assertEqual(owner.state, owner.IDLE)
+        self.assertFalse(air.is_landing)
+
+    def test_landing_cancels_unfinished_jump_attack(self):
+        owner = FakeOwner()
+        air = PlayerAirState(
+            jump_power=3,
+            gravity=2,
+            air_move_speed=3,
+            takeoff_frames=1,
+            landing_recovery_frames=3,
+        )
+        movement = PlayerMovement(owner.speed, air)
+
+        movement.start_jump(owner, FakeInput())
+        air.begin_jump()
+        owner.state = owner.JUMP_ATTACK
+        owner.combat.is_attacking = True
+        owner.combat.current_attack_name = owner.JUMP_ATTACK
+        self.update_until_state(movement, owner, owner.LANDING)
+
+        self.assertEqual(owner.state, owner.LANDING)
+        self.assertIsNone(owner.combat.current_attack_name)
 
     def test_attack_3_nudge_moves_forward_briefly(self):
         owner = FakeOwner()

@@ -40,7 +40,9 @@ class PlayerRenderer:
         else:
             sprite_world_x = owner.x - image.get_width() - offset_x
 
-        sprite_y = owner.y + offset_y
+        air = getattr(owner, "air", None)
+        visual_y = air.get_visual_y(owner.y) if air else owner.y
+        sprite_y = visual_y + offset_y
         screen.blit(image, (sprite_world_x - camera_x, sprite_y))
 
         self.draw_health_bar(owner, screen, screen_x)

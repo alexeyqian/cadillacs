@@ -11,7 +11,8 @@ from game.settings import (
 
 
 class PlayerMovement:
-    def __init__(self, speed):
+    def __init__(self, speed, air_state=None):
+        self.air_state = air_state
         self.is_running = False
         self.run_active = False
         self.run_direction = 0
@@ -23,13 +24,13 @@ class PlayerMovement:
         self.left_pressed = False
         self.right_pressed = False
 
-        self.is_jumping = False
+        self._is_jumping = False
         self.jump_pressed = False
         self.ground_y = 0
         self.vx = 0
         self.vy = 0
-        self.jump_power = -20
-        self.gravity = 2
+        self.jump_power = 12
+        self.gravity = 0.7
         self.air_speed = speed * 1.2
         self.air_friction = 0.92
         self.run_attack_momentum_remaining = 0
@@ -39,6 +40,23 @@ class PlayerMovement:
         self.attack_nudge_direction = 0
         self.attack_nudge_speed = 0
 
+    @property
+    def is_jumping(self):
+        if self.air_state:
+            return self.air_state.is_jumping
+        return self._is_jumping
+
+    @is_jumping.setter
+    def is_jumping(self, value):
+        if self.air_state:
+            if value:
+                self.air_state.is_grounded = False
+            else:
+                self.air_state.reset()
+            return
+
+        self._is_jumping = value
+
     def update_timers(self):
         if self.run_tap_remaining > 0:
             self.run_tap_remaining -= 1
@@ -46,7 +64,7 @@ class PlayerMovement:
     # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):
         moving = False
-        if self.is_jumping:
+        if self.is_jumping or self.is_landing():
             return False
         if owner.combat.is_attacking:
             if owner.combat.current_attack_name == owner.RUN_ATTACK:
@@ -188,6 +206,41 @@ class PlayerMovement:
         self.run_tap_remaining = self.run_tap_window
 
     def update_jump_physics(self, owner, player_input):
+        if not self.air_state:
+            self.update_legacy_jump_physics(owner, player_input)
+            return
+
+        if self.air_state.is_landing:
+            if self.air_state.update_landing():
+                owner.state_machine.change_to(owner, owner.IDLE)
+            return
+
+        if owner.state == owner.JUMP_TAKEOFF:
+            if self.air_state.update_takeoff():
+                self.air_state.begin_jump()
+                owner.state_machine.change_to(owner, owner.JUMP)
+            return
+
+        if self.air_state.is_grounded:
+            return
+
+        self.update_air_movement(owner)
+        landed = self.air_state.update_jump_arc()
+        if landed:
+            self.vx = 0
+            self.vy = 0
+            owner.input_state.jump_attack_pressed = False
+            if owner.combat.current_attack_name == owner.JUMP_ATTACK:
+                owner.combat.cancel_attack()
+
+            if owner.state in [owner.JUMP, owner.JUMP_ATTACK]:
+                owner.state_machine.change_to(owner, owner.LANDING)
+
+    def update_air_movement(self, owner):
+        owner.x += self.air_state.direction_x * self.air_state.air_move_speed
+        owner.y += self.air_state.direction_y * self.air_state.air_move_speed * 0.6
+
+    def update_legacy_jump_physics(self, owner, player_input):
         if not self.is_jumping:
             return
 
@@ -216,24 +269,43 @@ class PlayerMovement:
     def start_jump(self, owner, player_input):
         if self.is_jumping:
             return
+        if self.is_landing():
+            return
         if owner.combat.is_attacking:
             return
         if owner.grab.grabbed_enemy:
             return
 
-        self.is_jumping = True
         self.ground_y = owner.y
-        self.vy = self.jump_power
         self.vx = 0
 
-        if player_input.left:
-            self.vx = -self.air_speed
+        direction_x = 0
+        direction_y = 0
+
+        if player_input.left and not player_input.right:
+            direction_x = -1
             owner.facing_right = False
-        elif player_input.right:
-            self.vx = self.air_speed
+        elif player_input.right and not player_input.left:
+            direction_x = 1
             owner.facing_right = True
 
+        if player_input.up and not player_input.down:
+            direction_y = -1
+        elif player_input.down and not player_input.up:
+            direction_y = 1
+
+        if self.air_state:
+            self.air_state.start_takeoff(direction_x, direction_y)
+            owner.state_machine.change_to(owner, owner.JUMP_TAKEOFF)
+            return
+
+        self.is_jumping = True
+        self.vy = -self.jump_power
+        self.vx = direction_x * self.air_speed
         owner.state_machine.change_to(owner, owner.JUMP)
+
+    def is_landing(self):
+        return bool(self.air_state and self.air_state.is_landing)
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
         if world_width is None:

@@ -13,6 +13,11 @@ class PlayerConfig:
     run_speed: float = PLAYER_RUN_SPEED
     run_attack_damage: int = int(FIST_DAMAGE*1.5)
     jump_attack_damage: int = FIST_DAMAGE + 5
+    jump_power: float = 12
+    jump_gravity: float = 0.7
+    air_move_speed: float = 3.0
+    jump_takeoff_frames: int = 6
+    landing_recovery_frames: int = 6
     grab_range: int = PLAYER_GRAB_RANGE
     width: int = PLAYER_W
     height: int = PLAYER_H

@@ -7,7 +7,7 @@ class PlayerActionController:
     def update_jump_input(self, owner, player_input):
         if player_input.jump:
             if not owner.movement.jump_pressed:
-                owner.movement.start_jump(player_input)
+                owner.movement.start_jump(owner, player_input)
                 owner.movement.jump_pressed = True
         else:
             owner.movement.jump_pressed = False

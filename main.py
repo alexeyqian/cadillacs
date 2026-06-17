@@ -90,6 +90,8 @@ def load_stage(game_state, stage_data):
     game_state.player.lifecycle.respawn_y = start_y
     game_state.player.movement.ground_y = start_y
     game_state.player.movement.is_jumping = False
+    if hasattr(game_state.player, "air"):
+        game_state.player.air.reset()
     game_state.player.movement.vx = 0
     game_state.player.movement.vy = 0
     game_state.player.state_machine.change_to(game_state.player, game_state.player.IDLE)

@@ -21,7 +21,7 @@ class PlayerGeometry:
         else:
             world_x = owner.x - frame_w - offset_x
 
-        world_y = owner.y + offset_y
+        world_y = self._get_visual_y(owner) + offset_y
 
         return pygame.Rect(
             int(world_x),
@@ -86,8 +86,18 @@ class PlayerGeometry:
             mirrored_x = frame_w - local_x - w
             world_x = owner.x - frame_w - offset_x + mirrored_x
 
-        world_y = owner.y + offset_y + local_y
+        world_y = self._get_visual_y(owner) + offset_y + local_y
         return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
 
     def _combat_rect_to_world(self, owner, box):
-        return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
+        anchor_y = owner.y
+        if owner.combat.current_attack_name == getattr(owner, "JUMP_ATTACK", None):
+            anchor_y = self._get_visual_y(owner)
+
+        return combat_box_to_world_rect(owner.x, anchor_y, owner.facing_right, box)
+
+    def _get_visual_y(self, owner):
+        air = getattr(owner, "air", None)
+        if not air:
+            return owner.y
+        return air.get_visual_y(owner.y)
