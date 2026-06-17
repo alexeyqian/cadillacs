@@ -133,8 +133,8 @@ PLAYER_ATTACKS = {
     ),
     "RUN_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,
-        duration=4 + 10 + 4,
-        phase=AttackPhaseData(windup=4, active=10, recovery=4),
+        duration=4 + 20 + 4,
+        phase=AttackPhaseData(windup=4, active=20, recovery=4),
         hitboxes=(AttackHitboxData(x=40, y=-220, width=180, height=80),),
         counter_hurtboxes=(AttackHitboxData(x=-24, y=-240, width=120, height=104),),
         max_targets=3,

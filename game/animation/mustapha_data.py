@@ -179,18 +179,12 @@ MUSTAPHA_ANIMATIONS = {
     },
     "hit": {
         "file": "assets/player/mustapha_hit.png",
-        "frames_count": 2,
+        "frames_count": 1,
         "frames": [
             {
-                "frame_rect": (0, 0, 120, 160),
+                "frame_rect": (0, 0, 126, 160),
                 "offset": (-60, -160),
                 "hurt_rect": (0, 0, 45, 110),
-                "attack_rect": None
-            },
-            {
-                "frame_rect": (120, 0, 126, 160),
-                "offset": (-70, -160),
-                "hurt_rect": (35, 0, 45, 110),
                 "attack_rect": None
             }
         ]
@@ -200,13 +194,13 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 2,
         "frames": [
             {
-                "frame_rect": (0, 0, 221, 87),
+                "frame_rect": (0, 0, 210, 87),
                 "offset": (-100, -87),
                 "hurt_rect": (0, 0, 110, 45),
                 "attack_rect": None
             },
             {
-                "frame_rect": (221, 0, 220, 87),
+                "frame_rect": (210, 0, 220, 87),
                 "offset": (-100, -87),
                 "hurt_rect": (0, 60, 110, 45),
                 "attack_rect": None
@@ -231,7 +225,7 @@ MUSTAPHA_ANIMATIONS = {
                 "attack_rect": (110, 18, 60, 20)
             },
             {
-                "frame_rect": (304, 0, 140, 168),
+                "frame_rect": (304, 0, 111, 168),
                 "offset": (-76, -168),
                 "hurt_rect": (56, 0, 45, 110),
                 "attack_rect": None
@@ -240,7 +234,7 @@ MUSTAPHA_ANIMATIONS = {
     },
     "run_attack": {
         "file": "assets/player/mustapha_run_attack.png",
-        "frames_count": 2,
+        "frames_count": 3,
         "frames": [
             {
                 "frame_rect": (0, 0, 120, 92),
@@ -253,6 +247,12 @@ MUSTAPHA_ANIMATIONS = {
                 "offset": (-110, -150),
                 "hurt_rect": (0, 20, 110, 45),
                 "attack_rect": (130, 40, 80, 40)
+            },
+            {
+                "frame_rect": (343, 0, 120, 92),
+                "offset": (-60, -150),
+                "hurt_rect": (0, 0, 120, 92),
+                "attack_rect": None
             }
         ]
     },
@@ -348,81 +348,10 @@ MUSTAPHA_ANIMATIONS = {
     },
 }
 
-MUSTAPHA_ANIMATIONS["attack_1"] = {
-    "file": "assets/player/mustapha_attack_1.png",
-    "frames_count": 3,
-    "frames": [
-        {
-            "frame_rect": (0, 0, 111, 168),
-            "offset": (-60, -168),
-            "hurt_rect": (40, 0, 45, 110),
-            "attack_rect": None
-        },
-        {
-            "frame_rect": (111, 0, 193, 168),
-            "offset": (-63, -168),
-            "hurt_rect": (40, 0, 45, 110),
-            "counter_hurt_rect": (90, 18, 20, 20),
-            "attack_rect": (110, 18, 60, 20)
-        },
-        {
-            "frame_rect": (304, 0, 140, 168),
-            "offset": (-76, -168),
-            "hurt_rect": (56, 0, 45, 110),
-            "attack_rect": None
-        }
-    ]
-}
-MUSTAPHA_ANIMATIONS["attack_2"] = {
-    "file": "assets/player/mustapha_attack_2.png",
-    "frames_count": 3,
-    "frames": [
-        {
-            "frame_rect": (0, 0, 111, 168),
-            "offset": (-60, -168),
-            "hurt_rect": (40, 0, 45, 110),
-            "attack_rect": None
-        },
-        {
-            "frame_rect": (111, 0, 200, 168),
-            "offset": (-66, -168),
-            "hurt_rect": (42, 0, 45, 110),
-            "counter_hurt_rect": (94, 18, 24, 20),
-            "attack_rect": (114, 18, 68, 20)
-        },
-        {
-            "frame_rect": (311, 0, 146, 168),
-            "offset": (-82, -168),
-            "hurt_rect": (62, 0, 45, 110),
-            "attack_rect": None
-        }
-    ]
-}
-MUSTAPHA_ANIMATIONS["attack_3"] = {
-    "file": "assets/player/mustapha_attack_3.png",
-    "frames_count": 3,
-    "frames": [
-        {
-            "frame_rect": (0, 0, 118, 168),
-            "offset": (-67, -168),
-            "hurt_rect": (47, 0, 45, 110),
-            "attack_rect": None
-        },
-        {
-            "frame_rect": (118, 0, 214, 168),
-            "offset": (-72, -168),
-            "hurt_rect": (46, 0, 48, 110),
-            "counter_hurt_rect": (100, 18, 28, 24),
-            "attack_rect": (122, 18, 78, 24)
-        },
-        {
-            "frame_rect": (332, 0, 154, 168),
-            "offset": (-90, -168),
-            "hurt_rect": (70, 0, 45, 110),
-            "attack_rect": None
-        }
-    ]
-}
+# todo: use different animation in future
+MUSTAPHA_ANIMATIONS["attack_1"] = MUSTAPHA_ANIMATIONS["attack"]
+MUSTAPHA_ANIMATIONS["attack_2"] = MUSTAPHA_ANIMATIONS["attack"]
+MUSTAPHA_ANIMATIONS["attack_3"] = MUSTAPHA_ANIMATIONS["attack"]
 
 MUSTAPHA_ANIM_FPS = {
     "idle": 6,
