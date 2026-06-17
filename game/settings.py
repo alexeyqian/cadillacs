@@ -31,7 +31,8 @@ SCREEN_HEIGHT=1080
 # player logical box, mostly for anchoring
 # visible idle body should be smaller, 
 # leave margin between visible body and logical player box
-PLAYER_W=int(128)
+# COLLISION UNIT is the fundamental unit in game
+PLAYER_W=int(128) # equals player shoulder width = COLLISION UNIT
 PLAYER_H=int(256)
 # walkable area height
 # todo: rename to GROUD_TOP and GROUND_BOTTOM
@@ -75,10 +76,10 @@ BOSS_ENEMY_H=ENEMY_H * 2
 
 ######## collision, hurt and hit/attack boxes ########
 # collision box is centered on bottom
-PLAYER_COLLISION_W = int(PLAYER_W * 0.70)
-PLAYER_COLLISION_H = int(PLAYER_H * 0.15)
+PLAYER_COLLISION_W = PLAYER_W
+PLAYER_COLLISION_H = int(PLAYER_H * 0.2)
 
-ENEMY_COLLISION_W = int(ENEMY_W * 0.5)
+ENEMY_COLLISION_W = int(ENEMY_W)
 ENEMY_COLLISION_H = int(ENEMY_H * 0.2)
 
 ENEMY_HURTBOX_W = int(ENEMY_W * 0.6)
