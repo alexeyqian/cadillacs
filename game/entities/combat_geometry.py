@@ -1,6 +1,7 @@
 import pygame
 
-
+# combat hitboxes are already in world/game pixels, not sprite-frame pixels. 
+# The code does not apply owner.sprite_scale to AttackHitboxData
 def combat_box_to_world_rect(anchor_x, anchor_y, facing_right, box):
     if facing_right:
         world_x = anchor_x + box.x

@@ -15,12 +15,12 @@ EPISODE_1_STAGES = [
                 "spawns": [
                     {
                         "enemy_type": "ferris",
-                        "count": 2
+                        "count": 3
                     }
                 ],
             },
             {
-                "trigger_x": 1600,
+                "trigger_x": 1800,
                 "max_active": 2,
                 "spawns": [
                     {
@@ -29,6 +29,7 @@ EPISODE_1_STAGES = [
                     {
                         "enemy_type": "gneiss",
                         "side": "left",
+                        "count": 2
                     }
                 ],
             },
@@ -38,6 +39,7 @@ EPISODE_1_STAGES = [
                 "spawns": [
                     {
                         "enemy_type": "gneiss",
+                        "count": 3
                     },
                     {
                         "enemy_type": "black_elmer",

@@ -23,7 +23,7 @@ class BossEnemy(Enemy):
             sprite_scale=4
         )
 
-        self.health.max_hp = BOSS_ENEMY_MAX_HP
+        self.health.max_hp = int(ENEMY_MAX_HP*10)
         self.health.hp = self.health.max_hp
         self.speed = BOSS_ENEMY_SPEED
 
