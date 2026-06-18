@@ -1,10 +1,15 @@
 import pygame
-
+from game.settings import *
 from game.entities.combat_geometry import combat_box_to_world_rect
 
 
 class EnemyGeometry:
     def get_collision_rect(self, owner):
+        return self._enemy_rect_to_world(owner,
+                pygame.Rect(-1 * owner.collision_box_w // 2, -1 * owner.collision_box_h,
+                owner.collision_box_w, owner.collision_box_h))
+    #deprecated
+    def get_collision_rect_old(self, owner):
         return pygame.Rect(
             int(owner.x - owner.collision_box_w / 2),
             int(owner.y - owner.collision_box_h),
@@ -12,6 +17,10 @@ class EnemyGeometry:
             int(owner.collision_box_h)
         )
 
+    def _enemy_rect_to_world(self, owner, box):
+        return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
+
+    # deprecated
     def get_frame_rect(self, owner):
         frame = owner.get_current_frame_data()
         if not frame:
@@ -33,6 +42,11 @@ class EnemyGeometry:
         return pygame.Rect(int(world_x), int(world_y), int(frame_w), int(frame_h))
 
     def get_hurt_rect(self, owner):
+        return self._enemy_rect_to_world(owner,
+                pygame.Rect(ENEMY_HURTBOX_OFFSET_X, ENEMY_HURTBOX_OFFSET_Y,
+                ENEMY_HURTBOX_W, ENEMY_HURTBOX_H))
+    # deprecated
+    def get_hurt_rect_old(self, owner):
         frame = owner.get_current_frame_data()
         if not frame or not frame.hurt_rect:
             return pygame.Rect(int(owner.x), int(owner.y), 0, 0)
@@ -40,6 +54,11 @@ class EnemyGeometry:
         return self._get_in_frame_box_rect(owner, frame.hurt_rect)
 
     def get_attack_rect(self, owner):
+        return self._enemy_rect_to_world(owner,
+                pygame.Rect(ENEMY_HIT_BOX_OFFSET_X, ENEMY_HIT_BOX_OFFSET_Y,
+                ENEMY_HITBOX_W, ENEMY_HITBOX_H))
+    # DEPRECATED
+    def get_attack_rect_old(self, owner):
         if owner.state == owner.ATTACK:
             combat_hitbox = owner.combat.get_active_hitbox_data(owner)
             if combat_hitbox:

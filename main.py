@@ -63,11 +63,12 @@ def create_stage_objects(stage_data):
 
     for object_config in stage_data["objects"]:
         kind = object_config["kind"]
-
+        loot_type = object_config.get("loot_type", None)
         if kind == "breakable":
             objects.append(BreakableObject(
                 object_config["x"],
-                object_config["y"]
+                object_config["y"],
+                loot_type=loot_type
             ))
 
         elif kind == "barrel":

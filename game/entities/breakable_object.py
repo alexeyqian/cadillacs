@@ -4,7 +4,7 @@ from game.assets.asset_manager import AssetManager
 from game.entities.loot import Loot
 
 class BreakableObject:
-    def __init__(self, x, y):
+    def __init__(self, x, y, loot_type=None):
         self.x = x
         self.y = y
         self.width = 100
@@ -13,6 +13,7 @@ class BreakableObject:
         self.destroyed = False
         self.loot_generated = False
         self.box_image_file = "game/assets/objects/box.png"
+        self.loot_type = loot_type
     
     def draw(self, screen, camera_x):
         if self.destroyed:
@@ -45,6 +46,9 @@ class BreakableObject:
             self.destroyed = True
 
     def create_loot(self):
+        if self.loot_type:
+            return Loot(self.x, self.y, self.loot_type)
+
         roll = random.randint(1,100)
         if roll <= 50:
             return Loot(self.x, self.y, "health")

@@ -11,8 +11,8 @@ class EnemyLootController:
         roll = random.randint(1, 100)
         # todo: design a loot drop system
         # todo: only some configured enemy should drop loot, not every one.
-        if roll <= 30:
-            return Loot(owner.x, owner.y, "health")
+        #if roll <= 30:
+        #    return Loot(owner.x, owner.y, "health")
 
         #if roll <= 50:
         #    return Loot(owner.x, owner.y, "ammo")

@@ -15,7 +15,7 @@ EPISODE_1_STAGES = [
                 "spawns": [
                     {
                         "enemy_type": "ferris",
-                        "count": 8
+                        "count": 2
                     }
                 ],
             },
@@ -25,12 +25,12 @@ EPISODE_1_STAGES = [
                 "spawns": [
                     {
                         "enemy_type": "ferris",
-                        "count": 4
+                        "count": 2
                     },
                     {
                         "enemy_type": "gneiss",
                         "side": "left",
-                        "count": 4
+                        "count": 2
                     }
                 ],
             },
@@ -40,12 +40,12 @@ EPISODE_1_STAGES = [
                 "spawns": [
                     {
                         "enemy_type": "gneiss",
-                        "count": 4
+                        "count": 2
                     },
                     {
                         "enemy_type": "black_elmer",
                         "side": "left",
-                        "count": 4
+                        "count": 1
                     },
                 ],
             },
@@ -56,8 +56,10 @@ EPISODE_1_STAGES = [
             #{"type": "pistol", "x": 2260, "y": 760},
         ],
         "objects": [
-            #{"kind": "breakable", "x": 880, "y": 500},
-            #{"kind": "breakable", "x": 1780, "y": 500},
+            # for after wave 2
+            {"kind": "breakable", "x": 2000, "y": 500, "loot_type":"health"},
+            # for after wave 3
+            {"kind": "breakable", "x": 1780, "y": 500, "loot_type":"health"},
             #{"kind": "barrel", "x": 1740, "y": 760},
             #{"kind": "breakable", "x": 2320, "y": 760},
         ],

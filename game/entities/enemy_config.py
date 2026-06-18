@@ -14,8 +14,8 @@ class EnemyConfig:
 
     collision_box_w: int = ENEMY_COLLISION_W
     collision_box_h: int = ENEMY_COLLISION_H
-    hurt_box_w: int = ENEMY_HURBOX_W
-    hurt_box_h: int = ENEMY_HURBOX_H
+    hurt_box_w: int = ENEMY_HURTBOX_W
+    hurt_box_h: int = ENEMY_HURTBOX_H
 
     max_hp: int = ENEMY_MAX_HP
     speed: float = ENEMY_SPEED
@@ -85,7 +85,7 @@ ENEMY_CONFIGS = {
         enemy_id="gneiss",
         display_name="Gneiss",
         max_hp=int(ENEMY_MAX_HP * GNEISS_SCALER),
-        speed=int(ENEMY_SPEED * GNEISS_SCALER),
+        speed=int(ENEMY_SPEED),
         attack_range=ENEMY_ATTACK_RANGE,
         attack_lane_range=ENEMY_ATTACK_LANE_RANGE,
         attack=EnemyAttackData(
@@ -119,11 +119,14 @@ ENEMY_CONFIGS = {
             phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*BLACK_ELMER_SCALER),
                                 active=int(ENEMY_ATTACK_ACTIVE*BLACK_ELMER_SCALER),
                                 recovery=int(ENEMY_ATTACK_RECOVERY*BLACK_ELMER_SCALER)),
-            hitboxes=(AttackHitboxData(
-                            x=int(ENEMY_HIT_BOX_OFFSET_X*BLACK_ELMER_SCALER),
-                            y=int(ENEMY_HIT_BOX_OFFSET_Y*BLACK_ELMER_SCALER),
-                            width=int(ENEMY_HITBOX_W*BLACK_ELMER_SCALER),
-                            height=int(ENEMY_HITBOX_H*BLACK_ELMER_SCALER),),
+            hitboxes=(
+                AttackHitboxData(
+                    x=int(ENEMY_HIT_BOX_OFFSET_X*BLACK_ELMER_SCALER),
+                    y=int(ENEMY_HIT_BOX_OFFSET_Y*BLACK_ELMER_SCALER),
+                    width=int(ENEMY_HITBOX_W*BLACK_ELMER_SCALER),
+                    height=int(ENEMY_HITBOX_H*BLACK_ELMER_SCALER),
+                ),
+            ),
         ),
         collision_box_w=int(ENEMY_COLLISION_W * BLACK_ELMER_SCALER),
         # So Black Elmer only flinches from the heavy punch
@@ -132,7 +135,7 @@ ENEMY_CONFIGS = {
         attack_flinch_damage_threshold=BAT_DAMAGE,
         anti_stunlock_hit_limit=2,
         score_points=int(ENEMY_SCORE_POINTS * BLACK_ELMER_SCALER),
-    )),
+    ),
 }
 
 def get_enemy_config(enemy_type):

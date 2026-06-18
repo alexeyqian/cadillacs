@@ -13,8 +13,8 @@ class PlayerConfig:
     height: int = PLAYER_H
     collision_box_w: int = PLAYER_COLLISION_W
     collision_box_h: int = PLAYER_COLLISION_H
-    hurt_box_w: int = PLAYER_HURBOX_H
-    hurt_box_h: int = PLAYER_HURBOX_H
+    hurt_box_w: int = PLAYER_HURTBOX_H
+    hurt_box_h: int = PLAYER_HURTBOX_H
 
     speed: float = PLAYER_SPEED
     run_speed: float = PLAYER_RUN_SPEED

@@ -14,22 +14,6 @@ PLAYER_SECOND_TO_THIRD_COMBO_WINDOW = 24
 PLAYER_THIRD_HIT_RECOVERY = 24
 PLAYER_CLASH_RECOVERY = 8
 
-PLAYER_ATTACK_HITBOXES=(AttackHitboxData(
-    x=PLAYER_HIT_BOX_OFFSET_X, y=PLAYER_HIT_BOX_OFFSET_Y,
-    width=PLAYER_HITBOX_W, height=PLAYER_HITBOX_H),),
-PLAYER_RUN_ATTACK_HITBOXES=(AttackHitboxData(
-    x=0, y=-1 * PLAYER_W, # horizon direction for mustapha
-    width=int(PLAYER_HITBOX_W*1.2),
-    height=int(PLAYER_HITBOX_H*2)),),
-
-# deprecated
-PLAYER_ATTACK_COUNTER_HURTBOXES=(AttackHitboxData(
-    x=54,
-    y=-300, 
-    width=34, 
-    height=38),)
-PLAYER_RUN_ATTACK_COUNTER_HURTBOXES=(AttackHitboxData(x=54, y=-300, width=34, height=38),)
-
 @dataclass(frozen=True)
 class AttackPhaseData:
     windup: int = 0
@@ -48,6 +32,37 @@ class AttackHitboxData:
     y: int
     width: int
     height: int
+
+
+PLAYER_ATTACK_HITBOXES = (
+    AttackHitboxData(
+        x=PLAYER_HIT_BOX_OFFSET_X,
+        y=PLAYER_HIT_BOX_OFFSET_Y,
+        width=PLAYER_HITBOX_W,
+        height=PLAYER_HITBOX_H,
+    ),
+)
+PLAYER_RUN_ATTACK_HITBOXES = (
+    AttackHitboxData(
+        x=0,
+        y=-1 * PLAYER_W,
+        width=int(PLAYER_HITBOX_W * 1.2),
+        height=int(PLAYER_HITBOX_H * 2),
+    ),
+)
+
+# deprecated
+PLAYER_ATTACK_COUNTER_HURTBOXES = (
+    AttackHitboxData(
+        x=54,
+        y=-300,
+        width=34,
+        height=38,
+    ),
+)
+PLAYER_RUN_ATTACK_COUNTER_HURTBOXES = (
+    AttackHitboxData(x=54, y=-300, width=34, height=38),
+)
 
 
 @dataclass(frozen=True)
