@@ -1,8 +1,6 @@
 from dataclasses import dataclass, replace
 from typing import Optional
-
 from game.settings import *
-
 from game.entities.attack_data import AttackData, DEFAULT_ENEMY_ATTACK_DATA
 
 GNEISS_SCALER=1.2
@@ -35,19 +33,7 @@ class EnemyConfig:
     # 0 = same lane only
     # 1 = same or adjacent lane
     attack_lane_reach: int = 0
-    attack: AttackData = replace(
-            DEFAULT_ENEMY_ATTACK_DATA,
-            damage=ENEMY_ATTACK_DAMAGE,
-            delay=ENEMY_ATTACK_DELAY,
-            cooldown=ENEMY_ATTACK_COOLDOWN,
-            windup=ENEMY_ATTACK_WINDUP,
-            active=ENEMY_ATTACK_ACTIVE,
-            recovery=ENEMY_ATTACK_RECOVERY,
-            hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
-            hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
-            hitbox_w=ENEMY_HITBOX_W,
-            hitbox_h=ENEMY_HITBOX_H,
-        )
+    attack: AttackData = DEFAULT_ENEMY_ATTACK_DATA
 
     max_melee_attackers:int = 2 # move to stage config?
     melee_attack_slot_limit: Optional[int] = None

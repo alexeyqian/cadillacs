@@ -95,77 +95,9 @@ DEFAULT_PLAYER_ATTACKS = {
     ),
 }
 
-PLAYER_ATTACKS = DEFAULT_PLAYER_ATTACKS
-
-WEAPON_PLAYER_ATTACKS = {
-    ("knife", "ATTACK_1"): replace(
-        PLAYER_ATTACKS["ATTACK_1"],
-        damage=PLAYER_ATTACKS["ATTACK_1"].damage + KNIFE_DAMAGE,
-        hitbox_offset_x=90,
-        hitbox_offset_y=-304,
-        hitbox_w=200,
-        hitbox_h=44,
-        lane_reach=1,
-    ),
-    ("knife", "ATTACK_2"): replace(
-        PLAYER_ATTACKS["ATTACK_2"],
-        damage=PLAYER_ATTACKS["ATTACK_2"].damage + KNIFE_DAMAGE,
-        hitbox_offset_x=90,
-        hitbox_offset_y=-304,
-        hitbox_w=200,
-        hitbox_h=44,
-        lane_reach=1,
-    ),
-    ("knife", "ATTACK_3"): replace(
-        PLAYER_ATTACKS["ATTACK_3"],
-        damage=PLAYER_ATTACKS["ATTACK_3"].damage + KNIFE_DAMAGE,
-        hitbox_offset_x=90,
-        hitbox_offset_y=-304,
-        hitbox_w=210,
-        hitbox_h=48,
-        lane_reach=1,
-    ),
-    ("bat", "ATTACK_1"): replace(
-        PLAYER_ATTACKS["ATTACK_1"],
-        damage=PLAYER_ATTACKS["ATTACK_1"].damage + BAT_DAMAGE,
-        hitbox_offset_x=80,
-        hitbox_offset_y=-316,
-        hitbox_w=250,
-        hitbox_h=64,
-        lane_reach=1,
-        max_targets=2,
-    ),
-    ("bat", "ATTACK_2"): replace(
-        PLAYER_ATTACKS["ATTACK_2"],
-        damage=PLAYER_ATTACKS["ATTACK_2"].damage + BAT_DAMAGE,
-        hitbox_offset_x=80,
-        hitbox_offset_y=-316,
-        hitbox_w=250,
-        hitbox_h=64,
-        lane_reach=1,
-        max_targets=2,
-    ),
-    ("bat", "ATTACK_3"): replace(
-        PLAYER_ATTACKS["ATTACK_3"],
-        damage=PLAYER_ATTACKS["ATTACK_3"].damage + BAT_DAMAGE,
-        hitbox_offset_x=72,
-        hitbox_offset_y=-320,
-        hitbox_w=280,
-        hitbox_h=72,
-        lane_reach=1,
-        max_targets=2,
-    ),
-}
-
-
+# todo: should get from owner
 def get_player_attack_data(attack_name, weapon=None):
-    if weapon and not getattr(weapon, "is_ranged", False):
-        weapon_type = getattr(weapon, "weapon_type", None)
-        weapon_attack = WEAPON_PLAYER_ATTACKS.get((weapon_type, attack_name))
-        if weapon_attack:
-            return weapon_attack
-
-    return PLAYER_ATTACKS.get(attack_name)
+    return DEFAULT_PLAYER_ATTACKS.get(attack_name)
 
 @dataclass(frozen=True)
 class PlayerConfig:
