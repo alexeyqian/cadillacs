@@ -3,6 +3,33 @@ from dataclasses import dataclass, replace
 from game.settings import *
 
 
+# todo: move to settings
+PLAYER_COUNTER_HIT_STUN_BONUS = 10
+# Combo windows are measured from attack start, not from attack finish.
+# Because standing punches now have recovery frames, these values include
+# attack duration plus the desired follow-up grace period.
+PLAYER_COMBO_WINDOW = 29
+PLAYER_FIRST_TO_SECOND_COMBO_WINDOW = 29
+PLAYER_SECOND_TO_THIRD_COMBO_WINDOW = 24
+PLAYER_THIRD_HIT_RECOVERY = 24
+PLAYER_CLASH_RECOVERY = 8
+
+PLAYER_ATTACK_HITBOXES=(AttackHitboxData(
+    x=PLAYER_HIT_BOX_OFFSET_X, y=PLAYER_HIT_BOX_OFFSET_Y,
+    width=PLAYER_HITBOX_W, height=PLAYER_HITBOX_H),),
+PLAYER_RUN_ATTACK_HITBOXES=(AttackHitboxData(
+    x=0, y=-1 * PLAYER_W, # horizon direction for mustapha
+    width=int(PLAYER_HITBOX_W*1.2),
+    height=int(PLAYER_HITBOX_H*2)),),
+
+# deprecated
+PLAYER_ATTACK_COUNTER_HURTBOXES=(AttackHitboxData(
+    x=54,
+    y=-300, 
+    width=34, 
+    height=38),)
+PLAYER_RUN_ATTACK_COUNTER_HURTBOXES=(AttackHitboxData(x=54, y=-300, width=34, height=38),)
+
 @dataclass(frozen=True)
 class AttackPhaseData:
     windup: int = 0
@@ -15,6 +42,7 @@ class AttackPhaseData:
 
 
 @dataclass(frozen=True)
+# x, y is offset relative to base middle of collision box
 class AttackHitboxData:
     x: int
     y: int
@@ -30,7 +58,7 @@ class PlayerAttackData:
     hitboxes: tuple = ()
     counter_hurtboxes: tuple = ()
     max_targets: int = 1
-    combo_window: int = 30
+    combo_window: int = ATTACK_COMBO_WINDOW
     action_lock: int = 0
     lane_reach: int = 0
     counter_hit_stun_bonus: int = 0
@@ -49,7 +77,6 @@ class PlayerAttackData:
     def recovery(self):
         return self.phase.recovery
 
-
 @dataclass(frozen=True)
 class EnemyAttackData:
     damage: float = ENEMY_ATTACK_DAMAGE
@@ -60,9 +87,14 @@ class EnemyAttackData:
         active=ENEMY_ATTACK_ACTIVE,
         recovery=ENEMY_ATTACK_RECOVERY,
     )
+    # should use per enemy design
     hitboxes: tuple = (
-        AttackHitboxData(x=72, y=-272, width=120, height=40),
-    )
+        AttackHitboxData(
+            x=ENEMY_HIT_BOX_OFFSET_X,
+            y=ENEMY_HIT_BOX_OFFSET_Y, 
+            width=ENEMY_HITBOX_W,
+            height=ENEMY_HITBOX_H),
+        )
     max_targets: int = 1
     clash_recovery_duration: int = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
     clash_cooldown_duration: int = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
@@ -87,56 +119,42 @@ class EnemyAttackData:
     def duration(self):
         return self.total_duration
 
-
-PLAYER_COUNTER_HIT_STUN_BONUS = 10
-PLAYER_ATTACK_1_RECOVERY = 3
-PLAYER_ATTACK_2_RECOVERY = 5
-PLAYER_ATTACK_3_RECOVERY = 6
-# Combo windows are measured from attack start, not from attack finish.
-# Because standing punches now have recovery frames, these values include
-# attack duration plus the desired follow-up grace period.
-PLAYER_COMBO_WINDOW = 29
-PLAYER_FIRST_TO_SECOND_COMBO_WINDOW = 29
-PLAYER_SECOND_TO_THIRD_COMBO_WINDOW = 24
-PLAYER_THIRD_HIT_RECOVERY = 24
-PLAYER_CLASH_RECOVERY = 8
-
 PLAYER_ATTACKS = {
     # shorter quick jab hitbox
     "ATTACK_1": PlayerAttackData(
-        damage=10,
-        duration=2 + 4 + 3,
-        phase=AttackPhaseData(windup=8, active=4, recovery=3),
-        hitboxes=(AttackHitboxData(x=92, y=-300, width=135, height=38),),
-        counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=34, height=38),),
+        damage=ATTACK_1_DAMAGE,
+        duration=ATTACK_1_WINDUP_DURATION + ATTACK_1_ACTIVE_DURATION + ATTACK_1_RECOVERY_DURATION,
+        phase=AttackPhaseData(
+            windup=ATTACK_1_WINDUP_DURATION,
+            active=ATTACK_1_ACTIVE_DURATION,
+            recovery=ATTACK_1_RECOVERY_DURATION),
+        hitboxes=PLAYER_ATTACK_HITBOXES,
+        counter_hurtboxes=PLAYER_ATTACK_COUNTER_HURTBOXES,
         combo_window=PLAYER_FIRST_TO_SECOND_COMBO_WINDOW,
     ),
     # medium baseline hitbox
     "ATTACK_2": PlayerAttackData(
-        damage=12,
-        duration=2 + 5 + 3,
-        phase=AttackPhaseData(windup=2, active=5, recovery=3),
-        hitboxes=(AttackHitboxData(x=94, y=-300, width=160, height=40),),
-        counter_hurtboxes=(AttackHitboxData(x=54, y=-300, width=40, height=40),),
+        damage=ATTACK_2_DAMAGE,
+        duration=ATTACK_2_WINDUP_DURATION + ATTACK_2_ACTIVE_DURATION + ATTACK_2_RECOVERY_DURATION,
+        phase=AttackPhaseData(
+            windup=ATTACK_2_WINDUP_DURATION,
+            active=ATTACK_2_ACTIVE_DURATION,
+            recovery=ATTACK_2_RECOVERY_DURATION),
+        hitboxes=PLAYER_ATTACK_HITBOXES,
+        counter_hurtboxes=PLAYER_ATTACK_COUNTER_HURTBOXES,
         combo_window=PLAYER_SECOND_TO_THIRD_COMBO_WINDOW,
     ),
     # wider/taller finisher hitbox. Keep it larger than ATTACK_2, but avoid
     # overextending it because ATTACK_3 also gets a small forward nudge.
     "ATTACK_3": PlayerAttackData(
-        damage=20,
-        duration=4 + 6 + 4,
-        phase=AttackPhaseData(windup=4, active=6, recovery=4),
-        hitboxes=(AttackHitboxData(x=98, y=-304, width=176, height=46),),
-        counter_hurtboxes=(AttackHitboxData(x=52, y=-304, width=46, height=46),),
-        combo_window=0,
-        action_lock=PLAYER_THIRD_HIT_RECOVERY,
-    ),
-    "ATTACK_4": PlayerAttackData(
-        damage=35,
-        duration=6 + 8 + 6,
-        phase=AttackPhaseData(windup=4, active=6, recovery=4),
-        hitboxes=(AttackHitboxData(x=98, y=-304, width=176, height=46),),
-        counter_hurtboxes=(AttackHitboxData(x=52, y=-304, width=46, height=46),),
+        damage=ATTACK_3_DAMAGE,
+        duration=ATTACK_3_WINDUP_DURATION + ATTACK_3_ACTIVE_DURATION + ATTACK_3_RECOVERY_DURATION,
+        phase=AttackPhaseData(
+            windup=ATTACK_3_WINDUP_DURATION,
+            active=ATTACK_3_ACTIVE_DURATION,
+            recovery=ATTACK_3_RECOVERY_DURATION),
+        hitboxes=PLAYER_ATTACK_HITBOXES,
+        counter_hurtboxes=PLAYER_ATTACK_COUNTER_HURTBOXES,
         combo_window=0,
         action_lock=PLAYER_THIRD_HIT_RECOVERY,
     ),
@@ -147,8 +165,8 @@ PLAYER_ATTACKS = {
             windup=RUN_ATTACK_WINDUP_DURATION, 
             active=RUN_ATTACK_ACTIVE_DURATION,
             recovery=RUN_ATTACK_RECOVERY_DURATION),
-        hitboxes=(AttackHitboxData(x=40, y=-220, width=180, height=80),),
-        counter_hurtboxes=(AttackHitboxData(x=-24, y=-240, width=120, height=104),),
+        hitboxes=PLAYER_RUN_ATTACK_HITBOXES,
+        counter_hurtboxes=PLAYER_RUN_ATTACK_COUNTER_HURTBOXES,
         max_targets=3,
         action_lock=RUN_ATTACK_LANDING_RECOVERY,
         knockback_velocity=RUN_ATTACK_BASE_KNOCKBACK,

@@ -1,10 +1,5 @@
-from game.settings import FIST_DAMAGE
-from game.settings import (
-    RUN_ATTACK_FULL_POWER_DISTANCE,
-    RUN_ATTACK_REQUIRED_DISTANCE,
-    RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
-    RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
-)
+from game.settings import *
+
 from game.entities.attack_data import (
     PLAYER_CLASH_RECOVERY,
     PLAYER_COMBO_WINDOW,
