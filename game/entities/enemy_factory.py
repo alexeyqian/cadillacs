@@ -1,7 +1,7 @@
 from game.entities.ferris_enemy import FerrisEnemy
 from game.entities.gneiss_enemy import GneissEnemy
 from game.entities.black_elmer_enemy import BlackElmerEnemy
-from game.entities.ranged_enemy import RangedEnemy
+from game.entities.walther_enemy import WaltherEnemy
 
 class EnemyFactory:
     @staticmethod
@@ -12,7 +12,7 @@ class EnemyFactory:
             return GneissEnemy(x, y)
         if enemy_type == "black_elmer":
             return BlackElmerEnemy(x, y)
-        if enemy_type == "ranged":
-            return RangedEnemy(x, y)
+        if enemy_type == "walther":
+            return WaltherEnemy(x, y)
 
         return FerrisEnemy(x, y)

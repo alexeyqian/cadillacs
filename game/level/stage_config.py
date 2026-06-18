@@ -148,6 +148,16 @@ EPISODE_1_STAGES = [
         "lane_bottom": 1080,
         "waves": [
             {
+                "trigger_x": 600,
+                "max_active": 3,
+                "spawns": [
+                    {
+                        "enemy_type": "walther",
+                        "count": 1
+                    },
+                ],
+            },
+            {
                 "trigger_x": 1000,
                 "max_active": 3,
                 "spawns": [

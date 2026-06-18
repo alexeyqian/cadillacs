@@ -6,6 +6,7 @@ from game.entities.attack_data import AttackHitboxData, AttackPhaseData, EnemyAt
 
 GNEISS_SCALER=1.2
 BLACK_ELMER_SCALER=1.5
+WALTHER_SCALER=3
 @dataclass(frozen=True)
 class EnemyConfig:
     enemy_id: str
@@ -135,6 +136,39 @@ ENEMY_CONFIGS = {
         attack_flinch_damage_threshold=BAT_DAMAGE,
         anti_stunlock_hit_limit=2,
         score_points=int(ENEMY_SCORE_POINTS * BLACK_ELMER_SCALER),
+    ),
+    "walther": EnemyConfig(
+        enemy_id="walther",
+        display_name="Walther",
+        archetype="heavy",
+        max_hp=ENEMY_MAX_HP * WALTHER_SCALER,
+        speed=int(ENEMY_SPEED * 0.7),
+        attack_range=int(ENEMY_ATTACK_RANGE * WALTHER_SCALER),
+        attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * WALTHER_SCALER),
+        attack_lane_reach=1,
+        attack=EnemyAttackData(
+            damage=ENEMY_ATTACK_DAMAGE * WALTHER_SCALER,
+            delay=int(ENEMY_ATTACK_DELAY * 1),
+            cooldown=int(ENEMY_ATTACK_COOLDOWN * WALTHER_SCALER),
+            phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*WALTHER_SCALER),
+                                active=int(ENEMY_ATTACK_ACTIVE*WALTHER_SCALER),
+                                recovery=int(ENEMY_ATTACK_RECOVERY*WALTHER_SCALER)),
+            hitboxes=(
+                AttackHitboxData(
+                    x=int(ENEMY_HIT_BOX_OFFSET_X*WALTHER_SCALER),
+                    y=int(ENEMY_HIT_BOX_OFFSET_Y*WALTHER_SCALER),
+                    width=int(ENEMY_HITBOX_W*WALTHER_SCALER),
+                    height=int(ENEMY_HITBOX_H*WALTHER_SCALER),
+                ),
+            ),
+        ),
+        collision_box_w=int(ENEMY_COLLISION_W * WALTHER_SCALER),
+        # So Black Elmer only flinches from the heavy punch
+        # light punch hits still reduce HP, but he can keep acting.
+        flinch_damage_threshold=FIST_DAMAGE + 100, # means no flinch
+        attack_flinch_damage_threshold=BAT_DAMAGE,
+        anti_stunlock_hit_limit=2,
+        score_points=int(ENEMY_SCORE_POINTS * WALTHER_SCALER),
     ),
 }
 
