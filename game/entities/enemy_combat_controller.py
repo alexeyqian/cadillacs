@@ -1,10 +1,18 @@
-from game.entities.attack_controller import AttackController
+from game.entities.attack_manager import AttackManager
 from dataclasses import replace
 
 from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 
 
 class EnemyCombatController:
+    def __init__(self, attack_data=None):
+        self.attack_manager = AttackManager()
+        self.attack_data = attack_data
+        self.decision_timer = 0
+        self.already_hit = False
+        self.cooldown = 0
+        self.has_attack_slot = False
+
     def start_attack(self, owner):
         owner.state = owner.ATTACK
         self.clear_hit_state(owner)
@@ -49,24 +57,16 @@ class EnemyCombatController:
             self.finish_attack(owner)
 
     def start_attack_timing(self, owner):
-        controller = self.get_attack_controller(owner)
-        controller.start(owner.ATTACK, self.get_attack_data(owner))
-        self.set_attack_timer(owner, controller.attack_timer)
+        self.attack_manager.start(owner.ATTACK, self.get_attack_data(owner))
 
     def advance_attack_timing(self, owner):
-        controller = self.get_attack_controller(owner)
-        if not controller.is_attacking:
-            controller.start(owner.ATTACK, self.get_attack_data(owner))
-            controller.attack_timer = self.get_attack_timer(owner)
+        if not self.attack_manager.is_attacking:
+            self.attack_manager.start(owner.ATTACK, self.get_attack_data(owner))
 
-        attack_finished = controller.advance()
-        self.set_attack_timer(owner, controller.attack_timer)
-        return attack_finished
+        return self.attack_manager.advance()
 
     def cancel_attack_timing(self, owner):
-        controller = self.get_attack_controller(owner)
-        controller.cancel()
-        self.set_attack_timer(owner, 0)
+        self.attack_manager.cancel()
 
     def finish_attack(self, owner):
         self.cancel_attack_timing(owner)
@@ -76,15 +76,14 @@ class EnemyCombatController:
         self.set_cooldown(owner, owner.attack_cooldown_duration)
 
     def is_attack_active(self, owner):
-        controller = self.get_attack_controller(owner)
-        if not controller.is_attacking:
+        if not self.attack_manager.is_attacking:
             attack_data = self.get_attack_data(owner)
             return (
                 attack_data.windup
                 <= self.get_attack_timer(owner)
                 < attack_data.windup + attack_data.active
             )
-        return controller.is_active()
+        return self.attack_manager.is_active()
 
     def get_active_hitbox_data(self, owner):
         if not self.is_attack_active(owner):
@@ -93,81 +92,48 @@ class EnemyCombatController:
         return self.get_attack_data(owner)
 
     def mark_attack_hit(self, owner, target):
-        controller = self.get_attack_controller(owner)
-        controller.mark_target_hit(target)
+        self.attack_manager.mark_target_hit(target)
         self.mark_attack_already_hit(owner)
 
-    def get_attack_controller(self, owner):
-        if hasattr(owner, "attack_state"):
-            return owner.attack_state.controller
-        if not hasattr(owner, "attack_controller"):
-            owner.attack_controller = AttackController()
-        return owner.attack_controller
+    def get_attack_manager(self, owner):
+        return self.attack_manager
 
     def get_attack_timer(self, owner):
-        if hasattr(owner, "attack_state"):
-            return owner.attack_state.timer
-        return getattr(owner, "attack_timer", 0)
+        return self.attack_manager.attack_timer
 
     def set_attack_timer(self, owner, value):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.timer = value
-        else:
-            owner.attack_timer = value
+        self.attack_manager.attack_timer = value
 
     def reset_decision_timer(self, owner):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.reset_decision_timer()
-        else:
-            owner.attack_decision_timer = 0
+        self.decision_timer = 0
 
     def has_attack_hit(self, owner):
-        if hasattr(owner, "attack_state"):
-            return owner.attack_state.already_hit
-        return owner.attack_already_hit
+        return self.already_hit
 
     def mark_attack_already_hit(self, owner):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.already_hit = True
-        else:
-            owner.attack_already_hit = True
+        self.already_hit = True
 
     def clear_hit_state(self, owner):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.clear_hit_state()
-        else:
-            owner.attack_already_hit = False
+        self.already_hit = False
 
     def reserve_attack_slot(self, owner, uses_slot):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.reserve_slot(uses_slot)
-        else:
-            owner.has_attack_slot = uses_slot
+        self.has_attack_slot = uses_slot
 
     def release_attack_slot(self, owner):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.release_slot()
-        else:
-            owner.has_attack_slot = False
+        self.has_attack_slot = False
 
     def get_cooldown(self, owner):
-        if hasattr(owner, "attack_state"):
-            return owner.attack_state.cooldown
-        return owner.attack_cooldown
+        return self.cooldown
 
     def set_cooldown(self, owner, value):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.cooldown = value
-        else:
-            owner.attack_cooldown = value
+        self.cooldown = value
 
     def get_attack_data(self, owner):
-        if hasattr(owner, "attack_state") and owner.attack_state.data:
-            return owner.attack_state.data
+        if self.attack_data:
+            return self.attack_data
         if hasattr(owner, "attack_data"):
             return owner.attack_data
 
-        # TODO: why need replace here?
         return replace(
             DEFAULT_ENEMY_ATTACK_DATA,
             damage=owner.attack_damage,
@@ -188,6 +154,10 @@ class EnemyCombatController:
             owner.lifecycle_state.action_lock_remaining = value
         else:
             owner.action_lock_remaining = value
+
+    def update_timers(self):
+        if self.cooldown > 0:
+            self.cooldown -= 1
 
     # Compatibility aliases for older call sites while migration continues.
     def start_attack_timer(self, owner):

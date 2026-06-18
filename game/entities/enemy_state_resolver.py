@@ -129,27 +129,27 @@ class EnemyStateResolver:
 
         return True
 
-    def get_attack_state(self, owner):
-        return getattr(owner, "attack_state", None)
+    def get_combat(self, owner):
+        return getattr(owner, "combat", None)
 
     def reset_attack_decision(self, owner):
-        attack_state = self.get_attack_state(owner)
-        if attack_state:
-            attack_state.reset_decision_timer()
+        combat = self.get_combat(owner)
+        if combat:
+            combat.reset_decision_timer(owner)
         else:
             owner.attack_decision_timer = 0
 
     def increment_attack_decision(self, owner):
-        attack_state = self.get_attack_state(owner)
-        if attack_state:
-            attack_state.decision_timer += 1
+        combat = self.get_combat(owner)
+        if combat:
+            combat.decision_timer += 1
         else:
             owner.attack_decision_timer += 1
 
     def get_attack_decision(self, owner):
-        attack_state = self.get_attack_state(owner)
-        if attack_state:
-            return attack_state.decision_timer
+        combat = self.get_combat(owner)
+        if combat:
+            return combat.decision_timer
         return owner.attack_decision_timer
 
     def get_required_attack_delay(self, owner, player=None):
@@ -173,15 +173,15 @@ class EnemyStateResolver:
         return combat.get_attack_phase_name() == "RECOVERY"
 
     def get_attack_cooldown(self, owner):
-        attack_state = self.get_attack_state(owner)
-        if attack_state:
-            return attack_state.cooldown
+        combat = self.get_combat(owner)
+        if combat:
+            return combat.cooldown
         return owner.attack_cooldown
 
     def has_attack_slot(self, owner):
-        attack_state = self.get_attack_state(owner)
-        if attack_state:
-            return attack_state.has_slot
+        combat = self.get_combat(owner)
+        if combat:
+            return combat.has_attack_slot
         return owner.has_attack_slot
 
     def uses_melee_attack_slot(self, owner):

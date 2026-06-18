@@ -1,14 +1,14 @@
 import unittest
 from dataclasses import replace
 
-from game.entities.attack_controller import AttackController
+from game.entities.attack_manager import AttackManager
 from game.entities.attack_data import DEFAULT_PLAYER_ATTACK_DATA
 from game.entities.attack_debug import format_attack_debug_lines
 
 
 class AttackDebugTests(unittest.TestCase):
     def test_inactive_attack_has_no_debug_lines(self):
-        controller = AttackController()
+        controller = AttackManager()
 
         self.assertEqual(format_attack_debug_lines("Player", controller), [])
 
@@ -25,7 +25,7 @@ class AttackDebugTests(unittest.TestCase):
             hitbox_h=40,
             max_targets=2,
         )
-        controller = AttackController()
+        controller = AttackManager()
         controller.start("test_punch", attack)
         for _ in range(4):
             controller.advance()

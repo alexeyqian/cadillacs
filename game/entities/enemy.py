@@ -7,7 +7,6 @@ from game.entities.enemy_animation_controller import EnemyAnimationController
 from game.entities.enemy_renderer import EnemyRenderer
 from game.entities.enemy_movement import EnemyMovement
 from game.entities.enemy_flanking import EnemyFlanking
-from game.entities.enemy_attack_state import EnemyAttackState
 from game.entities.enemy_lifecycle_state import EnemyLifecycleState
 from game.entities.enemy_coordination import EnemyCoordination
 from game.entities.enemy_combat_controller import EnemyCombatController
@@ -54,7 +53,6 @@ class Enemy:
         self.state = self.IDLE
         self.facing_right = False
 
-        self.attack_state = EnemyAttackState()
         self.lifecycle_state = EnemyLifecycleState()
 
         # Movement
@@ -66,12 +64,13 @@ class Enemy:
         self.geometry = EnemyGeometry()
         self.loot_generated = False
 
+        # Components
+        self.combat = EnemyCombatController()
+
         self.apply_enemy_config(get_enemy_config(self.enemy_type))
 
-        # Components
         self.movement = EnemyMovement()
         self.flanking = EnemyFlanking()
-        self.combat = EnemyCombatController()
         self.reactions = EnemyReactionController()
         self.lifecycle = EnemyLifecycleController()
         self.state_resolver = EnemyStateResolver()
@@ -101,7 +100,7 @@ class Enemy:
         self.attack_lane_range = config.attack_lane_range
         self.attack_lane_reach = config.attack_lane_reach
 
-        self.attack_state.data = config.attack
+        self.combat.attack_data = config.attack
         self.attack_damage = config.attack.damage
         self.attack_delay = config.attack.delay
         self.attack_cooldown_duration = config.attack.cooldown
@@ -221,8 +220,6 @@ class Enemy:
         return self.combat.is_attack_active(self)
 
     def get_attack_total_duration(self):
-        if hasattr(self, "attack_state") and self.attack_state.data:
-            return self.attack_state.data.total_duration
         if hasattr(self, "attack_data"):
             return self.attack_data.total_duration
         return self.combat.get_attack_data(self).total_duration
@@ -230,16 +227,12 @@ class Enemy:
     def get_attack_phase_name(self):
         if self.state != self.ATTACK:
             return ""
-        if not hasattr(self, "attack_state"):
-            return ""
-        return self.attack_state.controller.get_phase_name()
+        return self.combat.attack_manager.get_phase_name()
 
     def get_attack_timing_label(self):
         if self.state != self.ATTACK:
             return ""
-        if not hasattr(self, "attack_state"):
-            return ""
-        return self.attack_state.controller.get_timing_label()
+        return self.combat.attack_manager.get_timing_label()
 
     # Rendering / animation / geometry
     def draw(self, screen, camera_x):

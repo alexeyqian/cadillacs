@@ -1,13 +1,13 @@
 from game.settings import *
 
 from game.entities.player_config import get_player_attack_data
-from game.entities.attack_controller import AttackController
+from game.entities.attack_manager import AttackManager
 from game.entities.hit_reaction import HitReaction
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombatController:
     def __init__(self):
-        self.attack_controller = AttackController()
+        self.attack_manager = AttackManager()
 
         # classic combo system
         # J punch 1, J punch 2, J punch 3
@@ -26,64 +26,64 @@ class PlayerCombatController:
 
     @property
     def is_attacking(self):
-        return self.attack_controller.is_attacking
+        return self.attack_manager.is_attacking
 
     @is_attacking.setter
     def is_attacking(self, value):
         if not value:
-            self.attack_controller.cancel()
+            self.attack_manager.cancel()
 
     @property
     def attack_timer(self):
-        return self.attack_controller.attack_timer
+        return self.attack_manager.attack_timer
 
     @property
     def attack_remaining(self):
-        return self.attack_controller.attack_remaining
+        return self.attack_manager.attack_remaining
 
     @attack_remaining.setter
     def attack_remaining(self, value):
         # Kept only for old callers during the migration.
         if value <= 0:
-            self.attack_controller.cancel()
+            self.attack_manager.cancel()
 
     @property
     def attack_connected(self):
-        return self.attack_controller.attack_connected
+        return self.attack_manager.attack_connected
 
     @attack_connected.setter
     def attack_connected(self, value):
-        self.attack_controller.attack_connected = value
+        self.attack_manager.attack_connected = value
 
     @property
     def current_attack_name(self):
-        return self.attack_controller.current_attack_name
+        return self.attack_manager.current_attack_name
 
     def mark_attack_connected(self):
-        self.attack_controller.mark_connected()
+        self.attack_manager.mark_connected()
 
     def mark_attack_hit(self, target):
-        self.attack_controller.mark_target_hit(target)
+        self.attack_manager.mark_target_hit(target)
 
     def can_hit_target(self, target):
-        return self.attack_controller.can_hit_target(target)
+        return self.attack_manager.can_hit_target(target)
 
     def can_hit_more_targets(self):
-        return self.attack_controller.can_hit_more_targets()
+        return self.attack_manager.can_hit_more_targets()
 
     def is_attack_active(self):
-        return self.attack_controller.is_active()
+        return self.attack_manager.is_active()
 
     def get_attack_phase_name(self):
-        return self.attack_controller.get_phase_name()
+        return self.attack_manager.get_phase_name()
 
     def get_attack_timing_label(self):
-        return self.attack_controller.get_timing_label()
+        return self.attack_manager.get_timing_label()
 
     def get_active_hitbox_data(self):
         if not self.is_attack_active():
             return None
-        attack = self.attack_controller.current_attack
+        attack = self.attack_manager.current_attack
         if not attack:
             return None
         return attack
@@ -114,9 +114,9 @@ class PlayerCombatController:
             self.combo_step = 0
 
         if self.is_attacking:
-            if self.attack_controller.advance():
+            if self.attack_manager.advance():
                 finished_attack_name, finished_move, attack_connected = (
-                    self.attack_controller.finish()
+                    self.attack_manager.finish()
                 )
 
                 # expected behavior:
@@ -154,7 +154,7 @@ class PlayerCombatController:
 
         if owner.movement.can_start_run_attack():
             move_data = self.get_attack_data(owner, owner.RUN_ATTACK)
-            self.attack_controller.start(owner.RUN_ATTACK, move_data)
+            self.attack_manager.start(owner.RUN_ATTACK, move_data)
             owner.movement.start_run_attack_momentum(owner)
             self.combo_window_remaining = 0
             self.combo_step = 0
@@ -176,7 +176,7 @@ class PlayerCombatController:
             owner.movement.start_attack_3_nudge(owner)
 
         move_data = self.get_attack_data(owner, owner.state)
-        self.attack_controller.start(owner.state, move_data)
+        self.attack_manager.start(owner.state, move_data)
         self.combo_window_remaining = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
 
     def start_jump_attack(self, owner):
@@ -189,7 +189,7 @@ class PlayerCombatController:
             return
 
         move_data = self.get_attack_data(owner, owner.JUMP_ATTACK)
-        self.attack_controller.start(owner.JUMP_ATTACK, move_data)
+        self.attack_manager.start(owner.JUMP_ATTACK, move_data)
         if air:
             air.mark_jump_attack_used()
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
@@ -201,7 +201,7 @@ class PlayerCombatController:
             return
 
         move_data = self.get_attack_data(owner, owner.GRAB_KNEE)
-        self.attack_controller.start(owner.GRAB_KNEE, move_data)
+        self.attack_manager.start(owner.GRAB_KNEE, move_data)
         owner.grab.grab_knee_remaining = owner.grab.grab_knee_duration
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
@@ -212,7 +212,7 @@ class PlayerCombatController:
 
     # enemy hits should fully cancel the player’s combo.
     def cancel_attack(self):
-        self.attack_controller.cancel()
+        self.attack_manager.cancel()
         self.combo_step = 0
         self.combo_window_remaining = 0
         self.action_lock_remaining = 0
@@ -264,8 +264,8 @@ class PlayerCombatController:
         return full_power_bonus * bonus_ratio
 
     def get_current_or_state_attack_data(self, owner):
-        if self.attack_controller.current_attack:
-            return self.attack_controller.current_attack
+        if self.attack_manager.current_attack:
+            return self.attack_manager.current_attack
         return self.get_attack_data(owner, owner.state)
 
     def get_attack_data(self, owner, attack_name):

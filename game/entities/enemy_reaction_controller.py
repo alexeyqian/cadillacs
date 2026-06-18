@@ -223,21 +223,21 @@ class EnemyReactionController:
     def cancel_attack(self, owner):
         if hasattr(owner, "combat"):
             owner.combat.cancel_attack_timing(owner)
-        elif hasattr(owner, "attack_controller"):
-            owner.attack_controller.cancel()
+        elif hasattr(owner, "attack_manager"):
+            owner.attack_manager.cancel()
             owner.attack_timer = 0
         else:
             owner.attack_timer = 0
 
     def reset_attack_decision(self, owner):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.reset_decision_timer()
+        if hasattr(owner, "combat"):
+            owner.combat.reset_decision_timer(owner)
         else:
             owner.attack_decision_timer = 0
 
     def release_attack_slot(self, owner):
-        if hasattr(owner, "attack_state"):
-            owner.attack_state.release_slot()
+        if hasattr(owner, "combat"):
+            owner.combat.release_attack_slot(owner)
         else:
             owner.has_attack_slot = False
 

@@ -275,7 +275,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(
-            combat.attack_controller.current_attack,
+            combat.attack_manager.current_attack,
             WEAPON_PLAYER_ATTACKS[("knife", owner.ATTACK_1)],
         )
         self.assertEqual(
@@ -292,10 +292,10 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(
-            combat.attack_controller.current_attack,
+            combat.attack_manager.current_attack,
             WEAPON_PLAYER_ATTACKS[("bat", owner.ATTACK_1)],
         )
-        self.assertEqual(combat.attack_controller.current_attack.max_targets, 2)
+        self.assertEqual(combat.attack_manager.current_attack.max_targets, 2)
 
     def test_ranged_weapon_does_not_change_melee_attack_data(self):
         owner = FakeOwner()
@@ -304,7 +304,7 @@ class AttackDataTests(unittest.TestCase):
 
         combat.start_attack(owner)
 
-        self.assertEqual(combat.attack_controller.current_attack, PLAYER_ATTACKS["ATTACK_1"])
+        self.assertEqual(combat.attack_manager.current_attack, PLAYER_ATTACKS["ATTACK_1"])
 
     def test_second_combo_hit_allows_moderate_followup_delay(self):
         owner = FakeOwner()

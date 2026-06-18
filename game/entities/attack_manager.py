@@ -1,4 +1,4 @@
-class AttackController:
+class AttackManager:
     def __init__(self):
         self.current_attack_name = None
         self.current_attack = None

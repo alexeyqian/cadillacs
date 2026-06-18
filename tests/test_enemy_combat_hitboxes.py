@@ -1,8 +1,6 @@
 import unittest
 from dataclasses import replace
 
-from game.entities.attack_controller import AttackController
-
 from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_geometry import EnemyGeometry
@@ -28,7 +26,6 @@ class FakeEnemy:
         self.attack_windup = 2
         self.attack_active = 2
         self.attack_recovery = 2
-        self.attack_controller = AttackController()
         self.attack_data = replace(
             DEFAULT_ENEMY_ATTACK_DATA,
             damage=10,
@@ -40,7 +37,7 @@ class FakeEnemy:
             hitbox_w=50,
             hitbox_h=20,
         )
-        self.combat = EnemyCombatController()
+        self.combat = EnemyCombatController(self.attack_data)
 
     def get_current_frame_data(self):
         return FakeFrame()

@@ -1,11 +1,11 @@
 import unittest
 from dataclasses import replace
 
-from game.entities.attack_controller import AttackController
+from game.entities.attack_manager import AttackManager
 from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA, DEFAULT_PLAYER_ATTACK_DATA
 
 
-class AttackControllerTests(unittest.TestCase):
+class AttackManagerTests(unittest.TestCase):
     def test_player_attack_uses_elapsed_timer_and_duration(self):
         attack = replace(
             DEFAULT_PLAYER_ATTACK_DATA,
@@ -14,7 +14,7 @@ class AttackControllerTests(unittest.TestCase):
             active=1,
             recovery=2,
         )
-        controller = AttackController()
+        controller = AttackManager()
 
         controller.start("ATTACK_1", attack)
 
@@ -37,7 +37,7 @@ class AttackControllerTests(unittest.TestCase):
             active=2,
             recovery=2,
         )
-        controller = AttackController()
+        controller = AttackManager()
 
         controller.start("enemy_punch", attack)
 
@@ -59,7 +59,7 @@ class AttackControllerTests(unittest.TestCase):
             active=2,
             recovery=2,
         )
-        controller = AttackController()
+        controller = AttackManager()
 
         controller.start("enemy_punch", attack)
 
@@ -86,7 +86,7 @@ class AttackControllerTests(unittest.TestCase):
             recovery=2,
         )
         target = object()
-        controller = AttackController()
+        controller = AttackManager()
 
         controller.start("ATTACK_1", attack)
         controller.mark_target_hit(target)
@@ -111,7 +111,7 @@ class AttackControllerTests(unittest.TestCase):
         first_target = object()
         second_target = object()
         third_target = object()
-        controller = AttackController()
+        controller = AttackManager()
 
         controller.start("wide_swing", attack)
 

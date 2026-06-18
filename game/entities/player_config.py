@@ -196,7 +196,7 @@ class PlayerConfig:
     landing_recovery_frames: int = 6
 
     grab_range: int = PLAYER_GRAB_RANGE
-    hit_stun_duration: int = ATTACK_1_HIT_STUN # todo: for self or enemy?
+    hit_stun_duration: int = ATTACK_1_HIT_STUN_DURATION
     sprite_scale: int = 2
 
 

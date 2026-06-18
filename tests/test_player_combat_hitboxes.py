@@ -102,7 +102,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         hitboxes = PlayerGeometry()
         attack_data = PLAYER_ATTACKS["JUMP_ATTACK"]
 
-        owner.combat.attack_controller.start(owner.JUMP_ATTACK, attack_data)
+        owner.combat.attack_manager.start(owner.JUMP_ATTACK, attack_data)
         for _ in range(attack_data.windup):
             owner.combat.update_timers(owner)
 

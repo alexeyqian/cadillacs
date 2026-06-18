@@ -89,13 +89,19 @@ PROJECTILE_SPEED=PLAYER_SPEED*3
 
 ######## player attack ########
 FIST_DAMAGE=10
+# Attack lifecycle
+# -> windup (prepare)
+# -> active attack (hit player once, not every frame) 
+# -> recovery (enemy cannot move)
+# ->cooldown(frame cooldown before next attack)
 
 ATTACK_1_DAMAGE=10
-ATTACK_1_HIT_STUN=10
 ATTACK_1_WINDUP_DURATION=3
 ATTACK_1_ACTIVE_DURATION=3
 ATTACK_1_RECOVERY_DURATION=5
 ATTACK_1_COOLDOWN=2
+ATTACK_1_HIT_STUN_DURATION=15
+ATTACK_1_KNOCKBACK_VELOCITY=10
 
 ATTACK_2_DAMAGE=12
 ATTACK_2_HIT_STUN=10
@@ -103,6 +109,8 @@ ATTACK_2_WINDUP_DURATION=4
 ATTACK_2_ACTIVE_DURATION=4
 ATTACK_2_RECOVERY_DURATION=6
 ATTACK_2_COOLDOWN=4
+ATTACK_2_HIT_STUN_DURATION=20
+ATTACK_2_KNOCKBACK_VELOCITY=10
 
 ATTACK_3_DAMAGE=15
 ATTACK_3_HIT_STUN=10
@@ -110,6 +118,8 @@ ATTACK_3_WINDUP_DURATION=5
 ATTACK_3_ACTIVE_DURATION=4
 ATTACK_3_RECOVERY_DURATION=8
 ATTACK_3_COOLDOWN=6
+ATTACK_3_HIT_STUN_DURATION=25
+ATTACK_3_KNOCKBACK_VELOCITY=10
 
 # todo: simplify it?
 ATTACK_3_FORWARD_NUDGE_FRAMES=3
@@ -121,6 +131,8 @@ ATTACK_COMBO_WINDOW=30
 # Because standing punches now have recovery frames, these values include
 # attack duration plus the desired follow-up grace period.
 PLAYER_COMBO_WINDOW = 29
+# the window starts when the attack starts, not when it finishes. 
+# That is why the settings comment says the value includes attack duration plus follow-up grace.
 PLAYER_FIRST_TO_SECOND_COMBO_WINDOW = 29
 PLAYER_SECOND_TO_THIRD_COMBO_WINDOW = 24
 PLAYER_THIRD_HIT_RECOVERY = 24
@@ -132,12 +144,12 @@ RUN_TAP_WINDOW=0.25
 RUN_ATTACK_REQUIRED_DISTANCE=100
 
 RUN_ATTACK_DAMAGE=28
-RUN_ATTACK_HIT_STUN=15
 RUN_ATTACK_WINDUP_DURATION=4
 RUN_ATTACK_ACTIVE_DURATION=16
 RUN_ATTACK_RECOVERY_DURATION=6
-# cooldown
-RUN_ATTACK_TOTAL_DURATION=26
+RUN_ATTACK_COOLDOWN=6
+RUN_ATTACK_HIT_STUN_DURATION=25
+RUN_ATTACK_KNOCKBACK_VELOCITY=10
 
 # TODO: below design is too complicated, might remove?
 RUN_ATTACK_FULL_POWER_DISTANCE=240
@@ -168,19 +180,17 @@ ENEMY_DETECT_RANGE=int(SCREEN_WIDTH*0.50)
 ENEMY_ATTACK_RANGE=130
 ENEMY_ATTACK_LANE_RANGE=50
 
-# Attack lifecycle
-# -> windup (prepare)
-# -> active attack (hit player once, not every frame) 
-# -> recovery (enemy cannot move)
-# ->cooldown(frame cooldown before next attack)
+# thinking and make decisions
+ENEMY_ATTACK_DELAY=20
+ENEMY_ATTACK_DAMAGE=int(ATTACK_1_DAMAGE*0.8)
 ENEMY_ATTACK_WINDUP=int(ATTACK_1_WINDUP_DURATION*1.2)
 ENEMY_ATTACK_ACTIVE=int(ATTACK_1_ACTIVE_DURATION*0.8)
 ENEMY_ATTACK_RECOVERY=int(ATTACK_1_RECOVERY_DURATION*1.2)
 ENEMY_ATTACK_COOLDOWN=30 # add player attack cooldown?
-ENEMY_ATTACK_DAMAGE=int(ATTACK_1_DAMAGE*0.8)
+ENEMY_ATTACK_HIT_STUN_DURATION=5
+ENEMY_ATTACK_KNOCKBACK_VELOCITY=10
 
-# thinking and make decisions
-ENEMY_ATTACK_DELAY=20
+
 # Only a small number of regular melee enemies 
 # should enter ATTACK at the same time.
 MAX_MELEE_ATTACKERS = 4
