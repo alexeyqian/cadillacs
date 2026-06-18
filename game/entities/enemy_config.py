@@ -23,42 +23,35 @@ class EnemyConfig:
 
     max_hp: int = ENEMY_MAX_HP
     speed: float = ENEMY_SPEED
-
-    patrol_distance:int = ENEMY_DETECT_RANGE
-    detect_range: float = ENEMY_DETECT_RANGE
+    # todo:move inside attack data
     attack_range:int = ENEMY_ATTACK_RANGE
     attack_lane_range:int = ENEMY_ATTACK_LANE_RANGE
     # Normal melee enemies must be in the same lane to start attack
     # Boss/ranged can keep wider behavior for now
     # 0 = same lane only
     # 1 = same or adjacent lane
+    # todo: remove, already in attack data
     attack_lane_reach: int = 0
+    hit_stun_duration: int = 15 # for self or for player
+
     attack: AttackData = DEFAULT_ENEMY_ATTACK_DATA
 
-    max_melee_attackers:int = 2 # move to stage config?
-    melee_attack_slot_limit: Optional[int] = None
-
-    hit_stun_duration: int = 15 # for self or for player
+    # todo: move to enemy reactions
     # give heavy enemies poise, so weak punches still deal damage 
     # but do not always interrupt them.
     flinch_damage_threshold: int = 0
+    # todo: should be single int
     attack_flinch_damage_threshold: Optional[int] = None
-    # TODO: too complicated, need to remove
-    # Anti-stunlock tuning:
-    # If the player lands this many quick hits inside the window, the enemy gets
-    # a short stun-resistance window. Hits still deal damage, but light punches
-    # stop resetting HIT forever, giving the enemy a chance to move or attack.
-    anti_stunlock_hit_limit: int = 3
-    anti_stunlock_hit_window: int = 90
-    stun_resistance_duration: int = 45
-    resisted_hit_stun_duration: int = 4
-    breakout_recoil_duration: int = 10
-    breakout_velocity: float = 6
-    recovery_punish_delay_multiplier: float = 0.5
-
+    # todo:should not be here
     thrown_damage:int = THROWN_DAMAGE
     score_points: int = ENEMY_SCORE_POINTS
     sprite_scale: int  = 4
+    # enemy specific
+    patrol_distance:int = ENEMY_DETECT_RANGE
+    detect_range: float = ENEMY_DETECT_RANGE
+    # it should be field of EnemyCombatController
+    max_melee_attackers:int = 2 # move to stage config?
+    melee_attack_slot_limit: Optional[int] = None
 
 # Each enemy archetype has a readable combat rhythm:
 # Ferris   = basic pressure, fair but less passive.
@@ -130,7 +123,6 @@ ENEMY_CONFIGS = {
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 4,
         attack_flinch_damage_threshold=BAT_DAMAGE,
-        anti_stunlock_hit_limit=2,
 
         score_points=int(ENEMY_SCORE_POINTS * BLACK_ELMER_SCALER),
     ),
@@ -170,7 +162,6 @@ ENEMY_CONFIGS = {
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 100, # means no flinch
         attack_flinch_damage_threshold=BAT_DAMAGE,
-        anti_stunlock_hit_limit=2,
 
         score_points=int(ENEMY_SCORE_POINTS * WALTHER_SCALER),
     ),

@@ -1,6 +1,5 @@
 from game.settings import *
 
-from game.entities.player_config import get_player_attack_data
 from game.entities.attack_manager import AttackManager
 from game.entities.hit_reaction import HitReaction
 
@@ -269,6 +268,4 @@ class PlayerCombatController:
         return self.get_attack_data(owner, owner.state)
 
     def get_attack_data(self, owner, attack_name):
-        weapon_slot = getattr(owner, "weapon_slot", None)
-        weapon = getattr(weapon_slot, "weapon", None)
-        return get_player_attack_data(attack_name, weapon)
+        return owner.get_attack_data(attack_name)

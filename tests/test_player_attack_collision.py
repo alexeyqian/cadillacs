@@ -3,6 +3,7 @@ import unittest
 import pygame
 
 from game.entities.player_combat_controller import PlayerCombatController
+from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.systems.combat_system import handle_player_attack_collision
 
 
@@ -51,6 +52,8 @@ class FakePlayer:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot(weapon)
+        self.attacks = PLAYER_ATTACKS
+        self.weapon_attacks = WEAPON_PLAYER_ATTACKS
         self.combat = PlayerCombatController()
         self.combat.start_attack(self)
         while not self.combat.is_attack_active():
@@ -67,6 +70,14 @@ class FakePlayer:
 
     def get_attack_rect(self):
         return pygame.Rect(100, 100, 100, 100)
+
+    def get_attack_data(self, attack_name):
+        weapon = getattr(self.weapon_slot, "weapon", None)
+        weapon_type = getattr(weapon, "weapon_type", weapon)
+        weapon_attack = self.weapon_attacks.get((weapon_type, attack_name))
+        if weapon_attack and not getattr(weapon, "is_ranged", False):
+            return weapon_attack
+        return self.attacks.get(attack_name)
 
 class FakeHealth:
     hp = 100

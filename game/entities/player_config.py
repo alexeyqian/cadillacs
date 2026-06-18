@@ -95,9 +95,46 @@ DEFAULT_PLAYER_ATTACKS = {
     ),
 }
 
-# todo: should get from owner
-def get_player_attack_data(attack_name, weapon=None):
-    return DEFAULT_PLAYER_ATTACKS.get(attack_name)
+DEFAULT_WEAPON_PLAYER_ATTACKS = {
+    ("knife", "ATTACK_1"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK_1"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_1"].damage + KNIFE_DAMAGE,
+        lane_reach=1,
+    ),
+    ("knife", "ATTACK_2"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK_2"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_2"].damage + KNIFE_DAMAGE,
+        lane_reach=1,
+    ),
+    ("knife", "ATTACK_3"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK_3"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_3"].damage + KNIFE_DAMAGE,
+        lane_reach=1,
+    ),
+    ("bat", "ATTACK_1"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK_1"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_1"].damage + BAT_DAMAGE,
+        max_targets=2,
+        lane_reach=1,
+    ),
+    ("bat", "ATTACK_2"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK_2"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_2"].damage + BAT_DAMAGE,
+        max_targets=2,
+        lane_reach=1,
+    ),
+    ("bat", "ATTACK_3"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK_3"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_3"].damage + BAT_DAMAGE,
+        max_targets=2,
+        lane_reach=1,
+    ),
+}
+
+# Backward-compatible names for tests and validation. Runtime lookup should go
+# through Player.get_attack_data() so different players can own different tables.
+PLAYER_ATTACKS = DEFAULT_PLAYER_ATTACKS
+WEAPON_PLAYER_ATTACKS = DEFAULT_WEAPON_PLAYER_ATTACKS
 
 @dataclass(frozen=True)
 class PlayerConfig:
@@ -115,7 +152,9 @@ class PlayerConfig:
 
     speed: float = PLAYER_SPEED
     run_speed: float = PLAYER_RUN_SPEED
-    
+
+    attacks: dict = None
+    weapon_attacks: dict = None
     attack: AttackData = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
     run_attack_damage: int = RUN_ATTACK_DAMAGE
 
@@ -136,6 +175,8 @@ PLAYER_CONFIGS = {
     "mustapha": PlayerConfig(
         player_id="mustapha",
         display_name="Mustapha",
+        attacks=DEFAULT_PLAYER_ATTACKS,
+        weapon_attacks=DEFAULT_WEAPON_PLAYER_ATTACKS,
     ),
 }
 

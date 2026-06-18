@@ -98,6 +98,8 @@ class Player:
         self.run_speed = config.run_speed
         self.run_attack_damage = config.run_attack_damage
         self.jump_attack_damage = config.jump_attack_damage
+        self.attacks = config.attacks or {}
+        self.weapon_attacks = config.weapon_attacks or {}
         self.grab_range = config.grab_range
         self.hit_stun_duration = config.hit_stun_duration
         self.sprite_scale = config.sprite_scale
@@ -131,6 +133,19 @@ class Player:
         self.combat.update_timers(self)
         self.grab.update_timers(self)
         self.movement.update_timers()
+
+    def get_attack_data(self, attack_name):
+        weapon = None
+        weapon_slot = getattr(self, "weapon_slot", None)
+        if weapon_slot:
+            weapon = getattr(weapon_slot, "weapon", None)
+
+        weapon_type = getattr(weapon, "weapon_type", weapon)
+        weapon_attack = self.weapon_attacks.get((weapon_type, attack_name))
+        if weapon_attack and not getattr(weapon, "is_ranged", False):
+            return weapon_attack
+
+        return self.attacks.get(attack_name)
 
     # Lifecycle / damage
     def take_damage(self, damage, hit_stun_bonus=0):

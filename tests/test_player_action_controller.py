@@ -2,6 +2,7 @@ import unittest
 
 from game.entities.player_action_controller import PlayerActionController
 from game.entities.player_combat_controller import PlayerCombatController
+from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.entities.player_input_state import PlayerInputState
 
 
@@ -67,6 +68,16 @@ class FakeOwner:
         self.input_state = PlayerInputState()
         self.combat = PlayerCombatController()
         self.grab = FakeGrab()
+        self.attacks = PLAYER_ATTACKS
+        self.weapon_attacks = WEAPON_PLAYER_ATTACKS
+
+    def get_attack_data(self, attack_name):
+        weapon = getattr(self.weapon_slot, "weapon", None)
+        weapon_type = getattr(weapon, "weapon_type", weapon)
+        weapon_attack = self.weapon_attacks.get((weapon_type, attack_name))
+        if weapon_attack:
+            return weapon_attack
+        return self.attacks.get(attack_name)
 
 
 class PlayerActionControllerTests(unittest.TestCase):

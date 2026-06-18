@@ -1,6 +1,6 @@
 import unittest
 
-from game.entities.player_config import PLAYER_ATTACKS
+from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.entities.player_combat_controller import PlayerCombatController
 from game.entities.player_geometry import PlayerGeometry
 
@@ -45,7 +45,12 @@ class FakeOwner:
         self.state_machine = FakeStateMachine()
         self.animation_controller = FakeAnimationController()
         self.combat = PlayerCombatController()
+        self.attacks = PLAYER_ATTACKS
+        self.weapon_attacks = WEAPON_PLAYER_ATTACKS
         self.air = None
+
+    def get_attack_data(self, attack_name):
+        return self.attacks.get(attack_name)
 
 
 class PlayerCombatControllerHitboxTests(unittest.TestCase):

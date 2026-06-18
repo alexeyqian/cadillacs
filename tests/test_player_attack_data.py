@@ -62,7 +62,17 @@ class FakeOwner:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot()
+        self.attacks = PLAYER_ATTACKS
+        self.weapon_attacks = WEAPON_PLAYER_ATTACKS
         self.air = None
+
+    def get_attack_data(self, attack_name):
+        weapon = getattr(self.weapon_slot, "weapon", None)
+        weapon_type = getattr(weapon, "weapon_type", weapon)
+        weapon_attack = self.weapon_attacks.get((weapon_type, attack_name))
+        if weapon_attack and not getattr(weapon, "is_ranged", False):
+            return weapon_attack
+        return self.attacks.get(attack_name)
 
 
 class AttackDataTests(unittest.TestCase):

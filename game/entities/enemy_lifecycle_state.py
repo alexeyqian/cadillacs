@@ -11,14 +11,6 @@ class EnemyLifecycleState:
         # hit reaction # enemy gets briefly white when hit by player
         self.knockback_velocity = 0
         self.hit_stun_remaining = 0
-        # Anti-stunlock:
-        # These counters watch for several quick hits in a row. They live in
-        # lifecycle state because they are temporary combat state, like stun.
-        self.recent_hit_count = 0
-        self.recent_hit_timer = 0
-        self.stun_resistance_remaining = 0
-        self.breakout_velocity_x = 0
-
         # grab/throw
         self.thrown_velocity_x = 0
         self.thrown_remaining = 0

@@ -75,14 +75,6 @@ class FakeEnemy:
         self.hit_stun_remaining = 0
         self.flinch_damage_threshold = 0
         self.attack_flinch_damage_threshold = 0
-        self.anti_stunlock_hit_limit = 3
-        self.anti_stunlock_hit_window = 90
-        self.stun_resistance_duration = 45
-        self.resisted_hit_stun_duration = 4
-        self.breakout_recoil_duration = 10
-        self.breakout_velocity = 6
-        self.breakout_velocity_x = 0
-        self.recovery_punish_delay_multiplier = 0.5
         self.knockback_velocity = 0
         self.animation_controller = FakeAnimationController()
         self.combat = EnemyCombatController()
@@ -306,54 +298,13 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.state, enemy.HIT)
         self.assertEqual(enemy.hit_stun_remaining, 24)
 
-    def test_repeated_hits_activate_stun_resistance_and_clear_hit_stun(self):
-        enemy = FakeEnemy()
-        reactions = EnemyReactionController()
-
-        reactions.take_damage(enemy, 10, attacker_x=-100)
-        reactions.take_damage(enemy, 10, attacker_x=-100)
-        reactions.take_damage(enemy, 10, attacker_x=-100)
-
-        self.assertEqual(enemy.health.hp, 70)
-        self.assertGreater(enemy.stun_resistance_remaining, 0)
-        self.assertEqual(enemy.hit_stun_remaining, 0)
-
-    def test_repeated_hits_trigger_breakout_recoil_step(self):
-        enemy = FakeEnemy()
-        enemy.x = 100
-        reactions = EnemyReactionController()
-
-        reactions.take_damage(enemy, 10, attacker_x=50)
-        reactions.take_damage(enemy, 10, attacker_x=50)
-        reactions.take_damage(enemy, 10, attacker_x=50)
-
-        self.assertEqual(enemy.state, enemy.RECOIL)
-        self.assertEqual(enemy.action_lock_remaining, enemy.breakout_recoil_duration)
-        self.assertGreater(enemy.breakout_velocity_x, 0)
-
-        EnemyLifecycleController().update_special_states(enemy)
-
-        self.assertGreater(enemy.x, 100)
-
-    def test_stun_resistance_prevents_light_hit_from_canceling_enemy_attack(self):
-        enemy = FakeEnemy()
-        reactions = EnemyReactionController()
-
-        reactions.take_damage(enemy, 10, attacker_x=-100)
-        reactions.take_damage(enemy, 10, attacker_x=-100)
-        enemy.start_attack()
-        reactions.take_damage(enemy, 10, attacker_x=-100)
-
-        self.assertEqual(enemy.state, enemy.ATTACK)
-        self.assertTrue(enemy.combat.attack_manager.is_attacking)
-
     def test_enemy_uses_shorter_attack_delay_during_player_recovery(self):
         enemy = FakeEnemy()
         player = FakePlayer()
         player.combat = FakePlayerCombat("RECOVERY")
         resolver = EnemyStateResolver()
 
-        self.assertEqual(resolver.get_required_attack_delay(enemy, player), 1)
+        self.assertEqual(resolver.get_required_attack_delay(enemy, player), enemy.attack_delay)
 
     def test_enemy_attack_delay_stays_normal_outside_player_recovery(self):
         enemy = FakeEnemy()
@@ -376,9 +327,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertLess(gneiss.attack.cooldown, ferris.attack.cooldown)
         self.assertGreater(black_elmer.attack_range, ferris.attack_range)
         self.assertEqual(black_elmer.attack_flinch_damage_threshold, BAT_DAMAGE)
-        self.assertEqual(black_elmer.anti_stunlock_hit_limit, 2)
         self.assertEqual(boss.attack_flinch_damage_threshold, BAT_DAMAGE)
-        self.assertEqual(boss.anti_stunlock_hit_limit, 2)
         self.assertLess(ranged.attack.cooldown, 90)
 
     def test_ranged_enemy_fires_once_during_active_window(self):

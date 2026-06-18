@@ -112,13 +112,6 @@ class Enemy:
             if config.attack_flinch_damage_threshold is not None
             else config.flinch_damage_threshold
         )
-        self.anti_stunlock_hit_limit = config.anti_stunlock_hit_limit
-        self.anti_stunlock_hit_window = config.anti_stunlock_hit_window
-        self.stun_resistance_duration = config.stun_resistance_duration
-        self.resisted_hit_stun_duration = config.resisted_hit_stun_duration
-        self.breakout_recoil_duration = config.breakout_recoil_duration
-        self.breakout_velocity = config.breakout_velocity
-        self.recovery_punish_delay_multiplier = config.recovery_punish_delay_multiplier
         self.thrown_damage = config.thrown_damage
 
         self.melee_attack_slot_limit = getattr(config, "melee_attack_slot_limit", None)

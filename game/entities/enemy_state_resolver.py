@@ -153,14 +153,7 @@ class EnemyStateResolver:
         return owner.attack_decision_timer
 
     def get_required_attack_delay(self, owner, player=None):
-        if not self.is_player_in_attack_recovery(player):
-            return owner.attack_delay
-
-        # During player recovery, enemies need fewer decision frames before
-        # attacking. They still count up normally, so this creates a punish
-        # opportunity without making enemy reactions instant.
-        multiplier = getattr(owner, "recovery_punish_delay_multiplier", 0.5)
-        return max(1, int(owner.attack_delay * multiplier))
+        return owner.attack_delay
 
     def is_player_in_attack_recovery(self, player):
         if not player:

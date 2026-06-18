@@ -11,7 +11,6 @@ class EnemyLifecycleController:
                 self.get_action_lock_remaining(owner) - 1,
             )
             owner.state = owner.RECOIL
-            self.update_breakout_movement(owner)
             owner.update_animation()
             return True
         
@@ -98,36 +97,7 @@ class EnemyLifecycleController:
             owner.combat.update_timers()
         elif owner.attack_cooldown > 0:
             owner.attack_cooldown -= 1
-        self.update_anti_stunlock_timers(owner)
         owner.flanking.update_timers()
-
-    def update_anti_stunlock_timers(self, owner):
-        # Recent-hit tracking decays over time. If the player stops pressure,
-        # the enemy becomes fully stunnable again instead of staying armored.
-        if self.get_recent_hit_timer(owner) > 0:
-            self.set_recent_hit_timer(owner, self.get_recent_hit_timer(owner) - 1)
-        else:
-            self.set_recent_hit_count(owner, 0)
-
-        if self.get_stun_resistance_remaining(owner) > 0:
-            self.set_stun_resistance_remaining(
-                owner,
-                self.get_stun_resistance_remaining(owner) - 1,
-            )
-
-    def update_breakout_movement(self, owner):
-        # Breakout recoil is a tiny defensive step after repeated hits. It is
-        # intentionally separate from knockback, because knockback means "hit
-        # reaction" while breakout means "stop the infinite pressure loop."
-        velocity_x = self.get_breakout_velocity_x(owner)
-        if velocity_x == 0:
-            return
-
-        owner.x += velocity_x
-        self.set_breakout_velocity_x(owner, velocity_x * 0.75)
-
-        if abs(self.get_breakout_velocity_x(owner)) < 0.5:
-            self.set_breakout_velocity_x(owner, 0)
 
     def is_ready_to_remove(self, owner):
         return owner.state == owner.DEAD and self.get_death_remaining(owner) <= 0
@@ -222,51 +192,3 @@ class EnemyLifecycleController:
             state.hit_stun_remaining = value
         else:
             owner.hit_stun_remaining = value
-
-    def get_recent_hit_count(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.recent_hit_count if state else getattr(owner, "recent_hit_count", 0)
-
-    def set_recent_hit_count(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.recent_hit_count = value
-        else:
-            owner.recent_hit_count = value
-
-    def get_recent_hit_timer(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.recent_hit_timer if state else getattr(owner, "recent_hit_timer", 0)
-
-    def set_recent_hit_timer(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.recent_hit_timer = value
-        else:
-            owner.recent_hit_timer = value
-
-    def get_stun_resistance_remaining(self, owner):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            return state.stun_resistance_remaining
-        return getattr(owner, "stun_resistance_remaining", 0)
-
-    def set_stun_resistance_remaining(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.stun_resistance_remaining = value
-        else:
-            owner.stun_resistance_remaining = value
-
-    def get_breakout_velocity_x(self, owner):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            return state.breakout_velocity_x
-        return getattr(owner, "breakout_velocity_x", 0)
-
-    def set_breakout_velocity_x(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.breakout_velocity_x = value
-        else:
-            owner.breakout_velocity_x = value
