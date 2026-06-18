@@ -9,11 +9,15 @@ class EnemyConfig:
     enemy_id: str
     display_name: str = "Enemy"
     archetype: str = "basic_melee"
-    max_melee_attackers:int = 2 # move to stage config?
+
     collision_box_w: int = ENEMY_COLLISION_W
     collision_box_h: int = ENEMY_COLLISION_H
+    hurt_box_w: int = ENEMY_HURBOX_W
+    hurt_box_h: int = ENEMY_HURBOX_H
+
     max_hp: int = ENEMY_MAX_HP
     speed: float = ENEMY_SPEED
+
     patrol_distance:int = ENEMY_DETECT_RANGE
     detect_range: float = ENEMY_DETECT_RANGE
     attack_range:int = ENEMY_ATTACK_RANGE
@@ -24,13 +28,16 @@ class EnemyConfig:
     # 1 = same or adjacent lane
     attack_lane_reach: int = 0
     attack: EnemyAttackData = EnemyAttackData()
+
+    max_melee_attackers:int = 2 # move to stage config?
     melee_attack_slot_limit: Optional[int] = None
 
-    hit_stun_duration: int = 15
+    hit_stun_duration: int = 15 # for self or for player
     # give heavy enemies poise, so weak punches still deal damage 
     # but do not always interrupt them.
     flinch_damage_threshold: int = 0
     attack_flinch_damage_threshold: Optional[int] = None
+    # TODO: too complicated, need to remove
     # Anti-stunlock tuning:
     # If the player lands this many quick hits inside the window, the enemy gets
     # a short stun-resistance window. Hits still deal damage, but light punches
@@ -42,9 +49,10 @@ class EnemyConfig:
     breakout_recoil_duration: int = 10
     breakout_velocity: float = 6
     recovery_punish_delay_multiplier: float = 0.5
+
     thrown_damage:int = THROWN_DAMAGE
     score_points: int = ENEMY_SCORE_POINTS
-    sprite_scale: int  = 5
+    sprite_scale: int  = 4
 
 # Each enemy archetype has a readable combat rhythm:
 # Ferris   = basic pressure, fair but less passive.
@@ -64,7 +72,10 @@ ENEMY_CONFIGS = {
             phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
                                 active=ENEMY_ATTACK_ACTIVE,
                                 recovery=ENEMY_ATTACK_RECOVERY),
-            hitboxes=(AttackHitboxData(x=72, y=-272, width=200, height=50),),
+            hitboxes=(AttackHitboxData(
+                x=72, y=-272, 
+                width=200,
+                height=50),),
         ),
     ),
     "gneiss": EnemyConfig(

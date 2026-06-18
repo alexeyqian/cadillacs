@@ -19,6 +19,22 @@ def get_enemy_frame_rect(enemy):
         return enemy.get_frame_rect()
     return enemy.get_logical_rect()
 
+
+def damage_enemy(enemy, damage, attacker_x, hit_reaction=None):
+    # Most production enemies now accept HitReaction. Some lightweight tests and
+    # older enemy-like objects still expose the previous positional API.
+    if hit_reaction is None:
+        enemy.take_damage(damage, attacker_x)
+        return
+
+    enemy.take_damage(
+        damage,
+        attacker_x,
+        hit_reaction.knockback_velocity,
+        hit_reaction.stun_frames,
+    )
+
+
 # todo: refactoring to be easy to understand and maintainable
 def handle_player_attack_collision(game_state):
     player = game_state.player
@@ -123,12 +139,7 @@ def handle_player_attack_collision(game_state):
         if enemy_hurt_rect and attack_rect.colliderect(enemy_hurt_rect):
             damage = player.combat.get_attack_damage(player)
             hit_reaction = player.combat.get_attack_hit_reaction(player)
-            enemy.take_damage(
-                damage,
-                player.x,
-                hit_reaction.knockback_velocity,
-                hit_reaction.stun_frames,
-            )
+            damage_enemy(enemy, damage, player.x, hit_reaction)
             enemy_rect = get_enemy_frame_rect(enemy)
             game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,80,80)))
             game_state.score_manager.register_hit() # for combo score
@@ -174,7 +185,7 @@ def handle_player_projectile_collision(game_state):
             enemy_hurt_rect = enemy.get_hurt_rect()
             if enemy_hurt_rect and projectile_rect.colliderect(enemy_hurt_rect):
                 damage = projectile.damage
-                enemy.take_damage(damage, player.x)
+                damage_enemy(enemy, damage, player.x)
                 enemy_rect = get_enemy_frame_rect(enemy)
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,120,120)))
                 game_state.score_manager.register_hit() # for combo score
@@ -249,7 +260,7 @@ def handle_player_thrown_enemy_collision(game_state):
             enemy_hurt_rect = enemy.get_hurt_rect()
             if thrown_rect.colliderect(enemy_hurt_rect):
                 damage = enemy.thrown_damage
-                enemy.take_damage(damage, thrown_enemy.x)
+                damage_enemy(enemy, damage, thrown_enemy.x)
                 enemy_rect = get_enemy_frame_rect(enemy)
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,150,0)))
                 thrown_hit_targets.add(id(enemy))

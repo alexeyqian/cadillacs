@@ -15,7 +15,7 @@ from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_state_resolver import EnemyStateResolver
 from game.entities.enemy_loot_controller import EnemyLootController
-from game.entities.hit_reaction import HitReaction
+from game.entities.hit_reaction import normalize_hit_reaction
 
 # State resolver: decides what state the enemy wants
 # Movement: changes x/y/facing
@@ -157,15 +157,11 @@ class Enemy:
         hit_stun_duration=None,
         knockback_velocity=None,
     ):
-        if knockback_velocity is not None:
-            reaction = knockback_velocity
-        if isinstance(reaction, (int, float)):
-            reaction = HitReaction(
-                knockback_velocity=reaction,
-                stun_frames=hit_stun_duration,
-            )
-        elif reaction is None:
-            reaction = HitReaction(stun_frames=hit_stun_duration)
+        reaction = normalize_hit_reaction(
+            reaction,
+            hit_stun_duration,
+            knockback_velocity,
+        )
         self.reactions.take_damage(
             self,
             damage,

@@ -1,4 +1,4 @@
-from game.entities.hit_reaction import HitReaction
+from game.entities.hit_reaction import HitReaction, normalize_hit_reaction
 
 
 class EnemyReactionController:
@@ -11,7 +11,8 @@ class EnemyReactionController:
         self.reset_attack_decision(owner)
         self.release_attack_slot(owner)
 
-    # temp for renaming
+    # Public damage entry point. It accepts the new HitReaction object and a
+    # small legacy shape so older callers can migrate gradually.
     def take_damage(
         self,
         owner,
@@ -21,15 +22,11 @@ class EnemyReactionController:
         hit_stun_duration=None,
         knockback_velocity=None,
     ):
-        if knockback_velocity is not None:
-            reaction = knockback_velocity
-        if isinstance(reaction, (int, float)):
-            reaction = HitReaction(
-                knockback_velocity=reaction,
-                stun_frames=hit_stun_duration,
-            )
-        elif reaction is None:
-            reaction = HitReaction(stun_frames=hit_stun_duration)
+        reaction = normalize_hit_reaction(
+            reaction,
+            hit_stun_duration,
+            knockback_velocity,
+        )
         self.apply_hit(owner, damage, attacker_x, reaction)
 
     def apply_hit(

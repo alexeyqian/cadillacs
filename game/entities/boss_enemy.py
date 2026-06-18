@@ -4,7 +4,7 @@ from game.colors import *
 
 from game.entities.enemy import Enemy
 from game.entities.enemy_projectile import EnemyProjectile
-from game.entities.hit_reaction import HitReaction
+from game.entities.hit_reaction import normalize_hit_reaction
 from game.animation.animation_config import *
 from game.animation.boss_data import BOSS_ANIMATIONS, BOSS_ANIM_FPS
 
@@ -173,18 +173,12 @@ class BossEnemy(Enemy):
         hit_stun_duration=None,
         knockback_velocity=None,
     ):
-        if knockback_velocity is not None:
-            reaction = knockback_velocity
-        if isinstance(reaction, (int, float)):
-            reaction = HitReaction(
-                knockback_velocity=reaction,
-                stun_frames=hit_stun_duration,
-            )
-        elif reaction is None:
-            reaction = HitReaction(
-                knockback_velocity=3,
-                stun_frames=hit_stun_duration,
-            )
+        reaction = normalize_hit_reaction(
+            reaction,
+            hit_stun_duration,
+            knockback_velocity,
+            default_knockback_velocity=3,
+        )
 
         if self.state == self.DEAD:
             return
