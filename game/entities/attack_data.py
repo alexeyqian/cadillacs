@@ -15,83 +15,59 @@ PLAYER_THIRD_HIT_RECOVERY = 24
 PLAYER_CLASH_RECOVERY = 8
 
 @dataclass(frozen=True)
-class AttackPhaseData:
-    windup: int = 0
-    active: int = 0
-    recovery: int = 0
-
-    @property
-    def total_duration(self):
-        return self.windup + self.active + self.recovery
-
-
-@dataclass(frozen=True)
 class PlayerAttackData:
-    damage: int
-    duration: int
-    phase: AttackPhaseData
     hitbox_offset_x: int = PLAYER_HIT_BOX_OFFSET_X
     hitbox_offset_y: int = PLAYER_HIT_BOX_OFFSET_Y
     hitbox_w: int = PLAYER_HITBOX_W
     hitbox_h: int = PLAYER_HITBOX_H
+
     counter_hurtbox_offset_x: int = 0
     counter_hurtbox_offset_y: int = 0
     counter_hurtbox_w: int = 0
     counter_hurtbox_h: int = 0
+
+    damage: int = ATTACK_1_DAMAGE
+    duration: int = ATTACK_1_WINDUP_DURATION + ATTACK_1_ACTIVE_DURATION + ATTACK_1_RECOVERY_DURATION
+    windup: int = ATTACK_1_WINDUP_DURATION
+    active: int = ATTACK_1_ACTIVE_DURATION
+    recovery: int = ATTACK_1_RECOVERY_DURATION
+
+    action_lock: int = 0 # cooldown
+
     max_targets: int = 1
     combo_window: int = ATTACK_COMBO_WINDOW
-    action_lock: int = 0
+
     lane_reach: int = 0
     counter_hit_stun_bonus: int = 0
     knockback_velocity: int = 10
     enemy_hit_stun_duration: int = 15
 
     @property
-    def windup(self):
-        return self.phase.windup
-
-    @property
-    def active(self):
-        return self.phase.active
-
-    @property
-    def recovery(self):
-        return self.phase.recovery
+    def total_duration(self):
+        return self.windup + self.active + self.recovery
 
 @dataclass(frozen=True)
 class EnemyAttackData:
-    damage: float = ENEMY_ATTACK_DAMAGE
-    delay: int = ENEMY_ATTACK_DELAY
-    cooldown: int = ENEMY_ATTACK_COOLDOWN
-    phase: AttackPhaseData = AttackPhaseData(
-        windup=ENEMY_ATTACK_WINDUP,
-        active=ENEMY_ATTACK_ACTIVE,
-        recovery=ENEMY_ATTACK_RECOVERY,
-    )
-    # should use per enemy design
     hitbox_offset_x: int = ENEMY_HITBOX_OFFSET_X
     hitbox_offset_y: int = ENEMY_HITBOX_OFFSET_Y
     hitbox_w: int = ENEMY_HITBOX_W
     hitbox_h: int = ENEMY_HITBOX_H
+
+    damage: float = ENEMY_ATTACK_DAMAGE
+    delay: int = ENEMY_ATTACK_DELAY
+    cooldown: int = ENEMY_ATTACK_COOLDOWN
+
+    windup: int = ENEMY_ATTACK_WINDUP
+    active: int = ENEMY_ATTACK_ACTIVE
+    recovery: int = ENEMY_ATTACK_RECOVERY
+
     max_targets: int = 1
     clash_recovery_duration: int = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
     clash_cooldown_duration: int = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
 
     @property
-    def windup(self):
-        return self.phase.windup
-
-    @property
-    def active(self):
-        return self.phase.active
-
-    @property
-    def recovery(self):
-        return self.phase.recovery
-
-    @property
     def total_duration(self):
-        return self.phase.total_duration
+        return self.windup + self.active + self.recovery
 
     @property
     def duration(self):
@@ -102,14 +78,21 @@ PLAYER_ATTACKS = {
     "ATTACK_1": PlayerAttackData(
         damage=ATTACK_1_DAMAGE,
         duration=ATTACK_1_WINDUP_DURATION + ATTACK_1_ACTIVE_DURATION + ATTACK_1_RECOVERY_DURATION,
-        phase=AttackPhaseData(
-            windup=ATTACK_1_WINDUP_DURATION,
-            active=ATTACK_1_ACTIVE_DURATION,
-            recovery=ATTACK_1_RECOVERY_DURATION),
-        hitbox_offset_x=PLAYER_HIT_BOX_OFFSET_X,
-        hitbox_offset_y=PLAYER_HIT_BOX_OFFSET_Y,
-        hitbox_w=PLAYER_HITBOX_W,
-        hitbox_h=PLAYER_HITBOX_H,
+        windup=ATTACK_1_WINDUP_DURATION,
+        active=ATTACK_1_ACTIVE_DURATION,
+        recovery=ATTACK_1_RECOVERY_DURATION,
+
+        # hardcode for now
+        hitbox_offset_x=60,
+        hitbox_offset_y=-320,
+        hitbox_w=200,
+        hitbox_h=60,
+        
+        #hitbox_offset_x=PLAYER_HIT_BOX_OFFSET_X,
+        #hitbox_offset_y=PLAYER_HIT_BOX_OFFSET_Y,
+        #hitbox_w=PLAYER_HITBOX_W,
+        #hitbox_h=PLAYER_HITBOX_H,
+
         counter_hurtbox_offset_x=54,
         counter_hurtbox_offset_y=-300,
         counter_hurtbox_w=34,
@@ -120,10 +103,9 @@ PLAYER_ATTACKS = {
     "ATTACK_2": PlayerAttackData(
         damage=ATTACK_2_DAMAGE,
         duration=ATTACK_2_WINDUP_DURATION + ATTACK_2_ACTIVE_DURATION + ATTACK_2_RECOVERY_DURATION,
-        phase=AttackPhaseData(
-            windup=ATTACK_2_WINDUP_DURATION,
-            active=ATTACK_2_ACTIVE_DURATION,
-            recovery=ATTACK_2_RECOVERY_DURATION),
+        windup=ATTACK_2_WINDUP_DURATION,
+        active=ATTACK_2_ACTIVE_DURATION,
+        recovery=ATTACK_2_RECOVERY_DURATION,
         hitbox_offset_x=PLAYER_HIT_BOX_OFFSET_X,
         hitbox_offset_y=PLAYER_HIT_BOX_OFFSET_Y,
         hitbox_w=PLAYER_HITBOX_W,
@@ -139,10 +121,9 @@ PLAYER_ATTACKS = {
     "ATTACK_3": PlayerAttackData(
         damage=ATTACK_3_DAMAGE,
         duration=ATTACK_3_WINDUP_DURATION + ATTACK_3_ACTIVE_DURATION + ATTACK_3_RECOVERY_DURATION,
-        phase=AttackPhaseData(
-            windup=ATTACK_3_WINDUP_DURATION,
-            active=ATTACK_3_ACTIVE_DURATION,
-            recovery=ATTACK_3_RECOVERY_DURATION),
+        windup=ATTACK_3_WINDUP_DURATION,
+        active=ATTACK_3_ACTIVE_DURATION,
+        recovery=ATTACK_3_RECOVERY_DURATION,
         hitbox_offset_x=PLAYER_HIT_BOX_OFFSET_X,
         hitbox_offset_y=PLAYER_HIT_BOX_OFFSET_Y,
         hitbox_w=PLAYER_HITBOX_W,
@@ -155,20 +136,22 @@ PLAYER_ATTACKS = {
         action_lock=PLAYER_THIRD_HIT_RECOVERY,
     ),
     "RUN_ATTACK": PlayerAttackData(
-        damage=RUN_ATTACK_DAMAGE,
-        duration=RUN_ATTACK_TOTAL_DURATION,
-        phase=AttackPhaseData(
-            windup=RUN_ATTACK_WINDUP_DURATION, 
-            active=RUN_ATTACK_ACTIVE_DURATION,
-            recovery=RUN_ATTACK_RECOVERY_DURATION),
-        hitbox_offset_x=0,
-        hitbox_offset_y=-1 * PLAYER_W,
-        hitbox_w=int(PLAYER_HITBOX_W * 1.2),
-        hitbox_h=int(PLAYER_HITBOX_H * 2),
+        hitbox_offset_x=40,
+        hitbox_offset_y=-250,
+        hitbox_w=200,
+        hitbox_h=100,
+
         counter_hurtbox_offset_x=54,
-        counter_hurtbox_offset_y=-300,
+        counter_hurtbox_offset_y=-00,
         counter_hurtbox_w=34,
         counter_hurtbox_h=38,
+
+        damage=RUN_ATTACK_DAMAGE,
+        duration=RUN_ATTACK_TOTAL_DURATION,
+        windup=RUN_ATTACK_WINDUP_DURATION,
+        active=RUN_ATTACK_ACTIVE_DURATION,
+        recovery=RUN_ATTACK_RECOVERY_DURATION,
+        
         max_targets=3,
         action_lock=RUN_ATTACK_LANDING_RECOVERY,
         knockback_velocity=RUN_ATTACK_BASE_KNOCKBACK,
@@ -177,7 +160,9 @@ PLAYER_ATTACKS = {
     "JUMP_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=18,
-        phase=AttackPhaseData(windup=4, active=8, recovery=6),
+        windup=4,
+        active=8,
+        recovery=6,
         hitbox_offset_x=86,
         hitbox_offset_y=-224,
         hitbox_w=118,
@@ -191,7 +176,9 @@ PLAYER_ATTACKS = {
     "GRAB_KNEE": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=PLAYER_GRAB_KNEE_DURATION,
-        phase=AttackPhaseData(windup=6, active=4, recovery=4),
+        windup=6,
+        active=4,
+        recovery=4,
         hitbox_offset_x=50,
         hitbox_offset_y=-190,
         hitbox_w=60,

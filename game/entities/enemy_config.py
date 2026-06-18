@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from game.settings import *
-from game.entities.attack_data import AttackPhaseData, EnemyAttackData
+from game.entities.attack_data import EnemyAttackData
 
 GNEISS_SCALER=1.2
 BLACK_ELMER_SCALER=1.5
@@ -38,9 +38,9 @@ class EnemyConfig:
             damage=ENEMY_ATTACK_DAMAGE,
             delay=ENEMY_ATTACK_DELAY,
             cooldown=ENEMY_ATTACK_COOLDOWN,
-            phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
-                                active=ENEMY_ATTACK_ACTIVE,
-                                recovery=ENEMY_ATTACK_RECOVERY),
+            windup=ENEMY_ATTACK_WINDUP,
+            active=ENEMY_ATTACK_ACTIVE,
+            recovery=ENEMY_ATTACK_RECOVERY,
             hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
             hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
             hitbox_w=ENEMY_HITBOX_W,
@@ -93,9 +93,9 @@ ENEMY_CONFIGS = {
             damage=int(ENEMY_ATTACK_DAMAGE * GNEISS_SCALER),
             delay=int(ENEMY_ATTACK_DELAY * 0.8),
             cooldown=int(ENEMY_ATTACK_COOLDOWN * 0.8),
-            phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
-                                active=ENEMY_ATTACK_ACTIVE,
-                                recovery=ENEMY_ATTACK_RECOVERY),
+            windup=ENEMY_ATTACK_WINDUP,
+            active=ENEMY_ATTACK_ACTIVE,
+            recovery=ENEMY_ATTACK_RECOVERY,
             hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
             hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
             hitbox_w=ENEMY_HITBOX_W,
@@ -127,9 +127,9 @@ ENEMY_CONFIGS = {
             damage=ENEMY_ATTACK_DAMAGE * BLACK_ELMER_SCALER,
             delay=int(ENEMY_ATTACK_DELAY * BLACK_ELMER_SCALER),
             cooldown=int(ENEMY_ATTACK_COOLDOWN * BLACK_ELMER_SCALER),
-            phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*BLACK_ELMER_SCALER),
-                                active=int(ENEMY_ATTACK_ACTIVE*BLACK_ELMER_SCALER),
-                                recovery=int(ENEMY_ATTACK_RECOVERY*BLACK_ELMER_SCALER)),
+            windup=int(ENEMY_ATTACK_WINDUP*BLACK_ELMER_SCALER),
+            active=int(ENEMY_ATTACK_ACTIVE*BLACK_ELMER_SCALER),
+            recovery=int(ENEMY_ATTACK_RECOVERY*BLACK_ELMER_SCALER),
             hitbox_offset_x=200,
             hitbox_offset_y=60,
             hitbox_w=100,
@@ -167,9 +167,9 @@ ENEMY_CONFIGS = {
             damage=ENEMY_ATTACK_DAMAGE * WALTHER_SCALER,
             delay=int(ENEMY_ATTACK_DELAY * 1),
             cooldown=int(ENEMY_ATTACK_COOLDOWN * WALTHER_SCALER),
-            phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*WALTHER_SCALER),
-                                active=int(ENEMY_ATTACK_ACTIVE*WALTHER_SCALER),
-                                recovery=int(ENEMY_ATTACK_RECOVERY*WALTHER_SCALER)),
+            windup=int(ENEMY_ATTACK_WINDUP*WALTHER_SCALER),
+            active=int(ENEMY_ATTACK_ACTIVE*WALTHER_SCALER),
+            recovery=int(ENEMY_ATTACK_RECOVERY*WALTHER_SCALER),
             hitbox_offset_x=125,
             hitbox_offset_y=-350,
             hitbox_w=180,

@@ -1,7 +1,7 @@
 import unittest
 
 from game.entities.boss_enemy import BossEnemy
-from game.entities.attack_data import AttackPhaseData, EnemyAttackData
+from game.entities.attack_data import EnemyAttackData
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy import Enemy
 from game.entities.enemy_combat_controller import EnemyCombatController
@@ -230,7 +230,9 @@ class EnemyAttackTimingTests(unittest.TestCase):
     def test_real_enemy_total_duration_comes_from_attack_data(self):
         enemy = Enemy.__new__(Enemy)
         enemy.attack_data = EnemyAttackData(
-            phase=AttackPhaseData(windup=3, active=2, recovery=1)
+            windup=3,
+            active=2,
+            recovery=1,
         )
 
         self.assertEqual(enemy.get_attack_total_duration(), 6)

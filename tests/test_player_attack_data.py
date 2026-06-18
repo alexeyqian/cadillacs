@@ -101,7 +101,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(attack.windup, 4)
         self.assertEqual(attack.active, 10)
         self.assertEqual(attack.recovery, 4)
-        self.assertEqual(attack.duration, attack.phase.total_duration)
+        self.assertEqual(attack.duration, attack.total_duration)
         self.assertEqual(attack.action_lock, RUN_ATTACK_LANDING_RECOVERY)
 
     def test_running_attack_has_counter_hurtbox_for_committed_flying_kick(self):
@@ -236,7 +236,7 @@ class PlayerAttackDataTests(unittest.TestCase):
 
         for attack_name in ["ATTACK_1", "ATTACK_2", "ATTACK_3"]:
             attack = PLAYER_ATTACKS[attack_name]
-            self.assertEqual(attack.duration, attack.phase.total_duration)
+            self.assertEqual(attack.duration, attack.total_duration)
 
     def test_standing_combo_hitboxes_progress_from_jab_to_finisher(self):
         attack_1 = PLAYER_ATTACKS["ATTACK_1"]

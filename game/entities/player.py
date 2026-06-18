@@ -38,17 +38,19 @@ class Player:
     THROW = "THROW"
 
     def __init__(self, player_type, animation_data, anim_fps):
+        self.player_type = player_type
+
         # Identity / position
         self.x = 300
         self.y = 500
-        self.player_type = player_type
+        self.facing_right = True
 
         # Core state
         self.state = self.IDLE
         self.state_machine = PlayerStateMachine(self)
-        self.facing_right = True
 
         self.apply_player_config(get_player_config(player_type))
+
         self.air = PlayerAirState(
             self.jump_power,
             self.jump_gravity,
@@ -162,6 +164,9 @@ class Player:
         return self.geometry.get_hurt_rect(self)
 
     def get_counter_hurt_rect(self):
+        # TODO: disable counter_hurt_rect for now, in future, 
+        # just remove it for simplification
+        return None
         return self.geometry.get_counter_hurt_rect(self)
 
     # on bottom center

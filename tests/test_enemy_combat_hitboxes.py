@@ -1,7 +1,7 @@
 import unittest
 
 from game.entities.attack_controller import AttackController
-from game.entities.attack_data import AttackPhaseData, EnemyAttackData
+from game.entities.attack_data import EnemyAttackData
 from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_geometry import EnemyGeometry
 from game.entities.enemy_state import EnemyState
@@ -31,7 +31,9 @@ class FakeEnemy:
         self.attack_controller = AttackController()
         self.attack_data = EnemyAttackData(
             damage=10,
-            phase=AttackPhaseData(windup=2, active=2, recovery=2),
+            windup=2,
+            active=2,
+            recovery=2,
             hitbox_offset_x=40,
             hitbox_offset_y=-30,
             hitbox_w=50,

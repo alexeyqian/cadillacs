@@ -1,5 +1,5 @@
 from game.entities.attack_controller import AttackController
-from game.entities.attack_data import AttackPhaseData, EnemyAttackData
+from game.entities.attack_data import EnemyAttackData
 
 
 class EnemyCombatController:
@@ -169,11 +169,9 @@ class EnemyCombatController:
             damage=owner.attack_damage,
             delay=owner.attack_delay,
             cooldown=owner.attack_cooldown_duration,
-            phase=AttackPhaseData(
-                windup=owner.attack_windup,
-                active=owner.attack_active,
-                recovery=owner.attack_recovery,
-            ),
+            windup=owner.attack_windup,
+            active=owner.attack_active,
+            recovery=owner.attack_recovery,
             clash_recovery_duration=owner.attack_clash_recovery_duration,
             clash_cooldown_duration=owner.attack_clash_cooldown_duration,
         )

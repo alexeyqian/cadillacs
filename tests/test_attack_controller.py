@@ -1,7 +1,7 @@
 import unittest
 
 from game.entities.attack_controller import AttackController
-from game.entities.attack_data import AttackPhaseData, EnemyAttackData, PlayerAttackData
+from game.entities.attack_data import EnemyAttackData, PlayerAttackData
 
 
 class AttackControllerTests(unittest.TestCase):
@@ -9,7 +9,9 @@ class AttackControllerTests(unittest.TestCase):
         attack = PlayerAttackData(
             damage=10,
             duration=3,
-            phase=AttackPhaseData(windup=0, active=1, recovery=2),
+            windup=0,
+            active=1,
+            recovery=2,
         )
         controller = AttackController()
 
@@ -29,7 +31,9 @@ class AttackControllerTests(unittest.TestCase):
     def test_enemy_attack_phase_controls_active_window(self):
         attack = EnemyAttackData(
             damage=10,
-            phase=AttackPhaseData(windup=2, active=2, recovery=2),
+            windup=2,
+            active=2,
+            recovery=2,
         )
         controller = AttackController()
 
@@ -48,7 +52,9 @@ class AttackControllerTests(unittest.TestCase):
     def test_phase_name_tracks_attack_timing(self):
         attack = EnemyAttackData(
             damage=10,
-            phase=AttackPhaseData(windup=2, active=2, recovery=2),
+            windup=2,
+            active=2,
+            recovery=2,
         )
         controller = AttackController()
 
@@ -72,7 +78,9 @@ class AttackControllerTests(unittest.TestCase):
         attack = PlayerAttackData(
             damage=10,
             duration=3,
-            phase=AttackPhaseData(windup=0, active=1, recovery=2),
+            windup=0,
+            active=1,
+            recovery=2,
         )
         target = object()
         controller = AttackController()
@@ -92,7 +100,9 @@ class AttackControllerTests(unittest.TestCase):
         attack = PlayerAttackData(
             damage=10,
             duration=3,
-            phase=AttackPhaseData(windup=0, active=1, recovery=2),
+            windup=0,
+            active=1,
+            recovery=2,
             max_targets=2,
         )
         first_target = object()

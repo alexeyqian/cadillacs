@@ -1,10 +1,7 @@
 import unittest
 
 from game.entities.attack_controller import AttackController
-from game.entities.attack_data import (
-    AttackPhaseData,
-    PlayerAttackData,
-)
+from game.entities.attack_data import PlayerAttackData
 from game.entities.attack_debug import format_attack_debug_lines
 
 
@@ -18,7 +15,9 @@ class AttackDebugTests(unittest.TestCase):
         attack = PlayerAttackData(
             damage=10,
             duration=12,
-            phase=AttackPhaseData(windup=4, active=4, recovery=4),
+            windup=4,
+            active=4,
+            recovery=4,
             hitbox_offset_x=10,
             hitbox_offset_y=-20,
             hitbox_w=30,
