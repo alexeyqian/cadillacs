@@ -1,18 +1,6 @@
-from dataclasses import dataclass, replace
+from dataclasses import dataclass
 
 from game.settings import *
-
-#from_here
-PLAYER_COUNTER_HIT_STUN_BONUS = 10
-# Combo windows are measured from attack start, not from attack finish.
-# Because standing punches now have recovery frames, these values include
-# attack duration plus the desired follow-up grace period.
-PLAYER_COMBO_WINDOW = 29
-PLAYER_FIRST_TO_SECOND_COMBO_WINDOW = 29
-PLAYER_SECOND_TO_THIRD_COMBO_WINDOW = 24
-PLAYER_THIRD_HIT_RECOVERY = 24
-PLAYER_CLASH_RECOVERY = 8
-#to_here
 
 @dataclass(frozen=True)
 class PlayerAttackData:
@@ -21,6 +9,7 @@ class PlayerAttackData:
     hitbox_w: int = PLAYER_HITBOX_W
     hitbox_h: int = PLAYER_HITBOX_H
 
+    # deprecated fields
     counter_hurtbox_offset_x: int = 0
     counter_hurtbox_offset_y: int = 0
     counter_hurtbox_w: int = 0
@@ -74,4 +63,3 @@ class EnemyAttackData:
     @property
     def duration(self):
         return self.total_duration
-

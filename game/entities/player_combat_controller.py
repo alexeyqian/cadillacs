@@ -1,11 +1,6 @@
 from game.settings import *
 
-from game.entities.attack_data import (
-    PLAYER_CLASH_RECOVERY,
-    PLAYER_COMBO_WINDOW,
-    PLAYER_COUNTER_HIT_STUN_BONUS,
-    get_player_attack_data,
-)
+from game.entities.player_config import get_player_attack_data
 from game.entities.attack_controller import AttackController
 from game.entities.hit_reaction import HitReaction
 

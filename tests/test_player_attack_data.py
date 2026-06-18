@@ -1,6 +1,6 @@
 import unittest
 
-from game.entities.attack_data import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
+from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.entities.player_combat_controller import PlayerCombatController
 from game.ui.score_manager import ScoreManager
 from game.settings import (

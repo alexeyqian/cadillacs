@@ -4,7 +4,7 @@ from game.effects.hit_spark import HitSpark
 from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
 from game.entities.boss_enemy import BossEnemy
-from game.entities.player_combat_controller import PLAYER_COUNTER_HIT_STUN_BONUS
+from game.settings import PLAYER_COUNTER_HIT_STUN_BONUS
 
 def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):
     if facing_right:

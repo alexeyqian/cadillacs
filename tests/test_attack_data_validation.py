@@ -1,11 +1,8 @@
 import unittest
 
-from game.entities.attack_data import (
-    EnemyAttackData,
-    PLAYER_ATTACKS,
-    WEAPON_PLAYER_ATTACKS,
-)
+from game.entities.attack_data import EnemyAttackData
 from game.entities.enemy_config import ENEMY_CONFIGS
+from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 
 
 class AttackDataValidationTests(unittest.TestCase):
