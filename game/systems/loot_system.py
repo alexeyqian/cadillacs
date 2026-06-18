@@ -47,7 +47,7 @@ def update_loot_pickup(game_state):
         return
 
     # inflate for easy to pickup
-    player_rect = player.get_collision_rect().inflate(40, 40)
+    player_rect = player.get_collision_rect().inflate(80, 80)
     for loot in loot_items:
         if not loot.active:
             continue

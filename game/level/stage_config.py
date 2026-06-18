@@ -10,7 +10,7 @@ EPISODE_1_STAGES = [
         "lane_bottom": 830,
         "waves": [
             {
-                "trigger_x": 900,
+                "trigger_x": 1000,
                 "max_active": 3,
                 "spawns": [
                     {
@@ -20,7 +20,7 @@ EPISODE_1_STAGES = [
                 ],
             },
             {
-                "trigger_x": 1800,
+                "trigger_x": 2000,
                 "max_active": 4,
                 "spawns": [
                     {
@@ -35,7 +35,7 @@ EPISODE_1_STAGES = [
                 ],
             },
             {
-                "trigger_x": 2700,
+                "trigger_x": 3000,
                 "max_active": 4,
                 "spawns": [
                     {
@@ -51,17 +51,16 @@ EPISODE_1_STAGES = [
             },
         ],
         "weapons": [
-            #{"type": "knife", "x": 850, "y": 600},
-            #{"type": "bat", "x": 1750, "y": 600},
-            #{"type": "pistol", "x": 2260, "y": 760},
+            #{"type": "knife", "x": 850, "y": 500},
+            #{"type": "bat", "x": 1750, "y": 500},
+            #{"type": "pistol", "x": 2260, "y": 500},
         ],
         "objects": [
-            # for after wave 2
+            # for wave 2
             {"kind": "breakable", "x": 2000, "y": 500, "loot_type":"health"},
-            # for after wave 3
-            {"kind": "breakable", "x": 1780, "y": 500, "loot_type":"health"},
+            # for wave 3
+            {"kind": "breakable", "x": 3000, "y": 500, "loot_type":"health"},
             #{"kind": "barrel", "x": 1740, "y": 760},
-            #{"kind": "breakable", "x": 2320, "y": 760},
         ],
         "completion": "clear_waves_then_exit",
         "exit_rect": (2700, 340, 100, 260),
@@ -77,87 +76,36 @@ EPISODE_1_STAGES = [
         "lane_bottom": 1080,
         "waves": [
             {
-                "trigger_x": 900,
-                "max_active": 3,
-                "spawns": [
-                    {
-                        "enemy_type": "ferris",
-                        "side": "right",
-                        "delay_min": 40,
-                        "delay_max": 80,
-                        "y_min": 720,
-                        "y_max": 900,
-                    },
-                    {
-                        "enemy_type": "ferris",
-                        "side": "right",
-                        "delay_min": 70,
-                        "delay_max": 120,
-                        "y_min": 820,
-                        "y_max": 1020,
-                    },
-                    {
-                        "enemy_type": "ferris",
-                        "side": "left",
-                        "delay_min": 100,
-                        "delay_max": 150,
-                        "y_min": 700,
-                        "y_max": 960,
-                    },
-                ],
-            },
-            {
-                "trigger_x": 1800,
-                "max_active": 3,
-                "spawns": [
-                    {
-                        "enemy_type": "ferris",
-                        "side": "right",
-                        "delay_min": 50,
-                        "delay_max": 90,
-                        "y_min": 720,
-                        "y_max": 980,
-                    },
-                    {
-                        "enemy_type": "gneiss",
-                        "side": "left",
-                        "delay_min": 90,
-                        "delay_max": 140,
-                        "y_min": 680,
-                        "y_max": 900,
-                    },
-                    {
-                        "enemy_type": "gneiss",
-                        "side": "right",
-                        "delay_min": 130,
-                        "delay_max": 190,
-                        "y_min": 820,
-                        "y_max": 1040,
-                    },
-                ],
-            },
-            {
-                "trigger_x": 2250,
+                "trigger_x": 1000,
                 "max_active": 4,
                 "spawns": [
                     {
                         "enemy_type": "ferris",
-                        "count": 3,
-                        "side": "right",
-                        "delay_min": 80,
-                        "delay_max": 130,
-                        "y_min": 720,
-                        "y_max": 1040,
+                        "count": 2
+                    },
+                ],
+            },
+            {
+                "trigger_x": 2000,
+                "max_active": 4,
+                "spawns": [
+                    {
+                        "enemy_type": "gneiss",
+                        "count": 3
+                    },
+                ],
+            },
+            {
+                "trigger_x": 2800,
+                "max_active": 4,
+                "spawns": [
+                    {
+                        "enemy_type": "gneiss",
+                        "count": 2
                     },
                     {
                         "enemy_type": "black_elmer",
-                        "count": 2,
-                        "side": "left",
-                        "delay_min": 130,
-                        "delay_max": 210,
-                        "y_min": 700,
-                        "y_max": 980,
-                        "enter_offset": 140,
+                        "count": 2
                     },
                 ],
             },
@@ -168,29 +116,27 @@ EPISODE_1_STAGES = [
             #{"type": "pistol", "x": 2220, "y": 760},
         ],
         "objects": [
-            #{"kind": "breakable", "x": 880, "y": 760},
-            {"kind": "breakable", "x": 1780, "y": 760},
-            #{"kind": "barrel", "x": 1740, "y": 760},
-            #{"kind": "breakable", "x": 2280, "y": 760},
+            {"kind": "breakable", "x": 1800, "y": 500, "loot_type":"health"},
+            {"kind": "breakable", "x": 2500, "y": 500, "loot_type":"health"},
         ],
         "completion": "clear_waves_then_exit",
         "exit_rect": (2800, 650, 150, 420),
     },
-    {
-        "id": "episode_1_stage_3_transition",
-        "name": "Ruined Building",
-        "background": "assets/backgrounds/episode_1/episode_1_stage_3_transition.png",
-        "world_width": 652,
-        "world_height": 1080,
-        "player_start": (120, 790),
-        "lane_top": 760,
-        "lane_bottom": 1080,
-        "waves": [],
-        "weapons": [],
-        "objects": [],
-        "completion": "reach_exit",
-        "exit_rect": (900, 760, 120, 320),
-    },
+    #{
+    #    "id": "episode_1_stage_3_transition",
+    #    "name": "Ruined Building",
+    #    "background": "assets/backgrounds/episode_1/episode_1_stage_3_transition.png",
+    #    "world_width": 652,
+    #    "world_height": 1080,
+    #    "player_start": (120, 790),
+    #    "lane_top": 760,
+    #    "lane_bottom": 1080,
+    #    "waves": [],
+    #    "weapons": [],
+    #    "objects": [],
+    #    "completion": "reach_exit",
+    #    "exit_rect": (900, 760, 120, 320),
+    #},
     {
         "id": "episode_1_stage_4_ruined_arena",
         "name": "Ruined Arena",
