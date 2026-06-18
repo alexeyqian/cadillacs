@@ -4,6 +4,7 @@ from game.colors import *
 
 from game.entities.enemy import Enemy
 from game.entities.enemy_projectile import EnemyProjectile
+from game.entities.hit_reaction import HitReaction
 from game.animation.animation_config import *
 from game.animation.boss_data import BOSS_ANIMATIONS, BOSS_ANIM_FPS
 
@@ -168,9 +169,23 @@ class BossEnemy(Enemy):
         self,
         damage,
         attacker_x,
-        knockback_velocity=3,
+        reaction=None,
         hit_stun_duration=None,
+        knockback_velocity=None,
     ):
+        if knockback_velocity is not None:
+            reaction = knockback_velocity
+        if isinstance(reaction, (int, float)):
+            reaction = HitReaction(
+                knockback_velocity=reaction,
+                stun_frames=hit_stun_duration,
+            )
+        elif reaction is None:
+            reaction = HitReaction(
+                knockback_velocity=3,
+                stun_frames=hit_stun_duration,
+            )
+
         if self.state == self.DEAD:
             return
 
@@ -184,14 +199,14 @@ class BossEnemy(Enemy):
         if should_flinch:
             self.cancel_special_attack_warning()
             boss_hit_stun_duration = 8
-            if hit_stun_duration and hit_stun_duration > 15:
+            if reaction.stun_frames and reaction.stun_frames > 15:
                 boss_hit_stun_duration = 12
             self.lifecycle_state.hit_stun_remaining = boss_hit_stun_duration
             self.state = self.HIT
 
             # boss barely moves when hit
             boss_knockback_velocity = 3
-            if knockback_velocity > 10:
+            if reaction.knockback_velocity > 10:
                 boss_knockback_velocity = 5
 
             if attacker_x < self.x:

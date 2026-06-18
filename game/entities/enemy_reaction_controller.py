@@ -1,3 +1,6 @@
+from game.entities.hit_reaction import HitReaction
+
+
 class EnemyReactionController:
     def die(self, owner):
         self.cancel_attack(owner)
@@ -14,19 +17,31 @@ class EnemyReactionController:
         owner,
         damage,
         attacker_x,
-        knockback_velocity=10,
+        reaction=None,
         hit_stun_duration=None,
+        knockback_velocity=None,
     ):
-        self.apply_hit(owner, damage, attacker_x, knockback_velocity, hit_stun_duration)
+        if knockback_velocity is not None:
+            reaction = knockback_velocity
+        if isinstance(reaction, (int, float)):
+            reaction = HitReaction(
+                knockback_velocity=reaction,
+                stun_frames=hit_stun_duration,
+            )
+        elif reaction is None:
+            reaction = HitReaction(stun_frames=hit_stun_duration)
+        self.apply_hit(owner, damage, attacker_x, reaction)
 
     def apply_hit(
         self,
         owner,
         damage,
         attacker_x,
-        knockback_velocity=10,
-        hit_stun_duration=None,
+        reaction=None,
     ):
+        if reaction is None:
+            reaction = HitReaction()
+
         if owner.state == owner.DEAD:
             return
 
@@ -49,18 +64,19 @@ class EnemyReactionController:
 
         if should_flinch:
             self.reset_attack_decision(owner)
-            if hit_stun_duration is None:
-                hit_stun_duration = owner.hit_stun_duration
-            self.set_hit_stun_remaining(owner, hit_stun_duration)
+            stun_frames = reaction.stun_frames
+            if stun_frames is None:
+                stun_frames = owner.hit_stun_duration
+            self.set_hit_stun_remaining(owner, stun_frames)
             owner.state = owner.HIT
             # So if an enemy is interrupted, it releases the slot.
             self.cancel_attack(owner)
             self.release_attack_slot(owner)
 
             if attacker_x < owner.x:
-                self.set_knockback_velocity(owner, knockback_velocity)
+                self.set_knockback_velocity(owner, reaction.knockback_velocity)
             else:
-                self.set_knockback_velocity(owner, -knockback_velocity)
+                self.set_knockback_velocity(owner, -reaction.knockback_velocity)
             return
 
         if self.is_stun_resistant(owner):

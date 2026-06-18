@@ -12,6 +12,7 @@ from game.entities.attack_data import (
     get_player_attack_data,
 )
 from game.entities.attack_controller import AttackController
+from game.entities.hit_reaction import HitReaction
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombatController:
@@ -261,6 +262,12 @@ class PlayerCombatController:
             owner,
             RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
         ))
+
+    def get_attack_hit_reaction(self, owner):
+        return HitReaction(
+            stun_frames=self.get_attack_enemy_hit_stun_duration(owner),
+            knockback_velocity=self.get_attack_knockback_velocity(owner),
+        )
 
     def get_run_attack_power_bonus(self, owner, full_power_bonus):
         if self.current_attack_name != owner.RUN_ATTACK:
