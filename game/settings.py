@@ -117,7 +117,6 @@ ATTACK_3_FORWARD_NUDGE_SPEED_SCALE=0.35
 
 # todo: merge with PLAYER_COMBO_WINDOW
 ATTACK_COMBO_WINDOW=30
-PLAYER_COUNTER_HIT_STUN_BONUS = 10
 # Combo windows are measured from attack start, not from attack finish.
 # Because standing punches now have recovery frames, these values include
 # attack duration plus the desired follow-up grace period.

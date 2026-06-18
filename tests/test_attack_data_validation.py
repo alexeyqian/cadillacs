@@ -14,10 +14,9 @@ class AttackDataValidationTests(unittest.TestCase):
     def test_player_attack_phase_fits_duration(self):
         for attack_name, attack in PLAYER_ATTACKS.items():
             with self.subTest(attack_name=attack_name):
-                self.assertGreater(attack.duration, 0)
+                self.assertGreater(attack.total_duration, 0)
                 self.assertGreater(attack.active, 0)
                 self.assertGreater(attack.max_targets, 0)
-                self.assertLessEqual(attack.total_duration, attack.duration)
 
     def test_player_damaging_attacks_have_positive_hitboxes(self):
         for attack_name, attack in PLAYER_ATTACKS.items():
@@ -28,10 +27,9 @@ class AttackDataValidationTests(unittest.TestCase):
     def test_weapon_player_attack_phase_fits_duration(self):
         for attack_key, attack in WEAPON_PLAYER_ATTACKS.items():
             with self.subTest(attack_key=attack_key):
-                self.assertGreater(attack.duration, 0)
+                self.assertGreater(attack.total_duration, 0)
                 self.assertGreater(attack.active, 0)
                 self.assertGreater(attack.max_targets, 0)
-                self.assertLessEqual(attack.total_duration, attack.duration)
 
     def test_weapon_player_attacks_have_positive_hitboxes(self):
         for attack_key, attack in WEAPON_PLAYER_ATTACKS.items():

@@ -163,12 +163,6 @@ class Player:
     def get_hurt_rect(self):
         return self.geometry.get_hurt_rect(self)
 
-    def get_counter_hurt_rect(self):
-        # TODO: disable counter_hurt_rect for now, in future, 
-        # just remove it for simplification
-        return None
-        return self.geometry.get_counter_hurt_rect(self)
-
     # on bottom center
     def get_collision_rect(self):
         return self.geometry.get_collision_rect(self)

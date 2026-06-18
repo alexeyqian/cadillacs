@@ -80,7 +80,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(owner.state, owner.ATTACK_1)
         self.assertEqual(combat.current_attack_name, owner.ATTACK_1)
         self.assertEqual(combat.attack_timer, 0)
-        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["ATTACK_1"].duration)
+        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["ATTACK_1"].total_duration)
 
     def test_running_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
@@ -92,7 +92,7 @@ class PlayerAttackDataTests(unittest.TestCase):
 
         self.assertEqual(owner.state, owner.RUN_ATTACK)
         self.assertEqual(combat.current_attack_name, owner.RUN_ATTACK)
-        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["RUN_ATTACK"].duration)
+        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["RUN_ATTACK"].total_duration)
         self.assertTrue(owner.movement.run_attack_momentum_started)
 
     def test_running_attack_has_arcade_style_timing_and_landing_recovery(self):
@@ -101,12 +101,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(attack.windup, 4)
         self.assertEqual(attack.active, 10)
         self.assertEqual(attack.recovery, 4)
-        self.assertEqual(attack.duration, attack.total_duration)
         self.assertEqual(attack.cooldown, RUN_ATTACK_LANDING_RECOVERY)
-
-    def test_running_attack_has_counter_hurtbox_for_committed_flying_kick(self):
-        self.assertGreater(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtbox_w, 0)
-        self.assertGreater(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtbox_h, 0)
 
     def test_running_attack_requires_enough_run_distance(self):
         owner = FakeOwner()
@@ -161,7 +156,7 @@ class PlayerAttackDataTests(unittest.TestCase):
 
         self.assertEqual(owner.state, owner.JUMP_ATTACK)
         self.assertEqual(combat.current_attack_name, owner.JUMP_ATTACK)
-        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["JUMP_ATTACK"].duration)
+        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["JUMP_ATTACK"].total_duration)
 
     def test_jump_attack_cannot_start_during_takeoff(self):
         class FakeAir:
@@ -209,8 +204,6 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(attack.windup, 4)
         self.assertEqual(attack.active, 8)
         self.assertEqual(attack.recovery, 6)
-        self.assertGreater(attack.counter_hurtbox_w, 0)
-        self.assertGreater(attack.counter_hurtbox_h, 0)
 
     def test_attack_timer_counts_up_until_attack_finishes(self):
         owner = FakeOwner()
@@ -220,9 +213,9 @@ class PlayerAttackDataTests(unittest.TestCase):
         combat.update_timers(owner)
 
         self.assertEqual(combat.attack_timer, 1)
-        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["ATTACK_1"].duration - 1)
+        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["ATTACK_1"].total_duration - 1)
 
-        for _ in range(PLAYER_ATTACKS["ATTACK_1"].duration - 1):
+        for _ in range(PLAYER_ATTACKS["ATTACK_1"].total_duration - 1):
             combat.update_timers(owner)
 
         self.assertFalse(combat.is_attacking)
@@ -236,7 +229,6 @@ class PlayerAttackDataTests(unittest.TestCase):
 
         for attack_name in ["ATTACK_1", "ATTACK_2", "ATTACK_3"]:
             attack = PLAYER_ATTACKS[attack_name]
-            self.assertEqual(attack.duration, attack.total_duration)
 
     def test_standing_combo_hitboxes_progress_from_jab_to_finisher(self):
         attack_1 = PLAYER_ATTACKS["ATTACK_1"]

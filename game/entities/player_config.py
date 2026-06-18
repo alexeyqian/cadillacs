@@ -7,7 +7,6 @@ DEFAULT_PLAYER_ATTACKS = {
     # shorter quick jab hitbox
     "ATTACK_1": PlayerAttackData(
         damage=ATTACK_1_DAMAGE,
-        duration=ATTACK_1_WINDUP_DURATION + ATTACK_1_ACTIVE_DURATION + ATTACK_1_RECOVERY_DURATION,
         windup=ATTACK_1_WINDUP_DURATION,
         active=ATTACK_1_ACTIVE_DURATION,
         recovery=ATTACK_1_RECOVERY_DURATION,
@@ -23,16 +22,11 @@ DEFAULT_PLAYER_ATTACKS = {
         #hitbox_w=PLAYER_HITBOX_W,
         #hitbox_h=PLAYER_HITBOX_H,
 
-        counter_hurtbox_offset_x=54,
-        counter_hurtbox_offset_y=-300,
-        counter_hurtbox_w=34,
-        counter_hurtbox_h=38,
         combo_window=PLAYER_FIRST_TO_SECOND_COMBO_WINDOW,
     ),
     # medium baseline hitbox
     "ATTACK_2": PlayerAttackData(
         damage=ATTACK_2_DAMAGE,
-        duration=ATTACK_2_WINDUP_DURATION + ATTACK_2_ACTIVE_DURATION + ATTACK_2_RECOVERY_DURATION,
         windup=ATTACK_2_WINDUP_DURATION,
         active=ATTACK_2_ACTIVE_DURATION,
         recovery=ATTACK_2_RECOVERY_DURATION,
@@ -40,17 +34,12 @@ DEFAULT_PLAYER_ATTACKS = {
         hitbox_offset_y=PLAYER_HIT_BOX_OFFSET_Y,
         hitbox_w=PLAYER_HITBOX_W,
         hitbox_h=PLAYER_HITBOX_H,
-        counter_hurtbox_offset_x=54,
-        counter_hurtbox_offset_y=-300,
-        counter_hurtbox_w=34,
-        counter_hurtbox_h=38,
         combo_window=PLAYER_SECOND_TO_THIRD_COMBO_WINDOW,
     ),
     # wider/taller finisher hitbox. Keep it larger than ATTACK_2, but avoid
     # overextending it because ATTACK_3 also gets a small forward nudge.
     "ATTACK_3": PlayerAttackData(
         damage=ATTACK_3_DAMAGE,
-        duration=ATTACK_3_WINDUP_DURATION + ATTACK_3_ACTIVE_DURATION + ATTACK_3_RECOVERY_DURATION,
         windup=ATTACK_3_WINDUP_DURATION,
         active=ATTACK_3_ACTIVE_DURATION,
         recovery=ATTACK_3_RECOVERY_DURATION,
@@ -58,10 +47,6 @@ DEFAULT_PLAYER_ATTACKS = {
         hitbox_offset_y=PLAYER_HIT_BOX_OFFSET_Y,
         hitbox_w=PLAYER_HITBOX_W,
         hitbox_h=PLAYER_HITBOX_H,
-        counter_hurtbox_offset_x=54,
-        counter_hurtbox_offset_y=-300,
-        counter_hurtbox_w=34,
-        counter_hurtbox_h=38,
         combo_window=0,
         cooldown=PLAYER_THIRD_HIT_RECOVERY,
     ),
@@ -71,13 +56,7 @@ DEFAULT_PLAYER_ATTACKS = {
         hitbox_w=200,
         hitbox_h=100,
 
-        counter_hurtbox_offset_x=54,
-        counter_hurtbox_offset_y=-00,
-        counter_hurtbox_w=34,
-        counter_hurtbox_h=38,
-
         damage=RUN_ATTACK_DAMAGE,
-        duration=RUN_ATTACK_TOTAL_DURATION,
         windup=RUN_ATTACK_WINDUP_DURATION,
         active=RUN_ATTACK_ACTIVE_DURATION,
         recovery=RUN_ATTACK_RECOVERY_DURATION,
@@ -89,7 +68,6 @@ DEFAULT_PLAYER_ATTACKS = {
     ),
     "JUMP_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,
-        duration=18,
         windup=4,
         active=8,
         recovery=6,
@@ -97,15 +75,10 @@ DEFAULT_PLAYER_ATTACKS = {
         hitbox_offset_y=-224,
         hitbox_w=118,
         hitbox_h=58,
-        counter_hurtbox_offset_x=-16,
-        counter_hurtbox_offset_y=-268,
-        counter_hurtbox_w=104,
-        counter_hurtbox_h=116,
     ),
     # Grab knee is safe once a grab succeeds, so keep it below combo finisher damage.
     "GRAB_KNEE": PlayerAttackData(
         damage=FIST_DAMAGE,
-        duration=PLAYER_GRAB_KNEE_DURATION,
         windup=6,
         active=4,
         recovery=4,

@@ -30,16 +30,6 @@ def format_attack_debug_lines(label, controller, damage=None, lane_reach=None):
     if hitbox_line:
         lines.append(hitbox_line)
 
-    counter_line = format_hitbox_line(
-        "counter",
-        getattr(attack, "counter_hurtbox_offset_x", 0),
-        getattr(attack, "counter_hurtbox_offset_y", 0),
-        getattr(attack, "counter_hurtbox_w", 0),
-        getattr(attack, "counter_hurtbox_h", 0),
-    )
-    if counter_line:
-        lines.append(counter_line)
-
     return lines
 
 

@@ -4,7 +4,6 @@ from game.effects.hit_spark import HitSpark
 from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
 from game.entities.boss_enemy import BossEnemy
-from game.settings import PLAYER_COUNTER_HIT_STUN_BONUS
 
 def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):
     if facing_right:
@@ -48,41 +47,6 @@ def handle_player_attack_collision(game_state):
         return
 
     player_attack_lane_reach = player.combat.get_attack_lane_reach(player)
-
-    # COUNTER-HIT BLOCK
-    # Rule: if the player is attacking and an enemy active attack overlaps the player’s counter_hurt_rect, 
-    # the player gets hit and their combo cancels. 
-    # This check should happen before the player’s attack damages enemies.
-    counter_hurt_rect = player.get_counter_hurt_rect()
-    if counter_hurt_rect:
-        for enemy in enemies:
-            if enemy.state != enemy.ATTACK:
-                continue
-            # prevent the same enemy attack from counter-hitting more than once.
-            if enemy.combat.has_attack_hit(enemy):
-                continue
-
-            enemy_attack_rect = enemy.get_attack_rect()
-            if not enemy_attack_rect:
-                continue
-
-            lane_distance = game_state.level.get_lane_distance(enemy.y, player.y)
-            if (lane_distance <= enemy.attack_lane_reach
-                and enemy.is_attack_active() 
-                and enemy_attack_rect.colliderect(counter_hurt_rect)):
-                # hit stun bonus here: A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
-                player.take_damage(enemy.attack_damage, hit_stun_bonus=PLAYER_COUNTER_HIT_STUN_BONUS)
-                enemy.combat.mark_attack_already_hit(enemy)
-                create_hit_spark(game_state, enemy_attack_rect, counter_hurt_rect, enemy.facing_right, ORANGE_COLOR)
-                # used for debug, remove in production
-                # Design note: this will make tuning much easier. 
-                # If you see COUNTER too often, the counter-hurtbox is too large or enemy active windows are too generous. 
-                # If you never see it, the boxes/windows may be too strict.
-                game_state.floating_texts.append(
-                    FloatingText(counter_hurt_rect.centerx,
-                        counter_hurt_rect.top - 18,
-                        "COUNTER", ORANGE_COLOR))
-                return
 
     if player.state == player.GRAB_KNEE:
         enemy = player.grab.grabbed_enemy

@@ -22,13 +22,6 @@ class PlayerAttackData:
     max_targets: int = 1
     combo_window: int = ATTACK_COMBO_WINDOW
 
-    # deprecated fields
-    counter_hurtbox_offset_x: int = 0
-    counter_hurtbox_offset_y: int = 0
-    counter_hurtbox_w: int = 0
-    counter_hurtbox_h: int = 0
-    counter_hit_stun_bonus: int = 0
-
     @property
     def total_duration(self):
         return self.windup + self.active + self.recovery

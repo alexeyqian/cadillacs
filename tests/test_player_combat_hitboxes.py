@@ -90,22 +90,6 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
             owner.x - attack_data.hitbox_offset_x - attack_data.hitbox_w
         )
 
-    def test_counter_hurtbox_uses_attack_data_active_window(self):
-        owner = FakeOwner()
-        hitboxes = PlayerGeometry()
-        attack_data = PLAYER_ATTACKS["ATTACK_1"]
-
-        owner.combat.start_attack(owner)
-        self.assertIsNone(hitboxes.get_counter_hurt_rect(owner))
-
-        for _ in range(attack_data.windup):
-            owner.combat.update_timers(owner)
-
-        counter_rect = hitboxes.get_counter_hurt_rect(owner)
-
-        self.assertEqual(counter_rect.x, owner.x + attack_data.counter_hurtbox_offset_x)
-        self.assertEqual(counter_rect.y, owner.y + attack_data.counter_hurtbox_offset_y)
-
     def test_jump_attack_rect_uses_visual_air_height(self):
         class FakeAir:
             z = 40

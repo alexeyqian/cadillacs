@@ -37,12 +37,6 @@ class PlayerGeometry:
                 pygame.Rect(PLAYER_HURTBOX_OFFSET_X, PLAYER_HURTBOX_OFFSET_Y,
                 PLAYER_HURTBOX_W, PLAYER_HURTBOX_H))
     
-    def get_counter_hurt_rect(self, owner):
-        combat_counter_hurtbox = owner.combat.get_active_counter_hurtbox_data()
-        if combat_counter_hurtbox:
-            return self._counter_hurt_rect_to_world(owner, combat_counter_hurtbox)
-        return None
-
     def get_collision_rect(self, owner):
         return self._player_rect_to_world(owner,
                 pygame.Rect(-1 * PLAYER_COLLISION_W//2, -1*PLAYER_COLLISION_H,
@@ -76,15 +70,6 @@ class PlayerGeometry:
             attack.hitbox_h,
         )
         return combat_box_to_world_rect(owner.x, anchor_y, owner.facing_right, box)
-
-    def _counter_hurt_rect_to_world(self, owner, attack):
-        box = pygame.Rect(
-            attack.counter_hurtbox_offset_x,
-            attack.counter_hurtbox_offset_y,
-            attack.counter_hurtbox_w,
-            attack.counter_hurtbox_h,
-        )
-        return self._attack_rect_to_world(owner, box)
 
     def _attack_rect_to_world(self, owner, box):
         anchor_y = owner.y

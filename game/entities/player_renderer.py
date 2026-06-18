@@ -73,7 +73,6 @@ class PlayerRenderer:
         collision_rect = player.get_collision_rect()
         body_rect = player.get_frame_rect()
         hurt_rect = player.get_hurt_rect()
-        #counter_hurt_rect = player.get_counter_hurt_rect()
         attack_rect = player.get_attack_rect()
 
         # blue = collision / feet box
@@ -106,12 +105,6 @@ class PlayerRenderer:
             hurt_rect.height
         ), 2)
 
-        #pygame.draw.rect(screen, ORANGE_COLOR, (
-        #    counter_hurt_rect.x - camera_x,
-        #    counter_hurt_rect.y,
-        #    counter_hurt_rect.width,
-        #    counter_hurt_rect.height
-        #), 2)
         if attack_rect:
             pygame.draw.rect(screen, RED_COLOR, (
                 attack_rect.x - camera_x,
@@ -125,4 +118,3 @@ class PlayerRenderer:
         #    font = pygame.font.SysFont(None, 20)
         #    label = font.render(timing_label, True, YELLOW_COLOR)
         #    screen.blit(label, (int(player.x - camera_x - 42), int(player.y - 210)))
-

@@ -68,10 +68,6 @@ class FakePlayer:
     def get_attack_rect(self):
         return pygame.Rect(100, 100, 100, 100)
 
-    def get_counter_hurt_rect(self):
-        return None
-
-
 class FakeHealth:
     hp = 100
     max_hp = 100
