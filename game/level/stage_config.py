@@ -14,8 +14,8 @@ EPISODE_1_STAGES = [
                 "max_active": 3,
                 "spawns": [
                     {
-                        "enemy_type": "ferris",
-                        "count": 2
+                        "enemy_type": "walther",
+                        "count": 1
                     }
                 ],
             },
@@ -149,15 +149,11 @@ EPISODE_1_STAGES = [
         "waves": [
             {
                 "trigger_x": 1000,
-                "max_active": 3,
+                "max_active": 4,
                 "spawns": [
                     {
                         "enemy_type": "gneiss",
                         "count": 3
-                    },
-                    {
-                        "enemy_type": "walther",
-                        "count": 1
                     },
                 ],
             },
@@ -172,8 +168,12 @@ EPISODE_1_STAGES = [
                 ],
             },
             {
-                "kind": "boss",
                 "trigger_x": 2800,
+                "spawns": [
+                    {
+                        "enemy_type": "walther",
+                    },
+                ],
             },
         ],
         "weapons": [

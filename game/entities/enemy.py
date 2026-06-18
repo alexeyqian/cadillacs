@@ -84,9 +84,18 @@ class Enemy:
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
         self.archetype = config.archetype
-        self.melee_attack_slot_limit = getattr(config, "melee_attack_slot_limit", None)
+
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
+        self.hurt_box_w = int(config.hurt_box_w)
+        self.hurt_box_h = int(config.hurt_box_h)
+        self.hurt_box_offset_x = int(config.hurt_box_offset_x)
+        self.hurt_box_offset_y = int(config.hurt_box_offset_y)
+        self.hit_box_w = int(config.hit_box_w)
+        self.hit_box_h = int(config.hit_box_h)
+        self.hit_box_offset_x = int(config.hit_box_offset_x)
+        self.hit_box_offset_y = int(config.hit_box_offset_y)
+        
         self.health = EnemyHealth(config.max_hp)
         self.speed = config.speed
         self.patrol_distance = config.patrol_distance
@@ -118,6 +127,8 @@ class Enemy:
         self.breakout_velocity = config.breakout_velocity
         self.recovery_punish_delay_multiplier = config.recovery_punish_delay_multiplier
         self.thrown_damage = config.thrown_damage
+
+        self.melee_attack_slot_limit = getattr(config, "melee_attack_slot_limit", None)
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale
 

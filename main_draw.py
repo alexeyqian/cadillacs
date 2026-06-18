@@ -75,7 +75,6 @@ def main_draw_world(game_state):
     #level.draw_props(screen, camera.x, "front")
     level.background.draw_front(screen, camera.x)
     draw_exit_rect(screen, camera, level)
-    draw_player_debug_boxes(screen, level, camera, player)
     #draw_entity_lane_debug(screen, level, camera, player, enemies)
     #draw_projectile_lane_debug(screen, level, camera, projectiles, enemy_projectiles)
 
@@ -312,73 +311,6 @@ def main_draw_ui(game_state):
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(game_over_text, game_over_rect)
         return
-
-def draw_player_debug_boxes(screen, level, camera, player):
-    if not settings.SHOW_COMBAT_BOXES:
-        return
-
-    collision_rect = player.get_collision_rect()
-    body_rect = player.get_frame_rect()
-    hurt_rect = player.get_hurt_rect()
-    counter_hurt_rect = player.get_counter_hurt_rect()
-    attack_rect = player.get_attack_rect()
-
-    # blue = collision / feet box
-    pygame.draw.rect(screen, BLUE_COLOR, (
-        collision_rect.x - camera.x,
-        collision_rect.y,
-        collision_rect.width,
-        collision_rect.height
-    ), 1)
-    # small feet anchor marker
-    pygame.draw.circle(
-        screen,
-        WHITE_COLOR,
-        (int(player.x - camera.x), int(player.y)),
-        3
-    )
-
-    # white = full animation frame / visual reference
-    pygame.draw.rect(screen, WHITE_COLOR, (
-        body_rect.x - camera.x,
-        body_rect.y,
-        body_rect.width,
-        body_rect.height
-    ), 1)
-
-    # green = current animation frame hurt box
-    if hurt_rect and hurt_rect.width > 0 and hurt_rect.height > 0:
-        pygame.draw.rect(screen, GREEN_COLOR, (
-            hurt_rect.x - camera.x,
-            hurt_rect.y,
-            hurt_rect.width,
-            hurt_rect.height
-        ), 2)
-        
-    # orange = counter-hurtbox / extended limb vulnerability
-    if counter_hurt_rect and counter_hurt_rect.width > 0 and counter_hurt_rect.height > 0:
-        pygame.draw.rect(screen, ORANGE_COLOR, (
-            counter_hurt_rect.x - camera.x,
-            counter_hurt_rect.y,
-            counter_hurt_rect.width,
-            counter_hurt_rect.height
-        ), 2)
-
-    # red = current animation frame attack box
-    if attack_rect and attack_rect.width > 0 and attack_rect.height > 0:
-        pygame.draw.rect(screen, RED_COLOR, (
-            attack_rect.x - camera.x,
-            attack_rect.y,
-            attack_rect.width,
-            attack_rect.height
-        ), 2)
-
-    timing_label = player.combat.get_attack_timing_label()
-    if timing_label:
-        font = pygame.font.SysFont(None, 20)
-        label = font.render(timing_label, True, YELLOW_COLOR)
-        screen.blit(label, (int(player.x - camera.x - 42), int(player.y - 210)))
-
 
 def draw_entity_lane_debug(screen, level, camera, player, enemies):
     if not settings.SHOW_COMBAT_BOXES:

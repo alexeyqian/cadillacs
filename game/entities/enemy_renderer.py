@@ -24,6 +24,7 @@ class EnemyRenderer:
 
         if settings.SHOW_COMBAT_BOXES:
             self.draw_debug_boxes(owner, screen, camera_x)
+            self.draw_debug_other(owner, screen, camera_x)
 
     def draw_health_bar(self, owner, screen, camera_x, frame_rect):
         bar_width = 50
@@ -84,7 +85,8 @@ class EnemyRenderer:
                 attack_rect.width,
                 attack_rect.height
             ), 1)
-            
+
+    def draw_debug_other(self, owner, screen, camera_x):
         timing_label = owner.get_attack_timing_label()
         if timing_label:
             font = pygame.font.SysFont(None, 20)
@@ -95,3 +97,4 @@ class EnemyRenderer:
             font = pygame.font.SysFont(None, 20)
             label = font.render(f"FLANK {owner.flanking.target_side.upper()}", True, WHITE_COLOR)
             screen.blit(label, (int(owner.x - camera_x - 42), int(owner.y - 225)))
+

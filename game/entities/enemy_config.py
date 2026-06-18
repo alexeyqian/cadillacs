@@ -17,6 +17,12 @@ class EnemyConfig:
     collision_box_h: int = ENEMY_COLLISION_H
     hurt_box_w: int = ENEMY_HURTBOX_W
     hurt_box_h: int = ENEMY_HURTBOX_H
+    hurt_box_offset_x: int = ENEMY_HURTBOX_OFFSET_X
+    hurt_box_offset_y: int = ENEMY_HURTBOX_OFFSET_Y
+    hit_box_w: int = ENEMY_HITBOX_W
+    hit_box_h: int = ENEMY_HITBOX_H
+    hit_box_offset_x: int = ENEMY_HITBOX_OFFSET_X
+    hit_box_offset_y: int = ENEMY_HITBOX_OFFSET_Y
 
     max_hp: int = ENEMY_MAX_HP
     speed: float = ENEMY_SPEED
@@ -76,8 +82,8 @@ ENEMY_CONFIGS = {
                                 active=ENEMY_ATTACK_ACTIVE,
                                 recovery=ENEMY_ATTACK_RECOVERY),
             hitboxes=(AttackHitboxData(
-                x=ENEMY_HIT_BOX_OFFSET_X,
-                y=ENEMY_HIT_BOX_OFFSET_Y, 
+                x=ENEMY_HITBOX_OFFSET_X,
+                y=ENEMY_HITBOX_OFFSET_Y, 
                 width=ENEMY_HITBOX_W,
                 height=ENEMY_HITBOX_H),),
         ),
@@ -97,8 +103,8 @@ ENEMY_CONFIGS = {
                                 active=ENEMY_ATTACK_ACTIVE,
                                 recovery=ENEMY_ATTACK_RECOVERY),
             hitboxes=(AttackHitboxData(
-                        x=ENEMY_HIT_BOX_OFFSET_X,
-                        y=ENEMY_HIT_BOX_OFFSET_Y,
+                        x=ENEMY_HITBOX_OFFSET_X,
+                        y=ENEMY_HITBOX_OFFSET_Y,
                         width=ENEMY_HITBOX_W,
                         height=ENEMY_HITBOX_H),),
         ),
@@ -122,8 +128,8 @@ ENEMY_CONFIGS = {
                                 recovery=int(ENEMY_ATTACK_RECOVERY*BLACK_ELMER_SCALER)),
             hitboxes=(
                 AttackHitboxData(
-                    x=int(ENEMY_HIT_BOX_OFFSET_X*BLACK_ELMER_SCALER),
-                    y=int(ENEMY_HIT_BOX_OFFSET_Y*BLACK_ELMER_SCALER),
+                    x=int(ENEMY_HITBOX_OFFSET_X*BLACK_ELMER_SCALER),
+                    y=int(ENEMY_HITBOX_OFFSET_Y*BLACK_ELMER_SCALER),
                     width=int(ENEMY_HITBOX_W*BLACK_ELMER_SCALER),
                     height=int(ENEMY_HITBOX_H*BLACK_ELMER_SCALER),
                 ),
@@ -141,6 +147,17 @@ ENEMY_CONFIGS = {
         enemy_id="walther",
         display_name="Walther",
         archetype="heavy",
+
+        collision_box_w=int(ENEMY_COLLISION_W * 2),
+        hurt_box_w=300,
+        hurt_box_h=400,
+        hurt_box_offset_x=200,
+        hurt_box_offset_y=200,
+        hit_box_w=400,
+        hit_box_h=200,
+        hit_box_offset_x=200,
+        hit_box_offset_y=200,
+
         max_hp=ENEMY_MAX_HP * WALTHER_SCALER,
         speed=int(ENEMY_SPEED * 0.7),
         attack_range=int(ENEMY_ATTACK_RANGE * WALTHER_SCALER),
@@ -155,14 +172,13 @@ ENEMY_CONFIGS = {
                                 recovery=int(ENEMY_ATTACK_RECOVERY*WALTHER_SCALER)),
             hitboxes=(
                 AttackHitboxData(
-                    x=int(ENEMY_HIT_BOX_OFFSET_X*WALTHER_SCALER),
-                    y=int(ENEMY_HIT_BOX_OFFSET_Y*WALTHER_SCALER),
-                    width=int(ENEMY_HITBOX_W*WALTHER_SCALER),
-                    height=int(ENEMY_HITBOX_H*WALTHER_SCALER),
+                    x=400,
+                    y=200,
+                    width=200,
+                    height=200,
                 ),
             ),
         ),
-        collision_box_w=int(ENEMY_COLLISION_W * WALTHER_SCALER),
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 100, # means no flinch

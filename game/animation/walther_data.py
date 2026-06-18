@@ -4,7 +4,7 @@
 # attack_rect format: (x, y, width, height) - x, y is relative position inside the current frame
 WALTHER_ANIMATIONS = {
     "idle": {
-        "file": "assets/enemies/ferris_walk.png",
+        "file": "assets/enemies/walther_walk.png",
         "frames_count": 2,
         "frames": [
             {
@@ -22,7 +22,7 @@ WALTHER_ANIMATIONS = {
         ]
     },
     "walk": {
-        "file": "assets/enemies/ferris_walk.png",
+        "file": "assets/enemies/walther_walk.png",
         "frames_count": 6,
         "frames": [
             {

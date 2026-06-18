@@ -105,8 +105,8 @@ class EnemyAttackData:
     # should use per enemy design
     hitboxes: tuple = (
         AttackHitboxData(
-            x=ENEMY_HIT_BOX_OFFSET_X,
-            y=ENEMY_HIT_BOX_OFFSET_Y, 
+            x=ENEMY_HITBOX_OFFSET_X,
+            y=ENEMY_HITBOX_OFFSET_Y, 
             width=ENEMY_HITBOX_W,
             height=ENEMY_HITBOX_H),
         )
