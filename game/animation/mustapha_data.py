@@ -1,7 +1,5 @@
 # frame_rect format: (x, y, width, height) -  x, y is the left top location in the png file
 # offset format: (x, y) - x, y  = (0,0) - (feet_center_x, feet_center_y)
-# hurt_rect format: (x, y, width, height) -   x, y is relative position inside the current frame
-# attack_rect format: (x, y, width, height) - x, y is relative position inside the current frame
 MUSTAPHA_ANIMATIONS = {
     "idle": {
         "file": "assets/player/mustapha_idle.png",
@@ -10,38 +8,26 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 94, 178),
                 "offset": (-50, -178),
-                "hurt_rect": (30, 10, 4, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (94, 0, 96, 178),
                 "offset": (-50, -178),
-                "hurt_rect": (30, 10, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (190, 0, 119, 178),
                 "offset": (-50, -178),
-                "hurt_rect": (30, 10, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (309, 0, 120, 178),
                 "offset": (-50, -178),
-                "hurt_rect": (30, 10, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (429, 0, 119, 178),
                 "offset": (-50, -178),
-                "hurt_rect": (30, 10, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (548, 0, 98, 178),
                 "offset": (-50, -178),
-                "hurt_rect": (30, 10, 45, 110),
-                "attack_rect": None
             }
         ]
     },
@@ -52,68 +38,46 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0,0,54,170),
                 "offset": (-25, -170),
-                "hurt_rect": (10, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (54,0,56,170),
                 "offset": (-25, -170),
-                "hurt_rect": (10, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (110,0,116,170),
                 "offset": (-70, -170),
-                "hurt_rect": (40, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (226,0,94,170),
                 "offset": (-50, -170),
-                "hurt_rect": (25, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (320,0,80,170),
                 "offset": (-45, -170),
-                "hurt_rect": (25, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (400,0,54,170),
                 "offset": (-25, -170),
-                "hurt_rect": (5, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (454,0,60,170),
                 "offset": (-30, -170),
-                "hurt_rect": (5, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (514,0,95,170),
                 "offset": (-45, -170),
-                "hurt_rect": (25, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (609,0,114,170),
                 "offset": (-55, -170),
-                "hurt_rect": (30, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (723,0,92,170),
                 "offset": (-40, -170),
-                "hurt_rect": (25, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (815,0,68,170),
                 "offset": (-30, -170),
-                "hurt_rect": (10, 0, 45, 110),
-                "attack_rect": None
             },
         ]
     },
@@ -124,56 +88,38 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 142, 153),
                 "offset": (-55, -153),
-                "hurt_rect": (55, 35, 70, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (142, 0, 180, 153),
                 "offset": (-55, -153),
-                "hurt_rect": (90, 10, 70, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (322, 0, 140, 153),
                 "offset": (-50, -153),
-                "hurt_rect": (60, 0, 70, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (462, 0, 148, 153),
                 "offset": (-60, -153),
-                "hurt_rect": (70, 0, 70, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (610, 0, 158, 153),
                 "offset": (-64, -153),
-                "hurt_rect": (80, 0, 70, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (768, 0, 156, 153),
                 "offset": (-20, -153),
-                "hurt_rect": (45, 0, 70, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (924, 0, 143, 153),
                 "offset": (-60, -153),
-                "hurt_rect": (70, 0, 70, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (1067, 0, 158, 153),
                 "offset": (-70, -153),
-                "hurt_rect": (80, 0, 70, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (1225, 0, 172, 153),
                 "offset": (-70, -153),
-                "hurt_rect": (80, 0, 70, 90),
-                "attack_rect": None
             }
         ]
     },
@@ -184,8 +130,6 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 126, 160),
                 "offset": (-60, -160),
-                "hurt_rect": (0, 0, 45, 110),
-                "attack_rect": None
             }
         ]
     },
@@ -196,14 +140,10 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 210, 87),
                 "offset": (-100, -87),
-                "hurt_rect": (0, 0, 110, 45),
-                "attack_rect": None
             },
             {
                 "frame_rect": (210, 0, 220, 87),
                 "offset": (-100, -87),
-                "hurt_rect": (0, 60, 110, 45),
-                "attack_rect": None
             }
         ]
     },
@@ -214,21 +154,14 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 111, 168),
                 "offset": (-60, -168),
-                "hurt_rect": (40, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (111, 0, 193, 168),
                 "offset": (-63, -168),
-                "hurt_rect": (40, 0, 45, 110),
-                "counter_hurt_rect": (90, 18, 20, 20),
-                "attack_rect": (110, 18, 60, 20)
             },
             {
                 "frame_rect": (304, 0, 111, 168),
                 "offset": (-76, -168),
-                "hurt_rect": (56, 0, 45, 110),
-                "attack_rect": None
             }
         ]
     },
@@ -239,20 +172,14 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 120, 92),
                 "offset": (-60, -150),
-                "hurt_rect": (0, 0, 120, 92),
-                "attack_rect": None
             },
             {
                 "frame_rect": (120, 0, 223, 92),
                 "offset": (-110, -150),
-                "hurt_rect": (0, 20, 110, 45),
-                "attack_rect": (130, 40, 80, 40)
             },
             {
                 "frame_rect": (343, 0, 120, 92),
                 "offset": (-60, -150),
-                "hurt_rect": (0, 0, 120, 92),
-                "attack_rect": None
             }
         ]
     },
@@ -263,26 +190,18 @@ MUSTAPHA_ANIMATIONS = {
             {#77,93,96,77
                 "frame_rect": (0, 0, 77, 211),
                 "offset": (-40, -211),
-                "hurt_rect": (40, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (77, 0, 93, 211),
                 "offset": (-40, -211),
-                "hurt_rect": (0, 0, 45, 90),
-                "attack_rect": None
             },
             {
                 "frame_rect": (170, 0, 96, 211),
                 "offset": (-40, -211),
-                "hurt_rect": (0, 0, 45, 50),
-                "attack_rect": None
             },
             {
                 "frame_rect": (266, 0, 77, 211),
                 "offset": (-40, -211),
-                "hurt_rect": (0, 0, 45, 90),
-                "attack_rect": None
             }
         ]
     },
@@ -293,14 +212,10 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 120, 92),
                 "offset": (-60, -150),
-                "hurt_rect": (0, 0, 120, 92),
-                "attack_rect": None
             },
             {
                 "frame_rect": (120, 0, 223, 92),
                 "offset": (-110, -150),
-                "hurt_rect": (0, 20, 110, 45),
-                "attack_rect": (130, 40, 80, 40)
             }
         ]
     },
@@ -311,8 +226,6 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 123, 162),
                 "offset": (-40, -162),
-                "hurt_rect": (20, 0, 45, 110),
-                "attack_rect": None
             }
         ]
     },
@@ -323,8 +236,6 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 153, 162),
                 "offset": (-40, -162),
-                "hurt_rect": (20, 0, 45, 110),
-                "attack_rect": None
             }
         ]
     },
@@ -335,14 +246,10 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (0, 0, 123, 165),
                 "offset": (-40, -165),
-                "hurt_rect": (0, 0, 45, 110),
-                "attack_rect": None
             },
             {
                 "frame_rect": (123, 0, 88, 165),
                 "offset": (-35, -165),
-                "hurt_rect": (0, 10, 45, 110),
-                "attack_rect": (60, 70, 30, 30),
             }
         ]
     },

@@ -19,8 +19,7 @@ class FakeStateMachine:
 
 
 class FakeFrame:
-    attack_rect = (999, 999, 999, 999)
-    counter_hurt_rect = (999, 999, 999, 999)
+    pass
 
 
 class FakeAnimationController:
@@ -50,7 +49,7 @@ class FakeOwner:
 
 
 class PlayerCombatControllerHitboxTests(unittest.TestCase):
-    def test_animation_attack_rect_is_ignored_during_windup(self):
+    def test_attack_rect_is_empty_during_windup(self):
         owner = FakeOwner()
         hitboxes = PlayerGeometry()
 

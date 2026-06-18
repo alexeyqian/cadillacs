@@ -8,7 +8,7 @@ from game.entities.enemy_state import EnemyState
 
 
 class FakeFrame:
-    attack_rect = (999, 999, 999, 999)
+    pass
 
 
 class FakeEnemy:
@@ -46,7 +46,7 @@ class FakeEnemy:
 
 
 class EnemyCombatHitboxTests(unittest.TestCase):
-    def test_animation_attack_rect_is_ignored_during_enemy_windup(self):
+    def test_attack_rect_is_empty_during_enemy_windup(self):
         enemy = FakeEnemy()
         enemy.combat.start_attack_timing(enemy)
         hitboxes = EnemyGeometry()
