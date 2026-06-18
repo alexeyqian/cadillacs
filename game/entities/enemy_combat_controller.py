@@ -89,10 +89,7 @@ class EnemyCombatController:
             return None
 
         attack_data = self.get_attack_data(owner)
-        if not attack_data.hitboxes:
-            return None
-
-        return attack_data.hitboxes[0]
+        return attack_data.hitbox
 
     def mark_attack_hit(self, owner, target):
         controller = self.get_attack_controller(owner)

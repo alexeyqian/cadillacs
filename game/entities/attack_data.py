@@ -103,13 +103,12 @@ class EnemyAttackData:
         recovery=ENEMY_ATTACK_RECOVERY,
     )
     # should use per enemy design
-    hitboxes: tuple = (
-        AttackHitboxData(
-            x=ENEMY_HITBOX_OFFSET_X,
-            y=ENEMY_HITBOX_OFFSET_Y, 
-            width=ENEMY_HITBOX_W,
-            height=ENEMY_HITBOX_H),
-        )
+    hitbox: AttackHitboxData = AttackHitboxData(
+        x=ENEMY_HITBOX_OFFSET_X,
+        y=ENEMY_HITBOX_OFFSET_Y,
+        width=ENEMY_HITBOX_W,
+        height=ENEMY_HITBOX_H,
+    )
     max_targets: int = 1
     clash_recovery_duration: int = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
     clash_cooldown_duration: int = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION

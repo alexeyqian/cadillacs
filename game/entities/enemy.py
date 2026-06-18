@@ -91,10 +91,6 @@ class Enemy:
         self.hurt_box_h = int(config.hurt_box_h)
         self.hurt_box_offset_x = int(config.hurt_box_offset_x)
         self.hurt_box_offset_y = int(config.hurt_box_offset_y)
-        self.hit_box_w = int(config.hit_box_w)
-        self.hit_box_h = int(config.hit_box_h)
-        self.hit_box_offset_x = int(config.hit_box_offset_x)
-        self.hit_box_offset_y = int(config.hit_box_offset_y)
         
         self.health = EnemyHealth(config.max_hp)
         self.speed = config.speed

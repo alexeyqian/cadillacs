@@ -52,10 +52,8 @@ class AttackDataValidationTests(unittest.TestCase):
                 continue
 
             with self.subTest(enemy_id=enemy_id):
-                self.assertTrue(config.attack.hitboxes)
-                for hitbox in config.attack.hitboxes:
-                    self.assertGreater(hitbox.width, 0)
-                    self.assertGreater(hitbox.height, 0)
+                self.assertGreater(config.attack.hitbox.width, 0)
+                self.assertGreater(config.attack.hitbox.height, 0)
 
     def test_enemy_attack_phase_fits_duration(self):
         for enemy_id, config in ENEMY_CONFIGS.items():

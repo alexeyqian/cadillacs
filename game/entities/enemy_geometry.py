@@ -15,9 +15,12 @@ class EnemyGeometry:
                 owner.hurt_box_w, owner.hurt_box_h))
 
     def get_attack_rect(self, owner):
-        return self._enemy_rect_to_world(owner,
-                pygame.Rect(owner.hit_box_offset_x, owner.hit_box_offset_y,
-                owner.hit_box_w, owner.hit_box_h))
+        if owner.state == owner.ATTACK:
+            hitbox = owner.combat.get_active_hitbox_data(owner)
+            if hitbox:
+                return combat_box_to_world_rect(
+                    owner.x, owner.y, owner.facing_right, hitbox)
+        return None
 
     def get_frame_rect(self, owner):
         frame = owner.get_current_frame_data()
@@ -41,19 +44,3 @@ class EnemyGeometry:
 
     def _enemy_rect_to_world(self, owner, box):
         return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
-
-
-    # DEPRECATED
-    #def get_attack_rect_old(self, owner):
-    #    if owner.state == owner.ATTACK:
-    #        combat_hitbox = owner.combat.get_active_hitbox_data(owner)
-    #        if combat_hitbox:
-    #            return combat_box_to_world_rect(
-    #                owner.x,
-    #                owner.y,
-    #                owner.facing_right,
-    #                combat_hitbox
-    #            )
-    #        return None
-
-    #    return None

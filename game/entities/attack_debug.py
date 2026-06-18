@@ -20,7 +20,7 @@ def format_attack_debug_lines(label, controller, damage=None, lane_reach=None):
         details.append(f"lane {lane_reach}")
     lines.append(" | ".join(details))
 
-    hitbox_line = format_hitbox_line("hitbox", get_first_box(attack.hitboxes))
+    hitbox_line = format_hitbox_line("hitbox", get_attack_hitbox(attack))
     if hitbox_line:
         lines.append(hitbox_line)
 
@@ -38,6 +38,13 @@ def get_first_box(boxes):
     if not boxes:
         return None
     return boxes[0]
+
+
+def get_attack_hitbox(attack):
+    hitbox = getattr(attack, "hitbox", None)
+    if hitbox:
+        return hitbox
+    return get_first_box(getattr(attack, "hitboxes", ()))
 
 
 def format_hitbox_line(label, box):

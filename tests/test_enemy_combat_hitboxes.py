@@ -32,7 +32,7 @@ class FakeEnemy:
         self.attack_data = EnemyAttackData(
             damage=10,
             phase=AttackPhaseData(windup=2, active=2, recovery=2),
-            hitboxes=(AttackHitboxData(x=40, y=-30, width=50, height=20),),
+            hitbox=AttackHitboxData(x=40, y=-30, width=50, height=20),
         )
         self.combat = EnemyCombatController()
 

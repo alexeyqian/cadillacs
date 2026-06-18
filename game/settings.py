@@ -162,10 +162,10 @@ ENEMY_ATTACK_LANE_RANGE=50
 # -> active attack (hit player once, not every frame) 
 # -> recovery (enemy cannot move)
 # ->cooldown(frame cooldown before next attack)
-ENEMY_ATTACK_WINDUP=int(ATTACK_1_WINDUP_DURATION*1.5)
+ENEMY_ATTACK_WINDUP=int(ATTACK_1_WINDUP_DURATION*1.2)
 ENEMY_ATTACK_ACTIVE=int(ATTACK_1_ACTIVE_DURATION*0.8)
-ENEMY_ATTACK_RECOVERY=int(ATTACK_1_RECOVERY_DURATION*1.5)
-ENEMY_ATTACK_COOLDOWN=15 # add player attack cooldown?
+ENEMY_ATTACK_RECOVERY=int(ATTACK_1_RECOVERY_DURATION*1.2)
+ENEMY_ATTACK_COOLDOWN=30 # add player attack cooldown?
 ENEMY_ATTACK_DAMAGE=int(ATTACK_1_DAMAGE*0.8)
 
 # thinking and make decisions

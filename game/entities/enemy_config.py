@@ -22,11 +22,6 @@ class EnemyConfig:
     hurt_box_offset_x: int = ENEMY_HURTBOX_OFFSET_X
     hurt_box_offset_y: int = ENEMY_HURTBOX_OFFSET_Y
 
-    hit_box_w: int = ENEMY_HITBOX_W
-    hit_box_h: int = ENEMY_HITBOX_H
-    hit_box_offset_x: int = ENEMY_HITBOX_OFFSET_X
-    hit_box_offset_y: int = ENEMY_HITBOX_OFFSET_Y
-
     max_hp: int = ENEMY_MAX_HP
     speed: float = ENEMY_SPEED
 
@@ -46,11 +41,11 @@ class EnemyConfig:
             phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
                                 active=ENEMY_ATTACK_ACTIVE,
                                 recovery=ENEMY_ATTACK_RECOVERY),
-            hitboxes=(AttackHitboxData(
+            hitbox=AttackHitboxData(
                 x=ENEMY_HITBOX_OFFSET_X,
                 y=ENEMY_HITBOX_OFFSET_Y, 
                 width=ENEMY_HITBOX_W,
-                height=ENEMY_HITBOX_H),),
+                height=ENEMY_HITBOX_H),
         )
 
     max_melee_attackers:int = 2 # move to stage config?
@@ -88,6 +83,7 @@ ENEMY_CONFIGS = {
         enemy_id="ferris",
         display_name="Ferris",
     ),
+
     "gneiss": EnemyConfig(
         enemy_id="gneiss",
         display_name="Gneiss",
@@ -101,15 +97,15 @@ ENEMY_CONFIGS = {
             phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
                                 active=ENEMY_ATTACK_ACTIVE,
                                 recovery=ENEMY_ATTACK_RECOVERY),
-            hitboxes=(AttackHitboxData(
+            hitbox=AttackHitboxData(
                         x=ENEMY_HITBOX_OFFSET_X,
                         y=ENEMY_HITBOX_OFFSET_Y,
                         width=ENEMY_HITBOX_W,
-                        height=ENEMY_HITBOX_H),),
+                        height=ENEMY_HITBOX_H),
         ),
         score_points=int(ENEMY_SCORE_POINTS*GNEISS_SCALER),
     ),
-    # 60, 85
+
     "black_elmer": EnemyConfig(
         enemy_id="black_elmer",
         display_name="Black Elmer",
@@ -122,11 +118,6 @@ ENEMY_CONFIGS = {
         hurt_box_h=300,
         hurt_box_offset_x=-100,
         hurt_box_offset_y=-300,
-
-        hit_box_w=200,
-        hit_box_h=60,
-        hit_box_offset_x=100,
-        hit_box_offset_y=-250,
 
         max_hp=ENEMY_MAX_HP * 2,
         speed=int(ENEMY_SPEED * 0.7),
@@ -141,13 +132,11 @@ ENEMY_CONFIGS = {
             phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*BLACK_ELMER_SCALER),
                                 active=int(ENEMY_ATTACK_ACTIVE*BLACK_ELMER_SCALER),
                                 recovery=int(ENEMY_ATTACK_RECOVERY*BLACK_ELMER_SCALER)),
-            hitboxes=(
-                AttackHitboxData(
-                    x=int(ENEMY_HITBOX_OFFSET_X*BLACK_ELMER_SCALER),
-                    y=int(ENEMY_HITBOX_OFFSET_Y*BLACK_ELMER_SCALER),
-                    width=int(ENEMY_HITBOX_W*BLACK_ELMER_SCALER),
-                    height=int(ENEMY_HITBOX_H*BLACK_ELMER_SCALER),
-                ),
+            hitbox=AttackHitboxData(
+                x=200,
+                y=60,
+                width=100,
+                height=-250,
             ),
         ),
         # todo: simplify it
@@ -165,18 +154,13 @@ ENEMY_CONFIGS = {
         display_name="Walther",
         archetype="heavy",
 
-        collision_box_w=int(ENEMY_COLLISION_W * 2),
+        collision_box_w=250,
         collision_box_h=ENEMY_COLLISION_H,
 
-        hurt_box_w=320,
-        hurt_box_h=360,
-        hurt_box_offset_x=-160,
+        hurt_box_w=250,
+        hurt_box_h=400,
+        hurt_box_offset_x=-125,
         hurt_box_offset_y=-400,
-
-        hit_box_w=200,
-        hit_box_h=80,
-        hit_box_offset_x=160,
-        hit_box_offset_y=-300,
 
         max_hp=ENEMY_MAX_HP * 4,
         speed=int(ENEMY_SPEED * 0.7),
@@ -190,51 +174,16 @@ ENEMY_CONFIGS = {
             phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*WALTHER_SCALER),
                                 active=int(ENEMY_ATTACK_ACTIVE*WALTHER_SCALER),
                                 recovery=int(ENEMY_ATTACK_RECOVERY*WALTHER_SCALER)),
-            hitboxes=(
-                AttackHitboxData(
-                    x=400,
-                    y=200,
-                    width=200,
-                    height=200,
-                ),
+            hitbox=AttackHitboxData(
+                x=125,
+                y=-350,
+                width=180,
+                height=200,
             ),
         ),
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 100, # means no flinch
-        attack_flinch_damage_threshold=BAT_DAMAGE,
-        anti_stunlock_hit_limit=2,
-
-        score_points=int(ENEMY_SCORE_POINTS * WALTHER_SCALER),
-    ),
-    "boss": EnemyConfig(
-        enemy_id="boss",
-        display_name="Boss",
-        archetype="boss",
-
-        max_hp=ENEMY_MAX_HP * 10,
-        speed=BOSS_ENEMY_SPEED,
-
-        attack_range=int(ENEMY_ATTACK_RANGE * WALTHER_SCALER),
-        attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * WALTHER_SCALER),
-        attack_lane_reach=1,
-        attack=EnemyAttackData(
-            damage=ENEMY_ATTACK_DAMAGE * WALTHER_SCALER,
-            delay=ENEMY_ATTACK_DELAY,
-            cooldown=int(ENEMY_ATTACK_COOLDOWN * WALTHER_SCALER),
-            phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP * WALTHER_SCALER),
-                                active=int(ENEMY_ATTACK_ACTIVE * WALTHER_SCALER),
-                                recovery=int(ENEMY_ATTACK_RECOVERY * WALTHER_SCALER)),
-            hitboxes=(
-                AttackHitboxData(
-                    x=400,
-                    y=200,
-                    width=200,
-                    height=200,
-                ),
-            ),
-        ),
-        flinch_damage_threshold=FIST_DAMAGE + 100,
         attack_flinch_damage_threshold=BAT_DAMAGE,
         anti_stunlock_hit_limit=2,
 
