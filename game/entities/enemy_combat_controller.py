@@ -14,14 +14,14 @@ class EnemyCombatController:
 
     def start_clash_recovery(self, owner):
         owner.state = owner.RECOIL
-        self.set_action_lock_remaining(owner, owner.attack_clash_recovery_duration)
+        self.set_action_lock_remaining(owner, owner.attack_cooldown_duration)
         self.cancel_attack_timing(owner)
         self.reset_decision_timer(owner)
         self.clear_hit_state(owner)
         self.release_attack_slot(owner)
         self.set_cooldown(owner, max(
             self.get_cooldown(owner),
-            owner.attack_clash_cooldown_duration
+            owner.attack_cooldown_duration
         ))
 
     # Enemy attack has explicit windup frames
@@ -172,8 +172,6 @@ class EnemyCombatController:
             windup=owner.attack_windup,
             active=owner.attack_active,
             recovery=owner.attack_recovery,
-            clash_recovery_duration=owner.attack_clash_recovery_duration,
-            clash_cooldown_duration=owner.attack_clash_cooldown_duration,
         )
 
     def uses_melee_attack_slot(self, owner):

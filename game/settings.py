@@ -182,8 +182,6 @@ ENEMY_ATTACK_DAMAGE=int(ATTACK_1_DAMAGE*0.8)
 
 # thinking and make decisions
 ENEMY_ATTACK_DELAY=20
-ENEMY_ATTACK_CLASH_RECOVERY_DURATION=6
-ENEMY_ATTACK_CLASH_COOLDOWN_DURATION=10
 # Only a small number of regular melee enemies 
 # should enter ATTACK at the same time.
 MAX_MELEE_ATTACKERS = 4

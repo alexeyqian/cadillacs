@@ -138,7 +138,9 @@ class AttackController:
     def get_attack_duration(self):
         if not self.current_attack:
             return 0
-        return self.current_attack.duration
+        if hasattr(self.current_attack, "duration"):
+            return self.current_attack.duration
+        return self.current_attack.total_duration
 
     def has_attack_phases(self):
         return all(

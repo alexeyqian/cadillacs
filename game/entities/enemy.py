@@ -105,8 +105,6 @@ class Enemy:
         self.attack_damage = config.attack.damage
         self.attack_delay = config.attack.delay
         self.attack_cooldown_duration = config.attack.cooldown
-        self.attack_clash_recovery_duration = config.attack.clash_recovery_duration
-        self.attack_clash_cooldown_duration = config.attack.clash_cooldown_duration
 
         self.hit_stun_duration = config.hit_stun_duration
         self.flinch_damage_threshold = config.flinch_damage_threshold

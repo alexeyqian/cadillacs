@@ -70,8 +70,6 @@ class FakeEnemy:
         self.attack_lane_range = 20
         self.attack_cooldown = 0
         self.attack_cooldown_duration = 30
-        self.attack_clash_recovery_duration = 12
-        self.attack_clash_cooldown_duration = 20
         self.attack_already_hit = False
         self.has_attack_slot = False
         self.action_lock_remaining = 0
@@ -249,12 +247,12 @@ class EnemyAttackTimingTests(unittest.TestCase):
         controller.start_clash_recovery(enemy)
 
         self.assertEqual(enemy.state, enemy.RECOIL)
-        self.assertEqual(enemy.action_lock_remaining, enemy.attack_clash_recovery_duration)
+        self.assertEqual(enemy.action_lock_remaining, enemy.attack_cooldown_duration)
         self.assertEqual(enemy.attack_timer, 0)
         self.assertEqual(enemy.attack_decision_timer, 0)
         self.assertFalse(enemy.attack_already_hit)
         self.assertFalse(enemy.has_attack_slot)
-        self.assertEqual(enemy.attack_cooldown, enemy.attack_clash_cooldown_duration)
+        self.assertEqual(enemy.attack_cooldown, enemy.attack_cooldown_duration)
 
     def test_knockdown_cancels_enemy_attack_controller(self):
         enemy = FakeEnemy()

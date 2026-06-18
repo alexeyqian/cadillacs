@@ -51,10 +51,8 @@ class AttackDataValidationTests(unittest.TestCase):
     def test_enemy_attack_phase_fits_duration(self):
         for enemy_id, config in ENEMY_CONFIGS.items():
             with self.subTest(enemy_id=enemy_id):
-                self.assertGreater(config.attack.duration, 0)
+                self.assertGreater(config.attack.total_duration, 0)
                 self.assertGreater(config.attack.active, 0)
-                self.assertGreater(config.attack.max_targets, 0)
-                self.assertEqual(config.attack.total_duration, config.attack.duration)
 
 
 if __name__ == "__main__":

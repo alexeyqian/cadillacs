@@ -26,8 +26,6 @@ class FakeEnemy:
         self.attack_windup = 2
         self.attack_active = 2
         self.attack_recovery = 2
-        self.attack_clash_recovery_duration = 12
-        self.attack_clash_cooldown_duration = 20
         self.attack_controller = AttackController()
         self.attack_data = EnemyAttackData(
             damage=10,

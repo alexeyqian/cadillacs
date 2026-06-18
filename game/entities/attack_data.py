@@ -9,12 +9,6 @@ class PlayerAttackData:
     hitbox_w: int = PLAYER_HITBOX_W
     hitbox_h: int = PLAYER_HITBOX_H
 
-    # deprecated fields
-    counter_hurtbox_offset_x: int = 0
-    counter_hurtbox_offset_y: int = 0
-    counter_hurtbox_w: int = 0
-    counter_hurtbox_h: int = 0
-
     damage: int = ATTACK_1_DAMAGE
     duration: int = ATTACK_1_WINDUP_DURATION + ATTACK_1_ACTIVE_DURATION + ATTACK_1_RECOVERY_DURATION
     windup: int = ATTACK_1_WINDUP_DURATION
@@ -32,6 +26,12 @@ class PlayerAttackData:
     counter_hit_stun_bonus: int = 0
     knockback_velocity: int = 10
     enemy_hit_stun_duration: int = 15
+    
+    # deprecated fields
+    counter_hurtbox_offset_x: int = 0
+    counter_hurtbox_offset_y: int = 0
+    counter_hurtbox_w: int = 0
+    counter_hurtbox_h: int = 0
 
     @property
     def total_duration(self):
@@ -44,22 +44,14 @@ class EnemyAttackData:
     hitbox_w: int = ENEMY_HITBOX_W
     hitbox_h: int = ENEMY_HITBOX_H
 
-    damage: float = ENEMY_ATTACK_DAMAGE
     delay: int = ENEMY_ATTACK_DELAY
-    cooldown: int = ENEMY_ATTACK_COOLDOWN
 
+    damage: float = ENEMY_ATTACK_DAMAGE
     windup: int = ENEMY_ATTACK_WINDUP
     active: int = ENEMY_ATTACK_ACTIVE
     recovery: int = ENEMY_ATTACK_RECOVERY
-
-    max_targets: int = 1
-    clash_recovery_duration: int = ENEMY_ATTACK_CLASH_RECOVERY_DURATION
-    clash_cooldown_duration: int = ENEMY_ATTACK_CLASH_COOLDOWN_DURATION
+    cooldown: int = ENEMY_ATTACK_COOLDOWN
 
     @property
     def total_duration(self):
         return self.windup + self.active + self.recovery
-
-    @property
-    def duration(self):
-        return self.total_duration
