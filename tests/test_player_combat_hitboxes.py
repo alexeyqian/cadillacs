@@ -69,10 +69,10 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         attack_rect = hitboxes.get_attack_rect(owner)
 
-        self.assertEqual(attack_rect.x, owner.x + attack_data.hitboxes[0].x)
-        self.assertEqual(attack_rect.y, owner.y + attack_data.hitboxes[0].y)
-        self.assertEqual(attack_rect.width, attack_data.hitboxes[0].width)
-        self.assertEqual(attack_rect.height, attack_data.hitboxes[0].height)
+        self.assertEqual(attack_rect.x, owner.x + attack_data.hitbox.x)
+        self.assertEqual(attack_rect.y, owner.y + attack_data.hitbox.y)
+        self.assertEqual(attack_rect.width, attack_data.hitbox.width)
+        self.assertEqual(attack_rect.height, attack_data.hitbox.height)
 
     def test_attack_rect_mirrors_around_player_anchor_when_facing_left(self):
         owner = FakeOwner()
@@ -88,7 +88,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         self.assertEqual(
             attack_rect.x,
-            owner.x - attack_data.hitboxes[0].x - attack_data.hitboxes[0].width
+            owner.x - attack_data.hitbox.x - attack_data.hitbox.width
         )
 
     def test_counter_hurtbox_uses_attack_data_active_window(self):
@@ -104,8 +104,8 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         counter_rect = hitboxes.get_counter_hurt_rect(owner)
 
-        self.assertEqual(counter_rect.x, owner.x + attack_data.counter_hurtboxes[0].x)
-        self.assertEqual(counter_rect.y, owner.y + attack_data.counter_hurtboxes[0].y)
+        self.assertEqual(counter_rect.x, owner.x + attack_data.counter_hurtbox.x)
+        self.assertEqual(counter_rect.y, owner.y + attack_data.counter_hurtbox.y)
 
     def test_jump_attack_rect_uses_visual_air_height(self):
         class FakeAir:
@@ -125,7 +125,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         attack_rect = hitboxes.get_attack_rect(owner)
 
-        self.assertEqual(attack_rect.y, owner.y - owner.air.z + attack_data.hitboxes[0].y)
+        self.assertEqual(attack_rect.y, owner.y - owner.air.z + attack_data.hitbox.y)
 
 
 if __name__ == "__main__":

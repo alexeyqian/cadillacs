@@ -112,13 +112,13 @@ class PlayerRenderer:
         #    counter_hurt_rect.width,
         #    counter_hurt_rect.height
         #), 2)
-
-        pygame.draw.rect(screen, RED_COLOR, (
-            attack_rect.x - camera_x,
-            attack_rect.y,
-            attack_rect.width,
-            attack_rect.height
-        ), 2)
+        if attack_rect:
+            pygame.draw.rect(screen, RED_COLOR, (
+                attack_rect.x - camera_x,
+                attack_rect.y,
+                attack_rect.width,
+                attack_rect.height
+            ), 2)
 
         #timing_label = player.combat.get_attack_timing_label()
         #if timing_label:

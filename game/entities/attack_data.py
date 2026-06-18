@@ -34,35 +34,26 @@ class AttackHitboxData:
     height: int
 
 
-PLAYER_ATTACK_HITBOXES = (
-    AttackHitboxData(
-        x=PLAYER_HIT_BOX_OFFSET_X,
-        y=PLAYER_HIT_BOX_OFFSET_Y,
-        width=PLAYER_HITBOX_W,
-        height=PLAYER_HITBOX_H,
-    ),
+PLAYER_ATTACK_HITBOX = AttackHitboxData(
+    x=PLAYER_HIT_BOX_OFFSET_X,
+    y=PLAYER_HIT_BOX_OFFSET_Y,
+    width=PLAYER_HITBOX_W,
+    height=PLAYER_HITBOX_H,
 )
-PLAYER_RUN_ATTACK_HITBOXES = (
-    AttackHitboxData(
-        x=0,
-        y=-1 * PLAYER_W,
-        width=int(PLAYER_HITBOX_W * 1.2),
-        height=int(PLAYER_HITBOX_H * 2),
-    ),
+PLAYER_RUN_ATTACK_HITBOX = AttackHitboxData(
+    x=0,
+    y=-1 * PLAYER_W,
+    width=int(PLAYER_HITBOX_W * 1.2),
+    height=int(PLAYER_HITBOX_H * 2),
 )
 
-# deprecated
-PLAYER_ATTACK_COUNTER_HURTBOXES = (
-    AttackHitboxData(
-        x=54,
-        y=-300,
-        width=34,
-        height=38,
-    ),
+PLAYER_ATTACK_COUNTER_HURTBOX = AttackHitboxData(
+    x=54,
+    y=-300,
+    width=34,
+    height=38,
 )
-PLAYER_RUN_ATTACK_COUNTER_HURTBOXES = (
-    AttackHitboxData(x=54, y=-300, width=34, height=38),
-)
+PLAYER_RUN_ATTACK_COUNTER_HURTBOX = AttackHitboxData(x=54, y=-300, width=34, height=38)
 
 
 @dataclass(frozen=True)
@@ -70,8 +61,8 @@ class PlayerAttackData:
     damage: int
     duration: int
     phase: AttackPhaseData
-    hitboxes: tuple = ()
-    counter_hurtboxes: tuple = ()
+    hitbox: AttackHitboxData = PLAYER_ATTACK_HITBOX
+    counter_hurtbox: AttackHitboxData = None
     max_targets: int = 1
     combo_window: int = ATTACK_COMBO_WINDOW
     action_lock: int = 0
@@ -142,8 +133,8 @@ PLAYER_ATTACKS = {
             windup=ATTACK_1_WINDUP_DURATION,
             active=ATTACK_1_ACTIVE_DURATION,
             recovery=ATTACK_1_RECOVERY_DURATION),
-        hitboxes=PLAYER_ATTACK_HITBOXES,
-        counter_hurtboxes=PLAYER_ATTACK_COUNTER_HURTBOXES,
+        hitbox=PLAYER_ATTACK_HITBOX,
+        counter_hurtbox=PLAYER_ATTACK_COUNTER_HURTBOX,
         combo_window=PLAYER_FIRST_TO_SECOND_COMBO_WINDOW,
     ),
     # medium baseline hitbox
@@ -154,8 +145,8 @@ PLAYER_ATTACKS = {
             windup=ATTACK_2_WINDUP_DURATION,
             active=ATTACK_2_ACTIVE_DURATION,
             recovery=ATTACK_2_RECOVERY_DURATION),
-        hitboxes=PLAYER_ATTACK_HITBOXES,
-        counter_hurtboxes=PLAYER_ATTACK_COUNTER_HURTBOXES,
+        hitbox=PLAYER_ATTACK_HITBOX,
+        counter_hurtbox=PLAYER_ATTACK_COUNTER_HURTBOX,
         combo_window=PLAYER_SECOND_TO_THIRD_COMBO_WINDOW,
     ),
     # wider/taller finisher hitbox. Keep it larger than ATTACK_2, but avoid
@@ -167,8 +158,8 @@ PLAYER_ATTACKS = {
             windup=ATTACK_3_WINDUP_DURATION,
             active=ATTACK_3_ACTIVE_DURATION,
             recovery=ATTACK_3_RECOVERY_DURATION),
-        hitboxes=PLAYER_ATTACK_HITBOXES,
-        counter_hurtboxes=PLAYER_ATTACK_COUNTER_HURTBOXES,
+        hitbox=PLAYER_ATTACK_HITBOX,
+        counter_hurtbox=PLAYER_ATTACK_COUNTER_HURTBOX,
         combo_window=0,
         action_lock=PLAYER_THIRD_HIT_RECOVERY,
     ),
@@ -179,8 +170,8 @@ PLAYER_ATTACKS = {
             windup=RUN_ATTACK_WINDUP_DURATION, 
             active=RUN_ATTACK_ACTIVE_DURATION,
             recovery=RUN_ATTACK_RECOVERY_DURATION),
-        hitboxes=PLAYER_RUN_ATTACK_HITBOXES,
-        counter_hurtboxes=PLAYER_RUN_ATTACK_COUNTER_HURTBOXES,
+        hitbox=PLAYER_RUN_ATTACK_HITBOX,
+        counter_hurtbox=PLAYER_RUN_ATTACK_COUNTER_HURTBOX,
         max_targets=3,
         action_lock=RUN_ATTACK_LANDING_RECOVERY,
         knockback_velocity=RUN_ATTACK_BASE_KNOCKBACK,
@@ -190,15 +181,15 @@ PLAYER_ATTACKS = {
         damage=FIST_DAMAGE,
         duration=18,
         phase=AttackPhaseData(windup=4, active=8, recovery=6),
-        hitboxes=(AttackHitboxData(x=86, y=-224, width=118, height=58),),
-        counter_hurtboxes=(AttackHitboxData(x=-16, y=-268, width=104, height=116),),
+        hitbox=AttackHitboxData(x=86, y=-224, width=118, height=58),
+        counter_hurtbox=AttackHitboxData(x=-16, y=-268, width=104, height=116),
     ),
     # Grab knee is safe once a grab succeeds, so keep it below combo finisher damage.
     "GRAB_KNEE": PlayerAttackData(
         damage=FIST_DAMAGE,
         duration=PLAYER_GRAB_KNEE_DURATION,
         phase=AttackPhaseData(windup=6, active=4, recovery=4),
-        hitboxes=(AttackHitboxData(x=50, y=-190, width=60, height=60),),
+        hitbox=AttackHitboxData(x=50, y=-190, width=60, height=60),
     ),
 }
 
@@ -206,39 +197,39 @@ WEAPON_PLAYER_ATTACKS = {
     ("knife", "ATTACK_1"): replace(
         PLAYER_ATTACKS["ATTACK_1"],
         damage=PLAYER_ATTACKS["ATTACK_1"].damage + KNIFE_DAMAGE,
-        hitboxes=(AttackHitboxData(x=90, y=-304, width=200, height=44),),
+        hitbox=AttackHitboxData(x=90, y=-304, width=200, height=44),
         lane_reach=1,
     ),
     ("knife", "ATTACK_2"): replace(
         PLAYER_ATTACKS["ATTACK_2"],
         damage=PLAYER_ATTACKS["ATTACK_2"].damage + KNIFE_DAMAGE,
-        hitboxes=(AttackHitboxData(x=90, y=-304, width=200, height=44),),
+        hitbox=AttackHitboxData(x=90, y=-304, width=200, height=44),
         lane_reach=1,
     ),
     ("knife", "ATTACK_3"): replace(
         PLAYER_ATTACKS["ATTACK_3"],
         damage=PLAYER_ATTACKS["ATTACK_3"].damage + KNIFE_DAMAGE,
-        hitboxes=(AttackHitboxData(x=90, y=-304, width=210, height=48),),
+        hitbox=AttackHitboxData(x=90, y=-304, width=210, height=48),
         lane_reach=1,
     ),
     ("bat", "ATTACK_1"): replace(
         PLAYER_ATTACKS["ATTACK_1"],
         damage=PLAYER_ATTACKS["ATTACK_1"].damage + BAT_DAMAGE,
-        hitboxes=(AttackHitboxData(x=80, y=-316, width=250, height=64),),
+        hitbox=AttackHitboxData(x=80, y=-316, width=250, height=64),
         lane_reach=1,
         max_targets=2,
     ),
     ("bat", "ATTACK_2"): replace(
         PLAYER_ATTACKS["ATTACK_2"],
         damage=PLAYER_ATTACKS["ATTACK_2"].damage + BAT_DAMAGE,
-        hitboxes=(AttackHitboxData(x=80, y=-316, width=250, height=64),),
+        hitbox=AttackHitboxData(x=80, y=-316, width=250, height=64),
         lane_reach=1,
         max_targets=2,
     ),
     ("bat", "ATTACK_3"): replace(
         PLAYER_ATTACKS["ATTACK_3"],
         damage=PLAYER_ATTACKS["ATTACK_3"].damage + BAT_DAMAGE,
-        hitboxes=(AttackHitboxData(x=72, y=-320, width=280, height=72),),
+        hitbox=AttackHitboxData(x=72, y=-320, width=280, height=72),
         lane_reach=1,
         max_targets=2,
     ),

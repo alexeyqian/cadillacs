@@ -89,17 +89,17 @@ class PlayerCombatController:
         if not self.is_attack_active():
             return None
         attack = self.attack_controller.current_attack
-        if not attack or not attack.hitboxes:
+        if not attack:
             return None
-        return attack.hitboxes[0]
+        return attack.hitbox
 
     def get_active_counter_hurtbox_data(self):
         if not self.is_attack_active():
             return None
         attack = self.attack_controller.current_attack
-        if not attack or not attack.counter_hurtboxes:
+        if not attack:
             return None
-        return attack.counter_hurtboxes[0]
+        return attack.counter_hurtbox
 
     # Avoiding the combo step advances when the player presses attack inside the combo window, 
     # even if the previous punch hit nothing. 

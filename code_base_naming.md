@@ -18,14 +18,14 @@ Examples:
 These names read naturally as:
 
 - Enemy has movement.
-- Enemy has hitboxes.
+- Enemy has hitbox.
 - Enemy has health.
 - Player has movement.
 
 Prefer this style when the class mainly answers one practical question:
 
 - How does this entity move?
-- How are its hitboxes calculated?
+- How are its hitbox calculated?
 - How is it rendered?
 - How is health stored or changed?
 

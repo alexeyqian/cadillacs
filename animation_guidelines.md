@@ -198,7 +198,7 @@ Recommended:
 looping
 ```
 
-Avoid large movement because it makes hitboxes look unstable.
+Avoid large movement because it makes hitbox look unstable.
 
 ### Walk
 

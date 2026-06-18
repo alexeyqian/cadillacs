@@ -105,7 +105,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(attack.action_lock, RUN_ATTACK_LANDING_RECOVERY)
 
     def test_running_attack_has_counter_hurtbox_for_committed_flying_kick(self):
-        self.assertTrue(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtboxes)
+        self.assertTrue(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtbox)
 
     def test_running_attack_requires_enough_run_distance(self):
         owner = FakeOwner()
@@ -208,7 +208,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(attack.windup, 4)
         self.assertEqual(attack.active, 8)
         self.assertEqual(attack.recovery, 6)
-        self.assertTrue(attack.counter_hurtboxes)
+        self.assertTrue(attack.counter_hurtbox)
 
     def test_attack_timer_counts_up_until_attack_finishes(self):
         owner = FakeOwner()
@@ -237,9 +237,9 @@ class PlayerAttackDataTests(unittest.TestCase):
             self.assertEqual(attack.duration, attack.phase.total_duration)
 
     def test_standing_combo_hitboxes_progress_from_jab_to_finisher(self):
-        attack_1_hitbox = PLAYER_ATTACKS["ATTACK_1"].hitboxes[0]
-        attack_2_hitbox = PLAYER_ATTACKS["ATTACK_2"].hitboxes[0]
-        attack_3_hitbox = PLAYER_ATTACKS["ATTACK_3"].hitboxes[0]
+        attack_1_hitbox = PLAYER_ATTACKS["ATTACK_1"].hitbox
+        attack_2_hitbox = PLAYER_ATTACKS["ATTACK_2"].hitbox
+        attack_3_hitbox = PLAYER_ATTACKS["ATTACK_3"].hitbox
 
         self.assertLess(attack_1_hitbox.width, attack_2_hitbox.width)
         self.assertGreater(attack_3_hitbox.width, attack_2_hitbox.width)

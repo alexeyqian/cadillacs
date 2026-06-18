@@ -43,11 +43,12 @@ class PlayerGeometry:
         local_x, local_y, w, h = frame.hurt_rect
         return self._frame_local_rect_to_world(owner, frame, local_x, local_y, w, h)
     
-    # deprecated, do not use
     def get_counter_hurt_rect(self, owner):
-        return self._player_rect_to_world(owner,
-                pygame.Rect(PLAYER_HURTBOX_W//2, -0.9*PLAYER_H,
-                PLAYER_HITBOX_H*0.1, PLAYER_HITBOX_H))
+        combat_counter_hurtbox = owner.combat.get_active_counter_hurtbox_data()
+        if combat_counter_hurtbox:
+            return self._attack_rect_to_world(owner, combat_counter_hurtbox)
+        return None
+
     # deprecated, do not use
     def get_counter_hurt_rect_old(self, owner):
         combat_counter_hurtbox = owner.combat.get_active_counter_hurtbox_data()
@@ -77,9 +78,11 @@ class PlayerGeometry:
         )
 
     def get_attack_rect(self, owner):
-        return self._player_rect_to_world(owner,
-                pygame.Rect(PLAYER_HIT_BOX_OFFSET_X, PLAYER_HIT_BOX_OFFSET_Y,
-                PLAYER_HITBOX_W, PLAYER_HITBOX_H))
+        combat_hitbox = owner.combat.get_active_hitbox_data()
+        if combat_hitbox:
+            return self._attack_rect_to_world(owner, combat_hitbox)
+        return None
+
     # todo: deprecated
     def get_attack_rect_old(self, owner):
         if not owner.combat.is_attacking:
@@ -117,6 +120,11 @@ class PlayerGeometry:
     def _player_rect_to_world(self, owner, box):
         return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
 
+    def _attack_rect_to_world(self, owner, box):
+        anchor_y = owner.y
+        if owner.combat.current_attack_name == getattr(owner, "JUMP_ATTACK", None):
+            anchor_y = self._get_visual_y(owner)
+        return combat_box_to_world_rect(owner.x, anchor_y, owner.facing_right, box)
 
     def _player_rect_to_world_old(self, owner, box):
         anchor_y = owner.y

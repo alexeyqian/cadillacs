@@ -20,8 +20,8 @@ class AttackDebugTests(unittest.TestCase):
             damage=10,
             duration=12,
             phase=AttackPhaseData(windup=4, active=4, recovery=4),
-            hitboxes=(AttackHitboxData(x=10, y=-20, width=30, height=40),),
-            counter_hurtboxes=(AttackHitboxData(x=2, y=-18, width=8, height=10),),
+            hitbox=AttackHitboxData(x=10, y=-20, width=30, height=40),
+            counter_hurtbox=AttackHitboxData(x=2, y=-18, width=8, height=10),
             max_targets=2,
         )
         controller = AttackController()
