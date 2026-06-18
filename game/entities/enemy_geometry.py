@@ -19,60 +19,15 @@ class EnemyGeometry:
                 pygame.Rect(owner.hit_box_offset_x, owner.hit_box_offset_y,
                 owner.hit_box_w, owner.hit_box_h))
 
-    def _enemy_rect_to_world(self, owner, box):
-        return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
-
-
-    # DEPRECATED
-    def get_attack_rect_old(self, owner):
-        if owner.state == owner.ATTACK:
-            combat_hitbox = owner.combat.get_active_hitbox_data(owner)
-            if combat_hitbox:
-                return combat_box_to_world_rect(
-                    owner.x,
-                    owner.y,
-                    owner.facing_right,
-                    combat_hitbox
-                )
-            return None
-
-        return None
-
-    def _get_in_frame_box_rect(self, owner, local_rect):
-        frame = owner.get_current_frame_data()
-        scale = owner.sprite_scale
-
-        local_x, local_y, w, h = local_rect
-        offset_x, offset_y = frame.offset
-        frame_w = frame.image.get_width()
-
-        local_x *= scale
-        local_y *= scale
-        w *= scale
-        h *= scale
-        offset_x *= scale
-        offset_y *= scale
-        frame_w *= scale
-
-        if owner.facing_right:
-            world_x = owner.x + offset_x + local_x
-        else:
-            mirrored_x = frame_w - local_x - w
-            world_x = owner.x - frame_w - offset_x + mirrored_x
-
-        world_y = owner.y + offset_y + local_y
-        return pygame.Rect(int(world_x), int(world_y), int(w), int(h))
-    
-    # deprecated
     def get_frame_rect(self, owner):
         frame = owner.get_current_frame_data()
         if not frame:
             raise ValueError(f"Missing frame data for enemy state: {owner.state}")
 
         scale = owner.sprite_scale
-        offset_x, offset_y = frame.offset
         frame_w = frame.image.get_width() * scale
         frame_h = frame.image.get_height() * scale
+        offset_x, offset_y = frame.offset
         offset_x *= scale
         offset_y *= scale
 
@@ -83,3 +38,22 @@ class EnemyGeometry:
 
         world_y = owner.y + offset_y
         return pygame.Rect(int(world_x), int(world_y), int(frame_w), int(frame_h))
+
+    def _enemy_rect_to_world(self, owner, box):
+        return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
+
+
+    # DEPRECATED
+    #def get_attack_rect_old(self, owner):
+    #    if owner.state == owner.ATTACK:
+    #        combat_hitbox = owner.combat.get_active_hitbox_data(owner)
+    #        if combat_hitbox:
+    #            return combat_box_to_world_rect(
+    #                owner.x,
+    #                owner.y,
+    #                owner.facing_right,
+    #                combat_hitbox
+    #            )
+    #        return None
+
+    #    return None

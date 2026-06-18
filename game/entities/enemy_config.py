@@ -7,6 +7,7 @@ from game.entities.attack_data import AttackHitboxData, AttackPhaseData, EnemyAt
 GNEISS_SCALER=1.2
 BLACK_ELMER_SCALER=1.5
 WALTHER_SCALER=3
+
 @dataclass(frozen=True)
 class EnemyConfig:
     enemy_id: str
@@ -15,10 +16,12 @@ class EnemyConfig:
 
     collision_box_w: int = ENEMY_COLLISION_W
     collision_box_h: int = ENEMY_COLLISION_H
+
     hurt_box_w: int = ENEMY_HURTBOX_W
     hurt_box_h: int = ENEMY_HURTBOX_H
     hurt_box_offset_x: int = ENEMY_HURTBOX_OFFSET_X
     hurt_box_offset_y: int = ENEMY_HURTBOX_OFFSET_Y
+
     hit_box_w: int = ENEMY_HITBOX_W
     hit_box_h: int = ENEMY_HITBOX_H
     hit_box_offset_x: int = ENEMY_HITBOX_OFFSET_X
@@ -36,7 +39,19 @@ class EnemyConfig:
     # 0 = same lane only
     # 1 = same or adjacent lane
     attack_lane_reach: int = 0
-    attack: EnemyAttackData = EnemyAttackData()
+    attack: EnemyAttackData = EnemyAttackData(
+            damage=ENEMY_ATTACK_DAMAGE,
+            delay=ENEMY_ATTACK_DELAY,
+            cooldown=ENEMY_ATTACK_COOLDOWN,
+            phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
+                                active=ENEMY_ATTACK_ACTIVE,
+                                recovery=ENEMY_ATTACK_RECOVERY),
+            hitboxes=(AttackHitboxData(
+                x=ENEMY_HITBOX_OFFSET_X,
+                y=ENEMY_HITBOX_OFFSET_Y, 
+                width=ENEMY_HITBOX_W,
+                height=ENEMY_HITBOX_H),),
+        ),
 
     max_melee_attackers:int = 2 # move to stage config?
     melee_attack_slot_limit: Optional[int] = None
@@ -72,29 +87,13 @@ ENEMY_CONFIGS = {
     "ferris": EnemyConfig(
         enemy_id="ferris",
         display_name="Ferris",
-        attack_range=ENEMY_ATTACK_RANGE,
-        attack_lane_range=ENEMY_ATTACK_LANE_RANGE,
-        attack=EnemyAttackData(
-            damage=ENEMY_ATTACK_DAMAGE,
-            delay=ENEMY_ATTACK_DELAY,
-            cooldown=ENEMY_ATTACK_COOLDOWN,
-            phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
-                                active=ENEMY_ATTACK_ACTIVE,
-                                recovery=ENEMY_ATTACK_RECOVERY),
-            hitboxes=(AttackHitboxData(
-                x=ENEMY_HITBOX_OFFSET_X,
-                y=ENEMY_HITBOX_OFFSET_Y, 
-                width=ENEMY_HITBOX_W,
-                height=ENEMY_HITBOX_H),),
-        ),
     ),
     "gneiss": EnemyConfig(
         enemy_id="gneiss",
         display_name="Gneiss",
         max_hp=int(ENEMY_MAX_HP * GNEISS_SCALER),
         speed=int(ENEMY_SPEED),
-        attack_range=ENEMY_ATTACK_RANGE,
-        attack_lane_range=ENEMY_ATTACK_LANE_RANGE,
+
         attack=EnemyAttackData(
             damage=int(ENEMY_ATTACK_DAMAGE * GNEISS_SCALER),
             delay=int(ENEMY_ATTACK_DELAY * 0.8),
@@ -108,14 +107,30 @@ ENEMY_CONFIGS = {
                         width=ENEMY_HITBOX_W,
                         height=ENEMY_HITBOX_H),),
         ),
-        score_points=int(ENEMY_SCORE_POINTS*1.2),
+        score_points=int(ENEMY_SCORE_POINTS*GNEISS_SCALER),
     ),
+    # 60, 85
     "black_elmer": EnemyConfig(
         enemy_id="black_elmer",
         display_name="Black Elmer",
         archetype="heavy",
-        max_hp=ENEMY_MAX_HP * BLACK_ELMER_SCALER,
+
+        collision_box_w=int(ENEMY_COLLISION_W * BLACK_ELMER_SCALER),
+        collision_box_h=ENEMY_COLLISION_H,
+
+        hurt_box_w=200,
+        hurt_box_h=300,
+        hurt_box_offset_x=-100,
+        hurt_box_offset_y=-300,
+
+        hit_box_w=200,
+        hit_box_h=60,
+        hit_box_offset_x=100,
+        hit_box_offset_y=-250,
+
+        max_hp=ENEMY_MAX_HP * 2,
         speed=int(ENEMY_SPEED * 0.7),
+
         attack_range=int(ENEMY_ATTACK_RANGE * BLACK_ELMER_SCALER),
         attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * BLACK_ELMER_SCALER),
         attack_lane_reach=1,
@@ -135,30 +150,35 @@ ENEMY_CONFIGS = {
                 ),
             ),
         ),
-        collision_box_w=int(ENEMY_COLLISION_W * BLACK_ELMER_SCALER),
+        # todo: simplify it
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 4,
         attack_flinch_damage_threshold=BAT_DAMAGE,
         anti_stunlock_hit_limit=2,
+
         score_points=int(ENEMY_SCORE_POINTS * BLACK_ELMER_SCALER),
     ),
+
     "walther": EnemyConfig(
         enemy_id="walther",
         display_name="Walther",
         archetype="heavy",
 
         collision_box_w=int(ENEMY_COLLISION_W * 2),
-        hurt_box_w=300,
-        hurt_box_h=400,
-        hurt_box_offset_x=200,
-        hurt_box_offset_y=200,
-        hit_box_w=400,
-        hit_box_h=200,
-        hit_box_offset_x=200,
-        hit_box_offset_y=200,
+        collision_box_h=ENEMY_COLLISION_H,
 
-        max_hp=ENEMY_MAX_HP * WALTHER_SCALER,
+        hurt_box_w=320,
+        hurt_box_h=360,
+        hurt_box_offset_x=-160,
+        hurt_box_offset_y=-400,
+
+        hit_box_w=200,
+        hit_box_h=80,
+        hit_box_offset_x=160,
+        hit_box_offset_y=-300,
+
+        max_hp=ENEMY_MAX_HP * 4,
         speed=int(ENEMY_SPEED * 0.7),
         attack_range=int(ENEMY_ATTACK_RANGE * WALTHER_SCALER),
         attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * WALTHER_SCALER),
@@ -184,6 +204,7 @@ ENEMY_CONFIGS = {
         flinch_damage_threshold=FIST_DAMAGE + 100, # means no flinch
         attack_flinch_damage_threshold=BAT_DAMAGE,
         anti_stunlock_hit_limit=2,
+
         score_points=int(ENEMY_SCORE_POINTS * WALTHER_SCALER),
     ),
 }

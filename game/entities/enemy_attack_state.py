@@ -6,8 +6,6 @@ from game.entities.attack_controller import AttackController
 #EnemyCombatController = enemy-specific combat orchestration
 class EnemyAttackState:
     def __init__(self, attack_data=None):
-        # EnemyAttackData describes the attack.
-        # EnemyAttackState tracks the enemy's current use of that data.
         self.data = attack_data
 
         # new design

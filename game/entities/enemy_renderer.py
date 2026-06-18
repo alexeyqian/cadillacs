@@ -69,8 +69,7 @@ class EnemyRenderer:
         ), 1)
 
         # green = current animation frame hurt box
-        if hurt_rect:
-            pygame.draw.rect(screen, GREEN_COLOR, (
+        pygame.draw.rect(screen, GREEN_COLOR, (
                 hurt_rect.x - camera_x,
                 hurt_rect.y,
                 hurt_rect.width,

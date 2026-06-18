@@ -14,8 +14,8 @@ EPISODE_1_STAGES = [
                 "max_active": 3,
                 "spawns": [
                     {
-                        "enemy_type": "walther",
-                        "count": 1
+                        "enemy_type": "ferris",
+                        "count": 2
                     }
                 ],
             },
