@@ -1,14 +1,15 @@
 import unittest
+from dataclasses import replace
 
 from game.entities.attack_controller import AttackController
-from game.entities.attack_data import EnemyAttackData, PlayerAttackData
+from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA, DEFAULT_PLAYER_ATTACK_DATA
 
 
 class AttackControllerTests(unittest.TestCase):
     def test_player_attack_uses_elapsed_timer_and_duration(self):
-        attack = PlayerAttackData(
+        attack = replace(
+            DEFAULT_PLAYER_ATTACK_DATA,
             damage=10,
-            duration=3,
             windup=0,
             active=1,
             recovery=2,
@@ -29,7 +30,8 @@ class AttackControllerTests(unittest.TestCase):
         self.assertTrue(controller.advance())
 
     def test_enemy_attack_phase_controls_active_window(self):
-        attack = EnemyAttackData(
+        attack = replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             damage=10,
             windup=2,
             active=2,
@@ -50,7 +52,8 @@ class AttackControllerTests(unittest.TestCase):
         self.assertFalse(controller.is_active())
 
     def test_phase_name_tracks_attack_timing(self):
-        attack = EnemyAttackData(
+        attack = replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             damage=10,
             windup=2,
             active=2,
@@ -75,9 +78,9 @@ class AttackControllerTests(unittest.TestCase):
         )
 
     def test_hit_targets_are_tracked_per_attack(self):
-        attack = PlayerAttackData(
+        attack = replace(
+            DEFAULT_PLAYER_ATTACK_DATA,
             damage=10,
-            duration=3,
             windup=0,
             active=1,
             recovery=2,
@@ -97,9 +100,9 @@ class AttackControllerTests(unittest.TestCase):
         self.assertFalse(controller.has_hit_target(target))
 
     def test_target_limit_blocks_extra_targets(self):
-        attack = PlayerAttackData(
+        attack = replace(
+            DEFAULT_PLAYER_ATTACK_DATA,
             damage=10,
-            duration=3,
             windup=0,
             active=1,
             recovery=2,

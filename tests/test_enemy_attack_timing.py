@@ -1,7 +1,9 @@
 import unittest
+from dataclasses import replace
 
 from game.entities.boss_enemy import BossEnemy
-from game.entities.attack_data import EnemyAttackData
+
+from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy import Enemy
 from game.entities.enemy_combat_controller import EnemyCombatController
@@ -227,7 +229,8 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
     def test_real_enemy_total_duration_comes_from_attack_data(self):
         enemy = Enemy.__new__(Enemy)
-        enemy.attack_data = EnemyAttackData(
+        enemy.attack_data = replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             windup=3,
             active=2,
             recovery=1,

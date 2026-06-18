@@ -5,7 +5,8 @@ from game.entities.attack_data import *
 
 DEFAULT_PLAYER_ATTACKS = {
     # shorter quick jab hitbox
-    "ATTACK_1": PlayerAttackData(
+    "ATTACK_1": replace(
+        DEFAULT_PLAYER_ATTACK_DATA,
         damage=ATTACK_1_DAMAGE,
         windup=ATTACK_1_WINDUP_DURATION,
         active=ATTACK_1_ACTIVE_DURATION,
@@ -25,7 +26,8 @@ DEFAULT_PLAYER_ATTACKS = {
         combo_window=PLAYER_FIRST_TO_SECOND_COMBO_WINDOW,
     ),
     # medium baseline hitbox
-    "ATTACK_2": PlayerAttackData(
+    "ATTACK_2": replace(
+        DEFAULT_PLAYER_ATTACK_DATA,
         damage=ATTACK_2_DAMAGE,
         windup=ATTACK_2_WINDUP_DURATION,
         active=ATTACK_2_ACTIVE_DURATION,
@@ -38,7 +40,8 @@ DEFAULT_PLAYER_ATTACKS = {
     ),
     # wider/taller finisher hitbox. Keep it larger than ATTACK_2, but avoid
     # overextending it because ATTACK_3 also gets a small forward nudge.
-    "ATTACK_3": PlayerAttackData(
+    "ATTACK_3": replace(
+        DEFAULT_PLAYER_ATTACK_DATA,
         damage=ATTACK_3_DAMAGE,
         windup=ATTACK_3_WINDUP_DURATION,
         active=ATTACK_3_ACTIVE_DURATION,
@@ -50,7 +53,8 @@ DEFAULT_PLAYER_ATTACKS = {
         combo_window=0,
         cooldown=PLAYER_THIRD_HIT_RECOVERY,
     ),
-    "RUN_ATTACK": PlayerAttackData(
+    "RUN_ATTACK": replace(
+        DEFAULT_PLAYER_ATTACK_DATA,
         hitbox_offset_x=40,
         hitbox_offset_y=-250,
         hitbox_w=200,
@@ -66,7 +70,8 @@ DEFAULT_PLAYER_ATTACKS = {
         knockback_velocity=RUN_ATTACK_BASE_KNOCKBACK,
         hit_stun_duration=RUN_ATTACK_BASE_ENEMY_HIT_STUN,
     ),
-    "JUMP_ATTACK": PlayerAttackData(
+    "JUMP_ATTACK": replace(
+        DEFAULT_PLAYER_ATTACK_DATA,
         damage=FIST_DAMAGE,
         windup=4,
         active=8,
@@ -77,7 +82,8 @@ DEFAULT_PLAYER_ATTACKS = {
         hitbox_h=58,
     ),
     # Grab knee is safe once a grab succeeds, so keep it below combo finisher damage.
-    "GRAB_KNEE": PlayerAttackData(
+    "GRAB_KNEE": replace(
+        DEFAULT_PLAYER_ATTACK_DATA,
         damage=FIST_DAMAGE,
         windup=6,
         active=4,
@@ -178,7 +184,7 @@ class PlayerConfig:
     speed: float = PLAYER_SPEED
     run_speed: float = PLAYER_RUN_SPEED
     
-    attack: PlayerAttackData = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
+    attack: AttackData = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
     run_attack_damage: int = RUN_ATTACK_DAMAGE
 
     # TODO: move to settings constant

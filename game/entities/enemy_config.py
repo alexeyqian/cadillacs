@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Optional
 
 from game.settings import *
-from game.entities.attack_data import EnemyAttackData
+
+from game.entities.attack_data import AttackData, DEFAULT_ENEMY_ATTACK_DATA
 
 GNEISS_SCALER=1.2
 BLACK_ELMER_SCALER=1.5
@@ -34,7 +35,8 @@ class EnemyConfig:
     # 0 = same lane only
     # 1 = same or adjacent lane
     attack_lane_reach: int = 0
-    attack: EnemyAttackData = EnemyAttackData(
+    attack: AttackData = replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             damage=ENEMY_ATTACK_DAMAGE,
             delay=ENEMY_ATTACK_DELAY,
             cooldown=ENEMY_ATTACK_COOLDOWN,
@@ -89,7 +91,8 @@ ENEMY_CONFIGS = {
         max_hp=int(ENEMY_MAX_HP * GNEISS_SCALER),
         speed=int(ENEMY_SPEED),
 
-        attack=EnemyAttackData(
+        attack=replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             damage=int(ENEMY_ATTACK_DAMAGE * GNEISS_SCALER),
             delay=int(ENEMY_ATTACK_DELAY * 0.8),
             cooldown=int(ENEMY_ATTACK_COOLDOWN * 0.8),
@@ -123,7 +126,8 @@ ENEMY_CONFIGS = {
         attack_range=int(ENEMY_ATTACK_RANGE * BLACK_ELMER_SCALER),
         attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * BLACK_ELMER_SCALER),
         attack_lane_reach=1,
-        attack=EnemyAttackData(
+        attack=replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             damage=ENEMY_ATTACK_DAMAGE * BLACK_ELMER_SCALER,
             delay=int(ENEMY_ATTACK_DELAY * BLACK_ELMER_SCALER),
             cooldown=int(ENEMY_ATTACK_COOLDOWN * BLACK_ELMER_SCALER),
@@ -163,7 +167,8 @@ ENEMY_CONFIGS = {
         attack_range=int(ENEMY_ATTACK_RANGE * WALTHER_SCALER),
         attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * WALTHER_SCALER),
         attack_lane_reach=1,
-        attack=EnemyAttackData(
+        attack=replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             damage=ENEMY_ATTACK_DAMAGE * WALTHER_SCALER,
             delay=int(ENEMY_ATTACK_DELAY * 1),
             cooldown=int(ENEMY_ATTACK_COOLDOWN * WALTHER_SCALER),

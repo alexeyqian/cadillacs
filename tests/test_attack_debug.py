@@ -1,7 +1,8 @@
 import unittest
+from dataclasses import replace
 
 from game.entities.attack_controller import AttackController
-from game.entities.attack_data import PlayerAttackData
+from game.entities.attack_data import DEFAULT_PLAYER_ATTACK_DATA
 from game.entities.attack_debug import format_attack_debug_lines
 
 
@@ -12,7 +13,8 @@ class AttackDebugTests(unittest.TestCase):
         self.assertEqual(format_attack_debug_lines("Player", controller), [])
 
     def test_attack_debug_lines_include_timing_damage_targets_and_boxes(self):
-        attack = PlayerAttackData(
+        attack = replace(
+            DEFAULT_PLAYER_ATTACK_DATA,
             damage=10,
             windup=4,
             active=4,

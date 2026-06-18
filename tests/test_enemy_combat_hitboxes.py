@@ -1,7 +1,9 @@
 import unittest
+from dataclasses import replace
 
 from game.entities.attack_controller import AttackController
-from game.entities.attack_data import EnemyAttackData
+
+from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.entities.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_geometry import EnemyGeometry
 from game.entities.enemy_state import EnemyState
@@ -27,7 +29,8 @@ class FakeEnemy:
         self.attack_active = 2
         self.attack_recovery = 2
         self.attack_controller = AttackController()
-        self.attack_data = EnemyAttackData(
+        self.attack_data = replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             damage=10,
             windup=2,
             active=2,

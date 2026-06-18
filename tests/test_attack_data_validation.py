@@ -1,15 +1,15 @@
 import unittest
 
-from game.entities.attack_data import EnemyAttackData
+from game.entities.attack_data import AttackData
 from game.entities.enemy_config import ENEMY_CONFIGS
 from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 
 
 class AttackDataValidationTests(unittest.TestCase):
-    def test_enemy_configs_use_enemy_attack_data(self):
+    def test_enemy_configs_use_attack_data(self):
         for enemy_id, config in ENEMY_CONFIGS.items():
             with self.subTest(enemy_id=enemy_id):
-                self.assertIsInstance(config.attack, EnemyAttackData)
+                self.assertIsInstance(config.attack, AttackData)
 
     def test_player_attack_phase_fits_duration(self):
         for attack_name, attack in PLAYER_ATTACKS.items():

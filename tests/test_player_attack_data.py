@@ -65,7 +65,7 @@ class FakeOwner:
         self.air = None
 
 
-class PlayerAttackDataTests(unittest.TestCase):
+class AttackDataTests(unittest.TestCase):
     def finish_connected_attack(self, combat, owner):
         combat.mark_attack_connected()
         for _ in range(combat.attack_remaining):

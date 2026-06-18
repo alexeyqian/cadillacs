@@ -1,6 +1,6 @@
 from game.entities.attack_controller import AttackController
 
-#EnemyAttackData = what the attack is
+# AttackData = what the attack is
 #EnemyAttackState = what is happening right now
 #AttackController = generic timing/hit-target engine used inside state
 #EnemyCombatController = enemy-specific combat orchestration

@@ -1,5 +1,7 @@
 from game.entities.attack_controller import AttackController
-from game.entities.attack_data import EnemyAttackData
+from dataclasses import replace
+
+from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 
 
 class EnemyCombatController:
@@ -165,7 +167,9 @@ class EnemyCombatController:
         if hasattr(owner, "attack_data"):
             return owner.attack_data
 
-        return EnemyAttackData(
+        # TODO: why need replace here?
+        return replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
             damage=owner.attack_damage,
             delay=owner.attack_delay,
             cooldown=owner.attack_cooldown_duration,
