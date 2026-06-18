@@ -46,14 +46,14 @@ class PlayerGeometry:
     def get_counter_hurt_rect(self, owner):
         combat_counter_hurtbox = owner.combat.get_active_counter_hurtbox_data()
         if combat_counter_hurtbox:
-            return self._attack_rect_to_world(owner, combat_counter_hurtbox)
+            return self._counter_hurt_rect_to_world(owner, combat_counter_hurtbox)
         return None
 
     # deprecated, do not use
     def get_counter_hurt_rect_old(self, owner):
         combat_counter_hurtbox = owner.combat.get_active_counter_hurtbox_data()
         if combat_counter_hurtbox:
-            return self._player_rect_to_world(owner, combat_counter_hurtbox)
+            return self._counter_hurt_rect_to_world(owner, combat_counter_hurtbox)
         if owner.combat.is_attacking:
             return None
 
@@ -80,7 +80,7 @@ class PlayerGeometry:
     def get_attack_rect(self, owner):
         combat_hitbox = owner.combat.get_active_hitbox_data()
         if combat_hitbox:
-            return self._attack_rect_to_world(owner, combat_hitbox)
+            return self._attack_hitbox_to_world(owner, combat_hitbox)
         return None
 
     # todo: deprecated
@@ -90,7 +90,7 @@ class PlayerGeometry:
 
         combat_hitbox = owner.combat.get_active_hitbox_data()
         if combat_hitbox:
-            return self._player_rect_to_world(owner, combat_hitbox)
+            return self._attack_hitbox_to_world(owner, combat_hitbox)
 
         return None
 
@@ -119,6 +119,27 @@ class PlayerGeometry:
 
     def _player_rect_to_world(self, owner, box):
         return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
+
+    def _attack_hitbox_to_world(self, owner, attack):
+        anchor_y = owner.y
+        if owner.combat.current_attack_name == getattr(owner, "JUMP_ATTACK", None):
+            anchor_y = self._get_visual_y(owner)
+        box = pygame.Rect(
+            attack.hitbox_offset_x,
+            attack.hitbox_offset_y,
+            attack.hitbox_w,
+            attack.hitbox_h,
+        )
+        return combat_box_to_world_rect(owner.x, anchor_y, owner.facing_right, box)
+
+    def _counter_hurt_rect_to_world(self, owner, attack):
+        box = pygame.Rect(
+            attack.counter_hurtbox_offset_x,
+            attack.counter_hurtbox_offset_y,
+            attack.counter_hurtbox_w,
+            attack.counter_hurtbox_h,
+        )
+        return self._attack_rect_to_world(owner, box)
 
     def _attack_rect_to_world(self, owner, box):
         anchor_y = owner.y

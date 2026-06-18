@@ -105,7 +105,8 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(attack.action_lock, RUN_ATTACK_LANDING_RECOVERY)
 
     def test_running_attack_has_counter_hurtbox_for_committed_flying_kick(self):
-        self.assertTrue(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtbox)
+        self.assertGreater(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtbox_w, 0)
+        self.assertGreater(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtbox_h, 0)
 
     def test_running_attack_requires_enough_run_distance(self):
         owner = FakeOwner()
@@ -208,7 +209,8 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(attack.windup, 4)
         self.assertEqual(attack.active, 8)
         self.assertEqual(attack.recovery, 6)
-        self.assertTrue(attack.counter_hurtbox)
+        self.assertGreater(attack.counter_hurtbox_w, 0)
+        self.assertGreater(attack.counter_hurtbox_h, 0)
 
     def test_attack_timer_counts_up_until_attack_finishes(self):
         owner = FakeOwner()
@@ -237,14 +239,14 @@ class PlayerAttackDataTests(unittest.TestCase):
             self.assertEqual(attack.duration, attack.phase.total_duration)
 
     def test_standing_combo_hitboxes_progress_from_jab_to_finisher(self):
-        attack_1_hitbox = PLAYER_ATTACKS["ATTACK_1"].hitbox
-        attack_2_hitbox = PLAYER_ATTACKS["ATTACK_2"].hitbox
-        attack_3_hitbox = PLAYER_ATTACKS["ATTACK_3"].hitbox
+        attack_1 = PLAYER_ATTACKS["ATTACK_1"]
+        attack_2 = PLAYER_ATTACKS["ATTACK_2"]
+        attack_3 = PLAYER_ATTACKS["ATTACK_3"]
 
-        self.assertLess(attack_1_hitbox.width, attack_2_hitbox.width)
-        self.assertGreater(attack_3_hitbox.width, attack_2_hitbox.width)
-        self.assertGreater(attack_3_hitbox.height, attack_2_hitbox.height)
-        self.assertLessEqual(attack_3_hitbox.width, attack_2_hitbox.width + 20)
+        self.assertLess(attack_1.hitbox_w, attack_2.hitbox_w)
+        self.assertGreater(attack_3.hitbox_w, attack_2.hitbox_w)
+        self.assertGreater(attack_3.hitbox_h, attack_2.hitbox_h)
+        self.assertLessEqual(attack_3.hitbox_w, attack_2.hitbox_w + 20)
 
     def test_player_attack_is_inactive_during_recovery(self):
         owner = FakeOwner()

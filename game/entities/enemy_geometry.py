@@ -18,8 +18,15 @@ class EnemyGeometry:
         if owner.state == owner.ATTACK:
             hitbox = owner.combat.get_active_hitbox_data(owner)
             if hitbox:
-                return combat_box_to_world_rect(
-                    owner.x, owner.y, owner.facing_right, hitbox)
+                return self._enemy_rect_to_world(
+                    owner,
+                    pygame.Rect(
+                        hitbox.hitbox_offset_x,
+                        hitbox.hitbox_offset_y,
+                        hitbox.hitbox_w,
+                        hitbox.hitbox_h,
+                    )
+                )
         return None
 
     def get_frame_rect(self, owner):

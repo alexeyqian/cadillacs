@@ -88,8 +88,7 @@ class EnemyCombatController:
         if not self.is_attack_active(owner):
             return None
 
-        attack_data = self.get_attack_data(owner)
-        return attack_data.hitbox
+        return self.get_attack_data(owner)
 
     def mark_attack_hit(self, owner, target):
         controller = self.get_attack_controller(owner)

@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from game.settings import *
-from game.entities.attack_data import AttackHitboxData, AttackPhaseData, EnemyAttackData
+from game.entities.attack_data import AttackPhaseData, EnemyAttackData
 
 GNEISS_SCALER=1.2
 BLACK_ELMER_SCALER=1.5
@@ -41,11 +41,10 @@ class EnemyConfig:
             phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
                                 active=ENEMY_ATTACK_ACTIVE,
                                 recovery=ENEMY_ATTACK_RECOVERY),
-            hitbox=AttackHitboxData(
-                x=ENEMY_HITBOX_OFFSET_X,
-                y=ENEMY_HITBOX_OFFSET_Y, 
-                width=ENEMY_HITBOX_W,
-                height=ENEMY_HITBOX_H),
+            hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
+            hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
+            hitbox_w=ENEMY_HITBOX_W,
+            hitbox_h=ENEMY_HITBOX_H,
         )
 
     max_melee_attackers:int = 2 # move to stage config?
@@ -97,11 +96,10 @@ ENEMY_CONFIGS = {
             phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
                                 active=ENEMY_ATTACK_ACTIVE,
                                 recovery=ENEMY_ATTACK_RECOVERY),
-            hitbox=AttackHitboxData(
-                        x=ENEMY_HITBOX_OFFSET_X,
-                        y=ENEMY_HITBOX_OFFSET_Y,
-                        width=ENEMY_HITBOX_W,
-                        height=ENEMY_HITBOX_H),
+            hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
+            hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
+            hitbox_w=ENEMY_HITBOX_W,
+            hitbox_h=ENEMY_HITBOX_H,
         ),
         score_points=int(ENEMY_SCORE_POINTS*GNEISS_SCALER),
     ),
@@ -132,12 +130,10 @@ ENEMY_CONFIGS = {
             phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*BLACK_ELMER_SCALER),
                                 active=int(ENEMY_ATTACK_ACTIVE*BLACK_ELMER_SCALER),
                                 recovery=int(ENEMY_ATTACK_RECOVERY*BLACK_ELMER_SCALER)),
-            hitbox=AttackHitboxData(
-                x=200,
-                y=60,
-                width=100,
-                height=-250,
-            ),
+            hitbox_offset_x=200,
+            hitbox_offset_y=60,
+            hitbox_w=100,
+            hitbox_h=-250,
         ),
         # todo: simplify it
         # So Black Elmer only flinches from the heavy punch
@@ -174,12 +170,10 @@ ENEMY_CONFIGS = {
             phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*WALTHER_SCALER),
                                 active=int(ENEMY_ATTACK_ACTIVE*WALTHER_SCALER),
                                 recovery=int(ENEMY_ATTACK_RECOVERY*WALTHER_SCALER)),
-            hitbox=AttackHitboxData(
-                x=125,
-                y=-350,
-                width=180,
-                height=200,
-            ),
+            hitbox_offset_x=125,
+            hitbox_offset_y=-350,
+            hitbox_w=180,
+            hitbox_h=200,
         ),
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.

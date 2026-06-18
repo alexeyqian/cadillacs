@@ -20,13 +20,22 @@ def format_attack_debug_lines(label, controller, damage=None, lane_reach=None):
         details.append(f"lane {lane_reach}")
     lines.append(" | ".join(details))
 
-    hitbox_line = format_hitbox_line("hitbox", get_attack_hitbox(attack))
+    hitbox_line = format_hitbox_line(
+        "hitbox",
+        attack.hitbox_offset_x,
+        attack.hitbox_offset_y,
+        attack.hitbox_w,
+        attack.hitbox_h,
+    )
     if hitbox_line:
         lines.append(hitbox_line)
 
     counter_line = format_hitbox_line(
         "counter",
-        getattr(attack, "counter_hurtbox", None)
+        getattr(attack, "counter_hurtbox_offset_x", 0),
+        getattr(attack, "counter_hurtbox_offset_y", 0),
+        getattr(attack, "counter_hurtbox_w", 0),
+        getattr(attack, "counter_hurtbox_h", 0),
     )
     if counter_line:
         lines.append(counter_line)
@@ -34,14 +43,10 @@ def format_attack_debug_lines(label, controller, damage=None, lane_reach=None):
     return lines
 
 
-def get_attack_hitbox(attack):
-    return getattr(attack, "hitbox", None)
-
-
-def format_hitbox_line(label, box):
-    if not box:
+def format_hitbox_line(label, offset_x, offset_y, width, height):
+    if width <= 0 or height <= 0:
         return ""
     return (
-        f"{label} x:{box.x} y:{box.y} "
-        f"w:{box.width} h:{box.height}"
+        f"{label} x:{offset_x} y:{offset_y} "
+        f"w:{width} h:{height}"
     )

@@ -2,7 +2,6 @@ import unittest
 
 from game.entities.attack_controller import AttackController
 from game.entities.attack_data import (
-    AttackHitboxData,
     AttackPhaseData,
     PlayerAttackData,
 )
@@ -20,8 +19,14 @@ class AttackDebugTests(unittest.TestCase):
             damage=10,
             duration=12,
             phase=AttackPhaseData(windup=4, active=4, recovery=4),
-            hitbox=AttackHitboxData(x=10, y=-20, width=30, height=40),
-            counter_hurtbox=AttackHitboxData(x=2, y=-18, width=8, height=10),
+            hitbox_offset_x=10,
+            hitbox_offset_y=-20,
+            hitbox_w=30,
+            hitbox_h=40,
+            counter_hurtbox_offset_x=2,
+            counter_hurtbox_offset_y=-18,
+            counter_hurtbox_w=8,
+            counter_hurtbox_h=10,
             max_targets=2,
         )
         controller = AttackController()

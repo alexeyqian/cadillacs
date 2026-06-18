@@ -25,8 +25,8 @@ class AttackDataValidationTests(unittest.TestCase):
     def test_player_damaging_attacks_have_positive_hitboxes(self):
         for attack_name, attack in PLAYER_ATTACKS.items():
             with self.subTest(attack_name=attack_name):
-                self.assertGreater(attack.hitbox.width, 0)
-                self.assertGreater(attack.hitbox.height, 0)
+                self.assertGreater(attack.hitbox_w, 0)
+                self.assertGreater(attack.hitbox_h, 0)
 
     def test_weapon_player_attack_phase_fits_duration(self):
         for attack_key, attack in WEAPON_PLAYER_ATTACKS.items():
@@ -39,8 +39,8 @@ class AttackDataValidationTests(unittest.TestCase):
     def test_weapon_player_attacks_have_positive_hitboxes(self):
         for attack_key, attack in WEAPON_PLAYER_ATTACKS.items():
             with self.subTest(attack_key=attack_key):
-                self.assertGreater(attack.hitbox.width, 0)
-                self.assertGreater(attack.hitbox.height, 0)
+                self.assertGreater(attack.hitbox_w, 0)
+                self.assertGreater(attack.hitbox_h, 0)
 
     def test_melee_enemy_attacks_have_positive_hitboxes(self):
         for enemy_id, config in ENEMY_CONFIGS.items():
@@ -48,8 +48,8 @@ class AttackDataValidationTests(unittest.TestCase):
                 continue
 
             with self.subTest(enemy_id=enemy_id):
-                self.assertGreater(config.attack.hitbox.width, 0)
-                self.assertGreater(config.attack.hitbox.height, 0)
+                self.assertGreater(config.attack.hitbox_w, 0)
+                self.assertGreater(config.attack.hitbox_h, 0)
 
     def test_enemy_attack_phase_fits_duration(self):
         for enemy_id, config in ENEMY_CONFIGS.items():
