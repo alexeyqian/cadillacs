@@ -113,12 +113,12 @@ def main_draw_ui(game_state):
     font_line = font.get_linesize()
 
     score_text = font.render(
-        f"SCORE {score_manager.score} | HI {score_manager.high_score}",True,BLACK_COLOR)
+        f"SCORE {score_manager.score} | HI {score_manager.high_score}",True,YELLOW_COLOR)
     score_rect = score_text.get_rect(topleft=(left_x, top_y))
 
     status_text = small_font.render(
         f"CREDITS {game_state.credits} | LIVES {player.health.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
-        True, BLACK_COLOR)
+        True, YELLOW_COLOR)
     status_rect = status_text.get_rect(topright=(right_x, top_y))
     if status_rect.left <= score_rect.right + 24:
         status_rect.top = score_rect.bottom + row_gap
@@ -134,7 +134,7 @@ def main_draw_ui(game_state):
     hp_ratio = max(0.0, min(1.0, player.health.hp / player.health.max_hp))
     hp_width = int(hp_bar_w * hp_ratio)
     pygame.draw.rect(screen, GREEN_COLOR, (left_x, hp_y, hp_width, hp_bar_h))
-    hp_text = font.render(f"HP: {int(player.health.hp)}/{player.health.max_hp}", True, BLACK_COLOR)
+    hp_text = font.render(f"HP: {int(player.health.hp)}/{player.health.max_hp}", True, YELLOW_COLOR)
     hp_text_rect = hp_text.get_rect(topleft=(left_x + hp_bar_w + 16, hp_y - 4))
     screen.blit(hp_text, hp_text_rect)
 
@@ -149,7 +149,7 @@ def main_draw_ui(game_state):
     if weapon:
         weapon_name = weapon.weapon_type
         ammo_str = f" Ammo:{weapon.ammo}" if weapon.is_ranged else ""
-        weapon_text = font.render(f"Weapon: {weapon_name}{ammo_str}", True, BLACK_COLOR)
+        weapon_text = font.render(f"Weapon: {weapon_name}{ammo_str}", True, WHITE_COLOR)
         screen.blit(weapon_text, weapon_text.get_rect(topright=(right_x, right_panel_y)))
         right_panel_y += font_line + row_gap
 
@@ -172,7 +172,7 @@ def main_draw_ui(game_state):
     ]
 
     for debug_line in debug_lines:
-        debug_text = small_font.render(debug_line, True, BLACK_COLOR)
+        debug_text = small_font.render(debug_line, True, WHITE_COLOR)
         screen.blit(debug_text, (left_x, debug_y))
         debug_y += small_line
     
@@ -229,7 +229,7 @@ def main_draw_ui(game_state):
                 lane_reach=enemy.attack_lane_reach,
             )
             for debug_line in enemy_debug_lines:
-                debug_text = small_font.render(debug_line, True, BLACK_COLOR)
+                debug_text = small_font.render(debug_line, True, WHITE_COLOR)
                 screen.blit(debug_text, (left_x, debug_y))
                 debug_y += small_line
 

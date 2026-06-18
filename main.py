@@ -138,7 +138,7 @@ def main():
 
     clock = pygame.time.Clock()
     player = MustaphaPlayer()
-    stage_manager = StageManager(EPISODE_1_STAGES)
+    stage_manager = StageManager(EPISODE_1_STAGES, settings.START_STAGE)
     level = Level(stage_manager.get_current_stage())
     camera = Camera()
     

@@ -39,7 +39,7 @@ PLAYER_HURTBOX_H = int(PLAYER_H*0.9)
 PLAYER_HURTBOX_OFFSET_X=int(-1 * PLAYER_HURTBOX_W//2)
 PLAYER_HURTBOX_OFFSET_Y=int(-1*(PLAYER_HURTBOX_H + PLAYER_COLLISION_H*2))
 
-PLAYER_HITBOX_W = int(PLAYER_W*1.3)
+PLAYER_HITBOX_W = int(PLAYER_W*1.3+30)
 PLAYER_HITBOX_H = int(PLAYER_H*0.2)
 PLAYER_HIT_BOX_OFFSET_X = int(PLAYER_W/2)
 PLAYER_HIT_BOX_OFFSET_Y = int(-1*(PLAYER_HURTBOX_H + 70))
@@ -69,6 +69,11 @@ UI_FONT_SIZE=36
 ######## debug ########
 SHOW_COMBAT_BOXES=False
 SHOW_EXIT_RECT=True
+# Dev only.
+# None means start from the first stage normally.
+# Can be a stage id, for example: "episode_1_stage_4_ruined_arena"
+START_STAGE=None
+#"episode_1_stage_4_ruined_arena"
 
 ######## health and score ########
 PLAYER_LIVES=3
