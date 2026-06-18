@@ -63,7 +63,7 @@ DEFAULT_PLAYER_ATTACKS = {
         counter_hurtbox_w=34,
         counter_hurtbox_h=38,
         combo_window=0,
-        action_lock=PLAYER_THIRD_HIT_RECOVERY,
+        cooldown=PLAYER_THIRD_HIT_RECOVERY,
     ),
     "RUN_ATTACK": PlayerAttackData(
         hitbox_offset_x=40,
@@ -83,9 +83,9 @@ DEFAULT_PLAYER_ATTACKS = {
         recovery=RUN_ATTACK_RECOVERY_DURATION,
         
         max_targets=3,
-        action_lock=RUN_ATTACK_LANDING_RECOVERY,
+        cooldown=RUN_ATTACK_LANDING_RECOVERY,
         knockback_velocity=RUN_ATTACK_BASE_KNOCKBACK,
-        enemy_hit_stun_duration=RUN_ATTACK_BASE_ENEMY_HIT_STUN,
+        hit_stun_duration=RUN_ATTACK_BASE_ENEMY_HIT_STUN,
     ),
     "JUMP_ATTACK": PlayerAttackData(
         damage=FIST_DAMAGE,

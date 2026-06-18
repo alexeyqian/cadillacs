@@ -102,7 +102,7 @@ class PlayerAttackDataTests(unittest.TestCase):
         self.assertEqual(attack.active, 10)
         self.assertEqual(attack.recovery, 4)
         self.assertEqual(attack.duration, attack.total_duration)
-        self.assertEqual(attack.action_lock, RUN_ATTACK_LANDING_RECOVERY)
+        self.assertEqual(attack.cooldown, RUN_ATTACK_LANDING_RECOVERY)
 
     def test_running_attack_has_counter_hurtbox_for_committed_flying_kick(self):
         self.assertGreater(PLAYER_ATTACKS["RUN_ATTACK"].counter_hurtbox_w, 0)
@@ -142,8 +142,8 @@ class PlayerAttackDataTests(unittest.TestCase):
 
     def test_running_attack_has_longer_enemy_hit_stun_than_normal_punch(self):
         self.assertGreater(
-            PLAYER_ATTACKS["RUN_ATTACK"].enemy_hit_stun_duration,
-            PLAYER_ATTACKS["ATTACK_1"].enemy_hit_stun_duration,
+            PLAYER_ATTACKS["RUN_ATTACK"].hit_stun_duration,
+            PLAYER_ATTACKS["ATTACK_1"].hit_stun_duration,
         )
 
     def test_running_attack_can_hit_multiple_targets(self):

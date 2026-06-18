@@ -139,10 +139,11 @@ class PlayerCombatController:
                     self.combo_window_remaining = 0
                     self.combo_step = 0
 
-                if finished_move and finished_move.action_lock > 0:
-                    self.action_lock_remaining = finished_move.action_lock
-                    self.combo_window_remaining = 0
-                    self.combo_step = 0
+                if finished_move and finished_move.cooldown > 0:
+                    self.action_lock_remaining = finished_move.cooldown
+                    if finished_attack_name not in [owner.ATTACK_1, owner.ATTACK_2]:
+                        self.combo_window_remaining = 0
+                        self.combo_step = 0
 
                 air = getattr(owner, "air", None)
                 if air and air.is_landing and owner.state != owner.DEAD:
@@ -248,7 +249,7 @@ class PlayerCombatController:
         attack_data = self.get_current_or_state_attack_data(owner)
         if not attack_data:
             return 15
-        return int(attack_data.enemy_hit_stun_duration + self.get_run_attack_power_bonus(
+        return int(attack_data.hit_stun_duration + self.get_run_attack_power_bonus(
             owner,
             RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
         ))
