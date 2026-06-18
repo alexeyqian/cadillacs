@@ -2,8 +2,7 @@ from dataclasses import dataclass, replace
 
 from game.settings import *
 
-
-# todo: move to settings
+#from_here
 PLAYER_COUNTER_HIT_STUN_BONUS = 10
 # Combo windows are measured from attack start, not from attack finish.
 # Because standing punches now have recovery frames, these values include
@@ -13,6 +12,7 @@ PLAYER_FIRST_TO_SECOND_COMBO_WINDOW = 29
 PLAYER_SECOND_TO_THIRD_COMBO_WINDOW = 24
 PLAYER_THIRD_HIT_RECOVERY = 24
 PLAYER_CLASH_RECOVERY = 8
+#to_here
 
 @dataclass(frozen=True)
 class PlayerAttackData:

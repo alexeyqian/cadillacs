@@ -1,38 +1,6 @@
 from dataclasses import dataclass
 from game.settings import *
-from attack_data import *
-
-
-@dataclass(frozen=True)
-class PlayerConfig:
-    player_id: str
-    display_name: str
-    lives: int = PLAYER_LIVES
-    max_hp: int = PLAYER_MAX_HP
-
-    width: int = PLAYER_W
-    height: int = PLAYER_H
-    collision_box_w: int = PLAYER_COLLISION_W
-    collision_box_h: int = PLAYER_COLLISION_H
-    hurt_box_w: int = PLAYER_HURTBOX_H
-    hurt_box_h: int = PLAYER_HURTBOX_H
-
-    speed: float = PLAYER_SPEED
-    run_speed: float = PLAYER_RUN_SPEED
-
-    run_attack_damage: int = RUN_ATTACK_DAMAGE
-
-    # TODO: move to settings constant
-    jump_attack_damage: int = JUMP_ATTACK_DAMAGE
-    jump_power: float = 12
-    jump_gravity: float = 0.7
-    air_move_speed: float = 3.0
-    jump_takeoff_frames: int = 6
-    landing_recovery_frames: int = 6
-
-    grab_range: int = PLAYER_GRAB_RANGE
-    hit_stun_duration: int = ATTACK_1_HIT_STUN # todo: for self or enemy?
-    sprite_scale: int = 2
+from game.entities.attack_data import *
 
 
 DEFAULT_PLAYER_ATTACKS = {
@@ -148,14 +116,43 @@ DEFAULT_PLAYER_ATTACKS = {
     ),
 }
 
+@dataclass(frozen=True)
+class PlayerConfig:
+    player_id: str
+    display_name: str
+    lives: int = PLAYER_LIVES
+    max_hp: int = PLAYER_MAX_HP
+
+    width: int = PLAYER_W
+    height: int = PLAYER_H
+    collision_box_w: int = PLAYER_COLLISION_W
+    collision_box_h: int = PLAYER_COLLISION_H
+    hurt_box_w: int = PLAYER_HURTBOX_H
+    hurt_box_h: int = PLAYER_HURTBOX_H
+
+    speed: float = PLAYER_SPEED
+    run_speed: float = PLAYER_RUN_SPEED
+    
+    attack: PlayerAttackData = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
+    run_attack_damage: int = RUN_ATTACK_DAMAGE
+
+    # TODO: move to settings constant
+    jump_attack_damage: int = JUMP_ATTACK_DAMAGE
+    jump_power: float = 12
+    jump_gravity: float = 0.7
+    air_move_speed: float = 3.0
+    jump_takeoff_frames: int = 6
+    landing_recovery_frames: int = 6
+
+    grab_range: int = PLAYER_GRAB_RANGE
+    hit_stun_duration: int = ATTACK_1_HIT_STUN # todo: for self or enemy?
+    sprite_scale: int = 2
+
+
 PLAYER_CONFIGS = {
     "mustapha": PlayerConfig(
         player_id="mustapha",
         display_name="Mustapha",
-        speed=int(PLAYER_SPEED),
-        run_speed=int(PLAYER_RUN_SPEED),
-
-        attack=DEFAULT_PLAYER_ATTACKS["ATTACK_1"],
     ),
 }
 
