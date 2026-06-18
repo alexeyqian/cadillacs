@@ -59,26 +59,6 @@ class Level:
                 max_active=wave_config.get("max_active", 4),
             ))
 
-
-        #self.prop1_x = self.e1s1_wave1_x -100
-        #self.prop2_x = self.e1s1_wave2_x -100
-        #self.prop3_x = self.e1s1_wave3_x -100
-        #self.prop4_x = self.e1s2_wave1_x -100
-        #self.prop5_x = self.e1s2_wave2_x -100
-        
-        # front ui decorations
-        #self.props = [
-        #        Prop(self.prop1_x,LANE_BOTTOM,
-        #            "game/assets/props/car_wreck.png",layer="back",scale=1.5),
-        #        Prop(self.prop2_x,LANE_BOTTOM,
-        #            "game/assets/props/dino_bones.png",layer="back",scale=1.5),
-        #        Prop(self.prop3_x,LANE_BOTTOM,
-        #            "game/assets/props/barrel_green.png",layer="front",scale=1.3),
-        #        Prop(self.prop4_x,LANE_BOTTOM,
-        #            "game/assets/props/barrel_red.png",layer="front",scale=1.3),
-        #        Prop(self.prop5_x,LANE_BOTTOM,
-        #            "game/assets/props/bush.png",layer="front",scale=1.4),]
-
     def get_lane_index(self, y):
         return self.lane_system.get_lane_index(y)
 

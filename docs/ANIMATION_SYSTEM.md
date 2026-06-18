@@ -74,35 +74,6 @@ The logical player box is used for anchoring, while the visible body may leave m
 
 ---
 
-# Lane / Ground Area
-
-Current lane setup:
-
-```python
-LANE_TOP = 600 - PLAYER_H
-LANE_BOTTOM = 1040 - PLAYER_H
-```
-
-With:
-
-```python
-PLAYER_H = 256
-```
-
-This gives:
-
-```text
-LANE_TOP = 344
-LANE_BOTTOM = 784
-```
-
-The player’s `y` position represents the top of the logical body box.
-
-So the actual visible feet position is approximately:
-
-```text
-player.y + PLAYER_H
-```
 
 ---
 

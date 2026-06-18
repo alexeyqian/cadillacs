@@ -11,7 +11,8 @@ class PlayerConfig:
     lives: int = PLAYER_LIVES
     speed: float = PLAYER_SPEED
     run_speed: float = PLAYER_RUN_SPEED
-    run_attack_damage: int = int(FIST_DAMAGE*1.5)
+    run_attack_damage: int = RUN_ATTACK_DAMAGE
+
     jump_attack_damage: int = FIST_DAMAGE + 5
     jump_power: float = 12
     jump_gravity: float = 0.7
@@ -24,7 +25,7 @@ class PlayerConfig:
     collision_box_w: int = PLAYER_COLLISION_W
     collision_box_h: int = PLAYER_COLLISION_H
     hit_stun_duration: int = 20
-    sprite_scale: int = 2
+    sprite_scale: int = 2.5
 
 
 PLAYER_CONFIGS = {

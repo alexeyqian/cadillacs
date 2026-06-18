@@ -32,20 +32,6 @@ def main_draw_world(game_state):
     #screen.fill((120, 190, 255))
     level.background.draw_back(screen, camera.x)
     #level.draw_props(screen, camera.x, "back")
-    # ground
-    #pygame.draw.rect(screen, (80, 180, 80),# green
-    #                (0, LANE_TOP, SCREEN_WIDTH, 
-    #                LANE_BOTTOM - LANE_TOP + player.height))
-
-    # world markers - todo: remove
-    #for x in range(0, WORLD_WIDTH, 200):
-    #    screen_x = x - camera.x
-    #    pygame.draw.line(
-    #        screen, (150, 150, 150),
-    #        (screen_x, LANE_TOP),
-    #        (screen_x, LANE_BOTTOM+player.height),
-    #        2
-    #    )
 
     # depth sorting
     # Depth Sorting: Characters need to scale in size and dynamically re-order in front of 

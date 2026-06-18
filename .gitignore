@@ -1,3 +1,10 @@
 .vscode/
 .DS_Store
 venv/
+analysis/
+analysis/dino_reverse_engineering/captures/
+analysis/dino_reverse_engineering/screenshots/
+analysis/dino_reverse_engineering/reference_sprites/
+analysis/states/
+analysis/input/
+snap/

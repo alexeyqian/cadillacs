@@ -296,3 +296,6 @@ So the animation becomes the “skin”, while the attack definition becomes the
 The important idea:
 Attack timing uses seconds / normalized time.
 Animation uses frames.
+
+ROM download:
+https://archive.org/download/mame-0.221-roms-merged

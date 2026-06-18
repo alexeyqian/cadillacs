@@ -16,8 +16,8 @@ class EnemyConfig:
     speed: float = ENEMY_SPEED
     patrol_distance:int = ENEMY_DETECT_RANGE
     detect_range: float = ENEMY_DETECT_RANGE
-    attack_range:int = 90 
-    attack_lane_range:int = 45
+    attack_range:int = ENEMY_ATTACK_RANGE
+    attack_lane_range:int = ENEMY_ATTACK_LANE_RANGE
     # Normal melee enemies must be in the same lane to start attack
     # Boss/ranged can keep wider behavior for now
     # 0 = same lane only
@@ -44,7 +44,7 @@ class EnemyConfig:
     recovery_punish_delay_multiplier: float = 0.5
     thrown_damage:int = THROWN_DAMAGE
     score_points: int = ENEMY_SCORE_POINTS
-    sprite_scale: int  = 4
+    sprite_scale: int  = 5
 
 # Each enemy archetype has a readable combat rhythm:
 # Ferris   = basic pressure, fair but less passive.
@@ -55,14 +55,16 @@ ENEMY_CONFIGS = {
     "ferris": EnemyConfig(
         enemy_id="ferris",
         display_name="Ferris",
-        attack_range=105,
-        attack_lane_range=48,
+        attack_range=ENEMY_ATTACK_RANGE,
+        attack_lane_range=ENEMY_ATTACK_LANE_RANGE,
         attack=EnemyAttackData(
             damage=ENEMY_ATTACK_DAMAGE,
-            delay=16,
-            cooldown=35,
-            phase=AttackPhaseData(windup=18, active=8, recovery=22),
-            hitboxes=(AttackHitboxData(x=72, y=-272, width=132, height=44),),
+            delay=ENEMY_ATTACK_DELAY,
+            cooldown=ENEMY_ATTACK_COOLDOWN,
+            phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
+                                active=ENEMY_ATTACK_ACTIVE,
+                                recovery=ENEMY_ATTACK_RECOVERY),
+            hitboxes=(AttackHitboxData(x=72, y=-272, width=200, height=50),),
         ),
     ),
     "gneiss": EnemyConfig(
@@ -70,14 +72,16 @@ ENEMY_CONFIGS = {
         display_name="Gneiss",
         max_hp=int(ENEMY_MAX_HP*1.2),
         speed=int(ENEMY_SPEED * 1.2),
-        attack_range=115,
-        attack_lane_range=50,
+        attack_range=ENEMY_ATTACK_RANGE,
+        attack_lane_range=ENEMY_ATTACK_LANE_RANGE,
         attack=EnemyAttackData(
-            damage=int(ENEMY_ATTACK_DAMAGE * 0.9),
-            delay=10,
-            cooldown=28,
-            phase=AttackPhaseData(windup=13, active=7, recovery=18),
-            hitboxes=(AttackHitboxData(x=144, y=-264, width=120, height=40),),
+            damage=int(ENEMY_ATTACK_DAMAGE * 1.2),
+            delay=int(ENEMY_ATTACK_DELAY*0.8),
+            cooldown=int(ENEMY_ATTACK_COOLDOWN*1.2),
+            phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
+                                active=ENEMY_ATTACK_ACTIVE,
+                                recovery=ENEMY_ATTACK_RECOVERY),
+            hitboxes=(AttackHitboxData(x=144, y=-264, width=200, height=50),),
         ),
         score_points=int(ENEMY_SCORE_POINTS*1.2),
     ),
@@ -87,15 +91,17 @@ ENEMY_CONFIGS = {
         archetype="heavy",
         max_hp=ENEMY_MAX_HP*2,
         speed=int(ENEMY_SPEED * 0.75),
-        attack_range=125,
-        attack_lane_range=58,
+        attack_range=int(ENEMY_ATTACK_RANGE*1.5),
+        attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE*1.5),
         attack_lane_reach=1,
         attack=EnemyAttackData(
             damage=ENEMY_ATTACK_DAMAGE * 2,
-            delay=24,
-            cooldown=50,
-            phase=AttackPhaseData(windup=24, active=11, recovery=28),
-            hitboxes=(AttackHitboxData(x=128, y=-284, width=150, height=84),),
+            delay=int(ENEMY_ATTACK_DELAY*1.5),
+            cooldown=int(ENEMY_ATTACK_COOLDOWN*1.5),
+            phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP*1.5),
+                                active=int(ENEMY_ATTACK_ACTIVE*1.5),
+                                recovery=int(ENEMY_ATTACK_RECOVERY*1.5)),
+            hitboxes=(AttackHitboxData(x=128, y=-284, width=300, height=60),),
         ),
         collision_box_w=int(ENEMY_COLLISION_W * 2),
         # So Black Elmer only flinches from the heavy punch
@@ -109,8 +115,8 @@ ENEMY_CONFIGS = {
         enemy_id="raptor",
         display_name="Raptor",
         archetype="raptor",
-        max_hp=RAPTOR_ENEMY_MAX_HP,
-        speed=RAPTOR_ENEMY_SPEED,
+        max_hp=int(ENEMY_MAX_HP*1.2),
+        speed=ENEMY_SPEED*1.5,
         attack_range=110,
         attack_lane_range=55,
         attack=EnemyAttackData(
@@ -126,7 +132,7 @@ ENEMY_CONFIGS = {
         enemy_id="ranged",
         display_name="Ranged Enemy",
         archetype="ranged",
-        max_hp=RANGED_ENEMY_MAX_HP,
+        max_hp=int(ENEMY_MAX_HP*1.2),
         attack_range=260,
         attack_lane_range=60,
         attack=EnemyAttackData(
