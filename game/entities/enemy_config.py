@@ -51,7 +51,7 @@ class EnemyConfig:
                 y=ENEMY_HITBOX_OFFSET_Y, 
                 width=ENEMY_HITBOX_W,
                 height=ENEMY_HITBOX_H),),
-        ),
+        )
 
     max_melee_attackers:int = 2 # move to stage config?
     melee_attack_slot_limit: Optional[int] = None
@@ -97,7 +97,7 @@ ENEMY_CONFIGS = {
         attack=EnemyAttackData(
             damage=int(ENEMY_ATTACK_DAMAGE * GNEISS_SCALER),
             delay=int(ENEMY_ATTACK_DELAY * 0.8),
-            cooldown=int(ENEMY_ATTACK_COOLDOWN * GNEISS_SCALER),
+            cooldown=int(ENEMY_ATTACK_COOLDOWN * 0.8),
             phase=AttackPhaseData(windup=ENEMY_ATTACK_WINDUP,
                                 active=ENEMY_ATTACK_ACTIVE,
                                 recovery=ENEMY_ATTACK_RECOVERY),
@@ -202,6 +202,39 @@ ENEMY_CONFIGS = {
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 100, # means no flinch
+        attack_flinch_damage_threshold=BAT_DAMAGE,
+        anti_stunlock_hit_limit=2,
+
+        score_points=int(ENEMY_SCORE_POINTS * WALTHER_SCALER),
+    ),
+    "boss": EnemyConfig(
+        enemy_id="boss",
+        display_name="Boss",
+        archetype="boss",
+
+        max_hp=ENEMY_MAX_HP * 10,
+        speed=BOSS_ENEMY_SPEED,
+
+        attack_range=int(ENEMY_ATTACK_RANGE * WALTHER_SCALER),
+        attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * WALTHER_SCALER),
+        attack_lane_reach=1,
+        attack=EnemyAttackData(
+            damage=ENEMY_ATTACK_DAMAGE * WALTHER_SCALER,
+            delay=ENEMY_ATTACK_DELAY,
+            cooldown=int(ENEMY_ATTACK_COOLDOWN * WALTHER_SCALER),
+            phase=AttackPhaseData(windup=int(ENEMY_ATTACK_WINDUP * WALTHER_SCALER),
+                                active=int(ENEMY_ATTACK_ACTIVE * WALTHER_SCALER),
+                                recovery=int(ENEMY_ATTACK_RECOVERY * WALTHER_SCALER)),
+            hitboxes=(
+                AttackHitboxData(
+                    x=400,
+                    y=200,
+                    width=200,
+                    height=200,
+                ),
+            ),
+        ),
+        flinch_damage_threshold=FIST_DAMAGE + 100,
         attack_flinch_damage_threshold=BAT_DAMAGE,
         anti_stunlock_hit_limit=2,
 
