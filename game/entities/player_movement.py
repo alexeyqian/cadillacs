@@ -1,6 +1,6 @@
 from game.settings import (
     WORLD_WIDTH,
-    RUN_DOUBLE_TAP_TIME,
+    RUN_TAP_WINDOW,
     FPS,
     RUN_ATTACK_REQUIRED_DISTANCE,
     RUN_ATTACK_MOMENTUM_FRAMES,
@@ -17,7 +17,7 @@ class PlayerMovement:
         self.run_active = False
         self.run_direction = 0
         self.run_tap_remaining = 0
-        self.run_tap_window = max(1, int(RUN_DOUBLE_TAP_TIME * FPS))
+        self.run_tap_window = max(1, int(RUN_TAP_WINDOW * FPS))
         self.run_distance = 0
         self.last_run_attack_distance = 0
         self.run_attack_required_distance = RUN_ATTACK_REQUIRED_DISTANCE

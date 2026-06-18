@@ -174,3 +174,11 @@ Current visual finding:
 - Do not make fist attacks hit many enemies by default.
 - Do not couple animation frames directly to collision logic.
 - Do not remove the attack-data-driven phase system.
+
+## Hit stun and knock back
+
+light punch: short stun, small knockback
+heavy punch: longer stun, bigger knockback
+boss hit: tiny stun, tiny knockback
+armor/resistance: damage applies, but little/no stun
+explosives: big knockback, maybe knockdown

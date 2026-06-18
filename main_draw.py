@@ -75,9 +75,9 @@ def main_draw_world(game_state):
     #level.draw_props(screen, camera.x, "front")
     level.background.draw_front(screen, camera.x)
     draw_exit_rect(screen, camera, level)
-    draw_entity_lane_debug(screen, level, camera, player, enemies)
     draw_player_debug_boxes(screen, level, camera, player)
-    draw_projectile_lane_debug(screen, level, camera, projectiles, enemy_projectiles)
+    #draw_entity_lane_debug(screen, level, camera, player, enemies)
+    #draw_projectile_lane_debug(screen, level, camera, projectiles, enemy_projectiles)
 
 def draw_exit_rect(screen, camera, level):
     if not SHOW_EXIT_RECT:
