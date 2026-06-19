@@ -50,13 +50,15 @@ class Player(Character, PlayerState):
     def apply_body_config(self, config):
         self.width = int(config.width)
         self.height = int(config.height)
-
-        self.collision_box_w = int(config.collision_box_w)
-        self.collision_box_h = int(config.collision_box_h)
-        self.hurt_box_w = int(config.hurt_box_w)
-        self.hurt_box_h = int(config.hurt_box_h)
-        self.hurt_box_offset_x = int(config.hurt_box_offset_x)
-        self.hurt_box_offset_y = int(config.hurt_box_offset_y)
+        self.geometry = CharacterGeometry()
+        self.geometry.configure(
+            config.collision_box_w,
+            config.collision_box_h,
+            config.hurt_box_w,
+            config.hurt_box_h,
+            config.hurt_box_offset_x,
+            config.hurt_box_offset_y,
+        )
 
         # todo: already included in health, remove
         self.hit_stun_duration = config.hit_stun_duration
@@ -103,7 +105,8 @@ class Player(Character, PlayerState):
         self.movement.ground_y = self.y
         self.weapon_slot = PlayerWeaponSlot()
         self.events = GameEventQueue()
-        self.geometry = CharacterGeometry()
+        if not self.geometry:
+            self.geometry = CharacterGeometry()
 
     def build_controllers(self):
         self.combat_controller = PlayerCombatController()

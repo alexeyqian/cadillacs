@@ -12,6 +12,38 @@ from game.settings import (
 
 
 class CharacterGeometry:
+    def __init__(
+        self,
+        collision_box_w=PLAYER_COLLISION_W,
+        collision_box_h=PLAYER_COLLISION_H,
+        hurt_box_w=PLAYER_HURTBOX_W,
+        hurt_box_h=PLAYER_HURTBOX_H,
+        hurt_box_offset_x=PLAYER_HURTBOX_OFFSET_X,
+        hurt_box_offset_y=PLAYER_HURTBOX_OFFSET_Y,
+    ):
+        self.collision_box_w = int(collision_box_w)
+        self.collision_box_h = int(collision_box_h)
+        self.hurt_box_w = int(hurt_box_w)
+        self.hurt_box_h = int(hurt_box_h)
+        self.hurt_box_offset_x = int(hurt_box_offset_x)
+        self.hurt_box_offset_y = int(hurt_box_offset_y)
+
+    def configure(
+        self,
+        collision_box_w,
+        collision_box_h,
+        hurt_box_w,
+        hurt_box_h,
+        hurt_box_offset_x,
+        hurt_box_offset_y,
+    ):
+        self.collision_box_w = int(collision_box_w)
+        self.collision_box_h = int(collision_box_h)
+        self.hurt_box_w = int(hurt_box_w)
+        self.hurt_box_h = int(hurt_box_h)
+        self.hurt_box_offset_x = int(hurt_box_offset_x)
+        self.hurt_box_offset_y = int(hurt_box_offset_y)
+
     def get_frame_rect(self, owner):
         frame = self._get_current_frame(owner)
         if not frame:
@@ -115,19 +147,19 @@ class CharacterGeometry:
         return air.get_visual_y(owner.y)
 
     def _get_collision_box_w(self, owner):
-        return getattr(owner, "collision_box_w", PLAYER_COLLISION_W)
+        return self.collision_box_w
 
     def _get_collision_box_h(self, owner):
-        return getattr(owner, "collision_box_h", PLAYER_COLLISION_H)
+        return self.collision_box_h
 
     def _get_hurt_box_w(self, owner):
-        return getattr(owner, "hurt_box_w", PLAYER_HURTBOX_W)
+        return self.hurt_box_w
 
     def _get_hurt_box_h(self, owner):
-        return getattr(owner, "hurt_box_h", PLAYER_HURTBOX_H)
+        return self.hurt_box_h
 
     def _get_hurt_box_offset_x(self, owner):
-        return getattr(owner, "hurt_box_offset_x", PLAYER_HURTBOX_OFFSET_X)
+        return self.hurt_box_offset_x
 
     def _get_hurt_box_offset_y(self, owner):
-        return getattr(owner, "hurt_box_offset_y", PLAYER_HURTBOX_OFFSET_Y)
+        return self.hurt_box_offset_y

@@ -8,7 +8,6 @@ from game.components.enemy_renderer import EnemyRenderer
 from game.components.enemy_movement import EnemyMovement
 from game.components.enemy_flanking import EnemyFlanking
 from game.components.enemy_lifecycle_state import EnemyLifecycleState
-from game.entities.enemy_coordination import EnemyCoordination
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
@@ -57,7 +56,6 @@ class Enemy(Character, EnemyState):
         self.geometry = CharacterGeometry()
         self.movement = EnemyMovement(spawn_x=self.x)
         self.flanking = EnemyFlanking()
-        self.coordination = EnemyCoordination()
 
     def build_controllers(self):
         self.combat_controller = EnemyCombatController()
@@ -83,12 +81,14 @@ class Enemy(Character, EnemyState):
         self.archetype = config.archetype
 
     def apply_body_config(self, config):
-        self.collision_box_w = int(config.collision_box_w)
-        self.collision_box_h = int(config.collision_box_h)
-        self.hurt_box_w = int(config.hurt_box_w)
-        self.hurt_box_h = int(config.hurt_box_h)
-        self.hurt_box_offset_x = int(config.hurt_box_offset_x)
-        self.hurt_box_offset_y = int(config.hurt_box_offset_y)
+        self.geometry.configure(
+            config.collision_box_w,
+            config.collision_box_h,
+            config.hurt_box_w,
+            config.hurt_box_h,
+            config.hurt_box_offset_x,
+            config.hurt_box_offset_y,
+        )
 
         self.health = EnemyHealth(config.max_hp)
         self.sprite_scale = config.sprite_scale
