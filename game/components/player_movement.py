@@ -12,7 +12,7 @@ from game.components.movement_math import clamp_to_world_and_lane
 
 
 class PlayerMovement:
-    def __init__(self, speed, air_state=None):
+    def __init__(self, speed, air_state=None, run_attack_min_distance=RUN_ATTACK_REQUIRED_DISTANCE):
         self.air_state = air_state
         self.is_running = False
         self.run_active = False
@@ -21,7 +21,7 @@ class PlayerMovement:
         self.run_tap_window = max(1, int(RUN_TAP_WINDOW * FPS))
         self.run_distance = 0
         self.last_run_attack_distance = 0
-        self.run_attack_required_distance = RUN_ATTACK_REQUIRED_DISTANCE
+        self.run_attack_min_distance = run_attack_min_distance
         self.run_attack_cooldown_remaining = 0
         self.run_attack_cooldown_frames = RUN_ATTACK_COOLDOWN
         self.left_pressed = False
@@ -134,7 +134,7 @@ class PlayerMovement:
     def can_start_run_attack(self):
         return (
             self.is_running
-            and self.run_distance >= self.run_attack_required_distance
+            and self.run_distance >= self.run_attack_min_distance
             and self.run_attack_cooldown_remaining <= 0
         )
 

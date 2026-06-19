@@ -62,6 +62,7 @@ class Player(Character, PlayerState):
     def apply_movement_config(self, config):
         self.speed = config.speed
         self.run_speed = config.run_speed
+        self.run_attack_min_distance = config.run_attack_min_distance
 
     def apply_combat_config(self, config):
         self.combat_controller.attacks = config.attacks or {}
@@ -83,7 +84,11 @@ class Player(Character, PlayerState):
         self.input_state = PlayerInputState()
 
     def build_capability_components(self):
-        self.movement = PlayerMovement(self.speed, self.air)
+        self.movement = PlayerMovement(
+            self.speed,
+            self.air,
+            run_attack_min_distance=self.run_attack_min_distance,
+        )
         self.movement.ground_y = self.y
         self.weapon_slot = PlayerWeaponSlot()
         self.events = GameEventQueue()

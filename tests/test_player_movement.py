@@ -119,7 +119,7 @@ class PlayerMovementTests(unittest.TestCase):
     def test_run_attack_requires_configured_run_distance(self):
         owner = FakeOwner()
         movement = PlayerMovement(owner.speed)
-        movement.run_attack_required_distance = owner.run_speed * 2
+        movement.run_attack_min_distance = owner.run_speed * 2
 
         movement.update_movement(owner, FakeInput(right=True, run=True))
 
@@ -132,7 +132,7 @@ class PlayerMovementTests(unittest.TestCase):
     def test_run_attack_distance_resets_when_player_stops_running(self):
         owner = FakeOwner()
         movement = PlayerMovement(owner.speed)
-        movement.run_attack_required_distance = owner.run_speed
+        movement.run_attack_min_distance = owner.run_speed
 
         movement.update_movement(owner, FakeInput(right=True, run=True))
         self.assertTrue(movement.can_start_run_attack())
@@ -145,7 +145,7 @@ class PlayerMovementTests(unittest.TestCase):
     def test_run_attack_cooldown_blocks_only_run_attack_eligibility(self):
         owner = FakeOwner()
         movement = PlayerMovement(owner.speed)
-        movement.run_attack_required_distance = owner.run_speed
+        movement.run_attack_min_distance = owner.run_speed
 
         movement.update_movement(owner, FakeInput(right=True, run=True))
         self.assertTrue(movement.can_start_run_attack())

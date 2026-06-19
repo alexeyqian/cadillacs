@@ -64,6 +64,9 @@ def test_player_factory_builds_default_player_runtime_groups(monkeypatch):
     # Capabilities
     assert player.health is not None
     assert player.movement is not None
+    assert player.movement.run_attack_min_distance == get_player_config(
+        DEFAULT_PLAYER_TYPE
+    ).run_attack_min_distance
     assert player.weapon_slot is not None
     assert player.events is not None
     assert player.geometry is not None

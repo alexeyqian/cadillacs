@@ -36,6 +36,7 @@ from game.settings import (
     RUN_ATTACK_BASE_KNOCKBACK,
     RUN_ATTACK_DAMAGE,
     RUN_ATTACK_LANDING_RECOVERY,
+    RUN_ATTACK_REQUIRED_DISTANCE,
     RUN_ATTACK_WINDUP_DURATION,
     THROWN_DAMAGE,
 )
@@ -203,6 +204,7 @@ class PlayerConfig:
 
     speed: float = PLAYER_SPEED
     run_speed: float = PLAYER_RUN_SPEED
+    run_attack_min_distance: float = RUN_ATTACK_REQUIRED_DISTANCE
 
     attacks: dict = None
     weapon_attacks: dict = None
