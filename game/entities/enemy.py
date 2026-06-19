@@ -1,4 +1,5 @@
 from game.settings import *
+from game.entities.character import Character
 from game.entities.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_health import EnemyHealth
@@ -23,7 +24,7 @@ from game.entities.hit_reaction import normalize_hit_reaction
 # Enemy is a small coordinator. Components own movement, combat,
 # reactions, lifecycle, state decisions, loot, animation, and rendering.
 
-class Enemy:
+class Enemy(Character):
     IDLE = EnemyState.IDLE
     WALK = EnemyState.WALK
     PATROL = EnemyState.PATROL
@@ -43,15 +44,17 @@ class Enemy:
     # outside this range, enemy ignores player
     def __init__(self, x, y, enemy_type, 
                 animation_data, anim_fps, sprite_scale=4):
+        super().__init__(
+            x=x,
+            y=y,
+            state=self.IDLE,
+            facing_right=False,
+            sprite_scale=sprite_scale,
+        )
+
         # Identity / position
-        self.x = x
-        self.y = y
         self.spawn_x = x # enemy remembers where it spawned
         self.enemy_type = enemy_type
-
-        # Core state
-        self.state = self.IDLE
-        self.facing_right = False
 
         self.lifecycle_state = EnemyLifecycleState()
 
