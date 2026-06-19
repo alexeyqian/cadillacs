@@ -142,6 +142,23 @@ class PlayerMovementTests(unittest.TestCase):
         self.assertFalse(movement.can_start_run_attack())
         self.assertEqual(movement.run_distance, 0)
 
+    def test_run_attack_cooldown_blocks_only_run_attack_eligibility(self):
+        owner = FakeOwner()
+        movement = PlayerMovement(owner.speed)
+        movement.run_attack_required_distance = owner.run_speed
+
+        movement.update_movement(owner, FakeInput(right=True, run=True))
+        self.assertTrue(movement.can_start_run_attack())
+
+        movement.start_run_attack_cooldown(frames=2)
+        self.assertFalse(movement.can_start_run_attack())
+
+        movement.update_timers()
+        self.assertFalse(movement.can_start_run_attack())
+
+        movement.update_timers()
+        self.assertTrue(movement.can_start_run_attack())
+
     def test_run_attack_records_run_distance_before_consuming_it(self):
         owner = FakeOwner()
         movement = PlayerMovement(owner.speed)

@@ -113,6 +113,11 @@ class PlayerCombatController:
                         self.combo_window_remaining = 0
                         self.combo_step = 0
 
+                if finished_attack_name == owner.RUN_ATTACK:
+                    movement = getattr(owner, "movement", None)
+                    if movement and hasattr(movement, "start_run_attack_cooldown"):
+                        movement.start_run_attack_cooldown()
+
                 air = getattr(owner, "air", None)
                 if air and air.is_landing and owner.state != owner.DEAD:
                     owner.state_machine.change_to(owner, owner.LANDING)

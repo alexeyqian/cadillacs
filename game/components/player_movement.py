@@ -2,6 +2,7 @@ from game.settings import (
     RUN_TAP_WINDOW,
     FPS,
     RUN_ATTACK_REQUIRED_DISTANCE,
+    RUN_ATTACK_COOLDOWN,
     RUN_ATTACK_MOMENTUM_FRAMES,
     RUN_ATTACK_MOMENTUM_SPEED_SCALE,
     ATTACK_3_FORWARD_NUDGE_FRAMES,
@@ -21,6 +22,8 @@ class PlayerMovement:
         self.run_distance = 0
         self.last_run_attack_distance = 0
         self.run_attack_required_distance = RUN_ATTACK_REQUIRED_DISTANCE
+        self.run_attack_cooldown_remaining = 0
+        self.run_attack_cooldown_frames = RUN_ATTACK_COOLDOWN
         self.left_pressed = False
         self.right_pressed = False
 
@@ -60,6 +63,8 @@ class PlayerMovement:
     def update_timers(self):
         if self.run_tap_remaining > 0:
             self.run_tap_remaining -= 1
+        if self.run_attack_cooldown_remaining > 0:
+            self.run_attack_cooldown_remaining -= 1
 
     # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):
@@ -130,7 +135,13 @@ class PlayerMovement:
         return (
             self.is_running
             and self.run_distance >= self.run_attack_required_distance
+            and self.run_attack_cooldown_remaining <= 0
         )
+
+    def start_run_attack_cooldown(self, frames=None):
+        if frames is None:
+            frames = self.run_attack_cooldown_frames
+        self.run_attack_cooldown_remaining = max(0, int(frames))
 
     def start_run_attack_momentum(self, owner):
         direction = self.run_direction

@@ -18,12 +18,16 @@ class FakeMovement:
         self.can_run_attack = False
         self.last_run_attack_distance = 0
         self.attack_3_nudge_started = False
+        self.run_attack_cooldown_started = False
 
     def can_start_run_attack(self):
         return self.can_run_attack
 
     def start_run_attack_momentum(self, owner):
         self.run_attack_momentum_started = True
+
+    def start_run_attack_cooldown(self):
+        self.run_attack_cooldown_started = True
 
     def start_attack_3_nudge(self, owner):
         self.attack_3_nudge_started = True
@@ -110,6 +114,10 @@ class AttackDataTests(unittest.TestCase):
             DEFAULT_PLAYER_ATTACKS["RUN_ATTACK"].total_duration,
         )
         self.assertTrue(owner.movement.run_attack_momentum_started)
+
+        self.finish_connected_attack(combat, owner)
+
+        self.assertTrue(owner.movement.run_attack_cooldown_started)
 
     def test_running_attack_has_arcade_style_timing_and_landing_recovery(self):
         attack = DEFAULT_PLAYER_ATTACKS["RUN_ATTACK"]
