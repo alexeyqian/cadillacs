@@ -3,7 +3,6 @@ from game.colors import *
 from game.effects.hit_spark import HitSpark
 from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
-from game.entities.boss_enemy import BossEnemy
 
 def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):
     if facing_right:
@@ -113,8 +112,6 @@ def handle_player_attack_collision(game_state):
             player.combat.mark_attack_hit(enemy)
             if enemy.health.hp >0 and enemy.health.max_hp >= 200:
                 heavy_hit_shake(game_state)
-            if isinstance(enemy, BossEnemy):
-                boss_hit_shake(game_state)
             enemy_rect = enemy.get_hurt_rect()
             create_hit_spark(game_state, attack_rect, enemy_rect, player.facing_right, WHITE_COLOR)
             if not player.combat.can_hit_more_targets():

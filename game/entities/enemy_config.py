@@ -47,7 +47,6 @@ class EnemyConfig:
 # Ferris   = basic pressure, fair but less passive.
 # Gneiss   = fast striker, quicker startup and shorter cooldown.
 # Elmer    = heavy bruiser, bigger reach and attack poise.
-# Ranged   = long pressure, shorter pauses between shots.
 ENEMY_CONFIGS = {
     "ferris": EnemyConfig(
         enemy_id="ferris",
@@ -103,9 +102,9 @@ ENEMY_CONFIGS = {
             active=int(ENEMY_ATTACK_ACTIVE*BLACK_ELMER_SCALER),
             recovery=int(ENEMY_ATTACK_RECOVERY*BLACK_ELMER_SCALER),
             hitbox_offset_x=200,
-            hitbox_offset_y=60,
+            hitbox_offset_y=-190,
             hitbox_w=100,
-            hitbox_h=-250,
+            hitbox_h=250,
             lane_reach=1,
         ),
         # todo: simplify it

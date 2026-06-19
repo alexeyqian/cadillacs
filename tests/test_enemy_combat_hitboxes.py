@@ -20,12 +20,6 @@ class FakeEnemy:
         self.facing_right = True
         self.state = self.ATTACK
         self.attack_timer = 0
-        self.attack_damage = 10
-        self.attack_delay = 0
-        self.attack_cooldown_duration = 30
-        self.attack_windup = 2
-        self.attack_active = 2
-        self.attack_recovery = 2
         self.attack_data = replace(
             DEFAULT_ENEMY_ATTACK_DATA,
             damage=10,

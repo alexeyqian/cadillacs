@@ -1,5 +1,4 @@
 from game.entities.attack_manager import AttackManager
-from dataclasses import replace
 
 from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 
@@ -23,15 +22,16 @@ class EnemyCombatController:
         owner.animation_controller.reset_current_animation()
 
     def start_clash_recovery(self, owner):
+        attack_data = self.get_attack_data(owner)
         owner.state = owner.RECOIL
-        self.set_action_lock_remaining(owner, owner.attack_cooldown_duration)
+        self.set_action_lock_remaining(owner, attack_data.cooldown)
         self.cancel_attack_timing(owner)
         self.reset_decision_timer(owner)
         self.clear_hit_state(owner)
         self.release_attack_slot(owner)
         self.set_cooldown(owner, max(
             self.get_cooldown(owner),
-            owner.attack_cooldown_duration
+            attack_data.cooldown
         ))
 
     # Enemy attack has explicit windup frames
@@ -48,9 +48,10 @@ class EnemyCombatController:
             and attack_rect and player_hurt_rect 
             and not self.has_attack_hit(owner)):
             lane_distance = level.get_lane_distance(owner.y, player.y)
-            if (lane_distance <= self.get_attack_data(owner).lane_reach
+            attack_data = self.get_attack_data(owner)
+            if (lane_distance <= attack_data.lane_reach
                 and  attack_rect.colliderect(player_hurt_rect)):
-                player.take_damage(owner.attack_damage)
+                player.take_damage(attack_data.damage)
                 self.mark_attack_hit(owner, player)
 
         if attack_finished:
@@ -73,7 +74,7 @@ class EnemyCombatController:
         owner.state = owner.PATROL
         self.clear_hit_state(owner)
         self.release_attack_slot(owner)
-        self.set_cooldown(owner, owner.attack_cooldown_duration)
+        self.set_cooldown(owner, self.get_attack_data(owner).cooldown)
 
     def is_attack_active(self, owner):
         if not self.attack_manager.is_attacking:
@@ -134,15 +135,7 @@ class EnemyCombatController:
         if hasattr(owner, "attack_data"):
             return owner.attack_data
 
-        return replace(
-            DEFAULT_ENEMY_ATTACK_DATA,
-            damage=owner.attack_damage,
-            delay=owner.attack_delay,
-            cooldown=owner.attack_cooldown_duration,
-            windup=owner.attack_windup,
-            active=owner.attack_active,
-            recovery=owner.attack_recovery,
-        )
+        return DEFAULT_ENEMY_ATTACK_DATA
 
     def uses_melee_attack_slot(self, owner):
         if hasattr(owner, "coordination"):

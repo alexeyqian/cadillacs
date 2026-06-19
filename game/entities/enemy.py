@@ -98,9 +98,6 @@ class Enemy:
         self.attack_lane_range = config.attack_lane_range
 
         self.combat.attack_data = config.attack
-        self.attack_damage = config.attack.damage
-        self.attack_delay = config.attack.delay
-        self.attack_cooldown_duration = config.attack.cooldown
 
         self.flinch_damage_threshold = config.flinch_damage_threshold
         self.attack_flinch_damage_threshold = (
@@ -207,8 +204,6 @@ class Enemy:
         return self.combat.is_attack_active(self)
 
     def get_attack_total_duration(self):
-        if hasattr(self, "attack_data"):
-            return self.attack_data.total_duration
         return self.combat.get_attack_data(self).total_duration
 
     def get_attack_phase_name(self):

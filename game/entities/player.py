@@ -90,8 +90,10 @@ class Player:
         self.display_name = config.display_name
         self.width = int(config.width)
         self.height = int(config.height)
+
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
+
         self.config_max_hp = config.max_hp
         self.config_lives = config.lives
         self.speed = config.speed
@@ -103,6 +105,8 @@ class Player:
         self.grab_range = config.grab_range
         self.hit_stun_duration = config.hit_stun_duration
         self.sprite_scale = config.sprite_scale
+
+        # air
         self.jump_power = config.jump_power
         self.jump_gravity = config.jump_gravity
         self.air_move_speed = config.air_move_speed

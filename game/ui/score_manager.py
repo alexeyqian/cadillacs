@@ -56,12 +56,6 @@ class ScoreManager:
         if name == "HeavyEnemy":
             return 300
 
-        if name == "RangedEnemy":
-            return 250
-
-        if name == "BossEnemy":
-            return 2000
-
         if name == "RaptorEnemy":
             return 400
 

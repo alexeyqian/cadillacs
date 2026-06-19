@@ -153,7 +153,7 @@ class EnemyStateResolver:
         return owner.attack_decision_timer
 
     def get_required_attack_delay(self, owner, player=None):
-        return owner.attack_delay
+        return owner.combat.get_attack_data(owner).delay
 
     def is_player_in_attack_recovery(self, player):
         if not player:

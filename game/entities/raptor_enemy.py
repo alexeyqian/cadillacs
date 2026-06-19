@@ -56,15 +56,8 @@ class RaptorEnemy(Enemy):
         if self.has_leaped_this_attack:
             return False
 
-        if hasattr(self, "combat"):
-            attack_windup = self.combat.get_attack_data(self).windup
-        else:
-            attack_windup = self.attack_windup
-
+        attack_windup = self.combat.get_attack_data(self).windup
         leap_frame = max(0, attack_windup - self.leap_startup_frames)
-        if hasattr(self, "combat"):
-            attack_timer = self.combat.get_attack_timer(self)
-        else:
-            attack_timer = self.attack_timer
 
+        attack_timer = self.combat.get_attack_timer(self)
         return attack_timer >= leap_frame

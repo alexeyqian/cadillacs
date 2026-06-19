@@ -1,8 +1,8 @@
 class PlayerHealth:
     def __init__(self, max_hp, lives, hit_stun_duration):
+        self.lives = lives
         self.max_hp = max_hp
         self.hp = max_hp
-        self.lives = lives
         self.hit_stun_duration = hit_stun_duration
         self.hit_stun_remaining = 0
         self.respawn_remaining = 0
