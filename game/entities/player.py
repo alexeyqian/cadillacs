@@ -1,4 +1,5 @@
 from game.settings import *
+from game.entities.character import Character
 from game.entities.player_config import get_player_config
 from game.entities.player_geometry import PlayerGeometry
 from game.entities.player_health import PlayerHealth
@@ -16,7 +17,7 @@ from game.entities.player_state_machine import PlayerStateMachine
 from game.entities.player_input_state import PlayerInputState
 from game.entities.player_air_state import PlayerAirState
 
-class Player:
+class Player(Character):
     IDLE = "IDLE"
     WALK = "WALK"
     RUN="RUN"
@@ -38,12 +39,8 @@ class Player:
     THROW = "THROW"
 
     def __init__(self, player_type, animation_data, anim_fps):
+        super().__init__(x=300, y=500, state=self.IDLE, facing_right=True)
         self.player_type = player_type
-
-        self.x = 300
-        self.y = 500
-        self.facing_right = True
-        self.state = self.IDLE
 
         self.load_player_config(
             get_player_config(player_type),

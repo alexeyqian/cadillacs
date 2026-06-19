@@ -21,3 +21,15 @@ Build easy-to-understand Cadillacs and Dinosaurs style beat'em up using:
 
 The codebase should easy to understand and easy to maintain. 
 You can do refactoring if needed, including: rename variables, rename functions, move functions into different files. Prefer to write code in the way easy to write test in future.
+
+
+Combat should use hitboxes, hurtboxes, timing, and attack data rather than hardcoded distance checks.
+Recommended flow:
+Controller requests attack
+Character enters attack state
+Animation/attack timing advances
+Attack active frames expose hitbox
+Combat system checks hitbox vs hurtbox
+Target receives damage/reaction
+Attack remembers already-hit targets
+Character enters recovery or next combo state
