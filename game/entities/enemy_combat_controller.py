@@ -1,6 +1,7 @@
 from game.entities.attack_manager import AttackManager
 
 from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA
+from game.entities.hit_reaction import HitReaction
 
 
 class EnemyCombatController:
@@ -51,7 +52,7 @@ class EnemyCombatController:
             attack_data = self.get_attack_data(owner)
             if (lane_distance <= attack_data.lane_reach
                 and  attack_rect.colliderect(player_hurt_rect)):
-                player.take_damage(attack_data.damage)
+                self.damage_player(player, attack_data)
                 self.mark_attack_hit(owner, player)
 
         if attack_finished:
@@ -136,6 +137,19 @@ class EnemyCombatController:
             return owner.attack_data
 
         return DEFAULT_ENEMY_ATTACK_DATA
+
+    def damage_player(self, player, attack_data):
+        reaction = HitReaction(
+            stun_frames=attack_data.hit_stun_duration,
+            knockback_velocity=attack_data.knockback_velocity,
+        )
+
+        try:
+            player.take_damage(attack_data.damage, reaction=reaction)
+        except TypeError:
+            # Lightweight tests and older player-like objects may still expose
+            # the damage-only API while production Player accepts HitReaction.
+            player.take_damage(attack_data.damage)
 
     def uses_melee_attack_slot(self, owner):
         if hasattr(owner, "coordination"):

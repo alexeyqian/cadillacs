@@ -144,8 +144,13 @@ class Player(Character):
         return self.attacks.get(attack_name)
 
     # Lifecycle / damage
-    def take_damage(self, damage, hit_stun_bonus=0):
-        self.lifecycle.take_damage(self, damage, hit_stun_bonus)
+    def take_damage(self, damage, reaction=None, hit_stun_bonus=0):
+        self.lifecycle.take_damage(
+            self,
+            damage,
+            reaction=reaction,
+            hit_stun_bonus=hit_stun_bonus,
+        )
 
     # Geometry
     def get_left(self):

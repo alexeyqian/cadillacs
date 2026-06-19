@@ -122,6 +122,16 @@ class FakePlayer:
         self.damage_taken += damage
 
 
+class ReactionPlayer:
+    def __init__(self):
+        self.damage_taken = 0
+        self.reaction_taken = None
+
+    def take_damage(self, damage, reaction=None):
+        self.damage_taken += damage
+        self.reaction_taken = reaction
+
+
 class FakePlayerCombat:
     def __init__(self, phase_name):
         self.phase_name = phase_name
@@ -174,6 +184,21 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
         controller.update_attack(enemy, level, player)
         self.assertEqual(player.damage_taken, enemy.attack_data.damage)
+
+    def test_enemy_attack_sends_shared_hit_reaction_to_player(self):
+        attack_data = replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
+            damage=12,
+            hit_stun_duration=18,
+            knockback_velocity=7,
+        )
+        player = ReactionPlayer()
+
+        EnemyCombatController().damage_player(player, attack_data)
+
+        self.assertEqual(player.damage_taken, 12)
+        self.assertEqual(player.reaction_taken.stun_frames, 18)
+        self.assertEqual(player.reaction_taken.knockback_velocity, 7)
 
     def test_enemy_attack_uses_shared_attack_manager_timer(self):
         enemy = FakeEnemy()
