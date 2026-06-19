@@ -168,6 +168,9 @@ class Enemy(Character, EnemyState):
     def take_grab_knee_damage(self, damage):
         self.reaction_controller.take_grab_knee_damage(self, damage)
 
+    def face_player(self, player):
+        self.movement.face_player(self, player)
+
     # Combat
     def start_attack(self):
         self.combat_controller.start_attack(self)

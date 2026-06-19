@@ -2,6 +2,7 @@ import unittest
 from dataclasses import replace
 
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
+from game.combat.damage_request import DamageRequest
 from game.data.enemy_config import get_enemy_config
 from game.entities.enemy import Enemy
 from game.controllers.enemy_combat_controller import EnemyCombatController
@@ -123,8 +124,8 @@ class FakePlayer:
     def get_hurt_rect(self):
         return AlwaysCollidingRect()
 
-    def take_damage(self, damage):
-        self.damage_taken += damage
+    def take_damage(self, request):
+        self.damage_taken += request.damage
 
 
 class ReactionPlayer:
@@ -132,9 +133,9 @@ class ReactionPlayer:
         self.damage_taken = 0
         self.reaction_taken = None
 
-    def take_damage(self, damage, reaction=None):
-        self.damage_taken += damage
-        self.reaction_taken = reaction
+    def take_damage(self, request):
+        self.damage_taken += request.damage
+        self.reaction_taken = request.reaction
 
 
 class FakePlayerCombat:
@@ -242,7 +243,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.life_cycle.action_lock_remaining, enemy.attack_data.cooldown)
         self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
         self.assertEqual(enemy.state_controller.decision_timer, 0)
-        self.assertFalse(enemy.combat_controller.already_hit)
+        self.assertFalse(enemy.combat_controller.attack_manager.has_connected)
         self.assertFalse(enemy.combat_controller.has_attack_slot)
         self.assertEqual(enemy.combat_controller.cooldown_remaining, enemy.attack_data.cooldown)
 

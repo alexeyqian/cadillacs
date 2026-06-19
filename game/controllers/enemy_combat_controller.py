@@ -9,7 +9,6 @@ class EnemyCombatController:
     def __init__(self, attack_data=None):
         self.attack_manager = AttackManager()
         self.attack_data = attack_data
-        self.already_hit = False
         self.cooldown_remaining = 0
         self.has_attack_slot = False
         self.attack_range = ENEMY_ATTACK_RANGE
@@ -18,7 +17,6 @@ class EnemyCombatController:
 
     def start_attack(self, owner):
         owner.state = owner.ATTACK
-        self.already_hit = False
         self.has_attack_slot = self.uses_melee_attack_slot(owner)
         owner.state_controller.reset_decision_timer()
         self.attack_manager.start(owner.ATTACK, self.get_attack_data(owner))
@@ -31,7 +29,6 @@ class EnemyCombatController:
         owner.life_cycle.set_action_lock(attack_data.cooldown)
         self.attack_manager.cancel()
         owner.state_controller.reset_decision_timer()
-        self.already_hit = False
         self.has_attack_slot = False
         self.cooldown_remaining = max(self.cooldown_remaining, attack_data.cooldown)
 
@@ -47,14 +44,13 @@ class EnemyCombatController:
 
         if (self.attack_manager.is_active()
             and attack_rect and player_hurt_rect
-            and not self.already_hit):
+            and not self.attack_manager.has_connected):
             lane_distance = level.get_lane_distance(owner.y, player.y)
             attack_data = self.get_attack_data(owner)
             if (lane_distance <= attack_data.lane_reach
                 and attack_rect.colliderect(player_hurt_rect)):
                 self.damage_player(player, attack_data)
-                self.attack_manager.mark_target_hit(player)
-                self.already_hit = True
+                self.mark_attack_hit(owner, player)
 
         if attack_finished:
             self.finish_attack(owner)
@@ -71,7 +67,6 @@ class EnemyCombatController:
     def finish_attack(self, owner):
         self.attack_manager.cancel()
         owner.state = owner.PATROL
-        self.already_hit = False
         self.has_attack_slot = False
         self.cooldown_remaining = self.get_attack_data(owner).cooldown
 
@@ -85,7 +80,6 @@ class EnemyCombatController:
 
     def mark_attack_hit(self, owner, target):
         self.attack_manager.mark_target_hit(target)
-        self.already_hit = True
 
     def get_attack_timer(self, owner):
         return self.attack_manager.elapsed_frames
@@ -102,17 +96,7 @@ class EnemyCombatController:
         return DEFAULT_ENEMY_ATTACK_DATA
 
     def damage_player(self, player, attack_data):
-        request = DamageRequest.from_attack_data(attack_data)
-
-        try:
-            player.take_damage(request)
-        except TypeError:
-            # Lightweight tests and older player-like objects may still expose
-            # the damage-only API while production Player accepts HitReaction.
-            try:
-                player.take_damage(request.damage, reaction=request.reaction)
-            except TypeError:
-                player.take_damage(request.damage)
+        player.take_damage(DamageRequest.from_attack_data(attack_data))
 
     def uses_melee_attack_slot(self, owner):
         return True
