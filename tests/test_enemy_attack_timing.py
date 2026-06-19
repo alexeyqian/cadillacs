@@ -178,16 +178,17 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
     def test_enemy_attack_damages_only_during_active_frames(self):
         enemy = FakeEnemy()
-        enemy.state = enemy.ATTACK
         player = FakePlayer()
-        controller = EnemyCombatController()
         level = SameLaneLevel()
 
-        controller.update_attack(enemy, level, player)
-        controller.update_attack(enemy, level, player)
+        enemy.start_attack()
+        # windup = 3: frames 1 and 2 are still windup, no damage
+        enemy.combat_controller.update_attack(enemy, level, player)
+        enemy.combat_controller.update_attack(enemy, level, player)
         self.assertEqual(player.damage_taken, 0)
 
-        controller.update_attack(enemy, level, player)
+        # frame 3 enters active window — damage lands
+        enemy.combat_controller.update_attack(enemy, level, player)
         self.assertEqual(player.damage_taken, enemy.attack_data.damage)
 
     def test_enemy_attack_sends_shared_hit_reaction_to_player(self):
@@ -243,7 +244,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.state_controller.decision_timer, 0)
         self.assertFalse(enemy.combat_controller.already_hit)
         self.assertFalse(enemy.combat_controller.has_attack_slot)
-        self.assertEqual(enemy.combat_controller.cooldown, enemy.attack_data.cooldown)
+        self.assertEqual(enemy.combat_controller.cooldown_remaining, enemy.attack_data.cooldown)
 
     def test_knockdown_cancels_enemy_attack_manager(self):
         enemy = FakeEnemy()

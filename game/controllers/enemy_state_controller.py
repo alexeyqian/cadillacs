@@ -172,7 +172,7 @@ class EnemyStateController:
     def get_attack_cooldown(self, owner):
         combat = self.get_combat(owner)
         if combat:
-            return combat.cooldown
+            return combat.cooldown_remaining
         return owner.attack_cooldown
 
     def has_attack_slot(self, owner):
