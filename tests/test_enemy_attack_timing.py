@@ -65,13 +65,11 @@ class FakeEnemy:
         self.attack_active = 2
         self.attack_recovery = 2
         self.attack_damage = 10
-        self.attack_lane_reach = 0
         self.attack_range = 40
         self.attack_lane_range = 20
         self.attack_cooldown_duration = 30
         self.action_lock_remaining = 0
         self.health = FakeHealth()
-        self.hit_stun_duration = 15
         self.hit_stun_remaining = 0
         self.flinch_damage_threshold = 0
         self.attack_flinch_damage_threshold = 0

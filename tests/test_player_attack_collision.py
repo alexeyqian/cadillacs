@@ -92,7 +92,6 @@ class FakeEnemy:
         self.x = 120
         self.y = 100
         self.state = "IDLE"
-        self.attack_lane_reach = 0
         self.health = FakeHealth()
         self.damage_taken = 0
         self.knockback_velocity_taken = None

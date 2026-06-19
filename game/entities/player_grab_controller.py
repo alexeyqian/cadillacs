@@ -92,7 +92,9 @@ class PlayerGrabController:
         if not owner.facing_right:
             direction = -1
 
-        self.grabbed_enemy.thrown_by_player(direction)
+        throw_attack = owner.get_attack_data(owner.THROW)
+        throw_damage = throw_attack.damage
+        self.grabbed_enemy.thrown_by_player(direction, throw_damage)
         self.grabbed_enemy = None
 
         self.throw_remaining = self.throw_duration

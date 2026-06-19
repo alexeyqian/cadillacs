@@ -59,7 +59,7 @@ class EnemyReactionController:
             self.reset_attack_decision(owner)
             stun_frames = reaction.stun_frames
             if stun_frames is None:
-                stun_frames = owner.hit_stun_duration
+                stun_frames = owner.combat.get_attack_data(owner).hit_stun_duration
             self.set_hit_stun_remaining(owner, stun_frames)
             owner.state = owner.HIT
             # So if an enemy is interrupted, it releases the slot.
@@ -118,7 +118,7 @@ class EnemyReactionController:
         self.cancel_attack(owner)
         self.release_attack_slot(owner)
 
-    def thrown_by_player(self, owner, direction):
+    def thrown_by_player(self, owner, direction, damage):
         if owner.state == owner.DEAD:
             return
 
@@ -127,10 +127,11 @@ class EnemyReactionController:
         owner.facing_right = direction > 0
         self.set_thrown_velocity_x(owner, 14 * direction)
         self.set_thrown_remaining(owner, 30)
+        self.set_throw_damage(owner, damage)
         self.get_thrown_hit_targets(owner).clear()
         self.cancel_attack(owner)
         self.release_attack_slot(owner)
-        self.take_thrown_damage(owner, owner.thrown_damage)
+        self.take_throw_damage(owner, damage)
 
     def take_grab_knee_damage(self, owner, damage):
         if owner.state == owner.DEAD:
@@ -147,7 +148,7 @@ class EnemyReactionController:
         self.release_attack_slot(owner)
         owner.state = owner.GRABBED
 
-    def take_thrown_damage(self, owner, damage):
+    def take_throw_damage(self, owner, damage):
         if owner.state == owner.DEAD:
             return
         self.reset_attack_decision(owner)
@@ -239,6 +240,17 @@ class EnemyReactionController:
             state.thrown_remaining = value
         else:
             owner.thrown_remaining = value
+
+    def get_throw_damage(self, owner):
+        state = self.get_lifecycle_state(owner)
+        return state.throw_damage if state else getattr(owner, "throw_damage", 0)
+
+    def set_throw_damage(self, owner, value):
+        state = self.get_lifecycle_state(owner)
+        if state:
+            state.throw_damage = value
+        else:
+            owner.throw_damage = value
 
     def get_thrown_hit_targets(self, owner):
         state = self.get_lifecycle_state(owner)

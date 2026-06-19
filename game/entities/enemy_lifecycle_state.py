@@ -14,6 +14,7 @@ class EnemyLifecycleState:
         # grab/throw
         self.thrown_velocity_x = 0
         self.thrown_remaining = 0
+        self.throw_damage = 0
         self.thrown_hit_targets = set()
 
         #knockdown/getup

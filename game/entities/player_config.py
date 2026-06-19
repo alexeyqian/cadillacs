@@ -93,6 +93,20 @@ DEFAULT_PLAYER_ATTACKS = {
         hitbox_w=60,
         hitbox_h=60,
     ),
+    "THROW": replace(
+        DEFAULT_PLAYER_ATTACK_DATA,
+        damage=THROWN_DAMAGE,
+        windup=0,
+        active=1,
+        recovery=0,
+        cooldown=0,
+        hitbox_w=0,
+        hitbox_h=0,
+        hit_stun_duration=0,
+        knockback_velocity=0,
+        lane_reach=0,
+        combo_window=0,
+    ),
 }
 
 DEFAULT_WEAPON_PLAYER_ATTACKS = {

@@ -27,13 +27,6 @@ class EnemyConfig:
     attack_range:int = ENEMY_ATTACK_RANGE
     attack_lane_range:int = ENEMY_ATTACK_LANE_RANGE
 
-    # Normal melee enemies must be in the same lane to start attack
-    # Boss/ranged can keep wider behavior for now
-    # 0 = same lane only
-    # 1 = same or adjacent lane
-    # todo: remove, already in attack data
-    attack_lane_reach: int = 0
-    hit_stun_duration: int = 15 # for self or for player
     attack: AttackData = DEFAULT_ENEMY_ATTACK_DATA
     score_points: int = ENEMY_SCORE_POINTS
     sprite_scale: int  = 4
@@ -50,9 +43,6 @@ class EnemyConfig:
     # it should be field of EnemyCombatController
     max_melee_attackers:int = 2 # move to stage config?
     melee_attack_slot_limit: Optional[int] = None
-    # todo:should not be here
-    thrown_damage:int = THROWN_DAMAGE
-
 # Each enemy archetype has a readable combat rhythm:
 # Ferris   = basic pressure, fair but less passive.
 # Gneiss   = fast striker, quicker startup and shorter cooldown.
@@ -104,7 +94,6 @@ ENEMY_CONFIGS = {
 
         attack_range=int(ENEMY_ATTACK_RANGE * BLACK_ELMER_SCALER),
         attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * BLACK_ELMER_SCALER),
-        attack_lane_reach=1,
         attack=replace(
             DEFAULT_ENEMY_ATTACK_DATA,
             damage=ENEMY_ATTACK_DAMAGE * BLACK_ELMER_SCALER,
@@ -117,6 +106,7 @@ ENEMY_CONFIGS = {
             hitbox_offset_y=60,
             hitbox_w=100,
             hitbox_h=-250,
+            lane_reach=1,
         ),
         # todo: simplify it
         # So Black Elmer only flinches from the heavy punch
@@ -144,7 +134,6 @@ ENEMY_CONFIGS = {
         speed=int(ENEMY_SPEED * 0.7),
         attack_range=int(ENEMY_ATTACK_RANGE * WALTHER_SCALER),
         attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * WALTHER_SCALER),
-        attack_lane_reach=1,
         attack=replace(
             DEFAULT_ENEMY_ATTACK_DATA,
             damage=ENEMY_ATTACK_DAMAGE * WALTHER_SCALER,
@@ -157,6 +146,7 @@ ENEMY_CONFIGS = {
             hitbox_offset_y=-350,
             hitbox_w=180,
             hitbox_h=200,
+            lane_reach=1,
         ),
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.

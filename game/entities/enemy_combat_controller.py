@@ -48,7 +48,7 @@ class EnemyCombatController:
             and attack_rect and player_hurt_rect 
             and not self.has_attack_hit(owner)):
             lane_distance = level.get_lane_distance(owner.y, player.y)
-            if (lane_distance <= owner.attack_lane_reach 
+            if (lane_distance <= self.get_attack_data(owner).lane_reach
                 and  attack_rect.colliderect(player_hurt_rect)):
                 player.take_damage(owner.attack_damage)
                 self.mark_attack_hit(owner, player)

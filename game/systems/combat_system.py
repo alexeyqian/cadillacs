@@ -76,7 +76,10 @@ def handle_player_attack_collision(game_state):
         enemy_attack_rect = enemy.get_attack_rect()
         if enemy.state == enemy.ATTACK and enemy_attack_rect:
             lane_distance = game_state.level.get_lane_distance(player.y, enemy.y)
-            clash_lane_reach = max(player_attack_lane_reach, enemy.attack_lane_reach)
+            clash_lane_reach = max(
+                player_attack_lane_reach,
+                enemy.combat.get_attack_data(enemy).lane_reach,
+            )
             if (lane_distance <= clash_lane_reach
                 and enemy.is_attack_active()
                 and attack_rect.colliderect(enemy_attack_rect)):
@@ -223,7 +226,11 @@ def handle_player_thrown_enemy_collision(game_state):
 
             enemy_hurt_rect = enemy.get_hurt_rect()
             if thrown_rect.colliderect(enemy_hurt_rect):
-                damage = enemy.thrown_damage
+                damage = (
+                    thrown_enemy.lifecycle_state.throw_damage
+                    if hasattr(thrown_enemy, "lifecycle_state")
+                    else getattr(thrown_enemy, "throw_damage", 0)
+                )
                 damage_enemy(enemy, damage, thrown_enemy.x)
                 enemy_rect = get_enemy_frame_rect(enemy)
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,150,0)))

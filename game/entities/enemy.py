@@ -58,8 +58,6 @@ class Enemy:
         # Movement
         self.patrol_direction = 1
 
-        self.hit_stun_duration = 15
-
         # Rendering / collision / loot
         self.geometry = EnemyGeometry()
         self.loot_generated = False
@@ -98,22 +96,18 @@ class Enemy:
 
         self.attack_range = config.attack_range
         self.attack_lane_range = config.attack_lane_range
-        self.attack_lane_reach = config.attack_lane_reach
 
         self.combat.attack_data = config.attack
         self.attack_damage = config.attack.damage
         self.attack_delay = config.attack.delay
         self.attack_cooldown_duration = config.attack.cooldown
 
-        self.hit_stun_duration = config.hit_stun_duration
         self.flinch_damage_threshold = config.flinch_damage_threshold
         self.attack_flinch_damage_threshold = (
             config.attack_flinch_damage_threshold
             if config.attack_flinch_damage_threshold is not None
             else config.flinch_damage_threshold
         )
-        self.thrown_damage = config.thrown_damage
-
         self.melee_attack_slot_limit = getattr(config, "melee_attack_slot_limit", None)
         self.score_points = config.score_points
         self.sprite_scale = config.sprite_scale
@@ -169,8 +163,8 @@ class Enemy:
     def grabbed_by_player(self):
         self.reactions.grabbed_by_player(self)
 
-    def thrown_by_player(self, direction):
-        self.reactions.thrown_by_player(self, direction)
+    def thrown_by_player(self, direction, damage):
+        self.reactions.thrown_by_player(self, direction, damage)
 
     def take_grab_knee_damage(self, damage):
         self.reactions.take_grab_knee_damage(self, damage)

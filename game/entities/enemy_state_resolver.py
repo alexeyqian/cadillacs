@@ -38,7 +38,7 @@ class EnemyStateResolver:
         if distance_x > owner.attack_range:
             return False
         lane_distance = level.get_lane_distance(owner.y, player.y)
-        if lane_distance > owner.attack_lane_reach:
+        if lane_distance > owner.combat.get_attack_data(owner).lane_reach:
             return False
         if self.can_bypass_attack_slot_limit(owner):
             return True
