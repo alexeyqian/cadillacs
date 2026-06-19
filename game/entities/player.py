@@ -104,9 +104,6 @@ class Player(Character, PlayerState):
     def reset_for_stage_start(self, x, y):
         self.lifecycle_controller.reset_for_stage_start(self, x, y)
 
-    # update() works in world coordinates
-    # draw() translates to screen coordinates using camera_x
-    # Update flow
     def update(self, player_input):
         if self.state == self.DEAD:
             self.lifecycle_controller.update_dead_state(self)

@@ -14,7 +14,6 @@ from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
 from game.controllers.enemy_state_controller import EnemyStateController
 from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.damage_request import DamageRequest
-from game.combat.hit_reaction import normalize_hit_reaction
 
 class Enemy(Character, EnemyState):
     def __init__(self, x, y, enemy_type, 
@@ -35,7 +34,6 @@ class Enemy(Character, EnemyState):
 
     def configure_spawn_state(self, x, enemy_type):
         self.enemy_type = enemy_type
-        self.loot_generated = False
 
     def build_components(self):
         self.life_cycle = EnemyLifeCycle()
@@ -122,6 +120,9 @@ class Enemy(Character, EnemyState):
         self.state_controller.choose_state(
             self, level, player, distance_x, distance_y, enemies
         )
+        # During ATTACK animation advances first so the active hitbox frame is set
+        # before state logic checks for collision; all other states update state first
+        # so animation reacts to the new state in the same frame.
         if self.state == self.ATTACK:
             self.update_animation()
             self.state_controller.execute_state(self, level, player, enemies, dx, dy)
@@ -149,16 +150,13 @@ class Enemy(Character, EnemyState):
         if attacker_x is None:
             attacker_x = self.x
 
-        reaction = normalize_hit_reaction(
-            reaction,
-            hit_stun_duration,
-            knockback_velocity,
-        )
         self.reaction_controller.take_damage(
             self,
             damage,
             attacker_x,
-            reaction,
+            reaction=reaction,
+            hit_stun_duration=hit_stun_duration,
+            knockback_velocity=knockback_velocity,
         )
 
     def grabbed_by_player(self):
@@ -191,14 +189,10 @@ class Enemy(Character, EnemyState):
         return self.combat_controller.get_attack_data(self).total_duration
 
     def get_attack_phase_name(self):
-        if self.state != self.ATTACK:
-            return ""
-        return self.combat_controller.attack_manager.get_phase_name()
+        return self.combat_controller.get_attack_phase_name(self)
 
     def get_attack_timing_label(self):
-        if self.state != self.ATTACK:
-            return ""
-        return self.combat_controller.attack_manager.get_timing_label()
+        return self.combat_controller.get_attack_timing_label(self)
 
     # Rendering / animation / geometry
     def get_current_frame_data(self):

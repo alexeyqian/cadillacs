@@ -16,7 +16,7 @@ class FakeReactions:
     def __init__(self):
         self.calls = []
 
-    def take_damage(self, owner, damage, attacker_x, reaction):
+    def take_damage(self, owner, damage, attacker_x, reaction=None, hit_stun_duration=None, knockback_velocity=None):
         self.calls.append((owner, damage, attacker_x, reaction))
 
 

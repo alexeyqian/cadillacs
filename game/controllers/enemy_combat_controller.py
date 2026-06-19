@@ -157,6 +157,16 @@ class EnemyCombatController:
     def set_action_lock_remaining(self, owner, value):
         owner.life_cycle.set_action_lock(value)
 
+    def get_attack_phase_name(self, owner):
+        if owner.state != owner.ATTACK:
+            return ""
+        return self.attack_manager.get_phase_name()
+
+    def get_attack_timing_label(self, owner):
+        if owner.state != owner.ATTACK:
+            return ""
+        return self.attack_manager.get_timing_label()
+
     def update_timers(self):
         if self.cooldown > 0:
             self.cooldown -= 1

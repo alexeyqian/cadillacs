@@ -7,6 +7,9 @@ from game.entities.loot import Loot
 # weapon enemy: chance to drop weapon
 # boss enemy: guaranteed reward
 class EnemyLootController:
+    def __init__(self):
+        self.loot_generated = False
+
     def create_loot(self, owner):
         roll = random.randint(1, 100)
         # todo: design a loot drop system

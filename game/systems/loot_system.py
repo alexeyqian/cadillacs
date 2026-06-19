@@ -9,7 +9,7 @@ def create_enemy_loot(game_state):
     for enemy in enemies:
         if enemy.health.hp > 0:
             continue
-        if enemy.loot_generated:
+        if enemy.loot_controller.loot_generated:
             continue
         loot = enemy.create_loot()
         if loot:
@@ -20,7 +20,7 @@ def create_enemy_loot(game_state):
         game_state.score_manager.add_score(points)
         floating_text = FloatingText(enemy.x, enemy.y - 20, f"+{points}", (255, 255, 0))
         game_state.floating_texts.append(floating_text)
-        enemy.loot_generated = True
+        enemy.loot_controller.loot_generated = True
 
 # create loots when breakable objects destroyed
 # before destroyed objects are removed.
