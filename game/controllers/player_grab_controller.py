@@ -40,8 +40,8 @@ class PlayerGrabController:
         if not self.grabbed_enemy:
             return
 
-        grabbed_width = self.grabbed_enemy.collision_box_w
-        grab_offset = (owner.collision_box_w + grabbed_width) / 2 + 5
+        grabbed_width = self.grabbed_enemy.geometry.collision_box_w
+        grab_offset = (owner.geometry.collision_box_w + grabbed_width) / 2 + 5
 
         if owner.facing_right:
             self.grabbed_enemy.x = owner.x + grab_offset

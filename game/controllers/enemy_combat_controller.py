@@ -152,9 +152,7 @@ class EnemyCombatController:
                 player.take_damage(request.damage)
 
     def uses_melee_attack_slot(self, owner):
-        if hasattr(owner, "coordination"):
-            return owner.coordination.uses_melee_attack_slot(owner)
-        return owner.uses_melee_attack_slot()
+        return True
 
     def set_action_lock_remaining(self, owner, value):
         if hasattr(owner, "lifecycle_state"):

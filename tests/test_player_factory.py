@@ -67,6 +67,8 @@ def test_player_factory_builds_default_player_runtime_groups(monkeypatch):
     assert player.weapon_slot is not None
     assert player.events is not None
     assert player.geometry is not None
+    assert player.geometry.collision_box_w == get_player_config(DEFAULT_PLAYER_TYPE).collision_box_w
+    assert player.geometry.hurt_box_w == get_player_config(DEFAULT_PLAYER_TYPE).hurt_box_w
 
     # Controllers
     assert player.combat_controller is not None

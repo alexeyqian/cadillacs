@@ -69,13 +69,14 @@ def test_enemy_factory_builds_default_enemy_runtime_groups(monkeypatch):
     # Capabilities
     assert enemy.health is not None
     assert enemy.geometry is not None
+    assert enemy.geometry.collision_box_w == get_enemy_config(DEFAULT_ENEMY_TYPE).collision_box_w
+    assert enemy.geometry.hurt_box_w == get_enemy_config(DEFAULT_ENEMY_TYPE).hurt_box_w
     assert enemy.movement is not None
     assert enemy.movement.spawn_x == 100
     assert enemy.movement.speed == get_enemy_config(DEFAULT_ENEMY_TYPE).speed
     assert enemy.movement.patrol_distance == get_enemy_config(DEFAULT_ENEMY_TYPE).patrol_distance
     assert enemy.movement.detect_range == get_enemy_config(DEFAULT_ENEMY_TYPE).detect_range
     assert enemy.flanking is not None
-    assert enemy.coordination is not None
 
     # Controllers
     assert enemy.combat_controller is not None

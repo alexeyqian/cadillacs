@@ -187,16 +187,12 @@ class EnemyStateController:
         return owner.has_attack_slot
 
     def uses_melee_attack_slot(self, owner):
-        if hasattr(owner, "coordination"):
-            return owner.coordination.uses_melee_attack_slot(owner)
-        return owner.uses_melee_attack_slot()
+        return True
 
     def can_bypass_attack_slot_limit(self, owner):
-        if hasattr(owner, "coordination"):
-            return owner.coordination.can_bypass_attack_slot_limit(owner)
-        return owner.can_bypass_attack_slot_limit()
+        return False
 
     def get_side_of_player(self, owner, player):
-        if hasattr(owner, "coordination"):
-            return owner.coordination.get_side_of_player(owner, player)
-        return owner.get_side_of_player(player)
+        if owner.x < player.x:
+            return "left"
+        return "right"

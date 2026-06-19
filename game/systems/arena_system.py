@@ -27,7 +27,7 @@ def apply_arena_bounds(game_state):
 
 def clamp_entity(entity, arena_left, arena_right, use_collision_width=False):
     if use_collision_width:
-        width = entity.collision_box_w
+        width = entity.geometry.collision_box_w
     else:
         width = entity.width
     half_w = width // 2

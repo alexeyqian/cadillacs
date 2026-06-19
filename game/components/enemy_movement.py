@@ -110,6 +110,6 @@ class EnemyMovement:
             world_width,
             lane_top,
             lane_bottom,
-            half_width=owner.collision_box_w // 2,
+            half_width=owner.geometry.collision_box_w // 2,
             owner_name="Enemy",
         )
