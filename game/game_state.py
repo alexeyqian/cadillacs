@@ -1,4 +1,4 @@
-from game.ui.announcement_manager import AnnouncementManager
+from game.managers.announcement_manager import AnnouncementManager
 class GameState:
     def __init__(
         self,

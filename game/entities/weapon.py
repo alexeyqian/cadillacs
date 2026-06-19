@@ -1,6 +1,6 @@
 import pygame
 from game.settings import *
-from game.assets.asset_manager import AssetManager
+from game.managers.asset_manager import AssetManager
 
 KNIFE_IMAGE_FILE = "game/assets/weapon/knife.png"
 

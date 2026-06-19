@@ -1,6 +1,6 @@
 import pygame
 from game.colors import *
-from game.assets.asset_manager import AssetManager
+from game.managers.asset_manager import AssetManager
 
 LOOT_IMAGE_FILES = {
     "health": "game/assets/loot/health.png",

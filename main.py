@@ -13,8 +13,8 @@ from game.game_state import GameState
 from game.systems.continue_system import *
 from game.systems.gameplay_system import *
 from game.systems.player_input_system import *
-from game.ui.score_manager import ScoreManager
-from game.ui.stage_clear_manager import StageClearManager
+from game.managers.score_manager import ScoreManager
+from game.managers.stage_clear_manager import StageClearManager
 from game.level.stage_manager import StageManager
 from game.level.stage_config import EPISODE_1_STAGES
 from main_draw import *

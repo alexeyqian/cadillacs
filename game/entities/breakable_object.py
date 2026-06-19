@@ -1,6 +1,6 @@
 import random
 import pygame
-from game.assets.asset_manager import AssetManager
+from game.managers.asset_manager import AssetManager
 from game.entities.loot import Loot
 
 class BreakableObject:

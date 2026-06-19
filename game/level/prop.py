@@ -1,5 +1,5 @@
 import pygame
-from game.assets.asset_manager import AssetManager
+from game.managers.asset_manager import AssetManager
 
 class Prop:
     def __init__(self,x,y,image_file,layer="back",scale=1.0):

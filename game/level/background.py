@@ -1,5 +1,5 @@
 import pygame
-from game.assets.asset_manager import AssetManager
+from game.managers.asset_manager import AssetManager
 
 class Background:
     def __init__(self,far_file, mid_file = None, front_file = None):
