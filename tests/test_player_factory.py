@@ -48,7 +48,7 @@ def test_player_config_uses_default_fallback():
 
 def test_player_factory_builds_default_player_runtime_groups(monkeypatch):
     monkeypatch.setattr(
-        "game.controllers.player_animation_controller.load_frame_animation",
+        "game.controllers.frame_animation_controller.load_frame_animation",
         fake_frame_animation,
     )
 

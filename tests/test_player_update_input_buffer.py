@@ -24,6 +24,7 @@ class FakeMovement:
         self.is_running = False
         self.is_jumping = False
         self.jump_pressed = False
+        self.last_run_attack_distance = 0
 
     def update_timers(self):
         pass
@@ -101,6 +102,7 @@ def make_player_like():
     player.input_buffer = InputBuffer()
     player.input_state = PlayerInputState()
     player.movement = FakeMovement()
+    player.air = None
     player.combat_controller = PlayerCombatController()
     player.combat_controller.attacks = DEFAULT_PLAYER_ATTACKS
     player.combat_controller.weapon_attacks = {}

@@ -38,8 +38,16 @@ class FakeFrame:
 
 
 class FakeAnimationController:
+    def get_current_frame_data(self):
+        return FakeFrame()
+
     def get_image(self):
         return pygame.Surface((2, 2), pygame.SRCALPHA)
+
+
+class FakeCombatController:
+    def get_attack_timing_label(self, owner):
+        return ""
 
 
 class FakeFlanking:
@@ -54,17 +62,12 @@ class EnemyDebugOwner:
     facing_right = True
     sprite_scale = 1
     animation_controller = FakeAnimationController()
+    combat_controller = FakeCombatController()
     health = type("Health", (), {"hp": 1, "max_hp": 1})()
     flanking = FakeFlanking()
 
-    def get_current_frame_data(self):
-        return FakeFrame()
-
     def get_frame_rect(self):
         return pygame.Rect(20, 30, 2, 2)
-
-    def get_attack_timing_label(self):
-        return ""
 
 
 def test_debug_renderer_draws_combat_boxes_to_surface():

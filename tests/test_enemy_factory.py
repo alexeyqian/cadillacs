@@ -56,7 +56,7 @@ def test_enemy_config_has_raptor_data_and_default_fallback():
 
 def test_enemy_factory_builds_default_enemy_runtime_groups(monkeypatch):
     monkeypatch.setattr(
-        "game.controllers.enemy_animation_controller.load_frame_animation",
+        "game.controllers.frame_animation_controller.load_frame_animation",
         fake_frame_animation,
     )
 
