@@ -4,11 +4,13 @@ from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYE
 from game.settings import PLAYER_HURTBOX_H, PLAYER_HURTBOX_OFFSET_X, PLAYER_HURTBOX_OFFSET_Y, PLAYER_HURTBOX_W
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.components.character_geometry import CharacterGeometry
+from game.input.player_input_state import PlayerInputState
 
 
 class FakeMovement:
     is_running = False
     is_jumping = False
+    last_run_attack_distance = 0
 
     def can_start_run_attack(self):
         return False
@@ -46,6 +48,7 @@ class FakeOwner:
         self.state_machine = FakeStateMachine()
         self.animation_controller = FakeAnimationController()
         self.combat_controller = PlayerCombatController()
+        self.input_state = PlayerInputState()
         self.attacks = DEFAULT_PLAYER_ATTACKS
         self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.air = None

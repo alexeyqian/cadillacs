@@ -95,9 +95,7 @@ class PlayerActionController:
         return owner.combat_controller.current_attack_name != previous_attack_name
 
     def buffer_action(self, owner, action, frames=None):
-        input_buffer = getattr(owner, "input_buffer", None)
-        if input_buffer:
-            input_buffer.press(action, frames=frames)
+        owner.input_buffer.press(action, frames=frames)
 
     def buffer_and_try_action(self, owner, action, frames, start_action):
         self.buffer_action(owner, action, frames)
@@ -110,15 +108,10 @@ class PlayerActionController:
                 self.consume_action(owner, action)
 
     def consume_action(self, owner, action):
-        input_buffer = getattr(owner, "input_buffer", None)
-        if input_buffer:
-            input_buffer.consume(action)
+        owner.input_buffer.consume(action)
 
     def has_buffered_action(self, owner, action):
-        input_buffer = getattr(owner, "input_buffer", None)
-        return bool(input_buffer and input_buffer.has(action))
+        return owner.input_buffer.has(action)
 
     def update_input_buffer(self, owner):
-        input_buffer = getattr(owner, "input_buffer", None)
-        if input_buffer:
-            input_buffer.update()
+        owner.input_buffer.update()

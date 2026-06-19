@@ -99,7 +99,7 @@ class EnemyStateController:
         # That means an enemy that already owns a slot remains counted as eligible 
         # for priority until it releases the slot. 
         # This makes the coordination stable during the attack.
-        if self.has_attack_slot(enemy):
+        if enemy.combat_controller.owns_attack_slot:
             return True
         if enemy.state in [enemy.DEAD, enemy.HIT, enemy.GRABBED, enemy.THROWN, enemy.KNOCKDOWN, enemy.GETUP]:
             return False
@@ -117,7 +117,7 @@ class EnemyStateController:
         for enemy in enemies:
             if enemy is owner:
                 continue
-            if not self.has_attack_slot(enemy):
+            if not enemy.combat_controller.owns_attack_slot:
                 continue
             if self.get_side_of_player(enemy, player) == owner_side:
                 return True
@@ -130,7 +130,7 @@ class EnemyStateController:
     def count_active_melee_attackers(self, enemies):
         count = 0
         for enemy in enemies:
-            if self.has_attack_slot(enemy):
+            if enemy.combat_controller.owns_attack_slot:
                 count += 1
         return count
     
@@ -160,9 +160,6 @@ class EnemyStateController:
 
     def get_attack_cooldown(self, owner):
         return owner.combat_controller.cooldown_remaining
-
-    def has_attack_slot(self, owner):
-        return owner.combat_controller.has_attack_slot
 
     def get_side_of_player(self, owner, player):
         if owner.x < player.x:

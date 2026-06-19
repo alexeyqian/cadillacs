@@ -108,21 +108,10 @@ class CharacterGeometry:
         )
 
     def _get_current_frame(self, owner):
-        animation_controller = getattr(owner, "animation_controller", None)
-        if animation_controller and hasattr(animation_controller, "get_current_frame"):
-            return animation_controller.get_current_frame()
-        if hasattr(owner, "get_current_frame_data"):
-            return owner.get_current_frame_data()
-        return None
+        return owner.animation_controller.get_current_frame()
 
     def _get_active_hitbox_data(self, owner):
-        combat = getattr(owner, "combat_controller", None)
-        if not combat:
-            return None
-        try:
-            return combat.get_active_hitbox_data(owner)
-        except TypeError:
-            return combat.get_active_hitbox_data()
+        return owner.combat_controller.get_active_hitbox_data()
 
     def _rect_to_world(self, owner, box):
         return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
@@ -133,18 +122,12 @@ class CharacterGeometry:
         return owner.y
 
     def _uses_visual_y_for_attack(self, owner):
-        current_attack_name = getattr(
-            getattr(owner, "combat_controller", None),
-            "current_attack_name",
-            None,
-        )
-        return current_attack_name == getattr(owner, "JUMP_ATTACK", None)
+        return owner.air and owner.combat_controller.current_attack_name == owner.JUMP_ATTACK
 
     def _get_visual_y(self, owner):
-        air = getattr(owner, "air", None)
-        if not air:
+        if not owner.air:
             return owner.y
-        return air.get_visual_y(owner.y)
+        return owner.air.get_visual_y(owner.y)
 
     def _get_collision_box_w(self, owner):
         return self.collision_box_w

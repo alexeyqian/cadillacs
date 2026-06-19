@@ -6,6 +6,7 @@ from game.controllers.player_combat_controller import PlayerCombatController
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
 from game.combat.damage_request import DamageRequest
 from game.combat.hit_reaction import HitReaction
+from game.input.player_input_state import PlayerInputState
 from game.systems.combat_system import damage_enemy, handle_player_attack_collision
 
 
@@ -13,6 +14,7 @@ class FakeMovement:
     def __init__(self):
         self.is_running = False
         self.can_run_attack = False
+        self.last_run_attack_distance = 0
 
     def can_start_run_attack(self):
         return self.can_run_attack
@@ -57,6 +59,8 @@ class FakePlayer:
         self.attacks = DEFAULT_PLAYER_ATTACKS
         self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.combat_controller = PlayerCombatController()
+        self.input_state = PlayerInputState()
+        self.air = None
         self.combat_controller.start_attack(self)
         while not self.combat_controller.attack_manager.is_active():
             self.combat_controller.update_timers(self)
@@ -94,6 +98,7 @@ class FakeEnemy:
         self.x = 120
         self.y = 100
         self.state = "IDLE"
+        self.enemy_id = "ferris"
         self.health = FakeHealth()
         self.damage_taken = 0
         self.knockback_velocity_taken = None
@@ -105,19 +110,19 @@ class FakeEnemy:
     def get_hurt_rect(self):
         return pygame.Rect(120, 100, 40, 40)
 
-    def get_logical_rect(self):
+    def get_frame_rect(self):
         return self.get_hurt_rect()
 
     def take_damage(
         self,
         damage,
         attacker_x,
-        knockback_velocity=10,
-        hit_stun_duration=None,
+        reaction=None,
     ):
         self.damage_taken += damage
-        self.knockback_velocity_taken = knockback_velocity
-        self.hit_stun_duration_taken = hit_stun_duration
+        if reaction:
+            self.knockback_velocity_taken = reaction.knockback_velocity
+            self.hit_stun_duration_taken = reaction.stun_frames
 
 
 class ReactionEnemy:

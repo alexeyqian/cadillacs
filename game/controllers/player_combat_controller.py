@@ -1,20 +1,16 @@
 from game.settings import (
-    FIST_DAMAGE,
     PLAYER_CLASH_RECOVERY,
     PLAYER_COMBO_WINDOW,
-    RUN_ATTACK_FULL_POWER_DISTANCE,
-    RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
-    RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
-    RUN_ATTACK_REQUIRED_DISTANCE,
 )
 
 from game.combat.attack_manager import AttackManager
-from game.combat.hit_reaction import HitReaction
+from game.combat.player_attack_result import PlayerAttackResult
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombatController:
     def __init__(self):
         self.attack_manager = AttackManager()
+        self.attack_result = PlayerAttackResult(self)
         self.attacks = {}
         self.weapon_attacks = {}
 
@@ -140,8 +136,7 @@ class PlayerCombatController:
     def return_to_ready_state(self, owner):
         if owner.state == owner.DEAD:
             return
-        air = getattr(owner, "air", None)
-        if air and air.is_landing:
+        if owner.air and owner.air.is_landing:
             owner.state_machine.change_to(owner, owner.LANDING)
         else:
             owner.state_machine.change_to(owner, owner.IDLE)
@@ -151,8 +146,7 @@ class PlayerCombatController:
             return
         if self.action_lock_remaining > 0:
             return
-        air = getattr(owner, "air", None)
-        if air and air.is_landing:
+        if owner.air and owner.air.is_landing:
             return
 
         if self.can_start_run_attack(owner):
@@ -162,13 +156,9 @@ class PlayerCombatController:
         self.start_combo_attack(owner)
 
     def can_start_run_attack(self, owner):
-        input_state = getattr(owner, "input_state", None)
-        requires_run_attack_release = bool(
-            input_state and input_state.run_attack_requires_attack_release
-        )
         return (
             owner.movement.can_start_run_attack()
-            and not requires_run_attack_release
+            and not owner.input_state.run_attack_requires_attack_release
         )
 
     def start_run_attack(self, owner):
@@ -176,9 +166,7 @@ class PlayerCombatController:
         self.attack_manager.start(owner.RUN_ATTACK, move_data)
         owner.movement.start_run_attack_momentum(owner)
         self.reset_combo()
-        input_state = getattr(owner, "input_state", None)
-        if input_state:
-            input_state.run_attack_requires_attack_release = True
+        owner.input_state.run_attack_requires_attack_release = True
         owner.state_machine.change_to(owner, owner.RUN_ATTACK)
 
     def start_combo_attack(self, owner):
@@ -203,16 +191,15 @@ class PlayerCombatController:
     def start_jump_attack(self, owner):
         if not owner.movement.is_jumping:
             return
-        air = getattr(owner, "air", None)
-        if air and not air.can_start_jump_attack():
+        if owner.air and not owner.air.can_start_jump_attack():
             return
         if self.is_attacking:
             return
 
         move_data = self._get_attack_data(owner, owner.JUMP_ATTACK)
         self.attack_manager.start(owner.JUMP_ATTACK, move_data)
-        if air:
-            air.mark_jump_attack_used()
+        if owner.air:
+            owner.air.mark_jump_attack_used()
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
     def start_grab_knee_attack(self, owner):
@@ -240,56 +227,6 @@ class PlayerCombatController:
     def reset_combo(self):
         self.combo_step = 0
         self.combo_window_remaining = 0
-
-    def get_attack_damage(self, owner):
-        attack_data = self._get_current_or_state_attack_data(owner)
-        if not attack_data:
-            return int(FIST_DAMAGE)
-
-        return int(attack_data.damage)
-    
-    def get_attack_lane_reach(self, owner):
-        attack_data = self._get_current_or_state_attack_data(owner)
-        return attack_data.lane_reach if attack_data else 0
-
-    def _get_attack_knockback_velocity(self, owner):
-        attack_data = self._get_current_or_state_attack_data(owner)
-        if not attack_data:
-            return 10
-        return int(attack_data.knockback_velocity + self._get_run_attack_power_bonus(
-            owner,
-            RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
-        ))
-
-    def _get_attack_enemy_hit_stun_duration(self, owner):
-        attack_data = self._get_current_or_state_attack_data(owner)
-        if not attack_data:
-            return 15
-        return int(attack_data.hit_stun_duration + self._get_run_attack_power_bonus(
-            owner,
-            RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
-        ))
-
-    def get_attack_hit_reaction(self, owner):
-        return HitReaction(
-            stun_frames=self._get_attack_enemy_hit_stun_duration(owner),
-            knockback_velocity=self._get_attack_knockback_velocity(owner),
-        )
-
-    def _get_run_attack_power_bonus(self, owner, full_power_bonus):
-        if self.current_attack_name != owner.RUN_ATTACK:
-            return 0
-
-        run_distance = getattr(owner.movement, "last_run_attack_distance", 0)
-        bonus_distance = max(1, RUN_ATTACK_FULL_POWER_DISTANCE - RUN_ATTACK_REQUIRED_DISTANCE)
-        bonus_ratio = (run_distance - RUN_ATTACK_REQUIRED_DISTANCE) / bonus_distance
-        bonus_ratio = max(0, min(1, bonus_ratio))
-        return full_power_bonus * bonus_ratio
-
-    def _get_current_or_state_attack_data(self, owner):
-        if self.attack_manager.current_attack:
-            return self.attack_manager.current_attack
-        return self._get_attack_data(owner, owner.state)
 
     def _get_attack_data(self, owner, attack_name):
         return owner.get_attack_data(attack_name)

@@ -31,8 +31,10 @@ class FakeEnemy:
             hitbox_h=20,
         )
         self.combat_controller = EnemyCombatController(self.attack_data)
+        self.animation_controller = self
+        self.air = None
 
-    def get_current_frame_data(self):
+    def get_current_frame(self):
         return FakeFrame()
 
 

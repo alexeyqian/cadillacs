@@ -5,7 +5,7 @@ from game.components.debug_renderer import CharacterDebugRenderer
 
 class EnemyRenderer:
     def draw(self, owner, screen, camera_x):
-        frame = owner.get_current_frame_data()
+        frame = owner.animation_controller.get_current_frame_data()
         if not frame:
             raise ValueError(f"Missing frame data for enemy state: {owner.state}")
 
@@ -41,7 +41,7 @@ class EnemyRenderer:
         CharacterDebugRenderer().draw_combat_boxes(owner, screen, camera_x)
 
     def draw_debug_other(self, owner, screen, camera_x):
-        timing_label = owner.get_attack_timing_label()
+        timing_label = owner.combat_controller.get_attack_timing_label(owner)
         if timing_label:
             font = pygame.font.SysFont(None, 20)
             label = font.render(timing_label, True, YELLOW_COLOR)

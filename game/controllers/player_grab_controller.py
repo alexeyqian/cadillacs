@@ -58,7 +58,7 @@ class PlayerGrabController:
             return False
         # make heavy enemies harder to grab from the front.
         # todo: use archtype heavy instead of enemy id
-        if getattr(enemy, "enemy_id", "") == "black_elmer":
+        if enemy.enemy_id == "black_elmer":
             player_is_behind_enemy = owner.facing_right == enemy.facing_right
             if not player_is_behind_enemy:
                 self.fail_heavy_grab(owner)

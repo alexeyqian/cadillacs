@@ -3,8 +3,7 @@ class PlayerStateController:
         if owner.combat_controller.is_attacking:
             return
 
-        air = getattr(owner, "air", None)
-        if air and air.is_landing:
+        if owner.air and owner.air.is_landing:
             owner.state_machine.change_to(owner, owner.LANDING)
             return
 

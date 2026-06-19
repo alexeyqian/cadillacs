@@ -10,14 +10,14 @@ class EnemyCombatController:
         self.attack_manager = AttackManager()
         self.attack_data = attack_data
         self.cooldown_remaining = 0
-        self.has_attack_slot = False
+        self.owns_attack_slot = False
         self.attack_range = ENEMY_ATTACK_RANGE
         self.attack_lane_range = ENEMY_ATTACK_LANE_RANGE
         self.melee_attack_slot_limit = None
 
     def start_attack(self, owner):
         owner.state = owner.ATTACK
-        self.has_attack_slot = True
+        self.owns_attack_slot = True
         owner.state_controller.reset_decision_timer()
         self.attack_manager.start(owner.ATTACK, self.get_attack_data(owner))
         owner.animation_controller.play(owner.ATTACK)
@@ -29,7 +29,7 @@ class EnemyCombatController:
         owner.life_cycle.set_action_lock(attack_data.cooldown)
         self.attack_manager.cancel()
         owner.state_controller.reset_decision_timer()
-        self.has_attack_slot = False
+        self.owns_attack_slot = False
         self.cooldown_remaining = max(self.cooldown_remaining, attack_data.cooldown)
 
     # Enemy attack has explicit windup frames
@@ -61,22 +61,22 @@ class EnemyCombatController:
     def finish_attack(self, owner):
         self.attack_manager.cancel()
         owner.state = owner.PATROL
-        self.has_attack_slot = False
+        self.owns_attack_slot = False
         self.cooldown_remaining = self.get_attack_data(owner).cooldown
 
     def is_attack_active(self, owner):
         return self.attack_manager.is_active()
 
-    def get_active_hitbox_data(self, owner):
-        if not self.is_attack_active(owner):
+    def get_active_hitbox_data(self):
+        if not self.attack_manager.is_active():
             return None
-        return self.get_attack_data(owner)
+        return self.attack_manager.current_attack
 
     def get_attack_timer(self, owner):
         return self.attack_manager.elapsed_frames
 
     def release_attack_slot(self, owner):
-        self.has_attack_slot = False
+        self.owns_attack_slot = False
 
     def get_attack_data(self, owner):
         if self.attack_data:

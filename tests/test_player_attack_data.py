@@ -2,6 +2,7 @@ import unittest
 
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
 from game.controllers.player_combat_controller import PlayerCombatController
+from game.input.player_input_state import PlayerInputState
 from game.managers.score_manager import ScoreManager
 from game.settings import (
     RUN_ATTACK_FULL_POWER_DISTANCE,
@@ -68,6 +69,7 @@ class FakeOwner:
         self.weapon_slot = FakeWeaponSlot()
         self.attacks = DEFAULT_PLAYER_ATTACKS
         self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
+        self.input_state = PlayerInputState()
         self.air = None
 
     def get_attack_data(self, attack_name):
@@ -148,7 +150,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(
-            combat.get_attack_hit_reaction(owner).knockback_velocity,
+            combat.attack_result.get_hit_reaction(owner).knockback_velocity,
             DEFAULT_PLAYER_ATTACKS["RUN_ATTACK"].knockback_velocity
             + RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
         )
@@ -309,10 +311,10 @@ class AttackDataTests(unittest.TestCase):
             DEFAULT_WEAPON_PLAYER_ATTACKS[("knife", owner.ATTACK_1)],
         )
         self.assertEqual(
-            combat.get_attack_damage(owner),
+            combat.attack_result.get_damage(owner),
             DEFAULT_WEAPON_PLAYER_ATTACKS[("knife", owner.ATTACK_1)].damage,
         )
-        self.assertEqual(combat.get_attack_lane_reach(owner), 1)
+        self.assertEqual(combat.attack_result.get_lane_reach(owner), 1)
 
     def test_bat_attack_can_hit_two_targets_from_weapon_attack_data(self):
         owner = FakeOwner()

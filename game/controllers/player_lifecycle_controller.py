@@ -75,7 +75,7 @@ class PlayerLifecycleController:
         owner.movement.vx = 0
         owner.movement.vy = 0
         owner.movement.is_jumping = False
-        if hasattr(owner, "air"):
+        if owner.air:
             owner.air.reset()
         owner.movement.cancel_run_attack_momentum()
         owner.movement.cancel_attack_nudge()

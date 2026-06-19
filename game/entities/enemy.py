@@ -178,13 +178,6 @@ class Enemy(Character, EnemyState):
     def update_attack(self, level, player):
         self.combat_controller.update_attack(self, level, player)
 
-    def get_attack_timing_label(self):
-        return self.combat_controller.get_attack_timing_label(self)
-
-    # Rendering / animation / geometry
-    def get_current_frame_data(self):
-        return self.animation_controller.get_current_frame_data()
-
     # Loot
     def create_loot(self):
         return self.loot_controller.create_loot(self)

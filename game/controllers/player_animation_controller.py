@@ -1,36 +1,15 @@
-from game.settings import FPS
-from game.animation.animation_manager import AnimationManager
-from game.animation.frame_animation import FrameAnimation, load_frame_animation
+from game.controllers.frame_animation_controller import FrameAnimationController
 from game.tuning import scale_animation_fps_map
 
 
-class PlayerAnimationController:
+class PlayerAnimationController(FrameAnimationController):
     def __init__(self, owner, animation_data, anim_fps):
-        self.animation_data = animation_data
-        self.anim_fps = scale_animation_fps_map(anim_fps)
-        self.animation_manager = AnimationManager()
+        super().__init__(animation_data, scale_animation_fps_map(anim_fps))
         self.init_animations(owner)
-
-    def get_current_frame(self):
-        animation = self.animation_manager.current_animation
-        if hasattr(animation, "get_frame_data"):
-            return animation.get_frame_data()
-        return None
-
-    def get_current_frame_index(self):
-        animation = self.animation_manager.current_animation
-        if hasattr(animation, "get_frame_index"):
-            return animation.get_frame_index()
-        return 0
-
-    def get_image(self):
-        return self.animation_manager.get_image()
 
     def init_animations(self, owner):
         for state, animation_name in self.get_animation_specs(owner):
-            frames = load_frame_animation(self.animation_data, animation_name)
-            duration = self.frame_duration(animation_name)
-            self.animation_manager.add_animation(state, FrameAnimation(frames, duration))
+            frames, duration = self.add_frame_animation(state, animation_name)
 
             if state == owner.THROW:
                 owner.grab_controller.throw_duration = len(frames) * duration
@@ -55,13 +34,6 @@ class PlayerAnimationController:
             (owner.HIT, "hit"),
             (owner.DEAD, "dead"),
         ]
-
-    def frame_duration(self, animation_name):
-        return max(1, int(FPS / self.anim_fps[animation_name]))
-
-    def update(self, owner):
-        self.animation_manager.play(self.get_animation_state(owner))
-        self.animation_manager.update()
 
     def get_animation_state(self, owner):
         state_map = {

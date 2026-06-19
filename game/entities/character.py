@@ -27,6 +27,7 @@ class Character(GameObject):
         self.geometry = None
         self.animation_controller = None
         self.renderer = None
+        self.air = None
 
     def draw(self, screen, camera_x):
         if not self.visible:

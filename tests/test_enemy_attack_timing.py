@@ -231,7 +231,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy.combat_controller.attack_manager.elapsed_frames = 4
         enemy.state_controller.decision_timer = 2  # pre-set AI decision progress
         enemy.combat_controller.already_hit = True
-        enemy.combat_controller.has_attack_slot = True
+        enemy.combat_controller.owns_attack_slot = True
         controller = enemy.combat_controller
 
         controller.start_clash_recovery(enemy)
@@ -241,7 +241,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
         self.assertEqual(enemy.state_controller.decision_timer, 0)
         self.assertFalse(enemy.combat_controller.attack_manager.has_connected)
-        self.assertFalse(enemy.combat_controller.has_attack_slot)
+        self.assertFalse(enemy.combat_controller.owns_attack_slot)
         self.assertEqual(enemy.combat_controller.cooldown_remaining, enemy.attack_data.cooldown)
 
     def test_knockdown_cancels_enemy_attack_manager(self):
@@ -254,7 +254,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.state, enemy.KNOCKDOWN)
         self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
         self.assertFalse(enemy.combat_controller.attack_manager.is_attacking)
-        self.assertFalse(enemy.combat_controller.has_attack_slot)
+        self.assertFalse(enemy.combat_controller.owns_attack_slot)
 
     def test_heavy_attack_poise_ignores_light_flinch_during_attack(self):
         enemy = FakeEnemy()

@@ -14,6 +14,7 @@ class FakeMovement:
         self.jump_pressed = False
         self.run_attack_momentum_started = False
         self.can_run_attack = True
+        self.last_run_attack_distance = 0
 
     def start_jump(self, owner, player_input):
         pass
@@ -68,6 +69,7 @@ class FakeOwner:
         self.weapon_slot = FakeWeaponSlot()
         self.input_state = PlayerInputState()
         self.input_buffer = InputBuffer(default_frames=6)
+        self.air = None
         self.combat_controller = PlayerCombatController()
         self.grab_controller = FakeGrab()
         self.attacks = DEFAULT_PLAYER_ATTACKS
