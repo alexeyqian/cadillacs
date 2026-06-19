@@ -1,6 +1,7 @@
 from game.components.character_state import CharacterState
 from game.entities.enemy_state import EnemyState
 from game.entities.player import Player
+from game.entities.player_state import PlayerState
 from game.entities.player_state_machine import PlayerStateMachine
 
 
@@ -37,3 +38,11 @@ def test_player_state_machine_registers_shared_recovery_states():
     assert Player.GRABBED in state_machine.states
     assert Player.KNOCKDOWN in state_machine.states
     assert Player.GETUP in state_machine.states
+
+
+def test_player_specific_states_are_grouped_under_player_state():
+    assert Player.ATTACK_1 == PlayerState.ATTACK_1
+    assert Player.RUN_ATTACK == PlayerState.RUN_ATTACK
+    assert Player.JUMP_ATTACK == PlayerState.JUMP_ATTACK
+    assert Player.GRAB_KNEE == PlayerState.GRAB_KNEE
+    assert Player.THROW == PlayerState.THROW

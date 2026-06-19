@@ -1,6 +1,45 @@
 from dataclasses import dataclass, replace
-from game.settings import *
-from game.combat.attack_data import *
+from game.combat.attack_data import AttackData, DEFAULT_PLAYER_ATTACK_DATA
+from game.settings import (
+    ATTACK_1_ACTIVE_DURATION,
+    ATTACK_1_DAMAGE,
+    ATTACK_1_HIT_STUN_DURATION,
+    ATTACK_1_WINDUP_DURATION,
+    ATTACK_2_ACTIVE_DURATION,
+    ATTACK_2_DAMAGE,
+    ATTACK_2_WINDUP_DURATION,
+    ATTACK_3_ACTIVE_DURATION,
+    ATTACK_3_DAMAGE,
+    ATTACK_3_WINDUP_DURATION,
+    BAT_DAMAGE,
+    FIST_DAMAGE,
+    JUMP_ATTACK_DAMAGE,
+    KNIFE_DAMAGE,
+    PLAYER_COLLISION_H,
+    PLAYER_COLLISION_W,
+    PLAYER_GRAB_RANGE,
+    PLAYER_H,
+    PLAYER_HITBOX_H,
+    PLAYER_HITBOX_W,
+    PLAYER_HIT_BOX_OFFSET_X,
+    PLAYER_HIT_BOX_OFFSET_Y,
+    PLAYER_HURTBOX_H,
+    PLAYER_HURTBOX_OFFSET_X,
+    PLAYER_HURTBOX_OFFSET_Y,
+    PLAYER_HURTBOX_W,
+    PLAYER_LIVES,
+    PLAYER_MAX_HP,
+    PLAYER_RUN_SPEED,
+    PLAYER_SPEED,
+    PLAYER_THIRD_HIT_RECOVERY,
+    PLAYER_W,
+    RUN_ATTACK_BASE_ENEMY_HIT_STUN,
+    RUN_ATTACK_BASE_KNOCKBACK,
+    RUN_ATTACK_DAMAGE,
+    RUN_ATTACK_LANDING_RECOVERY,
+    RUN_ATTACK_WINDUP_DURATION,
+    THROWN_DAMAGE,
+)
 
 
 DEFAULT_PLAYER_ATTACKS = {
@@ -145,10 +184,6 @@ DEFAULT_WEAPON_PLAYER_ATTACKS = {
     ),
 }
 
-# Backward-compatible names for tests and validation. Runtime lookup should go
-# through Player.get_attack_data() so different players can own different tables.
-PLAYER_ATTACKS = DEFAULT_PLAYER_ATTACKS
-WEAPON_PLAYER_ATTACKS = DEFAULT_WEAPON_PLAYER_ATTACKS
 DEFAULT_PLAYER_TYPE = "mustapha"
 
 @dataclass(frozen=True)

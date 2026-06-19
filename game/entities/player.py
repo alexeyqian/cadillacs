@@ -1,6 +1,5 @@
-from game.settings import *
 from game.entities.character import Character
-from game.components.character_state import CharacterState
+from game.entities.player_state import PlayerState
 from game.data.player_config import get_player_config
 from game.components.character_geometry import CharacterGeometry
 from game.entities.player_health import PlayerHealth
@@ -16,33 +15,11 @@ from game.controllers.player_lifecycle_controller import PlayerLifecycleControll
 from game.combat.damage_request import DamageRequest
 from game.core.events import GameEventQueue
 from game.entities.player_state_machine import PlayerStateMachine
+from game.input.input_buffer import InputBuffer
 from game.input.player_input_state import PlayerInputState
 from game.components.player_air_state import PlayerAirState
 
-class Player(Character):
-    IDLE = CharacterState.IDLE
-    WALK = CharacterState.WALK
-    RUN = CharacterState.RUN
-    ATTACK = CharacterState.ATTACK # including 1,2,3
-    RUN_ATTACK="RUN_ATTACK"
-    JUMP_TAKEOFF = "JUMP_TAKEOFF"
-    JUMP = "JUMP"
-    JUMP_ATTACK="JUMP_ATTACK"
-    LANDING = "LANDING"
-    # punch combo
-    ATTACK_1 = "ATTACK_1"
-    ATTACK_2 = "ATTACK_2"
-    ATTACK_3 = "ATTACK_3"
-    HIT = CharacterState.HIT # hit by enemies
-    RECOIL = CharacterState.RECOIL
-    DEAD = CharacterState.DEAD
-    GRABBED = CharacterState.GRABBED
-    KNOCKDOWN = CharacterState.KNOCKDOWN
-    GETUP = CharacterState.GETUP
-    GRAB = "GRAB"
-    GRAB_KNEE="GRAB_KNEE"
-    THROW = "THROW"
-
+class Player(Character, PlayerState):
     def __init__(self, player_type, animation_data, anim_fps):
         super().__init__(x=300, y=500, state=self.IDLE, facing_right=True)
         self.player_type = player_type
@@ -53,8 +30,24 @@ class Player(Character):
 
     # Config
     def load_player_config(self, config, animation_data, anim_fps):
+        self.apply_player_config(config)
+        self.build_state_components(config)
+        self.build_input_components()
+        self.build_capability_components()
+        self.build_controllers()
+        self.build_presentation_components(animation_data, anim_fps)
+
+    def apply_player_config(self, config):
+        self.apply_identity_config(config)
+        self.apply_body_config(config)
+        self.apply_movement_config(config)
+        self.apply_combat_config(config)
+
+    def apply_identity_config(self, config):
         self.player_id = config.player_id
         self.display_name = config.display_name
+
+    def apply_body_config(self, config):
         self.width = int(config.width)
         self.height = int(config.height)
 
@@ -68,10 +61,13 @@ class Player(Character):
         # todo: already included in health, remove
         self.hit_stun_duration = config.hit_stun_duration
         self.health = PlayerHealth(config.max_hp, config.lives, config.hit_stun_duration)
+        self.sprite_scale = config.sprite_scale
 
+    def apply_movement_config(self, config):
         self.speed = config.speed
         self.run_speed = config.run_speed
 
+    def apply_combat_config(self, config):
         # todo: remove or refactoring
         self.attacks = config.attacks or {}
 
@@ -81,9 +77,8 @@ class Player(Character):
         self.weapon_attacks = config.weapon_attacks or {}
 
         self.grab_range = config.grab_range
-        self.sprite_scale = config.sprite_scale
 
-        # air
+    def build_state_components(self, config):
         self.jump_power = config.jump_power
         self.jump_gravity = config.jump_gravity
         self.air_move_speed = config.air_move_speed
@@ -96,19 +91,28 @@ class Player(Character):
             self.jump_takeoff_frames,
             self.landing_recovery_frames,
         )
-        
+
         self.state_machine = PlayerStateMachine(self)
+
+    def build_input_components(self):
+        self.input_buffer = InputBuffer()
         self.input_state = PlayerInputState()
+
+    def build_capability_components(self):
         self.movement = PlayerMovement(self.speed, self.air)
         self.movement.ground_y = self.y
+        self.weapon_slot = PlayerWeaponSlot()
+        self.events = GameEventQueue()
+        self.geometry = CharacterGeometry()
+
+    def build_controllers(self):
         self.combat = PlayerCombatController()
         self.action_controller = PlayerActionController()
         self.grab = PlayerGrabController()
         self.state_controller = PlayerStateController()
         self.lifecycle = PlayerLifecycleController(self.x, self.y)
-        self.weapon_slot = PlayerWeaponSlot()
-        self.events = GameEventQueue()
-        self.geometry = CharacterGeometry()
+
+    def build_presentation_components(self, animation_data, anim_fps):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 

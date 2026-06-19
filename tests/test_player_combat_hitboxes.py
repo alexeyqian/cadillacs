@@ -1,6 +1,6 @@
 import unittest
 
-from game.data.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
+from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
 from game.settings import PLAYER_HURTBOX_H, PLAYER_HURTBOX_OFFSET_X, PLAYER_HURTBOX_OFFSET_Y, PLAYER_HURTBOX_W
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.components.character_geometry import CharacterGeometry
@@ -46,8 +46,8 @@ class FakeOwner:
         self.state_machine = FakeStateMachine()
         self.animation_controller = FakeAnimationController()
         self.combat = PlayerCombatController()
-        self.attacks = PLAYER_ATTACKS
-        self.weapon_attacks = WEAPON_PLAYER_ATTACKS
+        self.attacks = DEFAULT_PLAYER_ATTACKS
+        self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.air = None
 
     def get_attack_data(self, attack_name):
@@ -76,7 +76,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
     def test_attack_rect_comes_from_attack_data_during_active_window(self):
         owner = FakeOwner()
         hitboxes = CharacterGeometry()
-        attack_data = PLAYER_ATTACKS["ATTACK_1"]
+        attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
 
         owner.combat.start_attack(owner)
         for _ in range(attack_data.windup):
@@ -93,7 +93,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         owner = FakeOwner()
         owner.facing_right = False
         hitboxes = CharacterGeometry()
-        attack_data = PLAYER_ATTACKS["ATTACK_1"]
+        attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
 
         owner.combat.start_attack(owner)
         for _ in range(attack_data.windup):
@@ -116,7 +116,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         owner = FakeOwner()
         owner.air = FakeAir()
         hitboxes = CharacterGeometry()
-        attack_data = PLAYER_ATTACKS["JUMP_ATTACK"]
+        attack_data = DEFAULT_PLAYER_ATTACKS["JUMP_ATTACK"]
 
         owner.combat.attack_manager.start(owner.JUMP_ATTACK, attack_data)
         for _ in range(attack_data.windup):

@@ -1,8 +1,8 @@
 import pygame
-from game.colors import *
+from game.colors import ORANGE_COLOR, WHITE_COLOR, YELLOW_COLOR
 from game.effects.hit_spark import HitSpark
 from game.effects.floating_text import FloatingText
-from game.systems.camera_effect_system import *
+from game.systems.camera_effect_system import heavy_hit_shake
 from game.combat.damage_request import DamageRequest
 
 def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):

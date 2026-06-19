@@ -2,7 +2,8 @@ import unittest
 
 from game.controllers.player_action_controller import PlayerActionController
 from game.controllers.player_combat_controller import PlayerCombatController
-from game.data.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
+from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
+from game.input.input_buffer import InputBuffer
 from game.input.player_input_state import PlayerInputState
 
 
@@ -66,10 +67,11 @@ class FakeOwner:
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot()
         self.input_state = PlayerInputState()
+        self.input_buffer = InputBuffer(default_frames=6)
         self.combat = PlayerCombatController()
         self.grab = FakeGrab()
-        self.attacks = PLAYER_ATTACKS
-        self.weapon_attacks = WEAPON_PLAYER_ATTACKS
+        self.attacks = DEFAULT_PLAYER_ATTACKS
+        self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
 
     def get_attack_data(self, attack_name):
         weapon = getattr(self.weapon_slot, "weapon", None)
@@ -100,6 +102,27 @@ class PlayerActionControllerTests(unittest.TestCase):
         actions.update(owner, FakeInput(attack=True))
 
         self.assertEqual(owner.combat.current_attack_name, owner.RUN_ATTACK)
+
+    def test_attack_input_buffers_during_active_attack_and_starts_after_recovery(self):
+        owner = FakeOwner()
+        owner.movement.is_running = False
+        owner.movement.can_run_attack = False
+        actions = PlayerActionController()
+
+        actions.update(owner, FakeInput(attack=True))
+        self.assertEqual(owner.combat.current_attack_name, owner.ATTACK_1)
+
+        actions.update(owner, FakeInput(attack=False))
+        actions.update(owner, FakeInput(attack=True))
+        self.assertTrue(owner.input_buffer.has("attack"))
+
+        owner.combat.attack_manager.mark_connected()
+        while owner.combat.current_attack_name == owner.ATTACK_1:
+            owner.combat.update_timers(owner)
+            actions.update(owner, FakeInput(attack=False))
+
+        self.assertEqual(owner.combat.current_attack_name, owner.ATTACK_2)
+        self.assertFalse(owner.input_buffer.has("attack"))
 
 
 if __name__ == "__main__":

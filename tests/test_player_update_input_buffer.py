@@ -1,0 +1,141 @@
+from game.controllers.player_action_controller import PlayerActionController
+from game.controllers.player_combat_controller import PlayerCombatController
+from game.data.player_config import DEFAULT_PLAYER_ATTACKS
+from game.entities.player import Player
+from game.entities.player_state_machine import PlayerStateMachine
+from game.input.input_buffer import InputBuffer
+from game.input.player_input_state import PlayerInputState
+
+
+class FakeInput:
+    def __init__(self, attack=False, jump=False):
+        self.left = False
+        self.right = False
+        self.up = False
+        self.down = False
+        self.run = False
+        self.jump = jump
+        self.attack = attack
+        self.fire = False
+
+
+class FakeMovement:
+    def __init__(self):
+        self.is_running = False
+        self.is_jumping = False
+        self.jump_pressed = False
+
+    def update_timers(self):
+        pass
+
+    def update_movement(self, owner, player_input):
+        return False
+
+    def update_jump_physics(self, owner, player_input):
+        pass
+
+    def start_jump(self, owner, player_input):
+        if owner.combat.is_attacking:
+            return
+        owner.state_machine.change_to(owner, owner.JUMP_TAKEOFF)
+
+    def can_start_run_attack(self):
+        return False
+
+    def start_run_attack_momentum(self, owner):
+        pass
+
+    def start_attack_3_nudge(self, owner):
+        pass
+
+    def cancel_run_attack_momentum(self):
+        pass
+
+    def cancel_attack_nudge(self):
+        pass
+
+
+class FakeGrab:
+    grabbed_enemy = None
+
+    def update_timers(self, owner):
+        pass
+
+    def update_grabbed_enemy_position(self, owner):
+        pass
+
+
+class FakeWeaponSlot:
+    fire_pressed = False
+    weapon = None
+
+    def fire(self, owner):
+        pass
+
+
+class FakeLifecycle:
+    def update_dead_state(self, owner):
+        pass
+
+    def update_hit_state(self, owner):
+        return False
+
+
+class FakeStateController:
+    def update_after_movement(self, owner, moving):
+        if not owner.combat.is_attacking and owner.state not in [owner.JUMP_TAKEOFF, owner.JUMP]:
+            owner.state_machine.change_to(owner, owner.IDLE)
+
+
+class FakeAnimationController:
+    def update(self, owner):
+        pass
+
+
+def make_player_like():
+    player = Player.__new__(Player)
+    player.x = 300
+    player.y = 500
+    player.state = Player.IDLE
+    player.attacks = DEFAULT_PLAYER_ATTACKS
+    player.weapon_attacks = {}
+    player.state_machine = PlayerStateMachine(player)
+    player.input_buffer = InputBuffer()
+    player.input_state = PlayerInputState()
+    player.movement = FakeMovement()
+    player.combat = PlayerCombatController()
+    player.action_controller = PlayerActionController()
+    player.grab = FakeGrab()
+    player.weapon_slot = FakeWeaponSlot()
+    player.lifecycle = FakeLifecycle()
+    player.state_controller = FakeStateController()
+    player.animation_controller = FakeAnimationController()
+    return player
+
+
+def test_player_update_uses_buffered_attack_after_recovery():
+    player = make_player_like()
+
+    player.update(FakeInput(attack=True))
+    assert player.combat.current_attack_name == player.ATTACK_1
+
+    player.update(FakeInput())
+    player.update(FakeInput(attack=True))
+    assert player.input_buffer.has("attack") is True
+
+    player.combat.attack_manager.mark_connected()
+    while player.combat.current_attack_name == player.ATTACK_1:
+        player.update(FakeInput())
+
+    assert player.combat.current_attack_name == player.ATTACK_2
+    assert player.input_buffer.has("attack") is False
+
+
+def test_player_update_jump_buffer_does_not_bypass_attack_lock():
+    player = make_player_like()
+
+    player.update(FakeInput(attack=True))
+    player.update(FakeInput(jump=True))
+
+    assert player.input_buffer.has("jump") is True
+    assert player.state == player.ATTACK_1

@@ -224,10 +224,12 @@ game/
   input/
     player_input.py
     player_input_state.py
+    input_buffer.py
 
   entities/
     game_object.py
     character.py
+    player_state.py
     player.py
     enemy.py
     projectile.py
@@ -424,9 +426,11 @@ The following ownership moves are complete:
 ```text
 game/entities/game_object.py
 game/entities/character.py
+game/entities/player_state.py
 game/core/events.py
 game/input/player_input.py
 game/input/player_input_state.py
+game/input/input_buffer.py
 game/controllers/player_action_controller.py
 game/controllers/player_animation_controller.py
 game/controllers/player_combat_controller.py
@@ -468,6 +472,21 @@ game/managers/stage_clear_manager.py
 ```
 
 Do not move files just to make the tree look tidy. Move a file when it clarifies ownership or reduces coupling.
+
+### Entity Construction Order
+
+Keep `Player` and `Enemy` setup grouped in this order:
+
+```text
+identity/config data
+body and combat tuning
+state components
+capability components
+controllers
+presentation components
+```
+
+Direct fields such as `movement`, `combat`, `geometry`, `renderer`, and `state_controller` should remain easy to find on the entity. The grouping is for readability during construction, not a reason to hide everything behind a generic component map.
 
 ## State Management
 
@@ -942,9 +961,9 @@ Expected result:
 Player and Enemy can accept DamageRequest directly while old adapters keep working.
 ```
 
-## Remaining Refactoring Steps
+## Completed State/Input Cleanup Plan
 
-These steps are useful next, but they are not required before adding more gameplay.
+These steps were completed after input, event, and damage ownership were clarified.
 
 ### Step 28: Review Player State Machine Ownership
 
@@ -958,6 +977,12 @@ Tasks:
 - Keep `PlayerStateMachine` local if enemies do not need the same state object model.
 - Extract shared state-machine code only when both sides benefit.
 
+Expected result:
+
+```text
+PlayerStateMachine remains entity-local because it is still player-specific.
+```
+
 ### Step 29: Split Large Gameplay System Imports
 
 Goal:
@@ -970,6 +995,12 @@ Tasks:
 - Replace wildcard imports with explicit function imports in small groups.
 - Keep update order clear because gameplay sequencing matters.
 
+Expected result:
+
+```text
+Gameplay and player-input systems use explicit imports.
+```
+
 ### Step 30: Add Input Mapping Tests
 
 Goal:
@@ -981,9 +1012,229 @@ Tasks:
 - Add tests for keyboard aliases such as arrows/WASD, attack, jump, grab, fire, and drop.
 - Use a small fake key object instead of needing a live pygame event loop.
 
-## Refactoring Plan
+Expected result:
 
-Each step should be medium-sized and independently testable. Do not refactor everything in one pass.
+```text
+Player input key mappings are covered by focused tests.
+```
+
+## Completed Naming/Import/Event Cleanup Plan
+
+These steps were completed after state, input, and event ownership were clarified.
+
+### Step 31: Review Generic Utility Wildcard Imports
+
+Goal:
+
+Clean up remaining wildcard imports outside the gameplay system path.
+
+Tasks:
+
+- Review wildcard imports from settings/colors where they make modules harder to scan.
+- Replace them gradually in touched files only.
+- Avoid noisy mechanical churn across the whole project.
+
+Expected result:
+
+```text
+Touched render/combat/system modules use explicit imports.
+```
+
+### Step 32: Review State Constants And Attack Names
+
+Goal:
+
+Separate shared character state constants from player-only attack-state names.
+
+Tasks:
+
+- Keep `CharacterState` for shared states.
+- Decide whether player attack names should become attack IDs instead of state constants.
+- Avoid changing gameplay behavior while renaming.
+
+Expected result:
+
+```text
+Player-specific state names are grouped under PlayerState while Player keeps readable aliases.
+```
+
+### Step 33: Add Event Queue Integration Tests
+
+Goal:
+
+Test the real projectile spawn path through `PlayerWeaponSlot` and `collect_player_projectiles`.
+
+Tasks:
+
+- Use a fake ranged weapon and fake player owner.
+- Emit a projectile through weapon firing.
+- Verify the projectile system drains the event queue into `game_state.projectiles`.
+
+Expected result:
+
+```text
+The player projectile event path is covered from weapon slot to projectile collection.
+```
+
+## Completed Input/Data Compatibility Cleanup Plan
+
+These steps were completed after input buffering and data import ownership were reviewed.
+
+### Step 34: Adopt InputBuffer In Player Action Flow
+
+Goal:
+
+Use `InputBuffer` for forgiving attack/jump input timing instead of only edge flags.
+
+Tasks:
+
+- Decide which actions should buffer first, probably attack and jump.
+- Keep current behavior until tests define expected buffered timing.
+- Add tests around pressing slightly early during attack recovery or landing.
+
+Expected result:
+
+```text
+Attack and jump input can be buffered without reintroducing hold-to-auto-combo.
+```
+
+### Step 35: Review Data Module Wildcard Imports
+
+Goal:
+
+Clean up broad imports in data-heavy modules when the constant list is stable.
+
+Tasks:
+
+- Review `player_config.py`, `enemy_config.py`, and `attack_data.py`.
+- Replace wildcard imports only when it improves readability.
+- Avoid a giant mechanical import patch unless tests remain easy to review.
+
+Expected result:
+
+```text
+Core attack/player/enemy data modules use explicit imports.
+```
+
+### Step 36: Review Compatibility Aliases
+
+Goal:
+
+Remove old aliases only when first-party code and tests no longer need them.
+
+Tasks:
+
+- Review `Entity = GameObject` compatibility.
+- Review backward-compatible attack table names in player config.
+- Keep aliases that help tests or data validation stay readable.
+
+Expected result:
+
+```text
+Unused compatibility aliases are removed; tests use canonical names.
+```
+
+## Completed Historical Plan/Input Coverage Cleanup Plan
+
+These steps were completed after input buffering and compatibility cleanup.
+
+### Step 37: Clean Up Historical Plan Text
+
+Goal:
+
+Move the original completed step-by-step plan out of the active planning section or clearly label it historical.
+
+Tasks:
+
+- Keep the useful architecture guidance.
+- Avoid making completed steps look like future work.
+- Preserve important comments and rationale.
+
+Expected result:
+
+```text
+The old step-by-step plan is clearly labeled historical.
+```
+
+### Step 38: Add Real Input Buffer Gameplay Tests
+
+Goal:
+
+Cover buffered jump/attack behavior through `Player.update`, not only `PlayerActionController`.
+
+Tasks:
+
+- Use a lightweight player-like fixture or factory-backed player if practical.
+- Verify early attack press during recovery starts the next combo.
+- Verify jump buffer does not bypass invalid states.
+
+Expected result:
+
+```text
+Buffered input is covered through Player.update.
+```
+
+### Step 39: Review Remaining Wildcard Imports Opportunistically
+
+Goal:
+
+Continue removing wildcard imports only in modules being actively edited.
+
+Tasks:
+
+- Prioritize `settings` and `colors` imports in gameplay modules.
+- Leave data-heavy or generated-style modules alone until touched.
+- Keep patches reviewable.
+
+Expected result:
+
+```text
+Newly touched entity/data/gameplay modules avoid broad imports where practical.
+```
+
+## Remaining Refactoring Steps
+
+These steps are useful next, but they are not required before adding more gameplay.
+
+### Step 40: Review Remaining Entity Field Groups After Gameplay Changes
+
+Goal:
+
+Keep Player and Enemy field ownership readable as new features land.
+
+Tasks:
+
+- Keep construction grouped by config, state/input, capability components, controllers, and presentation.
+- Avoid moving stable direct fields into opaque dictionaries.
+- Extract a new component only when behavior or state has a clear owner.
+
+### Step 41: Add Real Player/Enemy Construction Smoke Tests
+
+Goal:
+
+Make sure factories or direct constructors keep all required components wired.
+
+Tasks:
+
+- Instantiate real Player/Enemy through factories where possible.
+- Assert required components/controllers exist.
+- Avoid depending on rendering details beyond construction.
+
+### Step 42: Continue Opportunistic Import Cleanup
+
+Goal:
+
+Clean remaining wildcard imports in files already being touched.
+
+Tasks:
+
+- Prioritize gameplay/runtime modules.
+- Leave asset manifest and animation data modules alone unless they become noisy.
+- Keep import patches small and test-backed.
+
+## Historical Refactoring Plan
+
+This original step-by-step plan is complete and kept here as historical design rationale. Future work should use the active remaining steps above.
 
 ### Step 1: Rename And Clarify The Base Entity
 
@@ -994,7 +1245,7 @@ Create the intended root type without changing behavior.
 Tasks:
 
 - Rename or wrap `game/entities/entity.py` so it provides `GameObject`.
-- Keep a temporary `Entity = GameObject` compatibility alias if many imports still use `Entity`.
+- Keep a temporary `Entity = GameObject` compatibility alias if many imports still use `Entity`. This alias has since been removed after first-party imports were updated.
 - Define the minimal common fields: `x`, `y`, `width`, `height`, `active`, `visible`.
 - Keep `update()` and `draw()` as simple extension points.
 - Add small tests only if there is existing coverage around entity construction.

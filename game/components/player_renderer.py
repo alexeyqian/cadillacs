@@ -1,7 +1,5 @@
 import pygame
-import game.settings as settings
-from game.settings import *
-from game.colors import *
+from game.settings import SHOW_COMBAT_BOXES
 from game.components.debug_renderer import CharacterDebugRenderer
 
 class PlayerRenderer:
@@ -21,8 +19,6 @@ class PlayerRenderer:
         # shadow_rect = pygame.Rect(screen_x,self.y + self.height - 10,self.width,12)
         #pygame.draw.ellipse(screen,(50, 50, 50),shadow_rect)
         # end of depth
-        screen_x = owner.x - camera_x
-
         image = owner.animation_controller.get_image()
         scale = owner.sprite_scale
         image = pygame.transform.scale(
@@ -48,7 +44,6 @@ class PlayerRenderer:
         sprite_y = visual_y + offset_y
         screen.blit(image, (sprite_world_x - camera_x, sprite_y))
 
-        #self.draw_health_bar(owner, screen, screen_x)
         self.draw_player_debug_boxes(screen, camera_x, owner)
 
     def draw_health_bar(self, owner, screen, screen_x):
@@ -68,7 +63,7 @@ class PlayerRenderer:
         pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
 
     def draw_player_debug_boxes(self, screen, camera_x, player):
-        if not settings.SHOW_COMBAT_BOXES:
+        if not SHOW_COMBAT_BOXES:
             return
 
         CharacterDebugRenderer().draw_combat_boxes(

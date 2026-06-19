@@ -1,4 +1,3 @@
-from game.settings import *
 from game.entities.character import Character
 from game.data.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
@@ -25,20 +24,7 @@ from game.combat.hit_reaction import normalize_hit_reaction
 # Enemy is a small coordinator. Components own movement, combat,
 # reactions, lifecycle, state decisions, loot, animation, and rendering.
 
-class Enemy(Character):
-    IDLE = EnemyState.IDLE
-    WALK = EnemyState.WALK
-    PATROL = EnemyState.PATROL
-    CHASE = EnemyState.CHASE
-    ATTACK = EnemyState.ATTACK
-    HIT = EnemyState.HIT
-    RECOIL = EnemyState.RECOIL
-    DEAD = EnemyState.DEAD
-    GRABBED = EnemyState.GRABBED
-    THROWN = EnemyState.THROWN
-    KNOCKDOWN = EnemyState.KNOCKDOWN
-    GETUP = EnemyState.GETUP
-
+class Enemy(Character, EnemyState):
     # attack_range: should i attack
     #  attack_rect = did i hit
     # detect_range: within detect_range, enemy chases player
@@ -53,51 +39,68 @@ class Enemy(Character):
             sprite_scale=sprite_scale,
         )
 
-        # Identity / position
+        self.configure_spawn_state(x, enemy_type)
+        self.build_state_components()
+        self.build_capability_components()
+        self.build_controllers()
+        self.apply_enemy_config(get_enemy_config(self.enemy_type))
+        self.build_presentation_components(animation_data, anim_fps)
+
+    def configure_spawn_state(self, x, enemy_type):
         self.spawn_x = x # enemy remembers where it spawned
         self.enemy_type = enemy_type
-
-        self.lifecycle_state = EnemyLifecycleState()
-
-        # Movement
         self.patrol_direction = 1
-
-        # Rendering / collision / loot
-        self.geometry = CharacterGeometry()
         self.loot_generated = False
 
-        # Components
+    def build_state_components(self):
+        self.lifecycle_state = EnemyLifecycleState()
+
+    def build_capability_components(self):
+        self.geometry = CharacterGeometry()
         self.combat = EnemyCombatController()
-
-        self.apply_enemy_config(get_enemy_config(self.enemy_type))
-
         self.movement = EnemyMovement()
         self.flanking = EnemyFlanking()
+        self.coordination = EnemyCoordination()
+
+    def build_controllers(self):
         self.reactions = EnemyReactionController()
         self.lifecycle = EnemyLifecycleController()
         self.state_controller = EnemyStateController()
         self.loot_controller = EnemyLootController()
-        self.coordination = EnemyCoordination()
+
+    def build_presentation_components(self, animation_data, anim_fps):
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
 
     def apply_enemy_config(self, config):
+        self.apply_identity_config(config)
+        self.apply_body_config(config)
+        self.apply_movement_config(config)
+        self.apply_combat_config(config)
+        self.apply_reward_config(config)
+
+    def apply_identity_config(self, config):
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
         self.archetype = config.archetype
 
+    def apply_body_config(self, config):
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
         self.hurt_box_w = int(config.hurt_box_w)
         self.hurt_box_h = int(config.hurt_box_h)
         self.hurt_box_offset_x = int(config.hurt_box_offset_x)
         self.hurt_box_offset_y = int(config.hurt_box_offset_y)
-        
+
         self.health = EnemyHealth(config.max_hp)
+        self.sprite_scale = config.sprite_scale
+
+    def apply_movement_config(self, config):
         self.speed = config.speed
         self.patrol_distance = config.patrol_distance
         self.detect_range = config.detect_range
 
+    def apply_combat_config(self, config):
         self.attack_range = config.attack_range
         self.attack_lane_range = config.attack_lane_range
 
@@ -110,8 +113,9 @@ class Enemy(Character):
             else config.flinch_damage_threshold
         )
         self.melee_attack_slot_limit = getattr(config, "melee_attack_slot_limit", None)
+
+    def apply_reward_config(self, config):
         self.score_points = config.score_points
-        self.sprite_scale = config.sprite_scale
 
     def update(self, level, player, enemies):
         if self.lifecycle.update_special_states(self):

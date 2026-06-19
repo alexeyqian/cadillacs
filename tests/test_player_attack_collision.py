@@ -3,7 +3,7 @@ import unittest
 import pygame
 
 from game.controllers.player_combat_controller import PlayerCombatController
-from game.data.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
+from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
 from game.combat.damage_request import DamageRequest
 from game.combat.hit_reaction import HitReaction
 from game.systems.combat_system import damage_enemy, handle_player_attack_collision
@@ -54,8 +54,8 @@ class FakePlayer:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot(weapon)
-        self.attacks = PLAYER_ATTACKS
-        self.weapon_attacks = WEAPON_PLAYER_ATTACKS
+        self.attacks = DEFAULT_PLAYER_ATTACKS
+        self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.combat = PlayerCombatController()
         self.combat.start_attack(self)
         while not self.combat.is_attack_active():
