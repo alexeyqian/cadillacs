@@ -78,9 +78,6 @@ class EnemyCombatController:
     def get_attack_timer(self, owner):
         return self.attack_manager.elapsed_frames
 
-    def set_attack_timer(self, owner, value):
-        self.attack_manager.elapsed_frames = value
-
     def release_attack_slot(self, owner):
         self.has_attack_slot = False
 
@@ -94,11 +91,6 @@ class EnemyCombatController:
 
     def uses_melee_attack_slot(self, owner):
         return True
-
-    def get_attack_phase_name(self, owner):
-        if owner.state != owner.ATTACK:
-            return ""
-        return self.attack_manager.get_phase_name()
 
     def get_attack_timing_label(self, owner):
         if owner.state != owner.ATTACK:

@@ -128,12 +128,22 @@ class PlayerCombatController:
         if air and air.is_landing:
             return
 
-        if owner.movement.can_start_run_attack():
+        input_state = getattr(owner, "input_state", None)
+        requires_run_attack_release = bool(
+            input_state and input_state.run_attack_requires_attack_release
+        )
+        can_start_run_attack = (
+            owner.movement.can_start_run_attack()
+            and not requires_run_attack_release
+        )
+        if can_start_run_attack:
             move_data = self.get_attack_data(owner, owner.RUN_ATTACK)
             self.attack_manager.start(owner.RUN_ATTACK, move_data)
             owner.movement.start_run_attack_momentum(owner)
             self.combo_window_remaining = 0
             self.combo_step = 0
+            if input_state:
+                input_state.run_attack_requires_attack_release = True
             owner.state_machine.change_to(owner, owner.RUN_ATTACK)
             return
 

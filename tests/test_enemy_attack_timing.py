@@ -231,7 +231,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
     def test_clash_recovery_cancels_enemy_attack(self):
         enemy = FakeEnemy()
         enemy.state = enemy.ATTACK
-        enemy.combat_controller.set_attack_timer(enemy, 4)
+        enemy.combat_controller.attack_manager.elapsed_frames = 4
         enemy.state_controller.decision_timer = 2  # pre-set AI decision progress
         enemy.combat_controller.already_hit = True
         enemy.combat_controller.has_attack_slot = True
@@ -333,15 +333,13 @@ class EnemyAttackTimingTests(unittest.TestCase):
     def test_raptor_leaps_in_late_windup(self):
         raptor = FakeRaptor()
 
-        raptor.combat_controller.set_attack_timer(
-            raptor,
-            raptor.attack_data.windup - raptor.leap_startup_frames - 1,
+        raptor.combat_controller.attack_manager.elapsed_frames = (
+            raptor.attack_data.windup - raptor.leap_startup_frames - 1
         )
         self.assertFalse(RaptorEnemy.should_leap_now(raptor))
 
-        raptor.combat_controller.set_attack_timer(
-            raptor,
-            raptor.attack_data.windup - raptor.leap_startup_frames,
+        raptor.combat_controller.attack_manager.elapsed_frames = (
+            raptor.attack_data.windup - raptor.leap_startup_frames
         )
         self.assertTrue(RaptorEnemy.should_leap_now(raptor))
 

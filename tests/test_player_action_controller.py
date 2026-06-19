@@ -94,14 +94,28 @@ class PlayerActionControllerTests(unittest.TestCase):
 
         owner.combat_controller.cancel_attack()
         owner.input_state.attack_pressed = False
+        owner.input_buffer.press("attack")
         actions.update(owner, FakeInput(attack=True))
 
         self.assertIsNone(owner.combat_controller.current_attack_name)
+        self.assertFalse(owner.input_buffer.has("attack"))
 
         actions.update(owner, FakeInput(attack=False))
         actions.update(owner, FakeInput(attack=True))
 
         self.assertEqual(owner.combat_controller.current_attack_name, owner.RUN_ATTACK)
+
+    def test_combat_controller_refuses_second_run_attack_until_attack_release(self):
+        owner = FakeOwner()
+
+        owner.combat_controller.start_attack(owner)
+        self.assertEqual(owner.combat_controller.current_attack_name, owner.RUN_ATTACK)
+        self.assertTrue(owner.input_state.run_attack_requires_attack_release)
+
+        owner.combat_controller.cancel_attack()
+        owner.combat_controller.start_attack(owner)
+
+        self.assertNotEqual(owner.combat_controller.current_attack_name, owner.RUN_ATTACK)
 
     def test_attack_input_buffers_during_active_attack_and_starts_after_recovery(self):
         owner = FakeOwner()

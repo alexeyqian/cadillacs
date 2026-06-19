@@ -37,11 +37,9 @@ class PlayerActionController:
                         self.consume_action(owner, self.ATTACK_ACTION)
                     owner.input_state.jump_attack_pressed = True
             else:
-                if (
-                    owner.movement.is_running
-                    and owner.input_state.run_attack_requires_attack_release
-                ):
+                if owner.input_state.run_attack_requires_attack_release:
                     owner.input_state.attack_pressed = True
+                    self.consume_action(owner, self.ATTACK_ACTION)
                     return
 
                 if not owner.input_state.attack_pressed:
@@ -80,8 +78,6 @@ class PlayerActionController:
             owner.combat_controller.start_grab_knee_attack(owner)
         else:
             owner.combat_controller.start_attack(owner)
-            if owner.combat_controller.current_attack_name == owner.RUN_ATTACK:
-                owner.input_state.run_attack_requires_attack_release = True
 
         return owner.combat_controller.current_attack_name != previous_attack_name
 
