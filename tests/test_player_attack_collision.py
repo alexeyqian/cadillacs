@@ -4,6 +4,7 @@ import pygame
 
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.data.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
+from game.combat.damage_request import DamageRequest
 from game.combat.hit_reaction import HitReaction
 from game.systems.combat_system import damage_enemy, handle_player_attack_collision
 
@@ -164,6 +165,16 @@ class PlayerAttackCollisionTests(unittest.TestCase):
 
         self.assertEqual(enemy.damage_taken, 12)
         self.assertEqual(enemy.attacker_x_taken, 100)
+        self.assertIs(enemy.reaction_taken, reaction)
+
+    def test_damage_enemy_accepts_damage_request(self):
+        enemy = ReactionEnemy()
+        reaction = HitReaction(stun_frames=12, knockback_velocity=7)
+
+        damage_enemy(enemy, DamageRequest(9, attacker_x=80, reaction=reaction))
+
+        self.assertEqual(enemy.damage_taken, 9)
+        self.assertEqual(enemy.attacker_x_taken, 80)
         self.assertIs(enemy.reaction_taken, reaction)
 
     def test_default_player_attack_hits_only_one_target(self):

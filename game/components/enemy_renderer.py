@@ -1,8 +1,7 @@
 import pygame
 import game.settings as settings
-from game.settings import SHOW_COMBAT_BOXES
 from game.colors import *
-from game.level.lane import LaneSystem
+from game.components.debug_renderer import CharacterDebugRenderer
 
 class EnemyRenderer:
     def draw(self, owner, screen, camera_x):
@@ -38,52 +37,8 @@ class EnemyRenderer:
         pygame.draw.rect(screen,(255, 0, 0),
             (bar_x, frame_rect.y - hp_height, hp_width, 6))
 
-    # todo: dup? merge with player's same function
     def draw_debug_boxes(self, owner, screen, camera_x):
-        collision_rect = owner.get_collision_rect()
-        body_rect = owner.get_frame_rect()
-        hurt_rect = owner.get_hurt_rect()
-        attack_rect = owner.get_attack_rect()
-
-        # blue = collision / feet box
-        pygame.draw.rect(screen, BLUE_COLOR, (
-            collision_rect.x - camera_x,
-            collision_rect.y,
-            collision_rect.width,
-            collision_rect.height
-        ), 1)
-        # small feet anchor marker
-        pygame.draw.circle(
-            screen,
-            WHITE_COLOR,
-            (int(owner.x - camera_x), int(owner.y)),
-            3
-        )
-
-        # white = full animation frame / visual reference
-        pygame.draw.rect(screen, WHITE_COLOR, (
-            body_rect.x - camera_x,
-            body_rect.y,
-            body_rect.width,
-            body_rect.height
-        ), 1)
-
-        # green = current animation frame hurt box
-        pygame.draw.rect(screen, GREEN_COLOR, (
-                hurt_rect.x - camera_x,
-                hurt_rect.y,
-                hurt_rect.width,
-                hurt_rect.height
-            ), 1)
-
-        # red = current animation frame attack box
-        if attack_rect:
-            pygame.draw.rect(screen, RED_COLOR, (
-                attack_rect.x - camera_x,
-                attack_rect.y,
-                attack_rect.width,
-                attack_rect.height
-            ), 1)
+        CharacterDebugRenderer().draw_combat_boxes(owner, screen, camera_x)
 
     def draw_debug_other(self, owner, screen, camera_x):
         timing_label = owner.get_attack_timing_label()
@@ -96,4 +51,3 @@ class EnemyRenderer:
             font = pygame.font.SysFont(None, 20)
             label = font.render(f"FLANK {owner.flanking.target_side.upper()}", True, WHITE_COLOR)
             screen.blit(label, (int(owner.x - camera_x - 42), int(owner.y - 225)))
-

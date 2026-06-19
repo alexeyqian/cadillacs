@@ -1,7 +1,7 @@
 from game.combat.attack_manager import AttackManager
 
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
-from game.combat.hit_reaction import HitReaction
+from game.combat.damage_request import DamageRequest
 
 
 class EnemyCombatController:
@@ -139,17 +139,14 @@ class EnemyCombatController:
         return DEFAULT_ENEMY_ATTACK_DATA
 
     def damage_player(self, player, attack_data):
-        reaction = HitReaction(
-            stun_frames=attack_data.hit_stun_duration,
-            knockback_velocity=attack_data.knockback_velocity,
-        )
+        request = DamageRequest.from_attack_data(attack_data)
 
         try:
-            player.take_damage(attack_data.damage, reaction=reaction)
+            player.take_damage(request.damage, reaction=request.reaction)
         except TypeError:
             # Lightweight tests and older player-like objects may still expose
             # the damage-only API while production Player accepts HitReaction.
-            player.take_damage(attack_data.damage)
+            player.take_damage(request.damage)
 
     def uses_melee_attack_slot(self, owner):
         if hasattr(owner, "coordination"):

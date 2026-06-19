@@ -117,14 +117,10 @@ class CharacterGeometry:
         return getattr(owner, "collision_box_h", PLAYER_COLLISION_H)
 
     def _get_hurt_box_w(self, owner):
-        if hasattr(owner, "hurt_box_offset_x"):
-            return getattr(owner, "hurt_box_w", PLAYER_HURTBOX_W)
-        return PLAYER_HURTBOX_W
+        return getattr(owner, "hurt_box_w", PLAYER_HURTBOX_W)
 
     def _get_hurt_box_h(self, owner):
-        if hasattr(owner, "hurt_box_offset_y"):
-            return getattr(owner, "hurt_box_h", PLAYER_HURTBOX_H)
-        return PLAYER_HURTBOX_H
+        return getattr(owner, "hurt_box_h", PLAYER_HURTBOX_H)
 
     def _get_hurt_box_offset_x(self, owner):
         return getattr(owner, "hurt_box_offset_x", PLAYER_HURTBOX_OFFSET_X)

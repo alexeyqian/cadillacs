@@ -61,6 +61,8 @@ class Player(Character):
         self.collision_box_h = int(config.collision_box_h)
         self.hurt_box_w = int(config.hurt_box_w)
         self.hurt_box_h = int(config.hurt_box_h)
+        self.hurt_box_offset_x = int(config.hurt_box_offset_x)
+        self.hurt_box_offset_y = int(config.hurt_box_offset_y)
 
         # todo: already included in health, remove
         self.hit_stun_duration = config.hit_stun_duration

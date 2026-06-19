@@ -433,6 +433,8 @@ game/controllers/enemy_state_controller.py
 game/components/health.py
 game/components/character_state.py
 game/components/character_geometry.py
+game/components/movement_math.py
+game/components/debug_renderer.py
 game/components/player_movement.py
 game/components/enemy_movement.py
 game/components/player_air_state.py
@@ -444,6 +446,7 @@ game/components/player_weapon_slot.py
 game/combat/attack_data.py
 game/combat/attack_manager.py
 game/combat/combat_geometry.py
+game/combat/damage_request.py
 game/combat/hit_reaction.py
 game/data/player_config.py
 game/data/enemy_config.py
@@ -705,10 +708,6 @@ Expected result:
 Player and Enemy both use CharacterGeometry.
 ```
 
-## Remaining Refactoring Steps
-
-These steps are useful next, but they are not required before adding more gameplay.
-
 ### Step 20: Fix Player Hurtbox Config Ownership
 
 Goal:
@@ -722,6 +721,12 @@ Tasks:
 - Update `CharacterGeometry` to trust owner hurtbox fields for both player and enemy.
 - Add or update tests for player hurtbox dimensions.
 
+Expected result:
+
+```text
+Player and enemy hurtboxes both come from entity config fields.
+```
+
 ### Step 21: Evaluate Shared Movement Helpers
 
 Goal:
@@ -733,6 +738,12 @@ Tasks:
 - Compare facing, bounds, lane, and collision response helpers.
 - Extract tiny shared helpers if they reduce repeated math.
 - Keep input-driven player movement and AI-driven enemy movement separate.
+
+Expected result:
+
+```text
+Shared movement math exists, but player and enemy movement controllers remain separate.
+```
 
 ### Step 22: Review Renderer Duplication
 
@@ -746,6 +757,12 @@ Tasks:
 - Extract shared debug drawing only if it reduces duplication.
 - Keep player/enemy UI or visual special cases separate.
 
+Expected result:
+
+```text
+Combat debug box drawing is shared while sprite and health rendering stay specific.
+```
+
 ### Step 23: Introduce Shared Damage Request If Needed
 
 Goal:
@@ -757,6 +774,12 @@ Tasks:
 - Review current `take_damage` signatures.
 - Introduce `DamageRequest` only if systems keep needing adapter logic.
 - Keep player lives and enemy removal separate.
+
+Expected result:
+
+```text
+Damage call sites can pass one request object without merging lifecycle rules.
+```
 
 ### Step 15: Move Movement And Air/Flanking Components
 
@@ -834,6 +857,57 @@ Expected result:
 ```text
 The component folder is active, imports are clean, and tests pass.
 ```
+
+## Remaining Refactoring Steps
+
+These steps are useful next, but they are not required before adding more gameplay.
+
+### Step 24: Normalize Player Input Ownership
+
+Goal:
+
+Decide whether player input data should stay entity-local or move into an input package.
+
+Tasks:
+
+- Review `player_input.py` and `player_input_state.py`.
+- Move them only if an `input/` or `core/events` package becomes clearer than entity ownership.
+- Keep action decisions in `PlayerActionController`.
+
+### Step 25: Review Player Event Queue
+
+Goal:
+
+Decide whether `PlayerEvents` should become a broader game event queue.
+
+Tasks:
+
+- Review current event usage, especially projectile spawning.
+- Keep `PlayerEvents` local if only player actions emit through it.
+- Move toward a shared event model only when enemies, weapons, or level objects need the same channel.
+
+### Step 26: Add Tests Around Real Renderer Debug Boxes
+
+Goal:
+
+Protect the shared debug renderer without requiring a full game window.
+
+Tasks:
+
+- Add small tests with fake rect-owning characters and a pygame surface.
+- Verify collision, frame, hurt, and attack boxes draw without errors.
+
+### Step 27: Revisit DamageRequest Adoption
+
+Goal:
+
+Use `DamageRequest` more broadly after more combat features land.
+
+Tasks:
+
+- Consider accepting `DamageRequest` directly in `Player.take_damage` and `Enemy.take_damage`.
+- Keep legacy-friendly adapters until tests and lightweight fakes are migrated.
+- Avoid merging player lives and enemy death/removal behavior.
 
 ## Refactoring Plan
 

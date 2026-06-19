@@ -3,6 +3,7 @@ from game.colors import *
 from game.effects.hit_spark import HitSpark
 from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import *
+from game.combat.damage_request import DamageRequest
 
 def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):
     if facing_right:
@@ -18,21 +19,26 @@ def get_enemy_frame_rect(enemy):
     return enemy.get_logical_rect()
 
 
-def damage_enemy(enemy, damage, attacker_x, hit_reaction=None):
+def damage_enemy(enemy, damage, attacker_x=None, hit_reaction=None):
+    if isinstance(damage, DamageRequest):
+        request = damage
+    else:
+        request = DamageRequest(damage, attacker_x, hit_reaction)
+
     # Most production enemies now accept HitReaction. Some lightweight tests and
     # older enemy-like objects still expose the previous positional API.
-    if hit_reaction is None:
-        enemy.take_damage(damage, attacker_x)
+    if request.reaction is None:
+        enemy.take_damage(request.damage, request.attacker_x)
         return
 
     try:
-        enemy.take_damage(damage, attacker_x, reaction=hit_reaction)
+        enemy.take_damage(request.damage, request.attacker_x, reaction=request.reaction)
     except TypeError:
         enemy.take_damage(
-            damage,
-            attacker_x,
-            hit_reaction.knockback_velocity,
-            hit_reaction.stun_frames,
+            request.damage,
+            request.attacker_x,
+            request.reaction.knockback_velocity,
+            request.reaction.stun_frames,
         )
 
 

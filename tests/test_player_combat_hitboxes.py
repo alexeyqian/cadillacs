@@ -1,6 +1,7 @@
 import unittest
 
 from game.data.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
+from game.settings import PLAYER_HURTBOX_H, PLAYER_HURTBOX_OFFSET_X, PLAYER_HURTBOX_OFFSET_Y, PLAYER_HURTBOX_W
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.components.character_geometry import CharacterGeometry
 
@@ -51,6 +52,16 @@ class FakeOwner:
 
     def get_attack_data(self, attack_name):
         return self.attacks.get(attack_name)
+
+
+class FakeHurtboxOwner:
+    x = 300
+    y = 500
+    facing_right = True
+    hurt_box_w = PLAYER_HURTBOX_W
+    hurt_box_h = PLAYER_HURTBOX_H
+    hurt_box_offset_x = PLAYER_HURTBOX_OFFSET_X
+    hurt_box_offset_y = PLAYER_HURTBOX_OFFSET_Y
 
 
 class PlayerCombatControllerHitboxTests(unittest.TestCase):
@@ -114,6 +125,17 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         attack_rect = hitboxes.get_attack_rect(owner)
 
         self.assertEqual(attack_rect.y, owner.y - owner.air.z + attack_data.hitbox_offset_y)
+
+    def test_player_hurt_rect_comes_from_owner_config(self):
+        owner = FakeHurtboxOwner()
+        hitboxes = CharacterGeometry()
+
+        hurt_rect = hitboxes.get_hurt_rect(owner)
+
+        self.assertEqual(hurt_rect.x, owner.x + PLAYER_HURTBOX_OFFSET_X)
+        self.assertEqual(hurt_rect.y, owner.y + PLAYER_HURTBOX_OFFSET_Y)
+        self.assertEqual(hurt_rect.width, PLAYER_HURTBOX_W)
+        self.assertEqual(hurt_rect.height, PLAYER_HURTBOX_H)
 
 
 if __name__ == "__main__":

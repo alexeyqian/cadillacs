@@ -1,18 +1,17 @@
-from game.settings import WORLD_WIDTH
+from game.components.movement_math import (
+    clamp_to_world_and_lane,
+    face_toward_x,
+    get_distance_to,
+    move_x,
+)
 
 
 class EnemyMovement:
     def get_player_distance(self, owner, player):
-        dx = player.x - owner.x
-        dy = player.y - owner.y
-
-        distance_x = abs(dx)
-        distance_y = abs(dy)
-
-        return dx, dy, distance_x, distance_y
+        return get_distance_to(owner, player)
 
     def face_player(self, owner, player):
-        owner.facing_right = player.x > owner.x
+        face_toward_x(owner, player.x)
 
     def update_patrol(self, owner):
         owner.x += owner.patrol_direction
@@ -44,11 +43,9 @@ class EnemyMovement:
             return
 
         if dx > 0:
-            owner.x += owner.speed
-            owner.facing_right = True
+            move_x(owner, 1, owner.speed)
         elif dx < 0:
-            owner.x -= owner.speed
-            owner.facing_right = False
+            move_x(owner, -1, owner.speed)
 
         if abs(dy) > 10:
             if dy > 0:
@@ -75,11 +72,9 @@ class EnemyMovement:
     def move_toward_point(self, owner, target_x, target_y):
         if abs(owner.x - target_x) > owner.speed:
             if owner.x < target_x:
-                owner.x += owner.speed
-                owner.facing_right = True
+                move_x(owner, 1, owner.speed)
             else:
-                owner.x -= owner.speed
-                owner.facing_right = False
+                move_x(owner, -1, owner.speed)
 
         # Flanking has smoother vertical drift instead of sharp diagonal snapping
         # Slightly slower vertical correction makes enemy movement 
@@ -91,13 +86,11 @@ class EnemyMovement:
                 owner.y -= owner.speed * 0.75
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
-        if world_width is None:
-            world_width = WORLD_WIDTH
-        if lane_top is None or lane_bottom is None:
-            raise ValueError("Enemy.apply_world_bounds requires lane_top and lane_bottom")
-
-        half_w = owner.collision_box_w // 2
-        owner.x = max(half_w, owner.x)
-        owner.x = min(owner.x, world_width - half_w)
-        owner.y = max(lane_top, owner.y)
-        owner.y = min(lane_bottom, owner.y)
+        clamp_to_world_and_lane(
+            owner,
+            world_width,
+            lane_top,
+            lane_bottom,
+            half_width=owner.collision_box_w // 2,
+            owner_name="Enemy",
+        )

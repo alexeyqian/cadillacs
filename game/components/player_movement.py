@@ -1,5 +1,4 @@
 from game.settings import (
-    WORLD_WIDTH,
     RUN_TAP_WINDOW,
     FPS,
     RUN_ATTACK_REQUIRED_DISTANCE,
@@ -8,6 +7,7 @@ from game.settings import (
     ATTACK_3_FORWARD_NUDGE_FRAMES,
     ATTACK_3_FORWARD_NUDGE_SPEED_SCALE,
 )
+from game.components.movement_math import clamp_to_world_and_lane
 
 
 class PlayerMovement:
@@ -308,13 +308,11 @@ class PlayerMovement:
         return bool(self.air_state and self.air_state.is_landing)
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
-        if world_width is None:
-            world_width = WORLD_WIDTH
-        if lane_top is None or lane_bottom is None:
-            raise ValueError("Player.apply_world_bounds requires lane_top and lane_bottom")
-
-        half_w = int(owner.width / 2)
-        owner.x = max(half_w, owner.x)
-        owner.x = min(owner.x, world_width - half_w)
-        owner.y = max(lane_top, owner.y)
-        owner.y = min(lane_bottom, owner.y)
+        clamp_to_world_and_lane(
+            owner,
+            world_width,
+            lane_top,
+            lane_bottom,
+            half_width=int(owner.width / 2),
+            owner_name="Player",
+        )

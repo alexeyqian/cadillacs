@@ -2,6 +2,7 @@ import pygame
 import game.settings as settings
 from game.settings import *
 from game.colors import *
+from game.components.debug_renderer import CharacterDebugRenderer
 
 class PlayerRenderer:
     #World:   [--------------------PLAYER----]
@@ -70,48 +71,12 @@ class PlayerRenderer:
         if not settings.SHOW_COMBAT_BOXES:
             return
 
-        collision_rect = player.get_collision_rect()
-        body_rect = player.get_frame_rect()
-        hurt_rect = player.get_hurt_rect()
-        attack_rect = player.get_attack_rect()
-
-        # blue = collision / feet box
-        pygame.draw.rect(screen, BLUE_COLOR, (
-            collision_rect.x - camera_x,
-            collision_rect.y,
-            collision_rect.width,
-            collision_rect.height
-        ), 1)
-        # small feet anchor marker
-        pygame.draw.circle(
+        CharacterDebugRenderer().draw_combat_boxes(
+            player,
             screen,
-            WHITE_COLOR,
-            (int(player.x - camera_x), int(player.y)),
-            3
+            camera_x,
+            line_width=2,
         )
-
-        # white = full animation frame / visual reference
-        pygame.draw.rect(screen, WHITE_COLOR, (
-            body_rect.x - camera_x,
-            body_rect.y,
-            body_rect.width,
-            body_rect.height
-        ), 1)
-
-        pygame.draw.rect(screen, GREEN_COLOR, (
-            hurt_rect.x - camera_x,
-            hurt_rect.y,
-            hurt_rect.width,
-            hurt_rect.height
-        ), 2)
-
-        if attack_rect:
-            pygame.draw.rect(screen, RED_COLOR, (
-                attack_rect.x - camera_x,
-                attack_rect.y,
-                attack_rect.width,
-                attack_rect.height
-            ), 2)
 
         #timing_label = player.combat.get_attack_timing_label()
         #if timing_label:

@@ -22,10 +22,15 @@ def update_gameplay(game_state, keys):
     old_x = game_state.player.x
     old_y = game_state.player.y
     player_input = PlayerInput(keys)
+
+    # update player
     game_state.player.update(player_input)
     # moved from player.py
     apply_player_level_bounds(game_state)
+    
+    # update enemies
     update_enemy_system(game_state)
+
     resolve_enemy_enemy_collisions(game_state)
     apply_enemy_level_bounds(game_state)
     resolve_player_enemy_collisions(game_state, old_x, old_y)
@@ -34,7 +39,9 @@ def update_gameplay(game_state, keys):
     collect_player_projectiles(game_state)
     update_projectiles(game_state)
 
+    # important: handle attack
     handle_player_attack_collision(game_state)
+
     handle_player_projectile_collision(game_state)
     handle_enemy_projectile_collision(game_state)
     create_explosions_from_objects(game_state)
