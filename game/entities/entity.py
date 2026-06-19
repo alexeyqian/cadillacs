@@ -1,13 +1,5 @@
-class Entity:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.width = 0
-        self.height = 0
+from game.entities.game_object import GameObject
 
-    def update(self):
-        pass
 
-    def draw(self):
-        pass
-
+# Compatibility alias while the codebase migrates to GameObject.
+Entity = GameObject
