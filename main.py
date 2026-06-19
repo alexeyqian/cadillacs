@@ -5,7 +5,7 @@ import game.settings as settings
 from game.settings import *
 from game.camera import Camera
 from game.level.level import Level
-from game.entities.player_factory import PlayerFactory
+from game.factories.player_factory import PlayerFactory
 from game.entities.weapon import Weapon
 from game.entities.breakable_object import BreakableObject
 from game.entities.explosive_barrel import ExplosiveBarrel

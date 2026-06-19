@@ -1,6 +1,6 @@
 from game.entities.mustapha_player import MustaphaPlayer
-from game.entities.player_config import DEFAULT_PLAYER_TYPE, get_player_config
-from game.entities.player_factory import PlayerFactory
+from game.data.player_config import DEFAULT_PLAYER_TYPE, get_player_config
+from game.factories.player_factory import PlayerFactory
 
 
 class FakePlayer:

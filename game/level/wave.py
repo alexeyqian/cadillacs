@@ -2,7 +2,7 @@ from dataclasses import dataclass
 import random
 from typing import Optional
 
-from game.entities.enemy_factory import EnemyFactory
+from game.factories.enemy_factory import EnemyFactory
 from game.settings import LANE_BOTTOM, LANE_TOP, SCREEN_WIDTH
 
 @dataclass

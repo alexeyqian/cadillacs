@@ -1,5 +1,5 @@
-from game.entities.enemy_config import DEFAULT_ENEMY_TYPE, get_enemy_config
-from game.entities.enemy_factory import EnemyFactory
+from game.data.enemy_config import DEFAULT_ENEMY_TYPE, get_enemy_config
+from game.factories.enemy_factory import EnemyFactory
 from game.entities.ferris_enemy import FerrisEnemy
 from game.entities.raptor_enemy import RaptorEnemy
 

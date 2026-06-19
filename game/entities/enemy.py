@@ -1,6 +1,6 @@
 from game.settings import *
 from game.entities.character import Character
-from game.entities.enemy_config import get_enemy_config
+from game.data.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_health import EnemyHealth
 from game.entities.enemy_geometry import EnemyGeometry

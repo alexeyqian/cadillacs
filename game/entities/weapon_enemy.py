@@ -1,5 +1,5 @@
 from game.entities.enemy import Enemy
-from game.entities.enemy_config import get_enemy_config
+from game.data.enemy_config import get_enemy_config
 
 
 class WeaponEnemy(Enemy):
