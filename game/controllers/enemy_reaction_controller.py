@@ -2,6 +2,11 @@ from game.combat.hit_reaction import HitReaction, normalize_hit_reaction
 
 
 class EnemyReactionController:
+    def __init__(self):
+        self.flinch_damage_threshold = 0
+        self.attack_flinch_damage_threshold = 0
+        self.knockdown_damage_threshold = 40
+
     def die(self, owner):
         self.cancel_attack(owner)
         owner.health.hp = 0
@@ -75,17 +80,12 @@ class EnemyReactionController:
         owner.life_cycle.apply_knockback(owner)
 
     def should_knockdown_from_damage(self, damage):
-        return damage >= 40
+        return damage >= self.knockdown_damage_threshold
 
     def get_flinch_threshold(self, owner):
         if owner.state == owner.ATTACK:
-            return getattr(
-                owner,
-                "attack_flinch_damage_threshold",
-                getattr(owner, "flinch_damage_threshold", 0),
-            )
-
-        return getattr(owner, "flinch_damage_threshold", 0)
+            return self.attack_flinch_damage_threshold
+        return self.flinch_damage_threshold
 
     def knockdown(self, owner):
         if owner.state == owner.DEAD:
@@ -149,20 +149,13 @@ class EnemyReactionController:
             self.die(owner)
 
     def cancel_attack(self, owner):
-        if hasattr(owner, "combat_controller"):
-            owner.combat_controller.cancel_attack_timing(owner)
+        owner.combat_controller.cancel_attack_timing(owner)
 
     def reset_attack_decision(self, owner):
-        if hasattr(owner, "combat_controller"):
-            owner.combat_controller.reset_decision_timer(owner)
-        else:
-            owner.attack_decision_timer = 0
+        owner.state_controller.reset_decision_timer()
 
     def release_attack_slot(self, owner):
-        if hasattr(owner, "combat_controller"):
-            owner.combat_controller.release_attack_slot(owner)
-        else:
-            owner.has_attack_slot = False
+        owner.combat_controller.release_attack_slot(owner)
 
     def set_action_lock_remaining(self, owner, value):
         owner.life_cycle.set_action_lock(value)

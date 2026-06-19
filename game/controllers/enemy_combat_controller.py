@@ -2,22 +2,25 @@ from game.combat.attack_manager import AttackManager
 
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.combat.damage_request import DamageRequest
+from game.settings import ENEMY_ATTACK_LANE_RANGE, ENEMY_ATTACK_RANGE
 
 
 class EnemyCombatController:
     def __init__(self, attack_data=None):
         self.attack_manager = AttackManager()
         self.attack_data = attack_data
-        self.decision_timer = 0
         self.already_hit = False
         self.cooldown = 0
         self.has_attack_slot = False
+        self.attack_range = ENEMY_ATTACK_RANGE
+        self.attack_lane_range = ENEMY_ATTACK_LANE_RANGE
+        self.melee_attack_slot_limit = None
 
     def start_attack(self, owner):
         owner.state = owner.ATTACK
         self.clear_hit_state(owner)
         self.reserve_attack_slot(owner, self.uses_melee_attack_slot(owner))
-        self.reset_decision_timer(owner)
+        owner.state_controller.reset_decision_timer()
         self.start_attack_timing(owner)
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
@@ -27,7 +30,7 @@ class EnemyCombatController:
         owner.state = owner.RECOIL
         self.set_action_lock_remaining(owner, attack_data.cooldown)
         self.cancel_attack_timing(owner)
-        self.reset_decision_timer(owner)
+        owner.state_controller.reset_decision_timer()
         self.clear_hit_state(owner)
         self.release_attack_slot(owner)
         self.set_cooldown(owner, max(
@@ -105,9 +108,6 @@ class EnemyCombatController:
 
     def set_attack_timer(self, owner, value):
         self.attack_manager.elapsed_frames = value
-
-    def reset_decision_timer(self, owner):
-        self.decision_timer = 0
 
     def has_attack_hit(self, owner):
         return self.already_hit

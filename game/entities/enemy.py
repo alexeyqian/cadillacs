@@ -87,18 +87,18 @@ class Enemy(Character, EnemyState):
         )
 
     def apply_combat_config(self, config):
-        self.attack_range = config.attack_range
-        self.attack_lane_range = config.attack_lane_range
-
         self.combat_controller.attack_data = config.attack
+        self.combat_controller.attack_range = config.attack_range
+        self.combat_controller.attack_lane_range = config.attack_lane_range
+        self.combat_controller.melee_attack_slot_limit = config.melee_attack_slot_limit
 
-        self.flinch_damage_threshold = config.flinch_damage_threshold
-        self.attack_flinch_damage_threshold = (
+        self.reaction_controller.flinch_damage_threshold = config.flinch_damage_threshold
+        self.reaction_controller.attack_flinch_damage_threshold = (
             config.attack_flinch_damage_threshold
             if config.attack_flinch_damage_threshold is not None
             else config.flinch_damage_threshold
         )
-        self.melee_attack_slot_limit = getattr(config, "melee_attack_slot_limit", None)
+        self.reaction_controller.knockdown_damage_threshold = config.knockdown_damage_threshold
 
     def apply_reward_config(self, config):
         self.score_points = config.score_points

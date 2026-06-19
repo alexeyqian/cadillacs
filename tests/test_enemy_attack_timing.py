@@ -57,11 +57,7 @@ class FakeEnemy:
         self.state = self.IDLE
         self.x = 0
         self.y = 0
-        self.attack_range = 40
-        self.attack_lane_range = 20
         self.health = FakeHealth()
-        self.flinch_damage_threshold = 0
-        self.attack_flinch_damage_threshold = 0
         self.life_cycle = EnemyLifeCycle()
         self.animation_controller = FakeAnimationController()
         self.attack_data = replace(
@@ -74,6 +70,10 @@ class FakeEnemy:
             damage=10,
         )
         self.combat_controller = EnemyCombatController(self.attack_data)
+        self.combat_controller.attack_range = 40
+        self.combat_controller.attack_lane_range = 20
+        self.reaction_controller = EnemyReactionController()
+        self.state_controller = EnemyStateController()
 
     def face_player(self, player):
         self.facing_right = player.x > self.x
@@ -155,20 +155,20 @@ class FakeRaptor:
 class EnemyAttackTimingTests(unittest.TestCase):
     def test_attack_delay_waits_before_starting_attack(self):
         enemy = FakeEnemy()
-        resolver = EnemyStateController()
+        resolver = enemy.state_controller
 
         resolver.prepare_or_start_attack(enemy)
         self.assertEqual(enemy.state, enemy.IDLE)
-        self.assertEqual(enemy.combat_controller.decision_timer, 1)
+        self.assertEqual(resolver.decision_timer, 1)
 
         resolver.prepare_or_start_attack(enemy)
         self.assertEqual(enemy.state, enemy.IDLE)
-        self.assertEqual(enemy.combat_controller.decision_timer, 2)
+        self.assertEqual(resolver.decision_timer, 2)
 
         resolver.prepare_or_start_attack(enemy)
         self.assertEqual(enemy.state, enemy.ATTACK)
         self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
-        self.assertEqual(enemy.combat_controller.decision_timer, 0)
+        self.assertEqual(resolver.decision_timer, 0)
 
     def test_enemy_attack_damages_only_during_active_frames(self):
         enemy = FakeEnemy()
@@ -224,7 +224,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy = FakeEnemy()
         enemy.state = enemy.ATTACK
         enemy.combat_controller.set_attack_timer(enemy, 4)
-        enemy.combat_controller.decision_timer = 2
+        enemy.state_controller.decision_timer = 2  # pre-set AI decision progress
         enemy.combat_controller.already_hit = True
         enemy.combat_controller.has_attack_slot = True
         controller = enemy.combat_controller
@@ -234,7 +234,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertEqual(enemy.state, enemy.RECOIL)
         self.assertEqual(enemy.life_cycle.action_lock_remaining, enemy.attack_data.cooldown)
         self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
-        self.assertEqual(enemy.combat_controller.decision_timer, 0)
+        self.assertEqual(enemy.state_controller.decision_timer, 0)
         self.assertFalse(enemy.combat_controller.already_hit)
         self.assertFalse(enemy.combat_controller.has_attack_slot)
         self.assertEqual(enemy.combat_controller.cooldown, enemy.attack_data.cooldown)
@@ -253,16 +253,16 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
     def test_heavy_attack_poise_ignores_light_flinch_during_attack(self):
         enemy = FakeEnemy()
-        enemy.flinch_damage_threshold = 10
-        enemy.attack_flinch_damage_threshold = BAT_DAMAGE
+        enemy.reaction_controller.flinch_damage_threshold = 10
+        enemy.reaction_controller.attack_flinch_damage_threshold = BAT_DAMAGE
         enemy.start_attack()
 
-        EnemyReactionController().take_damage(enemy, BAT_DAMAGE - 1, attacker_x=-100)
+        enemy.reaction_controller.take_damage(enemy, BAT_DAMAGE - 1, attacker_x=-100)
 
         self.assertEqual(enemy.state, enemy.ATTACK)
         self.assertTrue(enemy.combat_controller.attack_manager.is_attacking)
 
-        EnemyReactionController().take_damage(enemy, BAT_DAMAGE, attacker_x=-100)
+        enemy.reaction_controller.take_damage(enemy, BAT_DAMAGE, attacker_x=-100)
 
         self.assertEqual(enemy.state, enemy.HIT)
         self.assertFalse(enemy.combat_controller.attack_manager.is_attacking)

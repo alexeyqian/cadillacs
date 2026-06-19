@@ -60,13 +60,12 @@ class EnemyConfig:
     attack_range:int = ENEMY_ATTACK_RANGE
     attack_lane_range:int = ENEMY_ATTACK_LANE_RANGE
 
-    # todo: move to enemy reactions
-    # give heavy enemies poise, so weak punches still deal damage 
+    # give heavy enemies poise, so weak punches still deal damage
     # but do not always interrupt them.
     flinch_damage_threshold: int = 0
-    # todo: should be single int
     attack_flinch_damage_threshold: Optional[int] = None
-    # it should be field of EnemyCombatController
+    knockdown_damage_threshold: int = 40
+
     max_melee_attackers:int = 2 # move to stage config?
     melee_attack_slot_limit: Optional[int] = None
 # Each enemy archetype has a readable combat rhythm:

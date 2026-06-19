@@ -1,6 +1,12 @@
 from game.settings import *
 
 class EnemyStateController:
+    def __init__(self):
+        self.decision_timer = 0
+
+    def reset_decision_timer(self):
+        self.decision_timer = 0
+
     def choose_state(self, owner, level, player, distance_x, distance_y, enemies):
         if owner.state == owner.ATTACK:
             return
@@ -44,7 +50,7 @@ class EnemyStateController:
     def can_attack_player(self, owner, level, player, distance_x, distance_y, enemies):
         if self.get_attack_cooldown(owner) > 0:
             return False
-        if distance_x > owner.attack_range:
+        if distance_x > owner.combat_controller.attack_range:
             return False
         lane_distance = level.get_lane_distance(owner.y, player.y)
         if lane_distance > owner.combat_controller.get_attack_data(owner).lane_reach:
@@ -95,7 +101,7 @@ class EnemyStateController:
         dx = abs(enemy.x - player.x)
         dy = abs(enemy.y - player.y)
 
-        return dx <= enemy.attack_range and dy <= enemy.attack_lane_range
+        return dx <= enemy.combat_controller.attack_range and dy <= enemy.combat_controller.attack_lane_range
     
     #  enemies prefer opposite sides
     # This prevents same-side dogpiles
@@ -113,7 +119,7 @@ class EnemyStateController:
         return False
     
     def get_melee_attack_slot_limit(self, owner):
-        return getattr(owner, "melee_attack_slot_limit", None) or MAX_MELEE_ATTACKERS
+        return owner.combat_controller.melee_attack_slot_limit or MAX_MELEE_ATTACKERS
     
     def count_active_melee_attackers(self, enemies):
         count = 0
@@ -127,11 +133,11 @@ class EnemyStateController:
             return False
         if not self.uses_melee_attack_slot(owner):
             return False
-        if distance_x > owner.attack_range:
+        if distance_x > owner.combat_controller.attack_range:
             return False
-        # Why: enemies slightly above/below the attack lane should still 
+        # Why: enemies slightly above/below the attack lane should still
         # try to flank into position instead of giving up immediately.
-        if distance_y > owner.attack_lane_range + ENEMY_FLANK_Y_TOLERANCE:
+        if distance_y > owner.combat_controller.attack_lane_range + ENEMY_FLANK_Y_TOLERANCE:
             return False
         if self.count_active_melee_attackers(enemies) < self.get_melee_attack_slot_limit(owner):
             return False
@@ -142,24 +148,13 @@ class EnemyStateController:
         return getattr(owner, "combat_controller", None)
 
     def reset_attack_decision(self, owner):
-        combat = self.get_combat(owner)
-        if combat:
-            combat.reset_decision_timer(owner)
-        else:
-            owner.attack_decision_timer = 0
+        self.decision_timer = 0
 
     def increment_attack_decision(self, owner):
-        combat = self.get_combat(owner)
-        if combat:
-            combat.decision_timer += 1
-        else:
-            owner.attack_decision_timer += 1
+        self.decision_timer += 1
 
     def get_attack_decision(self, owner):
-        combat = self.get_combat(owner)
-        if combat:
-            return combat.decision_timer
-        return owner.attack_decision_timer
+        return self.decision_timer
 
     def get_required_attack_delay(self, owner, player=None):
         return owner.combat_controller.get_attack_data(owner).delay
