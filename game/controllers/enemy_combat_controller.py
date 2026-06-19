@@ -42,7 +42,7 @@ class EnemyCombatController:
     # Enemy attack only damages during active frames
     # Enemy attack has explicit recovery before it can act again
     def update_attack(self, owner, level, player):
-        owner.face_player(player)
+        owner.movement.face_player(owner, player)
         attack_finished = self.advance_attack_timing(owner)
 
         attack_rect = owner.get_attack_rect()

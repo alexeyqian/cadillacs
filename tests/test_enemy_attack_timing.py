@@ -31,6 +31,11 @@ class FakeAnimationController:
         self.reset = True
 
 
+class FakeMovement:
+    def face_player(self, owner, player):
+        pass
+
+
 class FakeHealth:
     def __init__(self, hp=100):
         self.hp = hp
@@ -69,6 +74,7 @@ class FakeEnemy:
             cooldown=30,
             damage=10,
         )
+        self.movement = FakeMovement()
         self.combat_controller = EnemyCombatController(self.attack_data)
         self.combat_controller.attack_range = 40
         self.combat_controller.attack_lane_range = 20
@@ -218,7 +224,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
         enemy.combat_controller = EnemyCombatController(attack_data)
 
-        self.assertEqual(enemy.get_attack_total_duration(), 6)
+        self.assertEqual(enemy.combat_controller.get_attack_data(enemy).total_duration, 6)
 
     def test_clash_recovery_cancels_enemy_attack(self):
         enemy = FakeEnemy()

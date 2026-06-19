@@ -89,7 +89,7 @@ def handle_player_attack_collision(game_state):
                 enemy.combat_controller.get_attack_data(enemy).lane_reach,
             )
             if (lane_distance <= clash_lane_reach
-                and enemy.is_attack_active()
+                and enemy.combat_controller.is_attack_active(enemy)
                 and attack_rect.colliderect(enemy_attack_rect)):
                 # Expected behavior
                 # Clash -> player gets 8 frames recovery
@@ -97,7 +97,7 @@ def handle_player_attack_collision(game_state):
                 # Both sides separate mentally for a beat
                 # No one takes damage
                 player.combat_controller.start_clash_recovery(player)
-                enemy.start_clash_recovery()
+                enemy.combat_controller.start_clash_recovery(enemy)
                 create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right, YELLOW_COLOR)
                 # used for debug
                 game_state.floating_texts.append(

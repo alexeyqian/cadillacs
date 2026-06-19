@@ -168,28 +168,12 @@ class Enemy(Character, EnemyState):
     def take_grab_knee_damage(self, damage):
         self.reaction_controller.take_grab_knee_damage(self, damage)
 
-    # Movement / state decisions
-    def face_player(self, player):
-        self.movement.face_player(self, player)
-
     # Combat
     def start_attack(self):
         self.combat_controller.start_attack(self)
 
-    def start_clash_recovery(self):
-        self.combat_controller.start_clash_recovery(self)
-
     def update_attack(self, level, player):
         self.combat_controller.update_attack(self, level, player)
-
-    def is_attack_active(self):
-        return self.combat_controller.is_attack_active(self)
-
-    def get_attack_total_duration(self):
-        return self.combat_controller.get_attack_data(self).total_duration
-
-    def get_attack_phase_name(self):
-        return self.combat_controller.get_attack_phase_name(self)
 
     def get_attack_timing_label(self):
         return self.combat_controller.get_attack_timing_label(self)
@@ -197,9 +181,6 @@ class Enemy(Character, EnemyState):
     # Rendering / animation / geometry
     def get_current_frame_data(self):
         return self.animation_controller.get_current_frame_data()
-
-    def update_animation(self):
-        self.animation_controller.update(self)
 
     # Loot
     def create_loot(self):
