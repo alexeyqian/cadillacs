@@ -13,11 +13,11 @@ from game.entities.enemy_coordination import EnemyCoordination
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
-from game.controllers.enemy_state_resolver import EnemyStateResolver
+from game.controllers.enemy_state_controller import EnemyStateController
 from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.hit_reaction import normalize_hit_reaction
 
-# State resolver: decides what state the enemy wants
+# State controller: decides what state the enemy wants
 # Movement: changes x/y/facing
 # Combat: handles attack hit detection
 # Lifecycle: advances temporary states
@@ -74,7 +74,7 @@ class Enemy(Character):
         self.flanking = EnemyFlanking()
         self.reactions = EnemyReactionController()
         self.lifecycle = EnemyLifecycleController()
-        self.state_resolver = EnemyStateResolver()
+        self.state_controller = EnemyStateController()
         self.loot_controller = EnemyLootController()
         self.coordination = EnemyCoordination()
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
@@ -177,7 +177,7 @@ class Enemy(Character):
         self.movement.face_player(self, player)
 
     def choose_state(self, level, player, distance_x, distance_y, enemies):
-        self.state_resolver.choose_state(
+        self.state_controller.choose_state(
             self, level, player, distance_x, distance_y, enemies
         )
 

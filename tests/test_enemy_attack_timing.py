@@ -7,7 +7,7 @@ from game.entities.enemy import Enemy
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
-from game.controllers.enemy_state_resolver import EnemyStateResolver
+from game.controllers.enemy_state_controller import EnemyStateController
 from game.entities.raptor_enemy import RaptorEnemy
 from game.settings import BAT_DAMAGE
 
@@ -156,7 +156,7 @@ class FakeRaptor:
 class EnemyAttackTimingTests(unittest.TestCase):
     def test_attack_delay_waits_before_starting_attack(self):
         enemy = FakeEnemy()
-        resolver = EnemyStateResolver()
+        resolver = EnemyStateController()
 
         resolver.prepare_or_start_attack(enemy)
         self.assertEqual(enemy.state, enemy.IDLE)
@@ -299,7 +299,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy = FakeEnemy()
         player = FakePlayer()
         player.combat = FakePlayerCombat("RECOVERY")
-        resolver = EnemyStateResolver()
+        resolver = EnemyStateController()
 
         self.assertEqual(resolver.get_required_attack_delay(enemy, player), enemy.attack_data.delay)
 
@@ -307,7 +307,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy = FakeEnemy()
         player = FakePlayer()
         player.combat = FakePlayerCombat("ACTIVE")
-        resolver = EnemyStateResolver()
+        resolver = EnemyStateController()
 
         self.assertEqual(resolver.get_required_attack_delay(enemy, player), enemy.attack_data.delay)
 

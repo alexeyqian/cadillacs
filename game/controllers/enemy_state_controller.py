@@ -1,6 +1,6 @@
 from game.settings import *
 
-class EnemyStateResolver:
+class EnemyStateController:
     def choose_state(self, owner, level, player, distance_x, distance_y, enemies):
         if owner.state == owner.ATTACK:
             return

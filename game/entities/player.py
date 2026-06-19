@@ -11,7 +11,7 @@ from game.controllers.player_grab_controller import PlayerGrabController
 from game.controllers.player_animation_controller import PlayerAnimationController
 from game.entities.player_renderer import PlayerRenderer
 from game.controllers.player_action_controller import PlayerActionController
-from game.controllers.player_state_resolver import PlayerStateResolver
+from game.controllers.player_state_controller import PlayerStateController
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
 from game.entities.player_events import PlayerEvents
 from game.entities.player_state_machine import PlayerStateMachine
@@ -101,7 +101,7 @@ class Player(Character):
         self.combat = PlayerCombatController()
         self.action_controller = PlayerActionController()
         self.grab = PlayerGrabController()
-        self.state_resolver = PlayerStateResolver()
+        self.state_controller = PlayerStateController()
         self.lifecycle = PlayerLifecycleController(self.x, self.y)
         self.weapon_slot = PlayerWeaponSlot()
         self.events = PlayerEvents()
@@ -124,7 +124,7 @@ class Player(Character):
         moving = self.movement.update_movement(self, player_input)
         self.action_controller.update(self, player_input)
         self.movement.update_jump_physics(self, player_input)
-        self.state_resolver.update_after_movement(self, moving)
+        self.state_controller.update_after_movement(self, moving)
         self.grab.update_grabbed_enemy_position(self)
         self.animation_controller.update(self)
 

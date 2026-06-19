@@ -32,7 +32,7 @@ Current package ownership:
 
 ```text
 game/entities/     world objects and entity-owned data
-game/controllers/  per-entity controllers and state resolvers
+game/controllers/  per-entity controllers and state controllers
 game/combat/       attack data, timing, hit reactions, and hitbox helpers
 game/data/         player and enemy config registries
 game/factories/    player and enemy construction registries
@@ -181,7 +181,7 @@ CombatController
 LifecycleController
 AnimationController
 Renderer
-StateResolver
+StateController
 ReactionController
 Health
 WeaponSlot
@@ -242,13 +242,13 @@ game/
     player_combat_controller.py
     player_grab_controller.py
     player_lifecycle_controller.py
-    player_state_resolver.py
+    player_state_controller.py
     enemy_animation_controller.py
     enemy_combat_controller.py
     enemy_lifecycle_controller.py
     enemy_loot_controller.py
     enemy_reaction_controller.py
-    enemy_state_resolver.py
+    enemy_state_controller.py
 
   systems/
     combat_system.py
@@ -347,7 +347,7 @@ Examples:
 
 ```text
 PlayerActionController
-EnemyStateResolver
+EnemyStateController
 EnemyReactionController
 ```
 
@@ -417,13 +417,13 @@ game/controllers/player_animation_controller.py
 game/controllers/player_combat_controller.py
 game/controllers/player_grab_controller.py
 game/controllers/player_lifecycle_controller.py
-game/controllers/player_state_resolver.py
+game/controllers/player_state_controller.py
 game/controllers/enemy_animation_controller.py
 game/controllers/enemy_combat_controller.py
 game/controllers/enemy_lifecycle_controller.py
 game/controllers/enemy_loot_controller.py
 game/controllers/enemy_reaction_controller.py
-game/controllers/enemy_state_resolver.py
+game/controllers/enemy_state_controller.py
 game/combat/attack_data.py
 game/combat/attack_manager.py
 game/combat/combat_geometry.py
@@ -612,7 +612,7 @@ Prefer config plus replaceable behavior:
 
 ```python
 enemy = Enemy(..., enemy_type="gneiss")
-enemy.state_resolver = EnemyStateResolver(...)
+enemy.state_controller = EnemyStateController(...)
 enemy.combat.attack_data = config.attack
 ```
 
@@ -624,6 +624,126 @@ ENEMY_AI_REGISTRY = {
     "charger": ChargerAI,
     "ranged": RangedAI,
 }
+```
+
+## Remaining Refactoring Plan
+
+These steps start from the current codebase after the controller, combat, data, factory, and manager folder migrations. Each step is medium-sized and should keep the game playable.
+
+### Step 13: Create The Components Package And Move Shared Character State
+
+Goal:
+
+Create `game/components/` with the smallest safe shared pieces first.
+
+Tasks:
+
+- Create `game/components/__init__.py`.
+- Move `character_health.py` to `game/components/health.py`.
+- Move `character_state.py` to `game/components/character_state.py`.
+- Update `Player`, `Enemy`, `EnemyState`, tests, and any imports.
+- Keep `PlayerHealth` and `EnemyHealth` in `entities/` for now because lives and enemy removal still differ.
+
+Expected result:
+
+```text
+game/components exists and contains only truly shared character concepts.
+```
+
+### Step 14: Move Geometry Components
+
+Goal:
+
+Put reusable hitbox, hurtbox, and frame-rectangle ownership in the component layer.
+
+Tasks:
+
+- Move `player_geometry.py` and `enemy_geometry.py` into `game/components/`.
+- Keep their class names as `PlayerGeometry` and `EnemyGeometry` unless a shared `CharacterGeometry` naturally falls out.
+- Update imports in `Player`, `Enemy`, and geometry/combat tests.
+- Review duplicated geometry method names and extract shared helpers only if it reduces code.
+
+Expected result:
+
+```text
+Entity classes still expose geometry methods, but the geometry implementation lives under components.
+```
+
+### Step 15: Move Movement And Air/Flanking Components
+
+Goal:
+
+Move movement-related state and behavior out of `entities/` without merging player and enemy movement too early.
+
+Tasks:
+
+- Move `player_movement.py`, `enemy_movement.py`, `player_air_state.py`, and `enemy_flanking.py` into `game/components/`.
+- Keep names player/enemy-specific because input-driven movement and AI movement still differ.
+- Update imports and targeted movement tests.
+- Consider a tiny shared movement helper only for simple bounds or facing math if duplication becomes obvious.
+
+Expected result:
+
+```text
+Movement behavior is component-owned, while Player and Enemy remain coordinators.
+```
+
+### Step 16: Move Renderer And Lifecycle State Components
+
+Goal:
+
+Move rendering helpers and pure lifecycle state holders into the component layer.
+
+Tasks:
+
+- Move `player_renderer.py` and `enemy_renderer.py` into `game/components/`.
+- Move `enemy_lifecycle_state.py` into `game/components/`.
+- Keep lifecycle controllers in `game/controllers/` because they actively drive behavior.
+- Update imports and render/lifecycle tests.
+
+Expected result:
+
+```text
+Render helpers and passive lifecycle data sit under components; behavior controllers stay under controllers.
+```
+
+### Step 17: Review Player-Specific Data Components
+
+Goal:
+
+Decide which player-only helpers are reusable components versus entity-local data.
+
+Tasks:
+
+- Review `player_input_state.py`, `player_events.py`, `player_weapon_slot.py`, and `player_state_machine.py`.
+- Move `player_weapon_slot.py` into `game/components/` if weapon ownership is expected to be shared later by enemies or pickups.
+- Keep `player_input_state.py` near player/input code unless an input package is introduced.
+- Keep `player_events.py` near player until events become a broader game event model.
+- Move `player_state_machine.py` only if a shared state machine abstraction is introduced.
+
+Expected result:
+
+```text
+Only component-shaped files move; player-only coordination details do not move just for tidiness.
+```
+
+### Step 18: Remove Compatibility Dust And Update Tests/Docs
+
+Goal:
+
+Finish the component migration cleanly.
+
+Tasks:
+
+- Search for stale imports from old `game/entities/*` component paths.
+- Remove empty folders or temporary wrappers if any were created.
+- Update `design.md` current status and completed migration notes.
+- Run the full test suite.
+
+Expected result:
+
+```text
+The component folder is active, imports are clean, and tests pass.
 ```
 
 ## Refactoring Plan
@@ -731,7 +851,7 @@ Tasks:
   - `EnemyCombatController`
   - `EnemyReactionController`
   - `EnemyLifecycleController`
-  - `EnemyStateResolver`
+  - `EnemyStateController`
   - `EnemyAnimationController`
   - `EnemyRenderer`
 - Replace duplicate geometry/render wrapper methods only if the base class can do it cleanly.
@@ -959,7 +1079,7 @@ Player
   air
 
 Enemy
-  state_resolver
+  state_controller
   reactions
   flanking
   coordination
