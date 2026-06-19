@@ -1,22 +1,22 @@
 from game.settings import *
 from game.entities.character import Character
-from game.entities.character_state import CharacterState
+from game.components.character_state import CharacterState
 from game.data.player_config import get_player_config
-from game.entities.player_geometry import PlayerGeometry
+from game.components.character_geometry import CharacterGeometry
 from game.entities.player_health import PlayerHealth
-from game.entities.player_weapon_slot import PlayerWeaponSlot
-from game.entities.player_movement import PlayerMovement
+from game.components.player_weapon_slot import PlayerWeaponSlot
+from game.components.player_movement import PlayerMovement
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.controllers.player_grab_controller import PlayerGrabController
 from game.controllers.player_animation_controller import PlayerAnimationController
-from game.entities.player_renderer import PlayerRenderer
+from game.components.player_renderer import PlayerRenderer
 from game.controllers.player_action_controller import PlayerActionController
 from game.controllers.player_state_controller import PlayerStateController
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
 from game.entities.player_events import PlayerEvents
 from game.entities.player_state_machine import PlayerStateMachine
 from game.entities.player_input_state import PlayerInputState
-from game.entities.player_air_state import PlayerAirState
+from game.components.player_air_state import PlayerAirState
 
 class Player(Character):
     IDLE = CharacterState.IDLE
@@ -105,7 +105,7 @@ class Player(Character):
         self.lifecycle = PlayerLifecycleController(self.x, self.y)
         self.weapon_slot = PlayerWeaponSlot()
         self.events = PlayerEvents()
-        self.geometry = PlayerGeometry()
+        self.geometry = CharacterGeometry()
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 

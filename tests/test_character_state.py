@@ -1,4 +1,4 @@
-from game.entities.character_state import CharacterState
+from game.components.character_state import CharacterState
 from game.entities.enemy_state import EnemyState
 from game.entities.player import Player
 from game.entities.player_state_machine import PlayerStateMachine

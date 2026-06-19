@@ -3,7 +3,7 @@ from dataclasses import replace
 
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.controllers.enemy_combat_controller import EnemyCombatController
-from game.entities.enemy_geometry import EnemyGeometry
+from game.components.character_geometry import CharacterGeometry
 from game.entities.enemy_state import EnemyState
 
 
@@ -40,14 +40,14 @@ class EnemyCombatHitboxTests(unittest.TestCase):
     def test_attack_rect_is_empty_during_enemy_windup(self):
         enemy = FakeEnemy()
         enemy.combat.start_attack_timing(enemy)
-        hitboxes = EnemyGeometry()
+        hitboxes = CharacterGeometry()
 
         self.assertIsNone(hitboxes.get_attack_rect(enemy))
 
     def test_enemy_attack_rect_comes_from_attack_data_during_active_window(self):
         enemy = FakeEnemy()
         enemy.combat.start_attack_timing(enemy)
-        hitboxes = EnemyGeometry()
+        hitboxes = CharacterGeometry()
 
         for _ in range(enemy.attack_data.windup):
             enemy.combat.advance_attack_timing(enemy)
@@ -61,7 +61,7 @@ class EnemyCombatHitboxTests(unittest.TestCase):
         enemy = FakeEnemy()
         enemy.facing_right = False
         enemy.combat.start_attack_timing(enemy)
-        hitboxes = EnemyGeometry()
+        hitboxes = CharacterGeometry()
 
         for _ in range(enemy.attack_data.windup):
             enemy.combat.advance_attack_timing(enemy)

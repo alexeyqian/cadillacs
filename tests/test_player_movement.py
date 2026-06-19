@@ -1,8 +1,8 @@
 import unittest
 
 from game.settings import RUN_ATTACK_MOMENTUM_FRAMES, RUN_ATTACK_MOMENTUM_SPEED_SCALE
-from game.entities.player_air_state import PlayerAirState
-from game.entities.player_movement import PlayerMovement
+from game.components.player_air_state import PlayerAirState
+from game.components.player_movement import PlayerMovement
 
 
 class FakeCombat:

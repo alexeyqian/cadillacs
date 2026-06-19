@@ -3,12 +3,12 @@ from game.entities.character import Character
 from game.data.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_health import EnemyHealth
-from game.entities.enemy_geometry import EnemyGeometry
+from game.components.character_geometry import CharacterGeometry
 from game.controllers.enemy_animation_controller import EnemyAnimationController
-from game.entities.enemy_renderer import EnemyRenderer
-from game.entities.enemy_movement import EnemyMovement
-from game.entities.enemy_flanking import EnemyFlanking
-from game.entities.enemy_lifecycle_state import EnemyLifecycleState
+from game.components.enemy_renderer import EnemyRenderer
+from game.components.enemy_movement import EnemyMovement
+from game.components.enemy_flanking import EnemyFlanking
+from game.components.enemy_lifecycle_state import EnemyLifecycleState
 from game.entities.enemy_coordination import EnemyCoordination
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
@@ -62,7 +62,7 @@ class Enemy(Character):
         self.patrol_direction = 1
 
         # Rendering / collision / loot
-        self.geometry = EnemyGeometry()
+        self.geometry = CharacterGeometry()
         self.loot_generated = False
 
         # Components

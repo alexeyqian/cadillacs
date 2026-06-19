@@ -32,6 +32,7 @@ Current package ownership:
 
 ```text
 game/entities/     world objects and entity-owned data
+game/components/   reusable entity components
 game/controllers/  per-entity controllers and state controllers
 game/combat/       attack data, timing, hit reactions, and hitbox helpers
 game/data/         player and enemy config registries
@@ -230,11 +231,16 @@ game/
 
   components/
     health.py
-    movement.py
-    geometry.py
-    lifecycle.py
-    renderer.py
-    state_machine.py
+    character_state.py
+    character_geometry.py
+    player_movement.py
+    enemy_movement.py
+    player_air_state.py
+    enemy_flanking.py
+    player_renderer.py
+    enemy_renderer.py
+    enemy_lifecycle_state.py
+    player_weapon_slot.py
 
   controllers/
     player_action_controller.py
@@ -311,7 +317,7 @@ game/
     ...
 ```
 
-This structure is now mostly implemented. The current project intentionally does not have a `game/components/` package yet. Movement, geometry, health, state machine, and renderer files remain under `game/entities/` until a clearer shared component boundary emerges.
+This structure is now mostly implemented. `game/components/` exists and owns reusable or attachable entity parts. `PlayerHealth` and `EnemyHealth` remain under `game/entities/` because player lives and enemy removal still differ. `PlayerInputState`, `PlayerEvents`, and `PlayerStateMachine` also remain under `game/entities/` because they are still player-specific coordination details.
 
 ### Folder Responsibilities
 
@@ -424,6 +430,17 @@ game/controllers/enemy_lifecycle_controller.py
 game/controllers/enemy_loot_controller.py
 game/controllers/enemy_reaction_controller.py
 game/controllers/enemy_state_controller.py
+game/components/health.py
+game/components/character_state.py
+game/components/character_geometry.py
+game/components/player_movement.py
+game/components/enemy_movement.py
+game/components/player_air_state.py
+game/components/enemy_flanking.py
+game/components/player_renderer.py
+game/components/enemy_renderer.py
+game/components/enemy_lifecycle_state.py
+game/components/player_weapon_slot.py
 game/combat/attack_data.py
 game/combat/attack_manager.py
 game/combat/combat_geometry.py
@@ -626,9 +643,9 @@ ENEMY_AI_REGISTRY = {
 }
 ```
 
-## Remaining Refactoring Plan
+## Completed Component Migration Plan
 
-These steps start from the current codebase after the controller, combat, data, factory, and manager folder migrations. Each step is medium-sized and should keep the game playable.
+These steps were completed after the controller, combat, data, factory, and manager folder migrations.
 
 ### Step 13: Create The Components Package And Move Shared Character State
 
@@ -659,7 +676,7 @@ Put reusable hitbox, hurtbox, and frame-rectangle ownership in the component lay
 Tasks:
 
 - Move `player_geometry.py` and `enemy_geometry.py` into `game/components/`.
-- Keep their class names as `PlayerGeometry` and `EnemyGeometry` unless a shared `CharacterGeometry` naturally falls out.
+- Merge them into `CharacterGeometry` when the shared frame, collision, hurtbox, and attack-box behavior is clear.
 - Update imports in `Player`, `Enemy`, and geometry/combat tests.
 - Review duplicated geometry method names and extract shared helpers only if it reduces code.
 
@@ -668,6 +685,78 @@ Expected result:
 ```text
 Entity classes still expose geometry methods, but the geometry implementation lives under components.
 ```
+
+### Step 19: Merge Player And Enemy Geometry
+
+Goal:
+
+Use one shared geometry component for both `Player` and `Enemy`.
+
+Tasks:
+
+- Replace `PlayerGeometry` and `EnemyGeometry` with `CharacterGeometry`.
+- Keep player jump-attack visual Y behavior as a small hook.
+- Keep enemy config-driven hurtbox offsets.
+- Update imports and tests.
+
+Expected result:
+
+```text
+Player and Enemy both use CharacterGeometry.
+```
+
+## Remaining Refactoring Steps
+
+These steps are useful next, but they are not required before adding more gameplay.
+
+### Step 20: Fix Player Hurtbox Config Ownership
+
+Goal:
+
+Make player hurtbox dimensions come from config cleanly instead of relying on settings fallbacks.
+
+Tasks:
+
+- Add player hurtbox offsets to `PlayerConfig`.
+- Correct `hurt_box_w` to use `PLAYER_HURTBOX_W`.
+- Update `CharacterGeometry` to trust owner hurtbox fields for both player and enemy.
+- Add or update tests for player hurtbox dimensions.
+
+### Step 21: Evaluate Shared Movement Helpers
+
+Goal:
+
+Reduce duplication between player and enemy movement only where it is obvious.
+
+Tasks:
+
+- Compare facing, bounds, lane, and collision response helpers.
+- Extract tiny shared helpers if they reduce repeated math.
+- Keep input-driven player movement and AI-driven enemy movement separate.
+
+### Step 22: Review Renderer Duplication
+
+Goal:
+
+Decide whether `PlayerRenderer` and `EnemyRenderer` should share a base renderer.
+
+Tasks:
+
+- Compare sprite drawing and debug box rendering.
+- Extract shared debug drawing only if it reduces duplication.
+- Keep player/enemy UI or visual special cases separate.
+
+### Step 23: Introduce Shared Damage Request If Needed
+
+Goal:
+
+Normalize damage calls without forcing player and enemy lifecycle rules together.
+
+Tasks:
+
+- Review current `take_damage` signatures.
+- Introduce `DamageRequest` only if systems keep needing adapter logic.
+- Keep player lives and enemy removal separate.
 
 ### Step 15: Move Movement And Air/Flanking Components
 

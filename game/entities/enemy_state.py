@@ -1,4 +1,4 @@
-from game.entities.character_state import CharacterState
+from game.components.character_state import CharacterState
 
 
 class EnemyState(CharacterState):

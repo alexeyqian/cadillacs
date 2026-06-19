@@ -1,4 +1,4 @@
-from game.entities.character_health import CharacterHealth
+from game.components.health import CharacterHealth
 
 
 class EnemyHealth(CharacterHealth):

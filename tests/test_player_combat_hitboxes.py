@@ -2,7 +2,7 @@ import unittest
 
 from game.data.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.controllers.player_combat_controller import PlayerCombatController
-from game.entities.player_geometry import PlayerGeometry
+from game.components.character_geometry import CharacterGeometry
 
 
 class FakeMovement:
@@ -56,7 +56,7 @@ class FakeOwner:
 class PlayerCombatControllerHitboxTests(unittest.TestCase):
     def test_attack_rect_is_empty_during_windup(self):
         owner = FakeOwner()
-        hitboxes = PlayerGeometry()
+        hitboxes = CharacterGeometry()
 
         owner.combat.start_attack(owner)
 
@@ -64,7 +64,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
     def test_attack_rect_comes_from_attack_data_during_active_window(self):
         owner = FakeOwner()
-        hitboxes = PlayerGeometry()
+        hitboxes = CharacterGeometry()
         attack_data = PLAYER_ATTACKS["ATTACK_1"]
 
         owner.combat.start_attack(owner)
@@ -81,7 +81,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
     def test_attack_rect_mirrors_around_player_anchor_when_facing_left(self):
         owner = FakeOwner()
         owner.facing_right = False
-        hitboxes = PlayerGeometry()
+        hitboxes = CharacterGeometry()
         attack_data = PLAYER_ATTACKS["ATTACK_1"]
 
         owner.combat.start_attack(owner)
@@ -104,7 +104,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         owner = FakeOwner()
         owner.air = FakeAir()
-        hitboxes = PlayerGeometry()
+        hitboxes = CharacterGeometry()
         attack_data = PLAYER_ATTACKS["JUMP_ATTACK"]
 
         owner.combat.attack_manager.start(owner.JUMP_ATTACK, attack_data)
