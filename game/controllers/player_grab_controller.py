@@ -1,10 +1,11 @@
-from game.settings import PLAYER_GRAB_KNEE_DURATION, PLAYER_GRAB_KNEE_HIT_FRAME
+from game.settings import PLAYER_GRAB_KNEE_DURATION, PLAYER_GRAB_KNEE_HIT_FRAME, PLAYER_GRAB_RANGE
 
 # grab/throw/knee
 class PlayerGrabController:
     def __init__(self):
         self.grabbed_enemy = None
         self.grab_pressed = False
+        self.grab_range = PLAYER_GRAB_RANGE
         # failed heavy grab causes a tiny recovery and slightly punishable.
         self.failed_grab_recovery_duration = 8
         self.failed_grab_feedback = False
@@ -76,7 +77,7 @@ class PlayerGrabController:
 
         dx = abs(enemy.x - owner.x)
         lane_distance = level.get_lane_distance(owner.y, enemy.y)
-        return dx <= owner.grab_range and lane_distance == 0
+        return dx <= self.grab_range and lane_distance == 0
 
     def grab_enemy(self, owner, enemy):
         self.grabbed_enemy = enemy

@@ -97,13 +97,13 @@ def make_player_like():
     player.x = 300
     player.y = 500
     player.state = Player.IDLE
-    player.attacks = DEFAULT_PLAYER_ATTACKS
-    player.weapon_attacks = {}
     player.state_machine = PlayerStateMachine(player)
     player.input_buffer = InputBuffer()
     player.input_state = PlayerInputState()
     player.movement = FakeMovement()
     player.combat_controller = PlayerCombatController()
+    player.combat_controller.attacks = DEFAULT_PLAYER_ATTACKS
+    player.combat_controller.weapon_attacks = {}
     player.action_controller = PlayerActionController()
     player.grab_controller = FakeGrab()
     player.weapon_slot = FakeWeaponSlot()

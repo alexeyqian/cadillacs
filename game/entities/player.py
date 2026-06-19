@@ -30,18 +30,15 @@ class Player(Character, PlayerState):
 
     # Construction groups
     def configure_from_player_config(self, config, animation_data, anim_fps):
-        self.apply_player_config(config)
+        self.apply_identity_config(config)
+        self.apply_body_config(config)
+        self.apply_movement_config(config)
         self.build_state_components(config)
         self.build_input_components()
         self.build_capability_components()
         self.build_controllers()
-        self.build_presentation_components(animation_data, anim_fps)
-
-    def apply_player_config(self, config):
-        self.apply_identity_config(config)
-        self.apply_body_config(config)
-        self.apply_movement_config(config)
         self.apply_combat_config(config)
+        self.build_presentation_components(animation_data, anim_fps)
 
     def apply_identity_config(self, config):
         self.player_id = config.player_id
@@ -59,9 +56,6 @@ class Player(Character, PlayerState):
             config.hurt_box_offset_x,
             config.hurt_box_offset_y,
         )
-
-        # todo: already included in health, remove
-        self.hit_stun_duration = config.hit_stun_duration
         self.health = PlayerHealth(config.max_hp, config.lives, config.hit_stun_duration)
         self.sprite_scale = config.sprite_scale
 
@@ -70,30 +64,18 @@ class Player(Character, PlayerState):
         self.run_speed = config.run_speed
 
     def apply_combat_config(self, config):
-        # todo: remove or refactoring
-        self.attacks = config.attacks or {}
-
-        # todo: add run_attack, jump_attack, and weapon_attack
-        self.run_attack_damage = config.run_attack_damage
-        self.jump_attack_damage = config.jump_attack_damage
-        self.weapon_attacks = config.weapon_attacks or {}
-
-        self.grab_range = config.grab_range
+        self.combat_controller.attacks = config.attacks or {}
+        self.combat_controller.weapon_attacks = config.weapon_attacks or {}
+        self.grab_controller.grab_range = config.grab_range
 
     def build_state_components(self, config):
-        self.jump_power = config.jump_power
-        self.jump_gravity = config.jump_gravity
-        self.air_move_speed = config.air_move_speed
-        self.jump_takeoff_frames = config.jump_takeoff_frames
-        self.landing_recovery_frames = config.landing_recovery_frames
         self.air = PlayerAirState(
-            self.jump_power,
-            self.jump_gravity,
-            self.air_move_speed,
-            self.jump_takeoff_frames,
-            self.landing_recovery_frames,
+            config.jump_power,
+            config.jump_gravity,
+            config.air_move_speed,
+            config.jump_takeoff_frames,
+            config.landing_recovery_frames,
         )
-
         self.state_machine = PlayerStateMachine(self)
 
     def build_input_components(self):
@@ -154,11 +136,11 @@ class Player(Character, PlayerState):
             weapon = getattr(weapon_slot, "weapon", None)
 
         weapon_type = getattr(weapon, "weapon_type", weapon)
-        weapon_attack = self.weapon_attacks.get((weapon_type, attack_name))
+        weapon_attack = self.combat_controller.weapon_attacks.get((weapon_type, attack_name))
         if weapon_attack and not getattr(weapon, "is_ranged", False):
             return weapon_attack
 
-        return self.attacks.get(attack_name)
+        return self.combat_controller.attacks.get(attack_name)
 
     # Lifecycle / damage
     def take_damage(self, damage, reaction=None, hit_stun_bonus=0):

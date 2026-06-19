@@ -7,6 +7,8 @@ from game.combat.hit_reaction import HitReaction
 class PlayerCombatController:
     def __init__(self):
         self.attack_manager = AttackManager()
+        self.attacks = {}
+        self.weapon_attacks = {}
 
         # classic combo system
         # J punch 1, J punch 2, J punch 3
