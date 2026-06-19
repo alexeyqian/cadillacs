@@ -1,4 +1,4 @@
-from game.components.health import CharacterHealth
+from game.components.character_health import CharacterHealth
 from game.entities.enemy_health import EnemyHealth
 from game.combat.hit_reaction import HitReaction
 from game.entities.player_health import PlayerHealth
