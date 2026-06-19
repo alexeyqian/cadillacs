@@ -25,12 +25,15 @@ def damage_enemy(enemy, damage, attacker_x, hit_reaction=None):
         enemy.take_damage(damage, attacker_x)
         return
 
-    enemy.take_damage(
-        damage,
-        attacker_x,
-        hit_reaction.knockback_velocity,
-        hit_reaction.stun_frames,
-    )
+    try:
+        enemy.take_damage(damage, attacker_x, reaction=hit_reaction)
+    except TypeError:
+        enemy.take_damage(
+            damage,
+            attacker_x,
+            hit_reaction.knockback_velocity,
+            hit_reaction.stun_frames,
+        )
 
 
 # todo: refactoring to be easy to understand and maintainable

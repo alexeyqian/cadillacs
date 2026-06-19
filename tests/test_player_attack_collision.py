@@ -4,7 +4,8 @@ import pygame
 
 from game.entities.player_combat_controller import PlayerCombatController
 from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
-from game.systems.combat_system import handle_player_attack_collision
+from game.entities.hit_reaction import HitReaction
+from game.systems.combat_system import damage_enemy, handle_player_attack_collision
 
 
 class FakeMovement:
@@ -118,6 +119,18 @@ class FakeEnemy:
         self.hit_stun_duration_taken = hit_stun_duration
 
 
+class ReactionEnemy:
+    def __init__(self):
+        self.damage_taken = 0
+        self.attacker_x_taken = None
+        self.reaction_taken = None
+
+    def take_damage(self, damage, attacker_x, reaction=None):
+        self.damage_taken += damage
+        self.attacker_x_taken = attacker_x
+        self.reaction_taken = reaction
+
+
 class FakeLevel:
     def get_lane_distance(self, a, b):
         return 0
@@ -143,6 +156,16 @@ class FakeGameState:
 
 
 class PlayerAttackCollisionTests(unittest.TestCase):
+    def test_damage_enemy_prefers_shared_hit_reaction_api(self):
+        enemy = ReactionEnemy()
+        reaction = HitReaction(stun_frames=14, knockback_velocity=8)
+
+        damage_enemy(enemy, 12, attacker_x=100, hit_reaction=reaction)
+
+        self.assertEqual(enemy.damage_taken, 12)
+        self.assertEqual(enemy.attacker_x_taken, 100)
+        self.assertIs(enemy.reaction_taken, reaction)
+
     def test_default_player_attack_hits_only_one_target(self):
         game_state = FakeGameState()
 

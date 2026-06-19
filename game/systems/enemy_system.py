@@ -1,3 +1,4 @@
+from game.systems.bounds_system import apply_level_bounds
 from game.systems.projectile_system import collect_enemy_projectile
 
 def update_enemy_system(game_state):
@@ -5,10 +6,6 @@ def update_enemy_system(game_state):
 
     for enemy in game_state.enemies:
         enemy.update(game_state.level, player, game_state.enemies)
-        enemy.apply_world_bounds(
-            game_state.level.world_width,
-            game_state.level.lane_top,
-            game_state.level.lane_bottom
-        )
+        apply_level_bounds(enemy, game_state.level)
 
         collect_enemy_projectile(game_state, enemy)

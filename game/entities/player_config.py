@@ -149,6 +149,7 @@ DEFAULT_WEAPON_PLAYER_ATTACKS = {
 # through Player.get_attack_data() so different players can own different tables.
 PLAYER_ATTACKS = DEFAULT_PLAYER_ATTACKS
 WEAPON_PLAYER_ATTACKS = DEFAULT_WEAPON_PLAYER_ATTACKS
+DEFAULT_PLAYER_TYPE = "mustapha"
 
 @dataclass(frozen=True)
 class PlayerConfig:
@@ -200,4 +201,4 @@ PLAYER_CONFIGS = {
 
 
 def get_player_config(player_type):
-    return PLAYER_CONFIGS.get(player_type, PLAYER_CONFIGS["mustapha"])
+    return PLAYER_CONFIGS.get(player_type, PLAYER_CONFIGS[DEFAULT_PLAYER_TYPE])

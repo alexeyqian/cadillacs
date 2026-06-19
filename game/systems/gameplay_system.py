@@ -11,6 +11,7 @@ from game.systems.effect_system import *
 from game.systems.arena_system import *
 from game.systems.explosive_system import *
 from game.systems.collision_system import *
+from game.systems.bounds_system import *
 from game.entities.player_input import PlayerInput
 
 # do not put arena lock logic inside player, enemy, camera
@@ -23,20 +24,12 @@ def update_gameplay(game_state, keys):
     player_input = PlayerInput(keys)
     game_state.player.update(player_input)
     # moved from player.py
-    game_state.player.apply_world_bounds(game_state.level.world_width,
-        game_state.level.lane_top, game_state.level.lane_bottom)
+    apply_player_level_bounds(game_state)
     update_enemy_system(game_state)
     resolve_enemy_enemy_collisions(game_state)
-    for enemy in game_state.enemies:
-        enemy.apply_world_bounds(
-            game_state.level.world_width,
-            game_state.level.lane_top,
-            game_state.level.lane_bottom
-        )
+    apply_enemy_level_bounds(game_state)
     resolve_player_enemy_collisions(game_state, old_x, old_y)
-    game_state.player.apply_world_bounds(game_state.level.world_width,
-        game_state.level.lane_top, game_state.level.lane_bottom)
-    # TODO: check if this is dup with apply_world_bounds function in enemy
+    apply_player_level_bounds(game_state)
     apply_arena_bounds(game_state) # clamps player/enemies if camera locked
     collect_player_projectiles(game_state)
     update_projectiles(game_state)

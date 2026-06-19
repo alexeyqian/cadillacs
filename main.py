@@ -5,7 +5,7 @@ import game.settings as settings
 from game.settings import *
 from game.camera import Camera
 from game.level.level import Level
-from game.entities.mustapha_player import MustaphaPlayer
+from game.entities.player_factory import PlayerFactory
 from game.entities.weapon import Weapon
 from game.entities.breakable_object import BreakableObject
 from game.entities.explosive_barrel import ExplosiveBarrel
@@ -137,7 +137,7 @@ def main():
     pygame.display.set_caption("Cadillacs and Dinosaurs")
 
     clock = pygame.time.Clock()
-    player = MustaphaPlayer()
+    player = PlayerFactory.create_player()
     stage_manager = StageManager(EPISODE_1_STAGES, settings.START_STAGE)
     level = Level(stage_manager.get_current_stage())
     camera = Camera()

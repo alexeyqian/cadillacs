@@ -3,6 +3,7 @@ import unittest
 import pygame
 
 from game.systems.collision_system import (
+    enemy_blocks_movement,
     resolve_enemy_enemy_collisions,
     resolve_player_enemy_collisions,
 )
@@ -31,6 +32,7 @@ class FakeEnemy:
     DEAD = "DEAD"
     GRABBED = "GRABBED"
     THROWN = "THROWN"
+    KNOCKDOWN = "KNOCKDOWN"
 
     def __init__(self, x, y, state="IDLE"):
         self.x = x
@@ -82,6 +84,15 @@ class CollisionSystemTests(unittest.TestCase):
 
         self.assertTrue(player.get_collision_rect().colliderect(enemy.get_collision_rect()))
 
+    def test_knocked_down_enemy_does_not_block_player_movement(self):
+        player = FakePlayer(125, 500)
+        enemy = FakeEnemy(140, 500, state=FakeEnemy.KNOCKDOWN)
+        game_state = FakeGameState(player, [enemy])
+
+        resolve_player_enemy_collisions(game_state, old_player_x=90, old_player_y=500)
+
+        self.assertTrue(player.get_collision_rect().colliderect(enemy.get_collision_rect()))
+
     def test_enemies_are_pushed_apart_when_collision_boxes_overlap(self):
         enemy = FakeEnemy(100, 500)
         other = FakeEnemy(125, 500)
@@ -108,6 +119,13 @@ class CollisionSystemTests(unittest.TestCase):
         resolve_enemy_enemy_collisions(game_state)
 
         self.assertTrue(enemy.get_collision_rect().colliderect(other.get_collision_rect()))
+
+    def test_enemy_blocking_uses_shared_state_names(self):
+        self.assertFalse(enemy_blocks_movement(FakeEnemy(100, 500, state="DEAD")))
+        self.assertFalse(enemy_blocks_movement(FakeEnemy(100, 500, state="GRABBED")))
+        self.assertFalse(enemy_blocks_movement(FakeEnemy(100, 500, state="KNOCKDOWN")))
+        self.assertFalse(enemy_blocks_movement(FakeEnemy(100, 500, state="THROWN")))
+        self.assertTrue(enemy_blocks_movement(FakeEnemy(100, 500, state="IDLE")))
 
 
 if __name__ == "__main__":

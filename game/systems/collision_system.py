@@ -1,3 +1,7 @@
+from game.entities.character_state import CharacterState
+from game.entities.enemy_state import EnemyState
+
+
 def resolve_player_enemy_collisions(game_state, old_player_x, old_player_y):
     player = game_state.player
 
@@ -43,9 +47,10 @@ def resolve_enemy_enemy_collisions(game_state):
 
 def enemy_blocks_movement(enemy):
     non_blocking_states = {
-        enemy.DEAD,
-        enemy.GRABBED,
-        enemy.THROWN,
+        CharacterState.DEAD,
+        CharacterState.GRABBED,
+        CharacterState.KNOCKDOWN,
+        EnemyState.THROWN,
     }
     return enemy.state not in non_blocking_states
 
