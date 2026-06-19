@@ -1,6 +1,6 @@
 import pygame
 from game.settings import *
-from game.entities.combat_geometry import combat_box_to_world_rect
+from game.combat.combat_geometry import combat_box_to_world_rect
 
 
 class EnemyGeometry:

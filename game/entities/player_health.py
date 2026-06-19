@@ -1,5 +1,5 @@
 from game.entities.character_health import CharacterHealth
-from game.entities.hit_reaction import HitReaction
+from game.combat.hit_reaction import HitReaction
 
 
 class PlayerHealth(CharacterHealth):

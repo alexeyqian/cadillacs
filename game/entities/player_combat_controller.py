@@ -1,7 +1,7 @@
 from game.settings import *
 
-from game.entities.attack_manager import AttackManager
-from game.entities.hit_reaction import HitReaction
+from game.combat.attack_manager import AttackManager
+from game.combat.hit_reaction import HitReaction
 
 # TODO: attack buffering, counter-hit, clash/parry, and attack configs 
 class PlayerCombatController:

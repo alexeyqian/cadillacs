@@ -1,4 +1,4 @@
-from game.entities.hit_reaction import HitReaction, normalize_hit_reaction
+from game.combat.hit_reaction import HitReaction, normalize_hit_reaction
 
 
 class EnemyReactionController:

@@ -4,7 +4,7 @@ import pygame
 
 from game.entities.player_combat_controller import PlayerCombatController
 from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
-from game.entities.hit_reaction import HitReaction
+from game.combat.hit_reaction import HitReaction
 from game.systems.combat_system import damage_enemy, handle_player_attack_collision
 
 

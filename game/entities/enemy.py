@@ -15,7 +15,7 @@ from game.entities.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
 from game.entities.enemy_state_resolver import EnemyStateResolver
 from game.entities.enemy_loot_controller import EnemyLootController
-from game.entities.hit_reaction import normalize_hit_reaction
+from game.combat.hit_reaction import normalize_hit_reaction
 
 # State resolver: decides what state the enemy wants
 # Movement: changes x/y/facing

@@ -1,6 +1,6 @@
 import unittest
 
-from game.entities.attack_data import AttackData
+from game.combat.attack_data import AttackData
 from game.entities.enemy_config import ENEMY_CONFIGS
 from game.entities.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 

@@ -1,6 +1,6 @@
 from dataclasses import dataclass, replace
 from game.settings import *
-from game.entities.attack_data import *
+from game.combat.attack_data import *
 
 
 DEFAULT_PLAYER_ATTACKS = {

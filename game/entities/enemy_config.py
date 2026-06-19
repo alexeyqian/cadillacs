@@ -1,7 +1,7 @@
 from dataclasses import dataclass, replace
 from typing import Optional
 from game.settings import *
-from game.entities.attack_data import AttackData, DEFAULT_ENEMY_ATTACK_DATA
+from game.combat.attack_data import AttackData, DEFAULT_ENEMY_ATTACK_DATA
 
 GNEISS_SCALER=1.2
 BLACK_ELMER_SCALER=1.5

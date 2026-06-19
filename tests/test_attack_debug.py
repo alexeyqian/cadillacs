@@ -1,8 +1,8 @@
 import unittest
 from dataclasses import replace
 
-from game.entities.attack_manager import AttackManager
-from game.entities.attack_data import DEFAULT_PLAYER_ATTACK_DATA
+from game.combat.attack_manager import AttackManager
+from game.combat.attack_data import DEFAULT_PLAYER_ATTACK_DATA
 from game.entities.attack_debug import format_attack_debug_lines
 
 

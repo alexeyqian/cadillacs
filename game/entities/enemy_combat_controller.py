@@ -1,7 +1,7 @@
-from game.entities.attack_manager import AttackManager
+from game.combat.attack_manager import AttackManager
 
-from game.entities.attack_data import DEFAULT_ENEMY_ATTACK_DATA
-from game.entities.hit_reaction import HitReaction
+from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
+from game.combat.hit_reaction import HitReaction
 
 
 class EnemyCombatController:
