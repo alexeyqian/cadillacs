@@ -142,11 +142,14 @@ class EnemyCombatController:
         request = DamageRequest.from_attack_data(attack_data)
 
         try:
-            player.take_damage(request.damage, reaction=request.reaction)
+            player.take_damage(request)
         except TypeError:
             # Lightweight tests and older player-like objects may still expose
             # the damage-only API while production Player accepts HitReaction.
-            player.take_damage(request.damage)
+            try:
+                player.take_damage(request.damage, reaction=request.reaction)
+            except TypeError:
+                player.take_damage(request.damage)
 
     def uses_melee_attack_slot(self, owner):
         if hasattr(owner, "coordination"):

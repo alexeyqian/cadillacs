@@ -15,6 +15,7 @@ from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
 from game.controllers.enemy_state_controller import EnemyStateController
 from game.controllers.enemy_loot_controller import EnemyLootController
+from game.combat.damage_request import DamageRequest
 from game.combat.hit_reaction import normalize_hit_reaction
 
 # State controller: decides what state the enemy wants
@@ -143,11 +144,19 @@ class Enemy(Character):
     def take_damage(
         self,
         damage,
-        attacker_x,
+        attacker_x=None,
         reaction=None,
         hit_stun_duration=None,
         knockback_velocity=None,
     ):
+        if isinstance(damage, DamageRequest):
+            request = damage
+            damage = request.damage
+            attacker_x = request.attacker_x if request.attacker_x is not None else attacker_x
+            reaction = request.reaction
+        if attacker_x is None:
+            attacker_x = self.x
+
         reaction = normalize_hit_reaction(
             reaction,
             hit_stun_duration,

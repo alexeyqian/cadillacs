@@ -13,9 +13,10 @@ from game.components.player_renderer import PlayerRenderer
 from game.controllers.player_action_controller import PlayerActionController
 from game.controllers.player_state_controller import PlayerStateController
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
-from game.entities.player_events import PlayerEvents
+from game.combat.damage_request import DamageRequest
+from game.core.events import GameEventQueue
 from game.entities.player_state_machine import PlayerStateMachine
-from game.entities.player_input_state import PlayerInputState
+from game.input.player_input_state import PlayerInputState
 from game.components.player_air_state import PlayerAirState
 
 class Player(Character):
@@ -106,7 +107,7 @@ class Player(Character):
         self.state_controller = PlayerStateController()
         self.lifecycle = PlayerLifecycleController(self.x, self.y)
         self.weapon_slot = PlayerWeaponSlot()
-        self.events = PlayerEvents()
+        self.events = GameEventQueue()
         self.geometry = CharacterGeometry()
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
@@ -151,6 +152,10 @@ class Player(Character):
 
     # Lifecycle / damage
     def take_damage(self, damage, reaction=None, hit_stun_bonus=0):
+        if isinstance(damage, DamageRequest):
+            reaction = damage.reaction
+            damage = damage.damage
+
         self.lifecycle.take_damage(
             self,
             damage,

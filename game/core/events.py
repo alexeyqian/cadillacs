@@ -1,4 +1,4 @@
-class PlayerEvents:
+class GameEventQueue:
     def __init__(self):
         self.events = []
 

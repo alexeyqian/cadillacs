@@ -3,7 +3,7 @@ import unittest
 from game.controllers.player_action_controller import PlayerActionController
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.data.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
-from game.entities.player_input_state import PlayerInputState
+from game.input.player_input_state import PlayerInputState
 
 
 class FakeMovement:

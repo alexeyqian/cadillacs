@@ -1,18 +1,29 @@
-from game.systems.wave_system import *
-from game.systems.enemy_system import *
-from game.systems.projectile_system import *
-from game.systems.combat_system import *
-from game.systems.loot_system import *
-from game.systems.life_reward_system import *
-from game.systems.camera_system import *
-from game.systems.cleanup_system import *
-from game.systems.manager_system import *
-from game.systems.effect_system import *
-from game.systems.arena_system import *
-from game.systems.explosive_system import *
-from game.systems.collision_system import *
-from game.systems.bounds_system import *
-from game.entities.player_input import PlayerInput
+from game.input.player_input import PlayerInput
+from game.systems.arena_system import apply_arena_bounds
+from game.systems.bounds_system import apply_enemy_level_bounds, apply_player_level_bounds
+from game.systems.camera_system import update_camera_system
+from game.systems.cleanup_system import cleanup_game_state
+from game.systems.collision_system import (
+    resolve_enemy_enemy_collisions,
+    resolve_player_enemy_collisions,
+)
+from game.systems.combat_system import (
+    handle_enemy_projectile_collision,
+    handle_player_attack_collision,
+    handle_player_projectile_collision,
+)
+from game.systems.effect_system import update_effect_system
+from game.systems.enemy_system import update_enemy_system
+from game.systems.explosive_system import create_explosions_from_objects
+from game.systems.life_reward_system import update_life_reward_system
+from game.systems.loot_system import (
+    create_enemy_loot,
+    create_object_loot,
+    update_loot_pickup,
+)
+from game.systems.manager_system import update_manager_system
+from game.systems.projectile_system import collect_player_projectiles, update_projectiles
+from game.systems.wave_system import update_wave_completion, update_wave_system
 
 # do not put arena lock logic inside player, enemy, camera
 # arena system controls temporary battle boundaries

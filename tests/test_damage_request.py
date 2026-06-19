@@ -1,0 +1,41 @@
+from game.combat.damage_request import DamageRequest
+from game.combat.hit_reaction import HitReaction
+from game.entities.enemy import Enemy
+from game.entities.player import Player
+
+
+class FakeLifecycle:
+    def __init__(self):
+        self.calls = []
+
+    def take_damage(self, owner, damage, reaction=None, hit_stun_bonus=0):
+        self.calls.append((owner, damage, reaction, hit_stun_bonus))
+
+
+class FakeReactions:
+    def __init__(self):
+        self.calls = []
+
+    def take_damage(self, owner, damage, attacker_x, reaction):
+        self.calls.append((owner, damage, attacker_x, reaction))
+
+
+def test_player_accepts_damage_request():
+    player = Player.__new__(Player)
+    player.lifecycle = FakeLifecycle()
+    reaction = HitReaction(stun_frames=8, knockback_velocity=4)
+
+    player.take_damage(DamageRequest(12, reaction=reaction))
+
+    assert player.lifecycle.calls == [(player, 12, reaction, 0)]
+
+
+def test_enemy_accepts_damage_request():
+    enemy = Enemy.__new__(Enemy)
+    enemy.x = 300
+    enemy.reactions = FakeReactions()
+    reaction = HitReaction(stun_frames=10, knockback_velocity=6)
+
+    enemy.take_damage(DamageRequest(15, attacker_x=120, reaction=reaction))
+
+    assert enemy.reactions.calls == [(enemy, 15, 120, reaction)]

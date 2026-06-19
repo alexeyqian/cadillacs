@@ -33,6 +33,8 @@ Current package ownership:
 ```text
 game/entities/     world objects and entity-owned data
 game/components/   reusable entity components
+game/input/        player input snapshots and input edge state
+game/core/         shared infrastructure such as event queues
 game/controllers/  per-entity controllers and state controllers
 game/combat/       attack data, timing, hit reactions, and hitbox helpers
 game/data/         player and enemy config registries
@@ -219,6 +221,10 @@ game/
     game_state.py
     events.py
 
+  input/
+    player_input.py
+    player_input_state.py
+
   entities/
     game_object.py
     character.py
@@ -317,7 +323,7 @@ game/
     ...
 ```
 
-This structure is now mostly implemented. `game/components/` exists and owns reusable or attachable entity parts. `PlayerHealth` and `EnemyHealth` remain under `game/entities/` because player lives and enemy removal still differ. `PlayerInputState`, `PlayerEvents`, and `PlayerStateMachine` also remain under `game/entities/` because they are still player-specific coordination details.
+This structure is now mostly implemented. `game/components/` exists and owns reusable or attachable entity parts. `game/input/` owns player input snapshots and edge-state data. `game/core/events.py` owns the shared event queue. `PlayerHealth` and `EnemyHealth` remain under `game/entities/` because player lives and enemy removal still differ. `PlayerStateMachine` also remains under `game/entities/` because it is still player-specific state coordination.
 
 ### Folder Responsibilities
 
@@ -418,6 +424,9 @@ The following ownership moves are complete:
 ```text
 game/entities/game_object.py
 game/entities/character.py
+game/core/events.py
+game/input/player_input.py
+game/input/player_input_state.py
 game/controllers/player_action_controller.py
 game/controllers/player_animation_controller.py
 game/controllers/player_combat_controller.py
@@ -827,10 +836,10 @@ Decide which player-only helpers are reusable components versus entity-local dat
 
 Tasks:
 
-- Review `player_input_state.py`, `player_events.py`, `player_weapon_slot.py`, and `player_state_machine.py`.
+- Review `game/input/player_input_state.py`, `game/core/events.py`, `player_weapon_slot.py`, and `player_state_machine.py`.
 - Move `player_weapon_slot.py` into `game/components/` if weapon ownership is expected to be shared later by enemies or pickups.
-- Keep `player_input_state.py` near player/input code unless an input package is introduced.
-- Keep `player_events.py` near player until events become a broader game event model.
+- Keep player input state under `game/input/`.
+- Keep events under `game/core/` once more than one gameplay feature can emit them.
 - Move `player_state_machine.py` only if a shared state machine abstraction is introduced.
 
 Expected result:
@@ -858,9 +867,9 @@ Expected result:
 The component folder is active, imports are clean, and tests pass.
 ```
 
-## Remaining Refactoring Steps
+## Completed Input/Event/Damage Refinement Plan
 
-These steps are useful next, but they are not required before adding more gameplay.
+These steps were completed after the component and combat request migrations.
 
 ### Step 24: Normalize Player Input Ownership
 
@@ -874,17 +883,29 @@ Tasks:
 - Move them only if an `input/` or `core/events` package becomes clearer than entity ownership.
 - Keep action decisions in `PlayerActionController`.
 
+Expected result:
+
+```text
+Input snapshots and input edge state live under game/input.
+```
+
 ### Step 25: Review Player Event Queue
 
 Goal:
 
-Decide whether `PlayerEvents` should become a broader game event queue.
+Decide whether the player-local event queue should become a broader game event queue.
 
 Tasks:
 
 - Review current event usage, especially projectile spawning.
-- Keep `PlayerEvents` local if only player actions emit through it.
+- Keep events local if only player actions emit through them.
 - Move toward a shared event model only when enemies, weapons, or level objects need the same channel.
+
+Expected result:
+
+```text
+Player projectile spawning uses the shared GameEventQueue shape.
+```
 
 ### Step 26: Add Tests Around Real Renderer Debug Boxes
 
@@ -897,6 +918,12 @@ Tasks:
 - Add small tests with fake rect-owning characters and a pygame surface.
 - Verify collision, frame, hurt, and attack boxes draw without errors.
 
+Expected result:
+
+```text
+The shared debug renderer has surface-level coverage.
+```
+
 ### Step 27: Revisit DamageRequest Adoption
 
 Goal:
@@ -908,6 +935,51 @@ Tasks:
 - Consider accepting `DamageRequest` directly in `Player.take_damage` and `Enemy.take_damage`.
 - Keep legacy-friendly adapters until tests and lightweight fakes are migrated.
 - Avoid merging player lives and enemy death/removal behavior.
+
+Expected result:
+
+```text
+Player and Enemy can accept DamageRequest directly while old adapters keep working.
+```
+
+## Remaining Refactoring Steps
+
+These steps are useful next, but they are not required before adding more gameplay.
+
+### Step 28: Review Player State Machine Ownership
+
+Goal:
+
+Decide whether `PlayerStateMachine` should stay player-specific or become a shared state-machine component.
+
+Tasks:
+
+- Compare player state transitions with enemy state controller needs.
+- Keep `PlayerStateMachine` local if enemies do not need the same state object model.
+- Extract shared state-machine code only when both sides benefit.
+
+### Step 29: Split Large Gameplay System Imports
+
+Goal:
+
+Reduce wildcard imports in high-level systems after the folder migration has stabilized.
+
+Tasks:
+
+- Review `game/systems/gameplay_system.py`.
+- Replace wildcard imports with explicit function imports in small groups.
+- Keep update order clear because gameplay sequencing matters.
+
+### Step 30: Add Input Mapping Tests
+
+Goal:
+
+Protect `PlayerInput` key mapping after moving it into `game/input`.
+
+Tasks:
+
+- Add tests for keyboard aliases such as arrows/WASD, attack, jump, grab, fire, and drop.
+- Use a small fake key object instead of needing a live pygame event loop.
 
 ## Refactoring Plan
 
