@@ -4,10 +4,10 @@ from dataclasses import replace
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.data.enemy_config import get_enemy_config
 from game.entities.enemy import Enemy
-from game.entities.enemy_combat_controller import EnemyCombatController
-from game.entities.enemy_reaction_controller import EnemyReactionController
+from game.controllers.enemy_combat_controller import EnemyCombatController
+from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
-from game.entities.enemy_state_resolver import EnemyStateResolver
+from game.controllers.enemy_state_resolver import EnemyStateResolver
 from game.entities.raptor_enemy import RaptorEnemy
 from game.settings import BAT_DAMAGE
 

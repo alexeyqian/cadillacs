@@ -255,10 +255,18 @@ MUSTAPHA_ANIMATIONS = {
     },
 }
 
-# todo: use different animation in future
-MUSTAPHA_ANIMATIONS["attack_1"] = MUSTAPHA_ANIMATIONS["attack"]
-MUSTAPHA_ANIMATIONS["attack_2"] = MUSTAPHA_ANIMATIONS["attack"]
-MUSTAPHA_ANIMATIONS["attack_3"] = MUSTAPHA_ANIMATIONS["attack"]
+MUSTAPHA_ANIMATIONS["attack_1"] = {
+    **MUSTAPHA_ANIMATIONS["attack"],
+    "file": "assets/player/mustapha_attack_1.png",
+}
+MUSTAPHA_ANIMATIONS["attack_2"] = {
+    **MUSTAPHA_ANIMATIONS["attack"],
+    "file": "assets/player/mustapha_attack_2.png",
+}
+MUSTAPHA_ANIMATIONS["attack_3"] = {
+    **MUSTAPHA_ANIMATIONS["attack"],
+    "file": "assets/player/mustapha_attack_3.png",
+}
 
 MUSTAPHA_ANIM_FPS = {
     "idle": 6,

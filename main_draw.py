@@ -158,7 +158,7 @@ def main_draw_ui(game_state):
     if combo > 1:
         combo_text = font.render(
             f"{combo} HIT COMBO x{multiplier}",
-            True,BLACK_COLOR)
+            True,YELLOW_COLOR)
         screen.blit(combo_text, combo_text.get_rect(
             midtop=(screen.get_width() // 2, hp_y)))
 

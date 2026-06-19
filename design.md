@@ -24,6 +24,24 @@ Players and enemies both move, animate, collide, attack, take damage, and die. T
 - `Player` actions come from input.
 - `Enemy` actions come from AI/state resolution.
 
+## Current Status
+
+This refactor is implemented.
+
+Current package ownership:
+
+```text
+game/entities/     world objects and entity-owned data
+game/controllers/  per-entity controllers and state resolvers
+game/combat/       attack data, timing, hit reactions, and hitbox helpers
+game/data/         player and enemy config registries
+game/factories/    player and enemy construction registries
+game/managers/     asset, score, announcement, and stage-clear managers
+game/systems/      cross-object gameplay rules
+```
+
+The old compatibility wrapper modules for moved combat, data, factory, and manager files have been removed after first-party imports were updated.
+
 ## Design Principles
 
 - Keep classes easy to understand and easy to test.
@@ -220,10 +238,15 @@ game/
 
   controllers/
     player_action_controller.py
+    player_animation_controller.py
     player_combat_controller.py
     player_grab_controller.py
+    player_lifecycle_controller.py
+    player_state_resolver.py
+    enemy_animation_controller.py
     enemy_combat_controller.py
     enemy_lifecycle_controller.py
+    enemy_loot_controller.py
     enemy_reaction_controller.py
     enemy_state_resolver.py
 
@@ -239,7 +262,6 @@ game/
 
   managers/
     asset_manager.py
-    input_manager.py
     score_manager.py
     announcement_manager.py
     stage_clear_manager.py
@@ -260,15 +282,12 @@ game/
     hit_reaction.py
 
   data/
-    players.py
-    enemies.py
-    weapons.py
-    attacks.py
+    player_config.py
+    enemy_config.py
 
   factories/
     player_factory.py
     enemy_factory.py
-    weapon_factory.py
 
   level/
     level.py
@@ -292,7 +311,7 @@ game/
     ...
 ```
 
-This is a target structure, not a one-step migration. The current project already has many of these concepts, but some are still grouped under `game/entities` or `game/systems`.
+This structure is now mostly implemented. The current project intentionally does not have a `game/components/` package yet. Movement, geometry, health, state machine, and renderer files remain under `game/entities/` until a clearer shared component boundary emerges.
 
 ### Folder Responsibilities
 
@@ -386,26 +405,40 @@ PlayerFactory
 WeaponFactory
 ```
 
-### Migration Notes For Current Code
+### Completed Migration Notes
 
-Do not move files just to make the tree look tidy. Move a file when it clarifies ownership or reduces coupling.
-
-Likely future moves:
+The following ownership moves are complete:
 
 ```text
-game/entities/entity.py              -> game/entities/game_object.py
-game/entities/attack_data.py         -> game/combat/attack_data.py
-game/entities/attack_manager.py      -> game/combat/attack_manager.py
-game/entities/combat_geometry.py     -> game/combat/combat_geometry.py
-game/entities/hit_reaction.py        -> game/combat/hit_reaction.py
-game/entities/player_config.py       -> game/data/players.py
-game/entities/enemy_config.py        -> game/data/enemies.py
-game/entities/enemy_factory.py       -> game/factories/enemy_factory.py
-game/assets/asset_manager.py         -> game/managers/asset_manager.py
-game/ui/score_manager.py             -> game/managers/score_manager.py
+game/entities/game_object.py
+game/entities/character.py
+game/controllers/player_action_controller.py
+game/controllers/player_animation_controller.py
+game/controllers/player_combat_controller.py
+game/controllers/player_grab_controller.py
+game/controllers/player_lifecycle_controller.py
+game/controllers/player_state_resolver.py
+game/controllers/enemy_animation_controller.py
+game/controllers/enemy_combat_controller.py
+game/controllers/enemy_lifecycle_controller.py
+game/controllers/enemy_loot_controller.py
+game/controllers/enemy_reaction_controller.py
+game/controllers/enemy_state_resolver.py
+game/combat/attack_data.py
+game/combat/attack_manager.py
+game/combat/combat_geometry.py
+game/combat/hit_reaction.py
+game/data/player_config.py
+game/data/enemy_config.py
+game/factories/player_factory.py
+game/factories/enemy_factory.py
+game/managers/asset_manager.py
+game/managers/score_manager.py
+game/managers/announcement_manager.py
+game/managers/stage_clear_manager.py
 ```
 
-These moves should happen after `GameObject` and `Character` exist, because stable base classes make imports easier to reason about.
+Do not move files just to make the tree look tidy. Move a file when it clarifies ownership or reduces coupling.
 
 ## State Management
 

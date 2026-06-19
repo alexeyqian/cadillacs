@@ -2,7 +2,7 @@ import unittest
 
 import pygame
 
-from game.entities.player_combat_controller import PlayerCombatController
+from game.controllers.player_combat_controller import PlayerCombatController
 from game.data.player_config import PLAYER_ATTACKS, WEAPON_PLAYER_ATTACKS
 from game.combat.hit_reaction import HitReaction
 from game.systems.combat_system import damage_enemy, handle_player_attack_collision

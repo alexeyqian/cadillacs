@@ -2,7 +2,7 @@ import unittest
 from dataclasses import replace
 
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
-from game.entities.enemy_combat_controller import EnemyCombatController
+from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.entities.enemy_geometry import EnemyGeometry
 from game.entities.enemy_state import EnemyState
 

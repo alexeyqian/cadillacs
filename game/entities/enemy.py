@@ -4,17 +4,17 @@ from game.data.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.entities.enemy_health import EnemyHealth
 from game.entities.enemy_geometry import EnemyGeometry
-from game.entities.enemy_animation_controller import EnemyAnimationController
+from game.controllers.enemy_animation_controller import EnemyAnimationController
 from game.entities.enemy_renderer import EnemyRenderer
 from game.entities.enemy_movement import EnemyMovement
 from game.entities.enemy_flanking import EnemyFlanking
 from game.entities.enemy_lifecycle_state import EnemyLifecycleState
 from game.entities.enemy_coordination import EnemyCoordination
-from game.entities.enemy_combat_controller import EnemyCombatController
-from game.entities.enemy_reaction_controller import EnemyReactionController
-from game.entities.enemy_lifecycle_controller import EnemyLifecycleController
-from game.entities.enemy_state_resolver import EnemyStateResolver
-from game.entities.enemy_loot_controller import EnemyLootController
+from game.controllers.enemy_combat_controller import EnemyCombatController
+from game.controllers.enemy_reaction_controller import EnemyReactionController
+from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
+from game.controllers.enemy_state_resolver import EnemyStateResolver
+from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.hit_reaction import normalize_hit_reaction
 
 # State resolver: decides what state the enemy wants
