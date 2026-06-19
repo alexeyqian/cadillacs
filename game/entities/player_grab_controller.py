@@ -24,7 +24,6 @@ class PlayerGrabController:
             self.grab_knee_remaining -= 1
             if self.grab_knee_remaining <= 0:
                 owner.combat.is_attacking = False
-                owner.combat.attack_connected = False
                 # expected behavior
                 # Grab knee damage: 12 -> 10
                 # Repeated knees have a tiny 6-frame rhythm pause

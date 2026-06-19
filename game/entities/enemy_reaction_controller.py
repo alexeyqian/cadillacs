@@ -163,11 +163,6 @@ class EnemyReactionController:
     def cancel_attack(self, owner):
         if hasattr(owner, "combat"):
             owner.combat.cancel_attack_timing(owner)
-        elif hasattr(owner, "attack_manager"):
-            owner.attack_manager.cancel()
-            owner.attack_timer = 0
-        else:
-            owner.attack_timer = 0
 
     def reset_attack_decision(self, owner):
         if hasattr(owner, "combat"):

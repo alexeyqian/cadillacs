@@ -77,8 +77,8 @@ class FakeOwner:
 
 class AttackDataTests(unittest.TestCase):
     def finish_connected_attack(self, combat, owner):
-        combat.mark_attack_connected()
-        for _ in range(combat.attack_remaining):
+        combat.attack_manager.mark_connected()
+        for _ in range(combat.attack_manager.remaining_frames):
             combat.update_timers(owner)
 
     def test_standing_attack_duration_comes_from_attack_data(self):
@@ -89,8 +89,11 @@ class AttackDataTests(unittest.TestCase):
 
         self.assertEqual(owner.state, owner.ATTACK_1)
         self.assertEqual(combat.current_attack_name, owner.ATTACK_1)
-        self.assertEqual(combat.attack_timer, 0)
-        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["ATTACK_1"].total_duration)
+        self.assertEqual(combat.attack_manager.elapsed_frames, 0)
+        self.assertEqual(
+            combat.attack_manager.remaining_frames,
+            PLAYER_ATTACKS["ATTACK_1"].total_duration,
+        )
 
     def test_running_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
@@ -102,7 +105,10 @@ class AttackDataTests(unittest.TestCase):
 
         self.assertEqual(owner.state, owner.RUN_ATTACK)
         self.assertEqual(combat.current_attack_name, owner.RUN_ATTACK)
-        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["RUN_ATTACK"].total_duration)
+        self.assertEqual(
+            combat.attack_manager.remaining_frames,
+            PLAYER_ATTACKS["RUN_ATTACK"].total_duration,
+        )
         self.assertTrue(owner.movement.run_attack_momentum_started)
 
     def test_running_attack_has_arcade_style_timing_and_landing_recovery(self):
@@ -166,7 +172,10 @@ class AttackDataTests(unittest.TestCase):
 
         self.assertEqual(owner.state, owner.JUMP_ATTACK)
         self.assertEqual(combat.current_attack_name, owner.JUMP_ATTACK)
-        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["JUMP_ATTACK"].total_duration)
+        self.assertEqual(
+            combat.attack_manager.remaining_frames,
+            PLAYER_ATTACKS["JUMP_ATTACK"].total_duration,
+        )
 
     def test_jump_attack_cannot_start_during_takeoff(self):
         class FakeAir:
@@ -222,14 +231,17 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
         combat.update_timers(owner)
 
-        self.assertEqual(combat.attack_timer, 1)
-        self.assertEqual(combat.attack_remaining, PLAYER_ATTACKS["ATTACK_1"].total_duration - 1)
+        self.assertEqual(combat.attack_manager.elapsed_frames, 1)
+        self.assertEqual(
+            combat.attack_manager.remaining_frames,
+            PLAYER_ATTACKS["ATTACK_1"].total_duration - 1,
+        )
 
         for _ in range(PLAYER_ATTACKS["ATTACK_1"].total_duration - 1):
             combat.update_timers(owner)
 
         self.assertFalse(combat.is_attacking)
-        self.assertEqual(combat.attack_timer, 0)
+        self.assertEqual(combat.attack_manager.elapsed_frames, 0)
         self.assertEqual(owner.state, owner.IDLE)
 
     def test_standing_combo_attacks_have_recovery_frames(self):

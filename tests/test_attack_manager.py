@@ -19,12 +19,12 @@ class AttackManagerTests(unittest.TestCase):
         controller.start("ATTACK_1", attack)
 
         self.assertTrue(controller.is_attacking)
-        self.assertEqual(controller.attack_timer, 0)
-        self.assertEqual(controller.attack_remaining, 3)
+        self.assertEqual(controller.elapsed_frames, 0)
+        self.assertEqual(controller.remaining_frames, 3)
 
         self.assertFalse(controller.advance())
-        self.assertEqual(controller.attack_timer, 1)
-        self.assertEqual(controller.attack_remaining, 2)
+        self.assertEqual(controller.elapsed_frames, 1)
+        self.assertEqual(controller.remaining_frames, 2)
 
         controller.advance()
         self.assertTrue(controller.advance())
@@ -91,12 +91,12 @@ class AttackManagerTests(unittest.TestCase):
         controller.start("ATTACK_1", attack)
         controller.mark_target_hit(target)
 
-        self.assertTrue(controller.attack_connected)
+        self.assertTrue(controller.has_connected)
         self.assertTrue(controller.has_hit_target(target))
 
         controller.start("ATTACK_2", attack)
 
-        self.assertFalse(controller.attack_connected)
+        self.assertFalse(controller.has_connected)
         self.assertFalse(controller.has_hit_target(target))
 
     def test_target_limit_blocks_extra_targets(self):

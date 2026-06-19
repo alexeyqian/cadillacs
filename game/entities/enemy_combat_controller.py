@@ -100,10 +100,10 @@ class EnemyCombatController:
         return self.attack_manager
 
     def get_attack_timer(self, owner):
-        return self.attack_manager.attack_timer
+        return self.attack_manager.elapsed_frames
 
     def set_attack_timer(self, owner, value):
-        self.attack_manager.attack_timer = value
+        self.attack_manager.elapsed_frames = value
 
     def reset_decision_timer(self, owner):
         self.decision_timer = 0
@@ -151,13 +151,3 @@ class EnemyCombatController:
     def update_timers(self):
         if self.cooldown > 0:
             self.cooldown -= 1
-
-    # Compatibility aliases for older call sites while migration continues.
-    def start_attack_timer(self, owner):
-        self.start_attack_timing(owner)
-
-    def update_attack_timer(self, owner):
-        return self.advance_attack_timing(owner)
-
-    def cancel_attack_timer(self, owner):
-        self.cancel_attack_timing(owner)

@@ -50,7 +50,7 @@ class Player:
             animation_data, anim_fps)
 
     # Config
-    def load_player_config(self, config):
+    def load_player_config(self, config, animation_data, anim_fps):
         self.player_id = config.player_id
         self.display_name = config.display_name
         self.width = int(config.width)
@@ -58,19 +58,25 @@ class Player:
 
         self.collision_box_w = int(config.collision_box_w)
         self.collision_box_h = int(config.collision_box_h)
+        self.hurt_box_w = int(config.hurt_box_w)
+        self.hurt_box_h = int(config.hurt_box_h)
 
-        self.config_max_hp = config.max_hp
-        self.config_lives = config.lives
-        self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
+        # todo: already included in health, remove
+        self.hit_stun_duration = config.hit_stun_duration
+        self.health = PlayerHealth(config.max_hp, config.lives, config.hit_stun_duration)
 
         self.speed = config.speed
         self.run_speed = config.run_speed
+
+        # todo: remove or refactoring
+        self.attacks = config.attacks or {}
+
+        # todo: add run_attack, jump_attack, and weapon_attack
         self.run_attack_damage = config.run_attack_damage
         self.jump_attack_damage = config.jump_attack_damage
-        self.attacks = config.attacks or {}
         self.weapon_attacks = config.weapon_attacks or {}
+
         self.grab_range = config.grab_range
-        self.hit_stun_duration = config.hit_stun_duration
         self.sprite_scale = config.sprite_scale
 
         # air
@@ -89,7 +95,6 @@ class Player:
         
         self.state_machine = PlayerStateMachine(self)
         self.input_state = PlayerInputState()
-        # Components
         self.movement = PlayerMovement(self.speed, self.air)
         self.movement.ground_y = self.y
         self.combat = PlayerCombatController()

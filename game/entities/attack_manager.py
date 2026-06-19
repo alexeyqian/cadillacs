@@ -14,27 +14,7 @@ class AttackManager:
     def remaining_frames(self):
         if not self.current_attack:
             return 0
-        return max(0, self.get_attack_duration() - self.elapsed_frames)
-
-    @property
-    def attack_timer(self):
-        return self.elapsed_frames
-
-    @attack_timer.setter
-    def attack_timer(self, value):
-        self.elapsed_frames = value
-
-    @property
-    def attack_remaining(self):
-        return self.remaining_frames
-
-    @property
-    def attack_connected(self):
-        return self.has_connected
-
-    @attack_connected.setter
-    def attack_connected(self, value):
-        self.has_connected = value
+        return max(0, self.current_attack.total_duration - self.elapsed_frames)
 
     def start(self, attack_name, attack_data):
         self.current_attack_name = attack_name
@@ -53,15 +33,11 @@ class AttackManager:
     def is_finished(self):
         if not self.current_attack:
             return False
-        return self.elapsed_frames >= self.get_attack_duration()
+        return self.elapsed_frames >= self.current_attack.total_duration
 
     def is_active(self):
         if not self.current_attack:
             return False
-        # why return true here?
-        # It is a fallback for older/simple attack data that does not define windup, active, and recovery.
-        if not self.has_attack_phases():
-            return True
 
         active_start = self.current_attack.windup
         active_end = self.current_attack.windup + self.current_attack.active
@@ -70,8 +46,6 @@ class AttackManager:
     def get_phase_name(self):
         if not self.current_attack:
             return ""
-        if not self.has_attack_phases():
-            return "ACTIVE"
 
         if self.elapsed_frames < self.current_attack.windup:
             return "WINDUP"
@@ -80,7 +54,7 @@ class AttackManager:
         if self.elapsed_frames < active_end:
             return "ACTIVE"
 
-        if self.elapsed_frames < self.get_attack_duration():
+        if self.elapsed_frames < self.current_attack.total_duration:
             return "RECOVERY"
 
         return "DONE"
@@ -92,7 +66,7 @@ class AttackManager:
         return (
             f"{self.current_attack_name} "
             f"{self.get_phase_name()} "
-            f"{self.elapsed_frames}/{self.get_attack_duration()}"
+            f"{self.elapsed_frames}/{self.current_attack.total_duration}"
         )
 
     def mark_connected(self):
@@ -134,29 +108,3 @@ class AttackManager:
         self.elapsed_frames = 0
         self.has_connected = False
         self.hit_targets = set()
-
-    def get_attack_duration(self):
-        if not self.current_attack:
-            return 0
-        if hasattr(self.current_attack, "duration"):
-            return self.current_attack.duration
-        return self.current_attack.total_duration
-
-    def has_attack_phases(self):
-        return all(
-            hasattr(self.current_attack, field_name)
-            for field_name in ["windup", "active", "recovery"]
-        )
-
-    # Compatibility aliases for older call sites while migration continues.
-    def start_attack(self, attack_name, attack_data):
-        self.start(attack_name, attack_data)
-
-    def update_attack_timer(self):
-        return self.advance()
-
-    def finish_attack(self):
-        return self.finish()
-
-    def cancel_attack(self):
-        self.cancel()

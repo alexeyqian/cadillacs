@@ -182,7 +182,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy.combat.advance_attack_timing(enemy)
 
         self.assertEqual(enemy.combat.attack_manager.current_attack_name, enemy.ATTACK)
-        self.assertEqual(enemy.combat.attack_manager.attack_timer, 1)
+        self.assertEqual(enemy.combat.attack_manager.elapsed_frames, 1)
 
     def test_real_enemy_total_duration_comes_from_attack_data(self):
         enemy = Enemy.__new__(Enemy)

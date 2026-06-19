@@ -33,33 +33,8 @@ class PlayerCombatController:
             self.attack_manager.cancel()
 
     @property
-    def attack_timer(self):
-        return self.attack_manager.attack_timer
-
-    @property
-    def attack_remaining(self):
-        return self.attack_manager.attack_remaining
-
-    @attack_remaining.setter
-    def attack_remaining(self, value):
-        # Kept only for old callers during the migration.
-        if value <= 0:
-            self.attack_manager.cancel()
-
-    @property
-    def attack_connected(self):
-        return self.attack_manager.attack_connected
-
-    @attack_connected.setter
-    def attack_connected(self, value):
-        self.attack_manager.attack_connected = value
-
-    @property
     def current_attack_name(self):
         return self.attack_manager.current_attack_name
-
-    def mark_attack_connected(self):
-        self.attack_manager.mark_connected()
 
     def mark_attack_hit(self, target):
         self.attack_manager.mark_target_hit(target)
