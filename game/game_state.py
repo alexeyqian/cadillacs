@@ -49,3 +49,8 @@ class GameState:
         self.explosions = explosions
 
         self.running = True
+        # Game paused flag. Toggle with P key to pause/resume gameplay.
+        self.paused = False
+        # Pause menu state
+        self.pause_menu_options = ["Resume", "Restart Stage", "Quit"]
+        self.pause_menu_index = 0

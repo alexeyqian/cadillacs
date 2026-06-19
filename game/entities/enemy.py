@@ -28,8 +28,7 @@ class Enemy(Character, EnemyState):
         )
 
         self.configure_spawn_state(x, enemy_type)
-        self.build_state_components()
-        self.build_capability_components()
+        self.build_components()
         self.build_controllers()
         self.configure_from_enemy_config(get_enemy_config(self.enemy_type))
         self.build_presentation_components(animation_data, anim_fps)
@@ -38,10 +37,8 @@ class Enemy(Character, EnemyState):
         self.enemy_type = enemy_type
         self.loot_generated = False
 
-    def build_state_components(self):
+    def build_components(self):
         self.life_cycle = EnemyLifeCycle()
-
-    def build_capability_components(self):
         self.geometry = CharacterGeometry()
         self.movement = EnemyMovement(spawn_x=self.x)
         self.flanking = EnemyFlanking()

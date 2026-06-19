@@ -177,6 +177,34 @@ def main():
                     running = False
                 if event.key == pygame.K_F1:
                     settings.SHOW_COMBAT_BOXES = not settings.SHOW_COMBAT_BOXES
+                # Pause/resume with P
+                if event.key == pygame.K_p:
+                    game_state.paused = not getattr(game_state, 'paused', False)
+                    if game_state.paused:
+                        # initialize menu selection when entering pause
+                        game_state.pause_menu_index = 0
+                # If paused, handle menu navigation and selection
+                if getattr(game_state, 'paused', False):
+                    if event.key == pygame.K_UP:
+                        game_state.pause_menu_index = (
+                            (game_state.pause_menu_index - 1) % len(game_state.pause_menu_options)
+                        )
+                    elif event.key == pygame.K_DOWN:
+                        game_state.pause_menu_index = (
+                            (game_state.pause_menu_index + 1) % len(game_state.pause_menu_options)
+                        )
+                    elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
+                        choice = game_state.pause_menu_options[game_state.pause_menu_index]
+                        if choice == "Resume":
+                            game_state.paused = False
+                        elif choice == "Restart Stage":
+                            # reload current stage
+                            load_stage(game_state, game_state.stage_manager.get_current_stage())
+                            game_state.paused = False
+                        elif choice == "Quit":
+                            game_state.running = False
+                            running = False
+                            break
                 # todo: insert coin as credit, only use for dev
                 if event.key == pygame.K_5:
                     game_state.credits += 1

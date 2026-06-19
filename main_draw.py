@@ -294,6 +294,31 @@ def main_draw_ui(game_state):
         screen.blit(continue_hint_text, continue_hint_text.get_rect(center=(SCREEN_WIDTH//2,SCREEN_HEIGHT//2 + 60)))
         return
 
+    # Pause menu
+    if getattr(game_state, 'paused', False):
+        overlay = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 200))
+        screen.blit(overlay, (0, 0))
+
+        title = big_font.render("PAUSED", True, YELLOW_COLOR)
+        screen.blit(title, title.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 - 120)))
+
+        options = getattr(game_state, 'pause_menu_options', ["Resume", "Restart Stage", "Quit"])
+        selected = getattr(game_state, 'pause_menu_index', 0)
+
+        menu_start_y = SCREEN_HEIGHT//2 - 40
+        option_gap = 48
+
+        for idx, opt in enumerate(options):
+            color = YELLOW_COLOR if idx == selected else WHITE_COLOR
+            text = font.render(opt, True, color)
+            text_rect = text.get_rect(center=(SCREEN_WIDTH//2, menu_start_y + idx * option_gap))
+            screen.blit(text, text_rect)
+
+        hint = small_font.render("Use Up/Down and Enter to choose", True, WHITE_COLOR)
+        screen.blit(hint, hint.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 140)))
+        return
+
     if player.state == player.DEAD and player.health.lives <= 0:
         game_over_text = big_font.render("GAME OVER", True, RED_COLOR)
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
