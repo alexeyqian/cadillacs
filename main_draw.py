@@ -180,12 +180,7 @@ def main_draw_ui(game_state):
         max_slots = MAX_MELEE_ATTACKERS
 
         for enemy in enemies:
-            attack_state = getattr(enemy, "attack_state", None)
-            has_attack_slot = (
-                attack_state.has_slot
-                if attack_state
-                else getattr(enemy, "has_attack_slot", False)
-            )
+            has_attack_slot = enemy.combat_controller.has_attack_slot
             if has_attack_slot:
                 active_slots += 1
                 max_slots = getattr(enemy, "melee_attack_slot_limit", None) or max_slots
@@ -196,9 +191,9 @@ def main_draw_ui(game_state):
 
         attack_debug_lines = format_attack_debug_lines(
             "Player attack",
-            player.combat.attack_controller,
-            damage=player.combat.get_attack_damage(player),
-            lane_reach=player.combat.get_attack_lane_reach(player),
+            player.combat_controller.attack_manager,
+            damage=player.combat_controller.get_attack_damage(player),
+            lane_reach=player.combat_controller.get_attack_lane_reach(player),
         )
         for debug_line in attack_debug_lines:
             debug_text = small_font.render(debug_line, True, BLACK_COLOR)
@@ -212,20 +207,13 @@ def main_draw_ui(game_state):
             if enemy.state != enemy.ATTACK:
                 continue
 
-            attack_state = getattr(enemy, "attack_state", None)
-            attack_controller = (
-                attack_state.controller
-                if attack_state
-                else getattr(enemy, "attack_controller", None)
-            )
-            if not attack_controller:
-                continue
+            attack_manager = enemy.combat_controller.attack_manager
 
             enemy_debug_lines = format_attack_debug_lines(
                 enemy.display_name,
-                attack_controller,
-                damage=enemy.attack_damage,
-                lane_reach=enemy.attack_lane_reach,
+                attack_manager,
+                damage=enemy.combat_controller.get_attack_data(enemy).damage,
+                lane_reach=enemy.combat_controller.get_attack_data(enemy).lane_reach,
             )
             for debug_line in enemy_debug_lines:
                 debug_text = small_font.render(debug_line, True, WHITE_COLOR)

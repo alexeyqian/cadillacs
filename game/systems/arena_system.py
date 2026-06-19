@@ -1,4 +1,4 @@
-from game.settings import *
+from game.settings import SCREEN_WIDTH
 
 ENEMY_ARENA_ENTRY_MARGIN = 560
 

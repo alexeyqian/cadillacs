@@ -1,4 +1,4 @@
-from game.animation.gneiss_data import *
+from game.animation.gneiss_data import GNEISS_ANIMATIONS, GNEISS_ANIM_FPS
 from game.entities.enemy import Enemy
 
 class GneissEnemy(Enemy):

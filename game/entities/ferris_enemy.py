@@ -1,4 +1,4 @@
-from game.animation.ferris_data import *
+from game.animation.ferris_data import FERRIS_ANIMATIONS, FERRIS_ANIM_FPS
 from game.entities.enemy import Enemy
 
 # Ferris animation data owns the sprite frame slices and per-frame boxes.

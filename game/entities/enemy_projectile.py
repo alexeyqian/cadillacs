@@ -1,6 +1,6 @@
 import pygame
-from game.settings import *
-from game.colors import *
+from game.settings import WORLD_WIDTH
+from game.colors import WHITE_COLOR, YELLOW_COLOR
 
 class EnemyProjectile:
     def __init__(self, x, y, direction, speed, damage, 

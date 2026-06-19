@@ -22,6 +22,15 @@ class EnemyStateController:
             # todo: replace with: start_patrol()
             owner.state = owner.PATROL
 
+    def execute_state(self, owner, level, player, enemies, dx, dy):
+        if owner.state == owner.PATROL:
+            owner.movement.update_patrol(owner)
+        elif owner.state == owner.CHASE:
+            owner.movement.update_chasing(owner, player, dx, dy)
+            owner.movement.separate_from_other_enemies(owner, enemies)
+        elif owner.state == owner.ATTACK:
+            owner.update_attack(level, player)
+
     def prepare_or_start_attack(self, owner, player=None):
         self.increment_attack_decision(owner)
 
@@ -38,7 +47,7 @@ class EnemyStateController:
         if distance_x > owner.attack_range:
             return False
         lane_distance = level.get_lane_distance(owner.y, player.y)
-        if lane_distance > owner.combat.get_attack_data(owner).lane_reach:
+        if lane_distance > owner.combat_controller.get_attack_data(owner).lane_reach:
             return False
         if self.can_bypass_attack_slot_limit(owner):
             return True
@@ -130,7 +139,7 @@ class EnemyStateController:
         return True
 
     def get_combat(self, owner):
-        return getattr(owner, "combat", None)
+        return getattr(owner, "combat_controller", None)
 
     def reset_attack_decision(self, owner):
         combat = self.get_combat(owner)
@@ -153,13 +162,13 @@ class EnemyStateController:
         return owner.attack_decision_timer
 
     def get_required_attack_delay(self, owner, player=None):
-        return owner.combat.get_attack_data(owner).delay
+        return owner.combat_controller.get_attack_data(owner).delay
 
     def is_player_in_attack_recovery(self, player):
         if not player:
             return False
 
-        combat = getattr(player, "combat", None)
+        combat = getattr(player, "combat_controller", None)
         if not combat or not combat.is_attacking:
             return False
 

@@ -1,5 +1,5 @@
 import pygame
-from game.settings import SHOW_COMBAT_BOXES
+import game.settings as settings
 from game.components.debug_renderer import CharacterDebugRenderer
 
 class PlayerRenderer:
@@ -63,7 +63,7 @@ class PlayerRenderer:
         pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
 
     def draw_player_debug_boxes(self, screen, camera_x, player):
-        if not SHOW_COMBAT_BOXES:
+        if not settings.SHOW_COMBAT_BOXES:
             return
 
         CharacterDebugRenderer().draw_combat_boxes(
@@ -73,7 +73,7 @@ class PlayerRenderer:
             line_width=2,
         )
 
-        #timing_label = player.combat.get_attack_timing_label()
+        #timing_label = player.combat_controller.get_attack_timing_label()
         #if timing_label:
         #    font = pygame.font.SysFont(None, 20)
         #    label = font.render(timing_label, True, YELLOW_COLOR)

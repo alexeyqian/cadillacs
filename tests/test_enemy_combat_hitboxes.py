@@ -30,7 +30,7 @@ class FakeEnemy:
             hitbox_w=50,
             hitbox_h=20,
         )
-        self.combat = EnemyCombatController(self.attack_data)
+        self.combat_controller = EnemyCombatController(self.attack_data)
 
     def get_current_frame_data(self):
         return FakeFrame()
@@ -39,18 +39,18 @@ class FakeEnemy:
 class EnemyCombatHitboxTests(unittest.TestCase):
     def test_attack_rect_is_empty_during_enemy_windup(self):
         enemy = FakeEnemy()
-        enemy.combat.start_attack_timing(enemy)
+        enemy.combat_controller.start_attack_timing(enemy)
         hitboxes = CharacterGeometry()
 
         self.assertIsNone(hitboxes.get_attack_rect(enemy))
 
     def test_enemy_attack_rect_comes_from_attack_data_during_active_window(self):
         enemy = FakeEnemy()
-        enemy.combat.start_attack_timing(enemy)
+        enemy.combat_controller.start_attack_timing(enemy)
         hitboxes = CharacterGeometry()
 
         for _ in range(enemy.attack_data.windup):
-            enemy.combat.advance_attack_timing(enemy)
+            enemy.combat_controller.advance_attack_timing(enemy)
 
         attack_rect = hitboxes.get_attack_rect(enemy)
 
@@ -60,11 +60,11 @@ class EnemyCombatHitboxTests(unittest.TestCase):
     def test_enemy_attack_rect_mirrors_left_from_anchor(self):
         enemy = FakeEnemy()
         enemy.facing_right = False
-        enemy.combat.start_attack_timing(enemy)
+        enemy.combat_controller.start_attack_timing(enemy)
         hitboxes = CharacterGeometry()
 
         for _ in range(enemy.attack_data.windup):
-            enemy.combat.advance_attack_timing(enemy)
+            enemy.combat_controller.advance_attack_timing(enemy)
 
         attack_rect = hitboxes.get_attack_rect(enemy)
 

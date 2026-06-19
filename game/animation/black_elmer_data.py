@@ -72,29 +72,16 @@ BLACK_ELMER_ANIMATIONS = {
     },
     "hit": {
         "file": "assets/enemies/black_elmer_hit.png",
-        "frames_count": 2,
+        "frames_count": 1,
         "frames": [
             {"frame_rect": (0, 0, 64, 75), "offset": (-32, -75)},
-            {"frame_rect": (64, 0, 65, 75), "offset": (-33, -75)},
         ]
     },
     "dead": {
         "file": "assets/enemies/black_elmer_dead.png",
-        "frames_count": 4,
+        "frames_count": 1,
         "frames": [
-            {"frame_rect": (0, 0, 70, 84), "offset": (-35, -84)},
-            {"frame_rect": (70, 0, 96, 84), "offset": (-48, -84)},
-            {"frame_rect": (166, 0, 104, 84), "offset": (-52, -84)},
-            {"frame_rect": (270, 0, 74, 84), "offset": (-37, -84)},
-        ]
-    },
-    "dizzy": {
-        "file": "assets/enemies/black_elmer_dizzy.png",
-        "frames_count": 3,
-        "frames": [
-            {"frame_rect": (0, 0, 60, 70), "offset": (-30, -70)},
-            {"frame_rect": (60, 0, 69, 70), "offset": (-35, -70)},
-            {"frame_rect": (129, 0, 65, 70), "offset": (-33, -70)},
+            {"frame_rect": (0, 0, 104, 40), "offset": (-52, -40)},
         ]
     },
 }

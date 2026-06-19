@@ -24,12 +24,12 @@ class Player(Character, PlayerState):
         super().__init__(x=300, y=500, state=self.IDLE, facing_right=True)
         self.player_type = player_type
 
-        self.load_player_config(
+        self.configure_from_player_config(
             get_player_config(player_type),
             animation_data, anim_fps)
 
-    # Config
-    def load_player_config(self, config, animation_data, anim_fps):
+    # Construction groups
+    def configure_from_player_config(self, config, animation_data, anim_fps):
         self.apply_player_config(config)
         self.build_state_components(config)
         self.build_input_components()
@@ -106,25 +106,28 @@ class Player(Character, PlayerState):
         self.geometry = CharacterGeometry()
 
     def build_controllers(self):
-        self.combat = PlayerCombatController()
+        self.combat_controller = PlayerCombatController()
         self.action_controller = PlayerActionController()
-        self.grab = PlayerGrabController()
+        self.grab_controller = PlayerGrabController()
         self.state_controller = PlayerStateController()
-        self.lifecycle = PlayerLifecycleController(self.x, self.y)
+        self.lifecycle_controller = PlayerLifecycleController(self.x, self.y)
 
     def build_presentation_components(self, animation_data, anim_fps):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
+
+    def reset_for_stage_start(self, x, y):
+        self.lifecycle_controller.reset_for_stage_start(self, x, y)
 
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x
     # Update flow
     def update(self, player_input):
         if self.state == self.DEAD:
-            self.lifecycle.update_dead_state(self)
+            self.lifecycle_controller.update_dead_state(self)
             return
 
-        if self.lifecycle.update_hit_state(self):
+        if self.lifecycle_controller.update_hit_state(self):
             return
 
         self.update_timers()
@@ -132,13 +135,13 @@ class Player(Character, PlayerState):
         self.action_controller.update(self, player_input)
         self.movement.update_jump_physics(self, player_input)
         self.state_controller.update_after_movement(self, moving)
-        self.grab.update_grabbed_enemy_position(self)
+        self.grab_controller.update_grabbed_enemy_position(self)
         self.animation_controller.update(self)
 
     # Timers
     def update_timers(self):
-        self.combat.update_timers(self)
-        self.grab.update_timers(self)
+        self.combat_controller.update_timers(self)
+        self.grab_controller.update_timers(self)
         self.movement.update_timers()
 
     def get_attack_data(self, attack_name):
@@ -160,7 +163,7 @@ class Player(Character, PlayerState):
             reaction = damage.reaction
             damage = damage.damage
 
-        self.lifecycle.take_damage(
+        self.lifecycle_controller.take_damage(
             self,
             damage,
             reaction=reaction,

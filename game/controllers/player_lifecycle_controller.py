@@ -3,6 +3,13 @@ class PlayerLifecycleController:
         self.respawn_x = respawn_x
         self.respawn_y = respawn_y
 
+    def reset_for_stage_start(self, owner, x, y):
+        self.respawn_x = x
+        self.respawn_y = y
+        self.reset_position_and_movement(owner, x, y)
+        owner.state_machine.change_to(owner, owner.IDLE)
+        owner.facing_right = True
+
     def update_dead_state(self, owner):
         self.update_respawn(owner)
         owner.animation_controller.update(owner)
@@ -28,10 +35,10 @@ class PlayerLifecycleController:
         # Enemy lands hit -> combo step resets
         # Enemy lands hit -> grabbed enemy is released
         # Player must restart pressure after recovering
-        owner.combat.cancel_attack()
+        owner.combat_controller.cancel_attack()
         owner.movement.cancel_run_attack_momentum()
         owner.movement.cancel_attack_nudge()
-        owner.grab.grabbed_enemy = None
+        owner.grab_controller.grabbed_enemy = None
 
         lost_life = owner.health.take_damage(
             damage,
@@ -56,9 +63,15 @@ class PlayerLifecycleController:
 
     def respawn(self, owner):
         owner.health.reset_for_respawn()
-        owner.x = self.respawn_x
-        owner.y = self.respawn_y
-        owner.movement.ground_y = self.respawn_y
+        self.reset_position_and_movement(owner, self.respawn_x, self.respawn_y)
+        owner.state_machine.change_to(owner, owner.IDLE)
+        owner.combat_controller.is_attacking = False
+        owner.grab_controller.grabbed_enemy = None
+
+    def reset_position_and_movement(self, owner, x, y):
+        owner.x = x
+        owner.y = y
+        owner.movement.ground_y = y
         owner.movement.vx = 0
         owner.movement.vy = 0
         owner.movement.is_jumping = False
@@ -66,6 +79,3 @@ class PlayerLifecycleController:
             owner.air.reset()
         owner.movement.cancel_run_attack_momentum()
         owner.movement.cancel_attack_nudge()
-        owner.state_machine.change_to(owner, owner.IDLE)
-        owner.combat.is_attacking = False
-        owner.grab.grabbed_enemy = None

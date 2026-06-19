@@ -1192,9 +1192,9 @@ Expected result:
 Newly touched entity/data/gameplay modules avoid broad imports where practical.
 ```
 
-## Remaining Refactoring Steps
+## Completed Entity Field/Smoke Test/Import Cleanup Plan
 
-These steps are useful next, but they are not required before adding more gameplay.
+These steps were completed after the input/data compatibility cleanup.
 
 ### Step 40: Review Remaining Entity Field Groups After Gameplay Changes
 
@@ -1207,6 +1207,8 @@ Tasks:
 - Keep construction grouped by config, state/input, capability components, controllers, and presentation.
 - Avoid moving stable direct fields into opaque dictionaries.
 - Extract a new component only when behavior or state has a clear owner.
+- Use `_controller` for controller fields and plain domain names for components.
+- Keep Player and Enemy construction flows symmetric where practical.
 
 ### Step 41: Add Real Player/Enemy Construction Smoke Tests
 
@@ -1219,6 +1221,7 @@ Tasks:
 - Instantiate real Player/Enemy through factories where possible.
 - Assert required components/controllers exist.
 - Avoid depending on rendering details beyond construction.
+- Patch sprite frame loading in tests so construction stays headless.
 
 ### Step 42: Continue Opportunistic Import Cleanup
 
@@ -1231,6 +1234,46 @@ Tasks:
 - Prioritize gameplay/runtime modules.
 - Leave asset manifest and animation data modules alone unless they become noisy.
 - Keep import patches small and test-backed.
+
+## Remaining Refactoring Steps
+
+These steps are useful next, but they are not required before adding more gameplay.
+
+### Step 43: Clean Remaining Runtime Wildcard Imports
+
+Goal:
+
+Finish the easy wildcard-import cleanup in runtime modules.
+
+Tasks:
+
+- Replace `from game.settings import *` in `camera.py`, `enemy_state_controller.py`, `player_combat_controller.py`, and `level.py` with explicit imports.
+- Keep generated-style placeholder and animation data modules for a later pass.
+- Run the full test suite after each small group.
+
+### Step 44: Review Controller Field Naming In Docs And Debug Text
+
+Goal:
+
+Keep architecture docs, comments, and debug labels aligned with code.
+
+Tasks:
+
+- Update remaining comments that describe controller-owned behavior with old short names like combat, grab, lifecycle, or reactions.
+- Keep content/asset keys such as `player.grab` unchanged when they describe animations or input actions.
+- Avoid renaming player input fields like `grab`; they are button names, not controller fields.
+
+### Step 45: Extract Repeated Factory Smoke Test Helpers
+
+Goal:
+
+Reduce duplication in constructor smoke tests without hiding intent.
+
+Tasks:
+
+- Move fake frame creation into a shared test helper if more construction tests need it.
+- Keep each smoke test explicit about required components and controllers.
+- Add enemy-type/player-type variants only when new character types are introduced.
 
 ## Historical Refactoring Plan
 
@@ -1552,21 +1595,21 @@ With behavior composed like this:
 Character
   geometry
   movement
-  combat
-  lifecycle
+  combat_controller
+  lifecycle_controller
   animation_controller
   renderer
 
 Player
   input_state
   action_controller
-  grab
+  grab_controller
   weapon_slot
   air
 
 Enemy
   state_controller
-  reactions
+  reaction_controller
   flanking
   coordination
   loot_controller

@@ -1,6 +1,6 @@
 class PlayerStateController:
     def update_after_movement(self, owner, moving):
-        if owner.combat.is_attacking:
+        if owner.combat_controller.is_attacking:
             return
 
         air = getattr(owner, "air", None)
@@ -13,11 +13,11 @@ class PlayerStateController:
                 owner.state_machine.change_to(owner, owner.JUMP)
             return
 
-        if owner.grab.throw_remaining > 0:
+        if owner.grab_controller.throw_remaining > 0:
             owner.state_machine.change_to(owner, owner.THROW)
-        elif owner.grab.grab_knee_remaining > 0:
+        elif owner.grab_controller.grab_knee_remaining > 0:
             owner.state_machine.change_to(owner, owner.GRAB_KNEE)
-        elif owner.grab.grabbed_enemy:
+        elif owner.grab_controller.grabbed_enemy:
             owner.state_machine.change_to(owner, owner.GRAB)
         else:
             if moving and owner.movement.is_running:

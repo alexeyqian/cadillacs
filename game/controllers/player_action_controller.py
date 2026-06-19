@@ -72,18 +72,18 @@ class PlayerActionController:
         return owner.state != previous_state
 
     def try_start_attack(self, owner):
-        previous_attack_name = owner.combat.current_attack_name
+        previous_attack_name = owner.combat_controller.current_attack_name
 
         if owner.movement.is_jumping:
-            owner.combat.start_jump_attack(owner)
-        elif owner.grab.grabbed_enemy:
-            owner.combat.start_grab_knee_attack(owner)
+            owner.combat_controller.start_jump_attack(owner)
+        elif owner.grab_controller.grabbed_enemy:
+            owner.combat_controller.start_grab_knee_attack(owner)
         else:
-            owner.combat.start_attack(owner)
-            if owner.combat.current_attack_name == owner.RUN_ATTACK:
+            owner.combat_controller.start_attack(owner)
+            if owner.combat_controller.current_attack_name == owner.RUN_ATTACK:
                 owner.input_state.run_attack_requires_attack_release = True
 
-        return owner.combat.current_attack_name != previous_attack_name
+        return owner.combat_controller.current_attack_name != previous_attack_name
 
     def buffer_action(self, owner, action, frames=None):
         input_buffer = getattr(owner, "input_buffer", None)

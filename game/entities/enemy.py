@@ -26,7 +26,7 @@ from game.combat.hit_reaction import normalize_hit_reaction
 
 class Enemy(Character, EnemyState):
     # attack_range: should i attack
-    #  attack_rect = did i hit
+    # attack_rect = did i hit
     # detect_range: within detect_range, enemy chases player
     # outside this range, enemy ignores player
     def __init__(self, x, y, enemy_type, 
@@ -43,7 +43,7 @@ class Enemy(Character, EnemyState):
         self.build_state_components()
         self.build_capability_components()
         self.build_controllers()
-        self.apply_enemy_config(get_enemy_config(self.enemy_type))
+        self.configure_from_enemy_config(get_enemy_config(self.enemy_type))
         self.build_presentation_components(animation_data, anim_fps)
 
     def configure_spawn_state(self, x, enemy_type):
@@ -57,27 +57,27 @@ class Enemy(Character, EnemyState):
 
     def build_capability_components(self):
         self.geometry = CharacterGeometry()
-        self.combat = EnemyCombatController()
         self.movement = EnemyMovement()
         self.flanking = EnemyFlanking()
         self.coordination = EnemyCoordination()
 
     def build_controllers(self):
-        self.reactions = EnemyReactionController()
-        self.lifecycle = EnemyLifecycleController()
+        self.combat_controller = EnemyCombatController()
+        self.reaction_controller = EnemyReactionController()
+        self.lifecycle_controller = EnemyLifecycleController()
         self.state_controller = EnemyStateController()
         self.loot_controller = EnemyLootController()
 
-    def build_presentation_components(self, animation_data, anim_fps):
-        self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
-        self.renderer = EnemyRenderer()
-
-    def apply_enemy_config(self, config):
+    def configure_from_enemy_config(self, config):
         self.apply_identity_config(config)
         self.apply_body_config(config)
         self.apply_movement_config(config)
         self.apply_combat_config(config)
         self.apply_reward_config(config)
+
+    def build_presentation_components(self, animation_data, anim_fps):
+        self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
+        self.renderer = EnemyRenderer()
 
     def apply_identity_config(self, config):
         self.enemy_id = config.enemy_id
@@ -104,7 +104,7 @@ class Enemy(Character, EnemyState):
         self.attack_range = config.attack_range
         self.attack_lane_range = config.attack_lane_range
 
-        self.combat.attack_data = config.attack
+        self.combat_controller.attack_data = config.attack
 
         self.flinch_damage_threshold = config.flinch_damage_threshold
         self.attack_flinch_damage_threshold = (
@@ -118,32 +118,34 @@ class Enemy(Character, EnemyState):
         self.score_points = config.score_points
 
     def update(self, level, player, enemies):
-        if self.lifecycle.update_special_states(self):
+        if self.lifecycle_controller.update_special_states(self):
             return
 
-        self.lifecycle.update_timers(self)
+        self.lifecycle_controller.update_timers(self)
 
-        if self.lifecycle.update_hit_state(self):
+        if self.lifecycle_controller.update_hit_state(self):
             return
 
-        self.reactions.apply_knockback(self)
+        self.reaction_controller.apply_knockback(self)
 
-        dx, dy, distance_x, distance_y = self.get_player_distance(player)
+        dx, dy, distance_x, distance_y = self.movement.get_player_distance(self, player)
 
         if distance_x <= self.detect_range:
             self.face_player(player)
 
-        self.choose_state(level, player, distance_x, distance_y, enemies)
+        self.state_controller.choose_state(
+            self, level, player, distance_x, distance_y, enemies
+        )
         if self.state == self.ATTACK:
             self.update_animation()
-            self.execute_state(level, player, enemies, dx, dy)
+            self.state_controller.execute_state(self, level, player, enemies, dx, dy)
         else:
-            self.execute_state(level, player, enemies, dx, dy)
+            self.state_controller.execute_state(self, level, player, enemies, dx, dy)
             self.update_animation()
 
     # Lifecycle / reactions
     def is_ready_to_remove(self):
-        return self.lifecycle.is_ready_to_remove(self)
+        return self.lifecycle_controller.is_ready_to_remove(self)
 
     def take_damage(
         self,
@@ -166,7 +168,7 @@ class Enemy(Character, EnemyState):
             hit_stun_duration,
             knockback_velocity,
         )
-        self.reactions.take_damage(
+        self.reaction_controller.take_damage(
             self,
             damage,
             attacker_x,
@@ -174,60 +176,43 @@ class Enemy(Character, EnemyState):
         )
 
     def grabbed_by_player(self):
-        self.reactions.grabbed_by_player(self)
+        self.reaction_controller.grabbed_by_player(self)
 
     def thrown_by_player(self, direction, damage):
-        self.reactions.thrown_by_player(self, direction, damage)
+        self.reaction_controller.thrown_by_player(self, direction, damage)
 
     def take_grab_knee_damage(self, damage):
-        self.reactions.take_grab_knee_damage(self, damage)
+        self.reaction_controller.take_grab_knee_damage(self, damage)
 
     # Movement / state decisions
-    def get_player_distance(self, player):
-        return self.movement.get_player_distance(self, player)
-
     def face_player(self, player):
         self.movement.face_player(self, player)
 
-    def choose_state(self, level, player, distance_x, distance_y, enemies):
-        self.state_controller.choose_state(
-            self, level, player, distance_x, distance_y, enemies
-        )
-
-    def execute_state(self, level, player, enemies, dx, dy):
-        if self.state == self.PATROL:
-            self.movement.update_patrol(self)
-        elif self.state == self.CHASE:
-            self.movement.update_chasing(self, player, dx, dy)
-            self.movement.separate_from_other_enemies(self, enemies)
-        elif self.state == self.ATTACK:
-            self.update_attack(level, player)
-
     # Combat
     def start_attack(self):
-        self.combat.start_attack(self)
+        self.combat_controller.start_attack(self)
 
     def start_clash_recovery(self):
-        self.combat.start_clash_recovery(self)
+        self.combat_controller.start_clash_recovery(self)
 
     def update_attack(self, level, player):
-        self.combat.update_attack(self, level, player)
+        self.combat_controller.update_attack(self, level, player)
 
     def is_attack_active(self):
-        return self.combat.is_attack_active(self)
+        return self.combat_controller.is_attack_active(self)
 
     def get_attack_total_duration(self):
-        return self.combat.get_attack_data(self).total_duration
+        return self.combat_controller.get_attack_data(self).total_duration
 
     def get_attack_phase_name(self):
         if self.state != self.ATTACK:
             return ""
-        return self.combat.attack_manager.get_phase_name()
+        return self.combat_controller.attack_manager.get_phase_name()
 
     def get_attack_timing_label(self):
         if self.state != self.ATTACK:
             return ""
-        return self.combat.attack_manager.get_timing_label()
+        return self.combat_controller.attack_manager.get_timing_label()
 
     # Rendering / animation / geometry
     def get_current_frame_data(self):

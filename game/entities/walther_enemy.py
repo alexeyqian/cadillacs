@@ -1,4 +1,4 @@
-from game.animation.walther_data import *
+from game.animation.walther_data import WALTHER_ANIMATIONS, WALTHER_ANIM_FPS
 from game.entities.enemy import Enemy
 
 class WaltherEnemy(Enemy):

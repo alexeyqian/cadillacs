@@ -68,8 +68,8 @@ class FakeOwner:
         self.weapon_slot = FakeWeaponSlot()
         self.input_state = PlayerInputState()
         self.input_buffer = InputBuffer(default_frames=6)
-        self.combat = PlayerCombatController()
-        self.grab = FakeGrab()
+        self.combat_controller = PlayerCombatController()
+        self.grab_controller = FakeGrab()
         self.attacks = DEFAULT_PLAYER_ATTACKS
         self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
 
@@ -89,19 +89,19 @@ class PlayerActionControllerTests(unittest.TestCase):
 
         actions.update(owner, FakeInput(attack=True))
 
-        self.assertEqual(owner.combat.current_attack_name, owner.RUN_ATTACK)
+        self.assertEqual(owner.combat_controller.current_attack_name, owner.RUN_ATTACK)
         self.assertTrue(owner.input_state.run_attack_requires_attack_release)
 
-        owner.combat.cancel_attack()
+        owner.combat_controller.cancel_attack()
         owner.input_state.attack_pressed = False
         actions.update(owner, FakeInput(attack=True))
 
-        self.assertIsNone(owner.combat.current_attack_name)
+        self.assertIsNone(owner.combat_controller.current_attack_name)
 
         actions.update(owner, FakeInput(attack=False))
         actions.update(owner, FakeInput(attack=True))
 
-        self.assertEqual(owner.combat.current_attack_name, owner.RUN_ATTACK)
+        self.assertEqual(owner.combat_controller.current_attack_name, owner.RUN_ATTACK)
 
     def test_attack_input_buffers_during_active_attack_and_starts_after_recovery(self):
         owner = FakeOwner()
@@ -110,18 +110,18 @@ class PlayerActionControllerTests(unittest.TestCase):
         actions = PlayerActionController()
 
         actions.update(owner, FakeInput(attack=True))
-        self.assertEqual(owner.combat.current_attack_name, owner.ATTACK_1)
+        self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK_1)
 
         actions.update(owner, FakeInput(attack=False))
         actions.update(owner, FakeInput(attack=True))
         self.assertTrue(owner.input_buffer.has("attack"))
 
-        owner.combat.attack_manager.mark_connected()
-        while owner.combat.current_attack_name == owner.ATTACK_1:
-            owner.combat.update_timers(owner)
+        owner.combat_controller.attack_manager.mark_connected()
+        while owner.combat_controller.current_attack_name == owner.ATTACK_1:
+            owner.combat_controller.update_timers(owner)
             actions.update(owner, FakeInput(attack=False))
 
-        self.assertEqual(owner.combat.current_attack_name, owner.ATTACK_2)
+        self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK_2)
         self.assertFalse(owner.input_buffer.has("attack"))
 
 

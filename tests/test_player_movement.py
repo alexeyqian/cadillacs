@@ -31,8 +31,8 @@ class FakeOwner:
         self.speed = 5
         self.run_speed = 9
         self.facing_right = True
-        self.combat = FakeCombat()
-        self.grab = FakeGrab()
+        self.combat_controller = FakeCombat()
+        self.grab_controller = FakeGrab()
         self.input_state = FakeInputState()
         self.state_machine = FakeStateMachine()
 
@@ -70,8 +70,8 @@ class PlayerMovementTests(unittest.TestCase):
         owner = FakeOwner()
         movement = PlayerMovement(owner.speed)
         movement.run_direction = 1
-        owner.combat.is_attacking = True
-        owner.combat.current_attack_name = owner.RUN_ATTACK
+        owner.combat_controller.is_attacking = True
+        owner.combat_controller.current_attack_name = owner.RUN_ATTACK
 
         movement.start_run_attack_momentum(owner)
         starting_momentum = movement.run_attack_momentum_remaining
@@ -92,8 +92,8 @@ class PlayerMovementTests(unittest.TestCase):
     def test_non_run_attack_clears_run_attack_momentum(self):
         owner = FakeOwner()
         movement = PlayerMovement(owner.speed)
-        owner.combat.is_attacking = True
-        owner.combat.current_attack_name = "ATTACK_1"
+        owner.combat_controller.is_attacking = True
+        owner.combat_controller.current_attack_name = "ATTACK_1"
 
         movement.start_run_attack_momentum(owner)
         moved = movement.update_movement(owner, FakeInput())
@@ -268,18 +268,18 @@ class PlayerMovementTests(unittest.TestCase):
         movement.start_jump(owner, FakeInput())
         air.begin_jump()
         owner.state = owner.JUMP_ATTACK
-        owner.combat.is_attacking = True
-        owner.combat.current_attack_name = owner.JUMP_ATTACK
+        owner.combat_controller.is_attacking = True
+        owner.combat_controller.current_attack_name = owner.JUMP_ATTACK
         self.update_until_state(movement, owner, owner.LANDING)
 
         self.assertEqual(owner.state, owner.LANDING)
-        self.assertIsNone(owner.combat.current_attack_name)
+        self.assertIsNone(owner.combat_controller.current_attack_name)
 
     def test_attack_3_nudge_moves_forward_briefly(self):
         owner = FakeOwner()
         movement = PlayerMovement(owner.speed)
-        owner.combat.is_attacking = True
-        owner.combat.current_attack_name = owner.ATTACK_3
+        owner.combat_controller.is_attacking = True
+        owner.combat_controller.current_attack_name = owner.ATTACK_3
 
         movement.start_attack_3_nudge(owner)
         starting_nudge = movement.attack_nudge_remaining

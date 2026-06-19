@@ -1,5 +1,5 @@
 import pygame
-from game.colors import *
+from game.colors import GREEN_COLOR, WHITE_COLOR, YELLOW_COLOR
 from game.managers.asset_manager import AssetManager
 
 LOOT_IMAGE_FILES = {

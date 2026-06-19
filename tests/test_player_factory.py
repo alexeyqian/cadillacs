@@ -1,10 +1,18 @@
+import pygame
+
+from game.animation.frame_animation import FrameData
 from game.entities.mustapha_player import MustaphaPlayer
+from game.entities.player_state import PlayerState
 from game.data.player_config import DEFAULT_PLAYER_TYPE, get_player_config
 from game.factories.player_factory import PlayerFactory
 
 
 class FakePlayer:
     pass
+
+
+def fake_frame_animation(animation_data, animation_key):
+    return [FrameData(pygame.Surface((1, 1), pygame.SRCALPHA), (0, 0))]
 
 
 def test_player_factory_uses_registered_player_classes():
@@ -36,3 +44,37 @@ def test_player_config_uses_default_fallback():
 
     assert config.player_id == DEFAULT_PLAYER_TYPE
     assert config.display_name == "Mustapha"
+
+
+def test_player_factory_builds_default_player_runtime_groups(monkeypatch):
+    monkeypatch.setattr(
+        "game.controllers.player_animation_controller.load_frame_animation",
+        fake_frame_animation,
+    )
+
+    player = PlayerFactory.create_player()
+
+    # State and input
+    assert player.state == PlayerState.IDLE
+    assert player.air is not None
+    assert player.state_machine is not None
+    assert player.input_buffer is not None
+    assert player.input_state is not None
+
+    # Capabilities
+    assert player.health is not None
+    assert player.movement is not None
+    assert player.weapon_slot is not None
+    assert player.events is not None
+    assert player.geometry is not None
+
+    # Controllers
+    assert player.combat_controller is not None
+    assert player.action_controller is not None
+    assert player.grab_controller is not None
+    assert player.state_controller is not None
+    assert player.lifecycle_controller is not None
+
+    # Presentation
+    assert player.animation_controller is not None
+    assert player.renderer is not None

@@ -49,9 +49,6 @@ class EnemyConfig:
 
     max_hp: int = ENEMY_MAX_HP
     speed: float = ENEMY_SPEED
-    # todo:move inside attack data
-    attack_range:int = ENEMY_ATTACK_RANGE
-    attack_lane_range:int = ENEMY_ATTACK_LANE_RANGE
 
     attack: AttackData = DEFAULT_ENEMY_ATTACK_DATA
     score_points: int = ENEMY_SCORE_POINTS
@@ -60,6 +57,9 @@ class EnemyConfig:
     # enemy specific
     patrol_distance:int = ENEMY_DETECT_RANGE
     detect_range: float = ENEMY_DETECT_RANGE
+    attack_range:int = ENEMY_ATTACK_RANGE
+    attack_lane_range:int = ENEMY_ATTACK_LANE_RANGE
+
     # todo: move to enemy reactions
     # give heavy enemies poise, so weak punches still deal damage 
     # but do not always interrupt them.

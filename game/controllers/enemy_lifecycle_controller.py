@@ -72,7 +72,7 @@ class EnemyLifecycleController:
             return False
 
         self.set_hit_stun_remaining(owner, self.get_hit_stun_remaining(owner) - 1)
-        owner.reactions.apply_knockback(owner)
+        owner.reaction_controller.apply_knockback(owner)
 
         if self.get_hit_stun_remaining(owner) <= 0:
             owner.state = owner.IDLE
@@ -93,8 +93,8 @@ class EnemyLifecycleController:
         owner.update_animation()
 
     def update_timers(self, owner):
-        if hasattr(owner, "combat"):
-            owner.combat.update_timers()
+        if hasattr(owner, "combat_controller"):
+            owner.combat_controller.update_timers()
         elif owner.attack_cooldown > 0:
             owner.attack_cooldown -= 1
         owner.flanking.update_timers()

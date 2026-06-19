@@ -35,7 +35,7 @@ class FakeMovement:
         pass
 
     def start_jump(self, owner, player_input):
-        if owner.combat.is_attacking:
+        if owner.combat_controller.is_attacking:
             return
         owner.state_machine.change_to(owner, owner.JUMP_TAKEOFF)
 
@@ -83,7 +83,7 @@ class FakeLifecycle:
 
 class FakeStateController:
     def update_after_movement(self, owner, moving):
-        if not owner.combat.is_attacking and owner.state not in [owner.JUMP_TAKEOFF, owner.JUMP]:
+        if not owner.combat_controller.is_attacking and owner.state not in [owner.JUMP_TAKEOFF, owner.JUMP]:
             owner.state_machine.change_to(owner, owner.IDLE)
 
 
@@ -103,11 +103,11 @@ def make_player_like():
     player.input_buffer = InputBuffer()
     player.input_state = PlayerInputState()
     player.movement = FakeMovement()
-    player.combat = PlayerCombatController()
+    player.combat_controller = PlayerCombatController()
     player.action_controller = PlayerActionController()
-    player.grab = FakeGrab()
+    player.grab_controller = FakeGrab()
     player.weapon_slot = FakeWeaponSlot()
-    player.lifecycle = FakeLifecycle()
+    player.lifecycle_controller = FakeLifecycle()
     player.state_controller = FakeStateController()
     player.animation_controller = FakeAnimationController()
     return player
@@ -117,17 +117,17 @@ def test_player_update_uses_buffered_attack_after_recovery():
     player = make_player_like()
 
     player.update(FakeInput(attack=True))
-    assert player.combat.current_attack_name == player.ATTACK_1
+    assert player.combat_controller.current_attack_name == player.ATTACK_1
 
     player.update(FakeInput())
     player.update(FakeInput(attack=True))
     assert player.input_buffer.has("attack") is True
 
-    player.combat.attack_manager.mark_connected()
-    while player.combat.current_attack_name == player.ATTACK_1:
+    player.combat_controller.attack_manager.mark_connected()
+    while player.combat_controller.current_attack_name == player.ATTACK_1:
         player.update(FakeInput())
 
-    assert player.combat.current_attack_name == player.ATTACK_2
+    assert player.combat_controller.current_attack_name == player.ATTACK_2
     assert player.input_buffer.has("attack") is False
 
 

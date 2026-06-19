@@ -169,14 +169,14 @@ class PlayerCombatController:
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
     def start_grab_knee_attack(self, owner):
-        if not owner.grab.grabbed_enemy:
+        if not owner.grab_controller.grabbed_enemy:
             return
         if self.is_attacking:
             return
 
         move_data = self.get_attack_data(owner, owner.GRAB_KNEE)
         self.attack_manager.start(owner.GRAB_KNEE, move_data)
-        owner.grab.grab_knee_remaining = owner.grab.grab_knee_duration
+        owner.grab_controller.grab_knee_remaining = owner.grab_controller.grab_knee_duration
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
 
     def start_clash_recovery(self, owner):

@@ -84,7 +84,7 @@ class CharacterGeometry:
         return None
 
     def _get_active_hitbox_data(self, owner):
-        combat = getattr(owner, "combat", None)
+        combat = getattr(owner, "combat_controller", None)
         if not combat:
             return None
         try:
@@ -101,7 +101,11 @@ class CharacterGeometry:
         return owner.y
 
     def _uses_visual_y_for_attack(self, owner):
-        current_attack_name = getattr(getattr(owner, "combat", None), "current_attack_name", None)
+        current_attack_name = getattr(
+            getattr(owner, "combat_controller", None),
+            "current_attack_name",
+            None,
+        )
         return current_attack_name == getattr(owner, "JUMP_ATTACK", None)
 
     def _get_visual_y(self, owner):

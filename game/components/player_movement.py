@@ -66,8 +66,8 @@ class PlayerMovement:
         moving = False
         if self.is_jumping or self.is_landing():
             return False
-        if owner.combat.is_attacking:
-            if owner.combat.current_attack_name == owner.RUN_ATTACK:
+        if owner.combat_controller.is_attacking:
+            if owner.combat_controller.current_attack_name == owner.RUN_ATTACK:
                 return self.update_run_attack_momentum(owner)
             self.cancel_run_attack_momentum()
             return self.update_attack_nudge(owner)
@@ -230,8 +230,8 @@ class PlayerMovement:
             self.vx = 0
             self.vy = 0
             owner.input_state.jump_attack_pressed = False
-            if owner.combat.current_attack_name == owner.JUMP_ATTACK:
-                owner.combat.cancel_attack()
+            if owner.combat_controller.current_attack_name == owner.JUMP_ATTACK:
+                owner.combat_controller.cancel_attack()
 
             if owner.state in [owner.JUMP, owner.JUMP_ATTACK]:
                 owner.state_machine.change_to(owner, owner.LANDING)
@@ -271,9 +271,9 @@ class PlayerMovement:
             return
         if self.is_landing():
             return
-        if owner.combat.is_attacking:
+        if owner.combat_controller.is_attacking:
             return
-        if owner.grab.grabbed_enemy:
+        if owner.grab_controller.grabbed_enemy:
             return
 
         self.ground_y = owner.y

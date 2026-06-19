@@ -45,7 +45,7 @@ class FakeOwner:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.animation_controller = FakeAnimationController()
-        self.combat = PlayerCombatController()
+        self.combat_controller = PlayerCombatController()
         self.attacks = DEFAULT_PLAYER_ATTACKS
         self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.air = None
@@ -69,7 +69,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         owner = FakeOwner()
         hitboxes = CharacterGeometry()
 
-        owner.combat.start_attack(owner)
+        owner.combat_controller.start_attack(owner)
 
         self.assertIsNone(hitboxes.get_attack_rect(owner))
 
@@ -78,9 +78,9 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         hitboxes = CharacterGeometry()
         attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
 
-        owner.combat.start_attack(owner)
+        owner.combat_controller.start_attack(owner)
         for _ in range(attack_data.windup):
-            owner.combat.update_timers(owner)
+            owner.combat_controller.update_timers(owner)
 
         attack_rect = hitboxes.get_attack_rect(owner)
 
@@ -95,9 +95,9 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         hitboxes = CharacterGeometry()
         attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
 
-        owner.combat.start_attack(owner)
+        owner.combat_controller.start_attack(owner)
         for _ in range(attack_data.windup):
-            owner.combat.update_timers(owner)
+            owner.combat_controller.update_timers(owner)
 
         attack_rect = hitboxes.get_attack_rect(owner)
 
@@ -118,9 +118,9 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         hitboxes = CharacterGeometry()
         attack_data = DEFAULT_PLAYER_ATTACKS["JUMP_ATTACK"]
 
-        owner.combat.attack_manager.start(owner.JUMP_ATTACK, attack_data)
+        owner.combat_controller.attack_manager.start(owner.JUMP_ATTACK, attack_data)
         for _ in range(attack_data.windup):
-            owner.combat.update_timers(owner)
+            owner.combat_controller.update_timers(owner)
 
         attack_rect = hitboxes.get_attack_rect(owner)
 

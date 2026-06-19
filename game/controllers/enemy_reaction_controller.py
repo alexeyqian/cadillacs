@@ -59,7 +59,7 @@ class EnemyReactionController:
             self.reset_attack_decision(owner)
             stun_frames = reaction.stun_frames
             if stun_frames is None:
-                stun_frames = owner.combat.get_attack_data(owner).hit_stun_duration
+                stun_frames = owner.combat_controller.get_attack_data(owner).hit_stun_duration
             self.set_hit_stun_remaining(owner, stun_frames)
             owner.state = owner.HIT
             # So if an enemy is interrupted, it releases the slot.
@@ -161,18 +161,18 @@ class EnemyReactionController:
             self.die(owner)
 
     def cancel_attack(self, owner):
-        if hasattr(owner, "combat"):
-            owner.combat.cancel_attack_timing(owner)
+        if hasattr(owner, "combat_controller"):
+            owner.combat_controller.cancel_attack_timing(owner)
 
     def reset_attack_decision(self, owner):
-        if hasattr(owner, "combat"):
-            owner.combat.reset_decision_timer(owner)
+        if hasattr(owner, "combat_controller"):
+            owner.combat_controller.reset_decision_timer(owner)
         else:
             owner.attack_decision_timer = 0
 
     def release_attack_slot(self, owner):
-        if hasattr(owner, "combat"):
-            owner.combat.release_attack_slot(owner)
+        if hasattr(owner, "combat_controller"):
+            owner.combat_controller.release_attack_slot(owner)
         else:
             owner.has_attack_slot = False
 

@@ -1,6 +1,6 @@
 import pygame
-from game.settings import *
-from game.colors import *
+from game.settings import WORLD_WIDTH
+from game.colors import YELLOW_COLOR
 class Projectile:
     def __init__(self, x, y, direction, speed, damage, lane_reach=0):
         self.x = x
@@ -29,4 +29,3 @@ class Projectile:
 
     def get_rect(self):
         return pygame.Rect(self.x, self.y, self.width, self.height)
-

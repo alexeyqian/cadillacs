@@ -1,5 +1,5 @@
 import pygame
-from game.settings import SHOW_COMBAT_BOXES
+import game.settings as settings
 from game.colors import WHITE_COLOR, YELLOW_COLOR
 from game.components.debug_renderer import CharacterDebugRenderer
 
@@ -21,7 +21,7 @@ class EnemyRenderer:
         screen.blit(image, (frame_rect.x - camera_x, frame_rect.y))
         self.draw_health_bar(owner, screen, camera_x, frame_rect)
 
-        if SHOW_COMBAT_BOXES:
+        if settings.SHOW_COMBAT_BOXES:
             self.draw_debug_boxes(owner, screen, camera_x)
             self.draw_debug_other(owner, screen, camera_x)
 

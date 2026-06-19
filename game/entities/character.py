@@ -22,8 +22,8 @@ class Character(GameObject):
 
         self.health = None
         self.movement = None
-        self.combat = None
-        self.lifecycle = None
+        self.combat_controller = None
+        self.lifecycle_controller = None
         self.geometry = None
         self.animation_controller = None
         self.renderer = None

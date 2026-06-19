@@ -85,18 +85,7 @@ def load_stage(game_state, stage_data):
     # Do not create a new Player. Keep the same player so lives, score, 
     # and weapon behavior can be decided intentionally later.
     start_x, start_y = stage_data["player_start"]
-    game_state.player.x = start_x
-    game_state.player.y = start_y
-    game_state.player.lifecycle.respawn_x = start_x
-    game_state.player.lifecycle.respawn_y = start_y
-    game_state.player.movement.ground_y = start_y
-    game_state.player.movement.is_jumping = False
-    if hasattr(game_state.player, "air"):
-        game_state.player.air.reset()
-    game_state.player.movement.vx = 0
-    game_state.player.movement.vy = 0
-    game_state.player.state_machine.change_to(game_state.player, game_state.player.IDLE)
-    game_state.player.facing_right = True
+    game_state.player.reset_for_stage_start(start_x, start_y)
 
     game_state.camera.x = 0
 

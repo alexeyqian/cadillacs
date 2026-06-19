@@ -1,5 +1,11 @@
 import pygame
-from game.settings import *
+from game.settings import (
+    BAT_DAMAGE,
+    FIST_DAMAGE,
+    KNIFE_DAMAGE,
+    PISTOL_DAMAGE,
+    PLAYER_W,
+)
 from game.managers.asset_manager import AssetManager
 
 KNIFE_IMAGE_FILE = "game/assets/weapon/knife.png"

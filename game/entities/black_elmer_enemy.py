@@ -1,4 +1,7 @@
-from game.animation.black_elmer_data import *
+from game.animation.black_elmer_data import (
+    BLACK_ELMER_ANIMATIONS,
+    BLACK_ELMER_ANIM_FPS,
+)
 from game.entities.enemy import Enemy
 
 class BlackElmerEnemy(Enemy):

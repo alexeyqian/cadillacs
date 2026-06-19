@@ -22,20 +22,20 @@ class FakeReactions:
 
 def test_player_accepts_damage_request():
     player = Player.__new__(Player)
-    player.lifecycle = FakeLifecycle()
+    player.lifecycle_controller = FakeLifecycle()
     reaction = HitReaction(stun_frames=8, knockback_velocity=4)
 
     player.take_damage(DamageRequest(12, reaction=reaction))
 
-    assert player.lifecycle.calls == [(player, 12, reaction, 0)]
+    assert player.lifecycle_controller.calls == [(player, 12, reaction, 0)]
 
 
 def test_enemy_accepts_damage_request():
     enemy = Enemy.__new__(Enemy)
     enemy.x = 300
-    enemy.reactions = FakeReactions()
+    enemy.reaction_controller = FakeReactions()
     reaction = HitReaction(stun_frames=10, knockback_velocity=6)
 
     enemy.take_damage(DamageRequest(15, attacker_x=120, reaction=reaction))
 
-    assert enemy.reactions.calls == [(enemy, 15, 120, reaction)]
+    assert enemy.reaction_controller.calls == [(enemy, 15, 120, reaction)]
