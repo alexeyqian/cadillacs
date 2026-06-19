@@ -68,30 +68,30 @@ class PlayerMovementTests(unittest.TestCase):
 
     def test_run_attack_keeps_sliding_forward_for_a_short_time(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
-        movement.run_direction = 1
+        movement = PlayerMovement()
+        movement.run.run_direction = 1
         owner.combat_controller.is_attacking = True
         owner.combat_controller.current_attack_name = owner.RUN_ATTACK
 
         movement.start_run_attack_momentum(owner)
-        starting_momentum = movement.run_attack_momentum_remaining
+        starting_momentum = movement.attack_motion.run_attack_momentum_remaining
         moved = movement.update_movement(owner, FakeInput())
 
         self.assertEqual(starting_momentum, RUN_ATTACK_MOMENTUM_FRAMES)
         self.assertEqual(
-            movement.run_attack_momentum_speed,
+            movement.attack_motion.run_attack_momentum_speed,
             max(owner.speed, owner.run_speed * RUN_ATTACK_MOMENTUM_SPEED_SCALE),
         )
         self.assertTrue(moved)
         self.assertGreater(owner.x, 300)
         self.assertEqual(
-            movement.run_attack_momentum_remaining,
+            movement.attack_motion.run_attack_momentum_remaining,
             starting_momentum - 1,
         )
 
     def test_non_run_attack_clears_run_attack_momentum(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
+        movement = PlayerMovement()
         owner.combat_controller.is_attacking = True
         owner.combat_controller.current_attack_name = "ATTACK_1"
 
@@ -100,11 +100,11 @@ class PlayerMovementTests(unittest.TestCase):
 
         self.assertFalse(moved)
         self.assertEqual(owner.x, 300)
-        self.assertEqual(movement.run_attack_momentum_remaining, 0)
+        self.assertEqual(movement.attack_motion.run_attack_momentum_remaining, 0)
 
     def test_player_can_run_diagonally(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
+        movement = PlayerMovement()
 
         moved = movement.update_movement(
             owner,
@@ -118,8 +118,8 @@ class PlayerMovementTests(unittest.TestCase):
 
     def test_run_attack_requires_configured_run_distance(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
-        movement.run_attack_min_distance = owner.run_speed * 2
+        movement = PlayerMovement()
+        movement.run.run_attack_min_distance = owner.run_speed * 2
 
         movement.update_movement(owner, FakeInput(right=True, run=True))
 
@@ -131,8 +131,8 @@ class PlayerMovementTests(unittest.TestCase):
 
     def test_run_attack_distance_resets_when_player_stops_running(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
-        movement.run_attack_min_distance = owner.run_speed
+        movement = PlayerMovement()
+        movement.run.run_attack_min_distance = owner.run_speed
 
         movement.update_movement(owner, FakeInput(right=True, run=True))
         self.assertTrue(movement.can_start_run_attack())
@@ -140,12 +140,12 @@ class PlayerMovementTests(unittest.TestCase):
         movement.update_movement(owner, FakeInput())
 
         self.assertFalse(movement.can_start_run_attack())
-        self.assertEqual(movement.run_distance, 0)
+        self.assertEqual(movement.run.run_distance, 0)
 
     def test_run_attack_cooldown_blocks_only_run_attack_eligibility(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
-        movement.run_attack_min_distance = owner.run_speed
+        movement = PlayerMovement()
+        movement.run.run_attack_min_distance = owner.run_speed
 
         movement.update_movement(owner, FakeInput(right=True, run=True))
         self.assertTrue(movement.can_start_run_attack())
@@ -161,13 +161,13 @@ class PlayerMovementTests(unittest.TestCase):
 
     def test_run_attack_records_run_distance_before_consuming_it(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
-        movement.run_distance = 180
+        movement = PlayerMovement()
+        movement.run.run_distance = 180
 
         movement.start_run_attack_momentum(owner)
 
         self.assertEqual(movement.last_run_attack_distance, 180)
-        self.assertEqual(movement.run_distance, 0)
+        self.assertEqual(movement.run.run_distance, 0)
 
     def test_jump_starts_with_takeoff_state_and_preserves_ground_y(self):
         owner = FakeOwner()
@@ -178,7 +178,7 @@ class PlayerMovementTests(unittest.TestCase):
             takeoff_frames=2,
             landing_recovery_frames=6,
         )
-        movement = PlayerMovement(owner.speed, air)
+        movement = PlayerMovement(air)
 
         movement.start_jump(owner, FakeInput(right=True))
 
@@ -197,7 +197,7 @@ class PlayerMovementTests(unittest.TestCase):
             takeoff_frames=1,
             landing_recovery_frames=6,
         )
-        movement = PlayerMovement(owner.speed, air)
+        movement = PlayerMovement(air)
 
         movement.start_jump(owner, FakeInput())
         movement.update_jump_physics(owner, FakeInput())
@@ -218,7 +218,7 @@ class PlayerMovementTests(unittest.TestCase):
             takeoff_frames=1,
             landing_recovery_frames=6,
         )
-        movement = PlayerMovement(owner.speed, air)
+        movement = PlayerMovement(air)
 
         movement.start_jump(owner, FakeInput())
         for _ in range(20):
@@ -239,7 +239,7 @@ class PlayerMovementTests(unittest.TestCase):
             takeoff_frames=1,
             landing_recovery_frames=6,
         )
-        movement = PlayerMovement(owner.speed, air)
+        movement = PlayerMovement(air)
 
         movement.start_jump(owner, FakeInput(right=True, up=True))
         movement.update_jump_physics(owner, FakeInput())
@@ -257,7 +257,7 @@ class PlayerMovementTests(unittest.TestCase):
             takeoff_frames=1,
             landing_recovery_frames=3,
         )
-        movement = PlayerMovement(owner.speed, air)
+        movement = PlayerMovement(air)
 
         movement.start_jump(owner, FakeInput())
         self.update_until_state(movement, owner, owner.LANDING)
@@ -280,7 +280,7 @@ class PlayerMovementTests(unittest.TestCase):
             takeoff_frames=1,
             landing_recovery_frames=3,
         )
-        movement = PlayerMovement(owner.speed, air)
+        movement = PlayerMovement(air)
 
         movement.start_jump(owner, FakeInput())
         air.begin_jump()
@@ -294,28 +294,28 @@ class PlayerMovementTests(unittest.TestCase):
 
     def test_attack_3_nudge_moves_forward_briefly(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
+        movement = PlayerMovement()
         owner.combat_controller.is_attacking = True
         owner.combat_controller.current_attack_name = owner.ATTACK_3
 
         movement.start_attack_3_nudge(owner)
-        starting_nudge = movement.attack_nudge_remaining
+        starting_nudge = movement.attack_motion.attack_nudge_remaining
         moved = movement.update_movement(owner, FakeInput())
 
         self.assertTrue(moved)
         self.assertGreater(owner.x, 300)
-        self.assertEqual(movement.attack_nudge_remaining, starting_nudge - 1)
+        self.assertEqual(movement.attack_motion.attack_nudge_remaining, starting_nudge - 1)
 
     def test_attack_3_nudge_can_be_canceled(self):
         owner = FakeOwner()
-        movement = PlayerMovement(owner.speed)
+        movement = PlayerMovement()
 
         movement.start_attack_3_nudge(owner)
         movement.cancel_attack_nudge()
 
-        self.assertEqual(movement.attack_nudge_remaining, 0)
-        self.assertEqual(movement.attack_nudge_direction, 0)
-        self.assertEqual(movement.attack_nudge_speed, 0)
+        self.assertEqual(movement.attack_motion.attack_nudge_remaining, 0)
+        self.assertEqual(movement.attack_motion.attack_nudge_direction, 0)
+        self.assertEqual(movement.attack_motion.attack_nudge_speed, 0)
 
 
 if __name__ == "__main__":

@@ -19,6 +19,21 @@ def move_x(owner, direction, speed):
     owner.facing_right = direction > 0
 
 
+def get_input_axis(negative_down, positive_down):
+    if negative_down and not positive_down:
+        return -1
+    if positive_down and not negative_down:
+        return 1
+    return 0
+
+
+def get_input_direction(player_input):
+    return (
+        get_input_axis(player_input.left, player_input.right),
+        get_input_axis(player_input.up, player_input.down),
+    )
+
+
 def clamp_to_world_and_lane(
     owner,
     world_width=None,

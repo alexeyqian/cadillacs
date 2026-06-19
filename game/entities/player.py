@@ -85,7 +85,6 @@ class Player(Character, PlayerState):
 
     def build_capability_components(self):
         self.movement = PlayerMovement(
-            self.speed,
             self.air,
             run_attack_min_distance=self.run_attack_min_distance,
         )
@@ -144,7 +143,6 @@ class Player(Character, PlayerState):
 
         return self.combat_controller.attacks.get(attack_name)
 
-    # Lifecycle / damage
     def take_damage(self, damage, reaction=None, hit_stun_bonus=0):
         if isinstance(damage, DamageRequest):
             reaction = damage.reaction
