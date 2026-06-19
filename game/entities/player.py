@@ -40,52 +40,17 @@ class Player:
     def __init__(self, player_type, animation_data, anim_fps):
         self.player_type = player_type
 
-        # Identity / position
         self.x = 300
         self.y = 500
         self.facing_right = True
-
-        # Core state
         self.state = self.IDLE
-        self.state_machine = PlayerStateMachine(self)
 
-        self.apply_player_config(get_player_config(player_type))
-
-        self.air = PlayerAirState(
-            self.jump_power,
-            self.jump_gravity,
-            self.air_move_speed,
-            self.jump_takeoff_frames,
-            self.landing_recovery_frames,
-        )
-
-        # Health
-        self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
-
-        # Input edge flags
-        # stop the “hold attack to auto-combo” problem.
-        # expected gameplay for attack and attack combo:
-        # Hold J: one punch only
-        # Press J, release, press J: combo advances
-        # Mashing J: combo still works, but requires timing/input
-        self.input_state = PlayerInputState()
-
-        # Components
-        self.movement = PlayerMovement(self.speed, self.air)
-        self.movement.ground_y = self.y
-        self.combat = PlayerCombatController()
-        self.action_controller = PlayerActionController()
-        self.grab = PlayerGrabController()
-        self.state_resolver = PlayerStateResolver()
-        self.lifecycle = PlayerLifecycleController(self.x, self.y)
-        self.weapon_slot = PlayerWeaponSlot()
-        self.events = PlayerEvents()
-        self.geometry = PlayerGeometry()
-        self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
-        self.renderer = PlayerRenderer()
+        self.load_player_config(
+            get_player_config(player_type),
+            animation_data, anim_fps)
 
     # Config
-    def apply_player_config(self, config):
+    def load_player_config(self, config):
         self.player_id = config.player_id
         self.display_name = config.display_name
         self.width = int(config.width)
@@ -96,6 +61,8 @@ class Player:
 
         self.config_max_hp = config.max_hp
         self.config_lives = config.lives
+        self.health = PlayerHealth(self.config_max_hp, self.config_lives, self.hit_stun_duration)
+
         self.speed = config.speed
         self.run_speed = config.run_speed
         self.run_attack_damage = config.run_attack_damage
@@ -112,6 +79,29 @@ class Player:
         self.air_move_speed = config.air_move_speed
         self.jump_takeoff_frames = config.jump_takeoff_frames
         self.landing_recovery_frames = config.landing_recovery_frames
+        self.air = PlayerAirState(
+            self.jump_power,
+            self.jump_gravity,
+            self.air_move_speed,
+            self.jump_takeoff_frames,
+            self.landing_recovery_frames,
+        )
+        
+        self.state_machine = PlayerStateMachine(self)
+        self.input_state = PlayerInputState()
+        # Components
+        self.movement = PlayerMovement(self.speed, self.air)
+        self.movement.ground_y = self.y
+        self.combat = PlayerCombatController()
+        self.action_controller = PlayerActionController()
+        self.grab = PlayerGrabController()
+        self.state_resolver = PlayerStateResolver()
+        self.lifecycle = PlayerLifecycleController(self.x, self.y)
+        self.weapon_slot = PlayerWeaponSlot()
+        self.events = PlayerEvents()
+        self.geometry = PlayerGeometry()
+        self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
+        self.renderer = PlayerRenderer()
 
     # update() works in world coordinates
     # draw() translates to screen coordinates using camera_x
