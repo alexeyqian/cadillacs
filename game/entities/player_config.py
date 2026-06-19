@@ -153,12 +153,15 @@ class PlayerConfig:
     speed: float = PLAYER_SPEED
     run_speed: float = PLAYER_RUN_SPEED
 
+    # todo: remove
     attacks: dict = None
+    # todo: remove
     weapon_attacks: dict = None
     attack: AttackData = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
+    # todo: move to run:attack
     run_attack_damage: int = RUN_ATTACK_DAMAGE
 
-    # TODO: move to settings constant
+    # TODO: move to jump_attack, which type is JumpAttackData inherit from attack_data
     jump_attack_damage: int = JUMP_ATTACK_DAMAGE
     jump_power: float = 12
     jump_gravity: float = 0.7
@@ -167,6 +170,7 @@ class PlayerConfig:
     landing_recovery_frames: int = 6
 
     grab_range: int = PLAYER_GRAB_RANGE
+    # todo: remove, already in attack
     hit_stun_duration: int = ATTACK_1_HIT_STUN_DURATION
     sprite_scale: int = 2
 
