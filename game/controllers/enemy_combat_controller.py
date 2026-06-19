@@ -55,12 +55,6 @@ class EnemyCombatController:
         if attack_finished:
             self.finish_attack(owner)
 
-    def start_attack_timing(self, owner):
-        self.attack_manager.start(owner.ATTACK, self.get_attack_data(owner))
-
-    def advance_attack_timing(self, owner):
-        return self.attack_manager.advance()
-
     def cancel_attack_timing(self, owner):
         self.attack_manager.cancel()
 

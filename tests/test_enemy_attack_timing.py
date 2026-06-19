@@ -211,7 +211,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy = FakeEnemy()
 
         enemy.start_attack()
-        enemy.combat_controller.advance_attack_timing(enemy)
+        enemy.combat_controller.attack_manager.advance()
 
         self.assertEqual(enemy.combat_controller.attack_manager.current_attack_name, enemy.ATTACK)
         self.assertEqual(enemy.combat_controller.attack_manager.elapsed_frames, 1)
@@ -250,7 +250,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
     def test_knockdown_cancels_enemy_attack_manager(self):
         enemy = FakeEnemy()
         enemy.start_attack()
-        enemy.combat_controller.advance_attack_timing(enemy)
+        enemy.combat_controller.attack_manager.advance()
 
         EnemyReactionController().knockdown(enemy)
 

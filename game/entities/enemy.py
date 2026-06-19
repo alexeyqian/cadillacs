@@ -124,11 +124,11 @@ class Enemy(Character, EnemyState):
         # before state logic checks for collision; all other states update state first
         # so animation reacts to the new state in the same frame.
         if self.state == self.ATTACK:
-            self.update_animation()
+            self.animation_controller.update(self)
             self.state_controller.execute_state(self, level, player, enemies, dx, dy)
         else:
             self.state_controller.execute_state(self, level, player, enemies, dx, dy)
-            self.update_animation()
+            self.animation_controller.update(self)
 
     # Lifecycle / reactions
     def is_ready_to_remove(self):
