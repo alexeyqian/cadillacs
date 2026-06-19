@@ -8,7 +8,7 @@ class EnemyStateController:
         if self.can_attack_player(owner, level, player, distance_x, distance_y, enemies):
             owner.flanking.clear_target()
             self.prepare_or_start_attack(owner, player)
-        elif distance_x <= owner.detect_range:
+        elif distance_x <= owner.movement.detect_range:
             self.reset_attack_decision(owner)
             if self.should_flank(owner, player, distance_x, distance_y, enemies):
                 owner.flanking.set_target(owner, player, enemies)

@@ -1,5 +1,18 @@
 Guidelines:
 
+Component = state/data capability
+Controller = behavior/process using components
+Entity = wiring + stable public API
+The component can manage its own fields when the behavior is tightly local:
+Controllers can have fields too, but mostly when the fields are part of the controller’s process, not the character’s identity.
+
+For this codebase, I’d keep the practical rule:
+If it describes what the character has/is, use a component.
+If it describes what process is currently running, controller field is okay.
+If many systems read it constantly and it is fundamental, keep it on Character.
+If a field only exists because a controller needs bookkeeping, keep it inside that controller.
+If a component has enough state plus local behavior, let it manage itself. That is exactly the point of the component.
+
 GameObject handles position, rect, rendering basics
 Character handles health, movement, combat, state, animation
 Player handles input-driven behavior

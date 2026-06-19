@@ -47,9 +47,7 @@ class Enemy(Character, EnemyState):
         self.build_presentation_components(animation_data, anim_fps)
 
     def configure_spawn_state(self, x, enemy_type):
-        self.spawn_x = x # enemy remembers where it spawned
         self.enemy_type = enemy_type
-        self.patrol_direction = 1
         self.loot_generated = False
 
     def build_state_components(self):
@@ -57,7 +55,7 @@ class Enemy(Character, EnemyState):
 
     def build_capability_components(self):
         self.geometry = CharacterGeometry()
-        self.movement = EnemyMovement()
+        self.movement = EnemyMovement(spawn_x=self.x)
         self.flanking = EnemyFlanking()
         self.coordination = EnemyCoordination()
 
@@ -96,9 +94,11 @@ class Enemy(Character, EnemyState):
         self.sprite_scale = config.sprite_scale
 
     def apply_movement_config(self, config):
-        self.speed = config.speed
-        self.patrol_distance = config.patrol_distance
-        self.detect_range = config.detect_range
+        self.movement.configure(
+            speed=config.speed,
+            patrol_distance=config.patrol_distance,
+            detect_range=config.detect_range,
+        )
 
     def apply_combat_config(self, config):
         self.attack_range = config.attack_range
@@ -130,7 +130,7 @@ class Enemy(Character, EnemyState):
 
         dx, dy, distance_x, distance_y = self.movement.get_player_distance(self, player)
 
-        if distance_x <= self.detect_range:
+        if distance_x <= self.movement.detect_range:
             self.face_player(player)
 
         self.state_controller.choose_state(
