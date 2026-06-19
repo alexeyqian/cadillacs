@@ -36,9 +36,11 @@ class PlayerMovement:
         self.gravity = 0.7
         self.air_speed = speed * 1.2
         self.air_friction = 0.92
+
         self.run_attack_momentum_remaining = 0
         self.run_attack_momentum_direction = 0
         self.run_attack_momentum_speed = 0
+
         self.attack_nudge_remaining = 0
         self.attack_nudge_direction = 0
         self.attack_nudge_speed = 0

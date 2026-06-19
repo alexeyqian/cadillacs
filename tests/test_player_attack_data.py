@@ -148,7 +148,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(
-            combat.get_attack_knockback_velocity(owner),
+            combat.get_attack_hit_reaction(owner).knockback_velocity,
             DEFAULT_PLAYER_ATTACKS["RUN_ATTACK"].knockback_velocity
             + RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
         )
@@ -280,8 +280,8 @@ class AttackDataTests(unittest.TestCase):
             combat.update_timers(owner)
 
         self.assertTrue(combat.is_attacking)
-        self.assertFalse(combat.is_attack_active())
-        self.assertEqual(combat.get_attack_phase_name(), "RECOVERY")
+        self.assertFalse(combat.attack_manager.is_active())
+        self.assertEqual(combat.attack_manager.get_phase_name(), "RECOVERY")
 
     def test_player_combat_controller_uses_per_target_hit_tracking(self):
         first_target = object()

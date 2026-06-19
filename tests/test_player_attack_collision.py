@@ -58,7 +58,7 @@ class FakePlayer:
         self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.combat_controller = PlayerCombatController()
         self.combat_controller.start_attack(self)
-        while not self.combat_controller.is_attack_active():
+        while not self.combat_controller.attack_manager.is_active():
             self.combat_controller.update_timers(self)
         self.grab_controller = type("FakeGrab", (), {"grabbed_enemy": None})()
 
@@ -67,7 +67,7 @@ class FakePlayer:
         self.movement.is_running = True
         self.movement.can_run_attack = True
         self.combat_controller.start_attack(self)
-        while not self.combat_controller.is_attack_active():
+        while not self.combat_controller.attack_manager.is_active():
             self.combat_controller.update_timers(self)
 
     def get_attack_rect(self):
@@ -197,9 +197,7 @@ class PlayerAttackCollisionTests(unittest.TestCase):
 
     def test_run_attack_uses_stronger_enemy_knockback(self):
         game_state = FakeGameState()
-        normal_knockback = game_state.player.combat_controller.get_attack_knockback_velocity(
-            game_state.player
-        )
+        normal_knockback = DEFAULT_PLAYER_ATTACKS["ATTACK_1"].knockback_velocity
         game_state.player.start_running_attack()
 
         handle_player_attack_collision(game_state)
@@ -211,9 +209,7 @@ class PlayerAttackCollisionTests(unittest.TestCase):
 
     def test_run_attack_uses_longer_enemy_hit_stun(self):
         game_state = FakeGameState()
-        normal_hit_stun = game_state.player.combat_controller.get_attack_enemy_hit_stun_duration(
-            game_state.player
-        )
+        normal_hit_stun = DEFAULT_PLAYER_ATTACKS["ATTACK_1"].hit_stun_duration
         game_state.player.start_running_attack()
 
         handle_player_attack_collision(game_state)

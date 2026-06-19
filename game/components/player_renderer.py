@@ -72,9 +72,3 @@ class PlayerRenderer:
             camera_x,
             line_width=2,
         )
-
-        #timing_label = player.combat_controller.get_attack_timing_label()
-        #if timing_label:
-        #    font = pygame.font.SysFont(None, 20)
-        #    label = font.render(timing_label, True, YELLOW_COLOR)
-        #    screen.blit(label, (int(player.x - camera_x - 42), int(player.y - 210)))

@@ -47,22 +47,10 @@ class PlayerCombatController:
     def can_hit_more_targets(self):
         return self.attack_manager.can_hit_more_targets()
 
-    def is_attack_active(self):
-        return self.attack_manager.is_active()
-
-    def get_attack_phase_name(self):
-        return self.attack_manager.get_phase_name()
-
-    def get_attack_timing_label(self):
-        return self.attack_manager.get_timing_label()
-
     def get_active_hitbox_data(self):
-        if not self.is_attack_active():
+        if not self.attack_manager.is_active():
             return None
-        attack = self.attack_manager.current_attack
-        if not attack:
-            return None
-        return attack
+        return self.attack_manager.current_attack
 
     # Avoiding the combo step advances when the player presses attack inside the combo window, 
     # even if the previous punch hit nothing. 
@@ -142,7 +130,7 @@ class PlayerCombatController:
             and not requires_run_attack_release
         )
         if can_start_run_attack:
-            move_data = self.get_attack_data(owner, owner.RUN_ATTACK)
+            move_data = self._get_attack_data(owner, owner.RUN_ATTACK)
             self.attack_manager.start(owner.RUN_ATTACK, move_data)
             owner.movement.start_run_attack_momentum(owner)
             self.combo_window_remaining = 0
@@ -166,7 +154,7 @@ class PlayerCombatController:
             owner.state_machine.change_to(owner, owner.ATTACK_3)
             owner.movement.start_attack_3_nudge(owner)
 
-        move_data = self.get_attack_data(owner, owner.state)
+        move_data = self._get_attack_data(owner, owner.state)
         self.attack_manager.start(owner.state, move_data)
         self.combo_window_remaining = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
 
@@ -179,7 +167,7 @@ class PlayerCombatController:
         if self.is_attacking:
             return
 
-        move_data = self.get_attack_data(owner, owner.JUMP_ATTACK)
+        move_data = self._get_attack_data(owner, owner.JUMP_ATTACK)
         self.attack_manager.start(owner.JUMP_ATTACK, move_data)
         if air:
             air.mark_jump_attack_used()
@@ -191,7 +179,7 @@ class PlayerCombatController:
         if self.is_attacking:
             return
 
-        move_data = self.get_attack_data(owner, owner.GRAB_KNEE)
+        move_data = self._get_attack_data(owner, owner.GRAB_KNEE)
         self.attack_manager.start(owner.GRAB_KNEE, move_data)
         owner.grab_controller.grab_knee_remaining = owner.grab_controller.grab_knee_duration
         owner.state_machine.change_to(owner, owner.GRAB_KNEE)
@@ -209,41 +197,41 @@ class PlayerCombatController:
         self.action_lock_remaining = 0
 
     def get_attack_damage(self, owner):
-        attack_data = self.get_current_or_state_attack_data(owner)
+        attack_data = self._get_current_or_state_attack_data(owner)
         if not attack_data:
             return int(FIST_DAMAGE)
 
         return int(attack_data.damage)
     
     def get_attack_lane_reach(self, owner):
-        attack_data = self.get_current_or_state_attack_data(owner)
+        attack_data = self._get_current_or_state_attack_data(owner)
         return attack_data.lane_reach if attack_data else 0
 
-    def get_attack_knockback_velocity(self, owner):
-        attack_data = self.get_current_or_state_attack_data(owner)
+    def _get_attack_knockback_velocity(self, owner):
+        attack_data = self._get_current_or_state_attack_data(owner)
         if not attack_data:
             return 10
-        return int(attack_data.knockback_velocity + self.get_run_attack_power_bonus(
+        return int(attack_data.knockback_velocity + self._get_run_attack_power_bonus(
             owner,
             RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
         ))
 
-    def get_attack_enemy_hit_stun_duration(self, owner):
-        attack_data = self.get_current_or_state_attack_data(owner)
+    def _get_attack_enemy_hit_stun_duration(self, owner):
+        attack_data = self._get_current_or_state_attack_data(owner)
         if not attack_data:
             return 15
-        return int(attack_data.hit_stun_duration + self.get_run_attack_power_bonus(
+        return int(attack_data.hit_stun_duration + self._get_run_attack_power_bonus(
             owner,
             RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
         ))
 
     def get_attack_hit_reaction(self, owner):
         return HitReaction(
-            stun_frames=self.get_attack_enemy_hit_stun_duration(owner),
-            knockback_velocity=self.get_attack_knockback_velocity(owner),
+            stun_frames=self._get_attack_enemy_hit_stun_duration(owner),
+            knockback_velocity=self._get_attack_knockback_velocity(owner),
         )
 
-    def get_run_attack_power_bonus(self, owner, full_power_bonus):
+    def _get_run_attack_power_bonus(self, owner, full_power_bonus):
         if self.current_attack_name != owner.RUN_ATTACK:
             return 0
 
@@ -254,10 +242,10 @@ class PlayerCombatController:
         bonus_ratio = max(0, min(1, bonus_ratio))
         return full_power_bonus * bonus_ratio
 
-    def get_current_or_state_attack_data(self, owner):
+    def _get_current_or_state_attack_data(self, owner):
         if self.attack_manager.current_attack:
             return self.attack_manager.current_attack
-        return self.get_attack_data(owner, owner.state)
+        return self._get_attack_data(owner, owner.state)
 
-    def get_attack_data(self, owner, attack_name):
+    def _get_attack_data(self, owner, attack_name):
         return owner.get_attack_data(attack_name)

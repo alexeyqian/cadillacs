@@ -159,16 +159,6 @@ class EnemyStateController:
     def get_required_attack_delay(self, owner, player=None):
         return owner.combat_controller.get_attack_data(owner).delay
 
-    def is_player_in_attack_recovery(self, player):
-        if not player:
-            return False
-
-        combat = getattr(player, "combat_controller", None)
-        if not combat or not combat.is_attacking:
-            return False
-
-        return combat.get_attack_phase_name() == "RECOVERY"
-
     def get_attack_cooldown(self, owner):
         combat = self.get_combat(owner)
         if combat:
