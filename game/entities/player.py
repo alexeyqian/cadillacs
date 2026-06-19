@@ -147,14 +147,6 @@ class Player(Character):
     def take_damage(self, damage, hit_stun_bonus=0):
         self.lifecycle.take_damage(self, damage, hit_stun_bonus)
 
-    # Movement / bounds
-    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
-        self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
-
-    # Rendering
-    def draw(self, screen, camera_x):
-        self.renderer.draw(self, screen, camera_x)
-
     # Geometry
     def get_left(self):
         return self.get_frame_rect().left
@@ -167,17 +159,3 @@ class Player(Character):
     
     def get_bottom(self):
         return self.get_frame_rect().bottom
-
-    def get_frame_rect(self):
-        return self.geometry.get_frame_rect(self)
-
-    def get_hurt_rect(self):
-        return self.geometry.get_hurt_rect(self)
-
-    # on bottom center
-    def get_collision_rect(self):
-        return self.geometry.get_collision_rect(self)
-
-    # hit box
-    def get_attack_rect(self):
-        return self.geometry.get_attack_rect(self)

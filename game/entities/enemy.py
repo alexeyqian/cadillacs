@@ -190,9 +190,6 @@ class Enemy(Character):
         elif self.state == self.ATTACK:
             self.update_attack(level, player)
 
-    def apply_world_bounds(self, world_width=None, lane_top=None, lane_bottom=None):
-        self.movement.apply_world_bounds(self, world_width, lane_top, lane_bottom)
-
     # Combat
     def start_attack(self):
         self.combat.start_attack(self)
@@ -220,27 +217,11 @@ class Enemy(Character):
         return self.combat.attack_manager.get_timing_label()
 
     # Rendering / animation / geometry
-    def draw(self, screen, camera_x):
-        self.renderer.draw(self, screen, camera_x)
-
     def get_current_frame_data(self):
         return self.animation_controller.get_current_frame_data()
 
     def update_animation(self):
         self.animation_controller.update(self)
-
-    # returns the whole visible sprite frame in world space:
-    def get_frame_rect(self):
-        return self.geometry.get_frame_rect(self)
-
-    def get_collision_rect(self):
-        return self.geometry.get_collision_rect(self)
-
-    def get_hurt_rect(self):
-        return self.geometry.get_hurt_rect(self)
-
-    def get_attack_rect(self):
-        return self.geometry.get_attack_rect(self)
 
     # Loot
     def create_loot(self):
