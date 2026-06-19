@@ -11,8 +11,8 @@ class Loot:
     def __init__(self, x, y, loot_type):
         self.x = x
         self.y = y
-        self.width = 60
-        self.height = 60
+        self.width = 100
+        self.height = 100
         self.loot_type = loot_type
         self.active = True
         self.image = None

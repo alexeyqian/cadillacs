@@ -9,6 +9,7 @@ from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
 from game.controllers.enemy_state_controller import EnemyStateController
 from game.entities.raptor_enemy import RaptorEnemy
+from game.components.enemy_life_cycle import EnemyLifeCycle
 from game.settings import BAT_DAMAGE
 
 
@@ -58,12 +59,10 @@ class FakeEnemy:
         self.y = 0
         self.attack_range = 40
         self.attack_lane_range = 20
-        self.action_lock_remaining = 0
         self.health = FakeHealth()
-        self.hit_stun_remaining = 0
         self.flinch_damage_threshold = 0
         self.attack_flinch_damage_threshold = 0
-        self.knockback_velocity = 0
+        self.life_cycle = EnemyLifeCycle()
         self.animation_controller = FakeAnimationController()
         self.attack_data = replace(
             DEFAULT_ENEMY_ATTACK_DATA,
@@ -233,7 +232,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         controller.start_clash_recovery(enemy)
 
         self.assertEqual(enemy.state, enemy.RECOIL)
-        self.assertEqual(enemy.action_lock_remaining, enemy.attack_data.cooldown)
+        self.assertEqual(enemy.life_cycle.action_lock_remaining, enemy.attack_data.cooldown)
         self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
         self.assertEqual(enemy.combat_controller.decision_timer, 0)
         self.assertFalse(enemy.combat_controller.already_hit)
@@ -280,7 +279,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
-        self.assertEqual(enemy.knockback_velocity, 18)
+        self.assertEqual(enemy.life_cycle.knockback_velocity, 18)
 
     def test_enemy_reaction_uses_custom_hit_stun_duration(self):
         enemy = FakeEnemy()
@@ -293,7 +292,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
-        self.assertEqual(enemy.hit_stun_remaining, 24)
+        self.assertEqual(enemy.life_cycle.hit_stun_remaining, 24)
 
     def test_enemy_uses_shorter_attack_delay_during_player_recovery(self):
         enemy = FakeEnemy()

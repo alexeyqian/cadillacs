@@ -155,10 +155,7 @@ class EnemyCombatController:
         return True
 
     def set_action_lock_remaining(self, owner, value):
-        if hasattr(owner, "lifecycle_state"):
-            owner.lifecycle_state.action_lock_remaining = value
-        else:
-            owner.action_lock_remaining = value
+        owner.life_cycle.set_action_lock(value)
 
     def update_timers(self):
         if self.cooldown > 0:

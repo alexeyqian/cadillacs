@@ -218,12 +218,7 @@ def handle_player_thrown_enemy_collision(game_state):
             if enemy.state == enemy.DEAD:
                 continue
             # avoid process already hit enemies because of thrown
-            thrown_hit_targets = (
-                thrown_enemy.lifecycle_state.thrown_hit_targets
-                if hasattr(thrown_enemy, "lifecycle_state")
-                else thrown_enemy.thrown_hit_targets
-            )
-            if id(enemy) in thrown_hit_targets:
+            if thrown_enemy.life_cycle.has_thrown_hit(enemy):
                 continue
             # throw collision only hits enemies in the same lane for now.
             lane_distance = game_state.level.get_lane_distance(thrown_enemy.y, enemy.y)
@@ -232,15 +227,11 @@ def handle_player_thrown_enemy_collision(game_state):
 
             enemy_hurt_rect = enemy.get_hurt_rect()
             if thrown_rect.colliderect(enemy_hurt_rect):
-                damage = (
-                    thrown_enemy.lifecycle_state.throw_damage
-                    if hasattr(thrown_enemy, "lifecycle_state")
-                    else getattr(thrown_enemy, "throw_damage", 0)
-                )
+                damage = thrown_enemy.life_cycle.throw_damage
                 damage_enemy(enemy, damage, thrown_enemy.x)
                 enemy_rect = get_enemy_frame_rect(enemy)
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,150,0)))
-                thrown_hit_targets.add(id(enemy))
+                thrown_enemy.life_cycle.mark_thrown_hit(enemy)
 
 def handle_enemy_projectile_collision(game_state):
     player = game_state.player

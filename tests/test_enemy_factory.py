@@ -64,7 +64,7 @@ def test_enemy_factory_builds_default_enemy_runtime_groups(monkeypatch):
 
     # State
     assert enemy.state == EnemyState.IDLE
-    assert enemy.lifecycle_state is not None
+    assert enemy.life_cycle is not None
 
     # Capabilities
     assert enemy.health is not None

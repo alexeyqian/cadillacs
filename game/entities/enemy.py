@@ -7,7 +7,7 @@ from game.controllers.enemy_animation_controller import EnemyAnimationController
 from game.components.enemy_renderer import EnemyRenderer
 from game.components.enemy_movement import EnemyMovement
 from game.components.enemy_flanking import EnemyFlanking
-from game.components.enemy_lifecycle_state import EnemyLifecycleState
+from game.components.enemy_life_cycle import EnemyLifeCycle
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
@@ -16,18 +16,7 @@ from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.damage_request import DamageRequest
 from game.combat.hit_reaction import normalize_hit_reaction
 
-# State controller: decides what state the enemy wants
-# Movement: changes x/y/facing
-# Combat: handles attack hit detection
-# Lifecycle: advances temporary states
-# Enemy is a small coordinator. Components own movement, combat,
-# reactions, lifecycle, state decisions, loot, animation, and rendering.
-
 class Enemy(Character, EnemyState):
-    # attack_range: should i attack
-    # attack_rect = did i hit
-    # detect_range: within detect_range, enemy chases player
-    # outside this range, enemy ignores player
     def __init__(self, x, y, enemy_type, 
                 animation_data, anim_fps, sprite_scale=4):
         super().__init__(
@@ -50,7 +39,7 @@ class Enemy(Character, EnemyState):
         self.loot_generated = False
 
     def build_state_components(self):
-        self.lifecycle_state = EnemyLifecycleState()
+        self.life_cycle = EnemyLifeCycle()
 
     def build_capability_components(self):
         self.geometry = CharacterGeometry()

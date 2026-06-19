@@ -5,11 +5,8 @@ class EnemyLifecycleController:
             return True
 
         # give enemies their own clash recovery timer,
-        if self.get_action_lock_remaining(owner) > 0:
-            self.set_action_lock_remaining(
-                owner,
-                self.get_action_lock_remaining(owner) - 1,
-            )
+        if owner.life_cycle.has_action_lock():
+            owner.life_cycle.tick_action_lock()
             owner.state = owner.RECOIL
             owner.update_animation()
             return True
@@ -33,48 +30,34 @@ class EnemyLifecycleController:
         return False
 
     def update_thrown_state(self, owner):
-        thrown_velocity_x = self.get_thrown_velocity_x(owner)
-        if thrown_velocity_x > 0:
-            owner.facing_right = True
-        elif thrown_velocity_x < 0:
-            owner.facing_right = False
-
-        owner.x += thrown_velocity_x
-        self.set_thrown_velocity_x(owner, thrown_velocity_x * 0.9)
-        self.set_thrown_remaining(owner, self.get_thrown_remaining(owner) - 1)
-
-        if self.get_thrown_remaining(owner) <= 0 or abs(self.get_thrown_velocity_x(owner)) < 1:
+        if owner.life_cycle.tick_thrown(owner):
             owner.state = owner.KNOCKDOWN
-            self.set_knockdown_remaining(owner, 60)
-            self.set_thrown_velocity_x(owner, 0)
+            owner.life_cycle.start_knockdown(60)
+            owner.life_cycle.stop_thrown_motion()
 
         owner.update_animation()
 
     def update_knockdown_state(self, owner):
-        self.set_knockdown_remaining(owner, self.get_knockdown_remaining(owner) - 1)
-
-        if self.get_knockdown_remaining(owner) <= 0:
+        if owner.life_cycle.tick_knockdown():
             owner.state = owner.GETUP
-            self.set_getup_remaining(owner, 20)
+            owner.life_cycle.start_getup(20)
 
         owner.update_animation()
 
     def update_getup_state(self, owner):
-        self.set_getup_remaining(owner, self.get_getup_remaining(owner) - 1)
-
-        if self.get_getup_remaining(owner) <= 0:
+        if owner.life_cycle.tick_getup():
             owner.state = owner.IDLE
 
         owner.update_animation()
 
     def update_hit_state(self, owner):
-        if self.get_hit_stun_remaining(owner) <= 0:
+        if not owner.life_cycle.has_hit_stun():
             return False
 
-        self.set_hit_stun_remaining(owner, self.get_hit_stun_remaining(owner) - 1)
+        owner.life_cycle.tick_hit_stun()
         owner.reaction_controller.apply_knockback(owner)
 
-        if self.get_hit_stun_remaining(owner) <= 0:
+        if not owner.life_cycle.has_hit_stun():
             owner.state = owner.IDLE
         else:
             owner.state = owner.HIT
@@ -84,11 +67,10 @@ class EnemyLifecycleController:
         return True
 
     def update_dead_state(self, owner):
-        if not self.get_death_countdown_started(owner):
-            self.set_death_countdown_started(owner, True)
+        if not owner.life_cycle.death_countdown_started:
+            owner.life_cycle.begin_death_countdown()
 
-        if self.get_death_remaining(owner) > 0:
-            self.set_death_remaining(owner, self.get_death_remaining(owner) - 1)
+        owner.life_cycle.tick_death()
 
         owner.update_animation()
 
@@ -100,95 +82,4 @@ class EnemyLifecycleController:
         owner.flanking.update_timers()
 
     def is_ready_to_remove(self, owner):
-        return owner.state == owner.DEAD and self.get_death_remaining(owner) <= 0
-
-    def get_lifecycle_state(self, owner):
-        return getattr(owner, "lifecycle_state", None)
-
-    def get_death_remaining(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.death_remaining if state else owner.death_remaining
-
-    def set_death_remaining(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.death_remaining = value
-        else:
-            owner.death_remaining = value
-
-    def get_death_countdown_started(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.death_countdown_started if state else owner.death_countdown_started
-
-    def set_death_countdown_started(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.death_countdown_started = value
-        else:
-            owner.death_countdown_started = value
-
-    def get_action_lock_remaining(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.action_lock_remaining if state else owner.action_lock_remaining
-
-    def set_action_lock_remaining(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.action_lock_remaining = value
-        else:
-            owner.action_lock_remaining = value
-
-    def get_thrown_velocity_x(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.thrown_velocity_x if state else owner.thrown_velocity_x
-
-    def set_thrown_velocity_x(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.thrown_velocity_x = value
-        else:
-            owner.thrown_velocity_x = value
-
-    def get_thrown_remaining(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.thrown_remaining if state else owner.thrown_remaining
-
-    def set_thrown_remaining(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.thrown_remaining = value
-        else:
-            owner.thrown_remaining = value
-
-    def get_knockdown_remaining(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.knockdown_remaining if state else owner.knockdown_remaining
-
-    def set_knockdown_remaining(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.knockdown_remaining = value
-        else:
-            owner.knockdown_remaining = value
-
-    def get_getup_remaining(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.getup_remaining if state else owner.getup_remaining
-
-    def set_getup_remaining(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.getup_remaining = value
-        else:
-            owner.getup_remaining = value
-
-    def get_hit_stun_remaining(self, owner):
-        state = self.get_lifecycle_state(owner)
-        return state.hit_stun_remaining if state else owner.hit_stun_remaining
-
-    def set_hit_stun_remaining(self, owner, value):
-        state = self.get_lifecycle_state(owner)
-        if state:
-            state.hit_stun_remaining = value
-        else:
-            owner.hit_stun_remaining = value
+        return owner.state == owner.DEAD and owner.life_cycle.is_death_finished()
