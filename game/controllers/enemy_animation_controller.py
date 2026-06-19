@@ -29,52 +29,43 @@ class EnemyAnimationController:
         return self.animation_manager.current_animation
 
     def init_frame_animations(self, owner):
-        idle_frames = load_frame_animation(self.animation_data, "idle")
-        walk_frames = load_frame_animation(self.animation_data, "walk")
-        attack_frames = load_frame_animation(self.animation_data, "attack")
-        hit_frames = load_frame_animation(self.animation_data, "hit")
-        dead_frames = load_frame_animation(self.animation_data, "dead")
+        for state, animation_name, loop in self.get_animation_specs(owner):
+            frames = load_frame_animation(self.animation_data, animation_name)
+            duration = self.frame_duration(animation_name)
+            self.animation_manager.add_animation(
+                state,
+                FrameAnimation(frames, duration, loop=loop),
+            )
 
-        idle_dur = self.frame_duration("idle")
-        walk_dur = self.frame_duration("walk")
-        attack_dur = self.frame_duration("attack")
-        hit_dur = self.frame_duration("hit")
-        dead_dur = self.frame_duration("dead")
-
-        self.animation_manager.add_animation(owner.IDLE, FrameAnimation(idle_frames, idle_dur))
-        self.animation_manager.add_animation(owner.WALK, FrameAnimation(walk_frames, walk_dur))
-        self.animation_manager.add_animation(owner.ATTACK, FrameAnimation(attack_frames, attack_dur, loop=False))
-        self.animation_manager.add_animation(owner.HIT, FrameAnimation(hit_frames, hit_dur))
-        self.animation_manager.add_animation(owner.DEAD, FrameAnimation(dead_frames, dead_dur))
+    def get_animation_specs(self, owner):
+        return [
+            (owner.IDLE, "idle", True),
+            (owner.WALK, "walk", True),
+            (owner.ATTACK, "attack", False),
+            (owner.HIT, "hit", True),
+            (owner.DEAD, "dead", True),
+        ]
 
     def frame_duration(self, animation_name):
         return max(1, int(FPS / self.anim_fps[animation_name]))
 
     def update(self, owner):
-        if owner.state == owner.IDLE:
-            self.animation_manager.play(owner.IDLE)
-        elif owner.state == owner.WALK:
-            self.animation_manager.play(owner.WALK)
-        elif owner.state == owner.PATROL:
-            self.animation_manager.play(owner.IDLE)
-        elif owner.state == owner.CHASE:
-            self.animation_manager.play(owner.WALK)
-        elif owner.state == owner.ATTACK:
-            self.animation_manager.play(owner.ATTACK)
-        elif owner.state == owner.HIT:
-            self.animation_manager.play(owner.HIT)
-        elif owner.state == owner.RECOIL:
-            # todo: add recoil animation
-            self.animation_manager.play(owner.HIT)
-        elif owner.state == owner.GRABBED:
-            self.animation_manager.play(owner.IDLE)
-        elif owner.state == owner.THROWN: # TODO
-            self.animation_manager.play(owner.HIT)
-        elif owner.state == owner.KNOCKDOWN: # TODO
-            self.animation_manager.play(owner.HIT)
-        elif owner.state == owner.GETUP:
-            self.animation_manager.play(owner.IDLE)
-        elif owner.state == owner.DEAD:
-            self.animation_manager.play(owner.DEAD)
-
+        self.animation_manager.play(self.get_animation_state(owner))
         self.animation_manager.update()
+
+    def get_animation_state(self, owner):
+        state_map = {
+            owner.IDLE: owner.IDLE,
+            owner.WALK: owner.WALK,
+            owner.PATROL: owner.IDLE,
+            owner.CHASE: owner.WALK,
+            owner.ATTACK: owner.ATTACK,
+            owner.HIT: owner.HIT,
+            owner.RECOIL: owner.HIT,
+            owner.GRABBED: owner.IDLE,
+            owner.THROWN: owner.HIT,
+            owner.KNOCKDOWN: owner.HIT,
+            owner.GETUP: owner.IDLE,
+            owner.DEAD: owner.DEAD,
+        }
+        return state_map.get(owner.state, owner.IDLE)

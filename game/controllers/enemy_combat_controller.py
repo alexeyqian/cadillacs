@@ -17,7 +17,7 @@ class EnemyCombatController:
 
     def start_attack(self, owner):
         owner.state = owner.ATTACK
-        self.has_attack_slot = self.uses_melee_attack_slot(owner)
+        self.has_attack_slot = True
         owner.state_controller.reset_decision_timer()
         self.attack_manager.start(owner.ATTACK, self.get_attack_data(owner))
         owner.animation_controller.play(owner.ATTACK)
@@ -49,8 +49,8 @@ class EnemyCombatController:
             attack_data = self.get_attack_data(owner)
             if (lane_distance <= attack_data.lane_reach
                 and attack_rect.colliderect(player_hurt_rect)):
-                self.damage_player(player, attack_data)
-                self.mark_attack_hit(owner, player)
+                player.take_damage(DamageRequest.from_attack_data(attack_data))
+                self.attack_manager.mark_target_hit(player)
 
         if attack_finished:
             self.finish_attack(owner)
@@ -72,9 +72,6 @@ class EnemyCombatController:
             return None
         return self.get_attack_data(owner)
 
-    def mark_attack_hit(self, owner, target):
-        self.attack_manager.mark_target_hit(target)
-
     def get_attack_timer(self, owner):
         return self.attack_manager.elapsed_frames
 
@@ -85,12 +82,6 @@ class EnemyCombatController:
         if self.attack_data:
             return self.attack_data
         return DEFAULT_ENEMY_ATTACK_DATA
-
-    def damage_player(self, player, attack_data):
-        player.take_damage(DamageRequest.from_attack_data(attack_data))
-
-    def uses_melee_attack_slot(self, owner):
-        return True
 
     def get_attack_timing_label(self, owner):
         if owner.state != owner.ATTACK:

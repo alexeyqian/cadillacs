@@ -61,23 +61,25 @@ class PlayerGrabController:
         if getattr(enemy, "enemy_id", "") == "black_elmer":
             player_is_behind_enemy = owner.facing_right == enemy.facing_right
             if not player_is_behind_enemy:
-                # punish for 8 game frames if grab fails on heavy enemy in front
-                owner.combat_controller.action_lock_remaining = self.failed_grab_recovery_duration
-                # failed grab read as a small bounce-off.
-                owner.state_machine.change_to(owner, owner.RECOIL)
-                # Small edge case: after a failed heavy grab, 
-                # the player may still be holding L, 
-                # and grab_pressed can make the next grab attempt feel unresponsive until release. 
-                # below line of code make the failed-grab recovery explicit.
-                # Failed grab consumes the grab press
-                # Player must release and press L again for another grab attempt
-                self.grab_pressed = True
-                self.failed_grab_feedback = True
+                self.fail_heavy_grab(owner)
                 return False
 
         dx = abs(enemy.x - owner.x)
         lane_distance = level.get_lane_distance(owner.y, enemy.y)
         return dx <= self.grab_range and lane_distance == 0
+
+    def fail_heavy_grab(self, owner):
+        # punish for 8 game frames if grab fails on heavy enemy in front
+        owner.combat_controller.action_lock_remaining = self.failed_grab_recovery_duration
+        # failed grab read as a small bounce-off.
+        owner.state_machine.change_to(owner, owner.RECOIL)
+        # Small edge case: after a failed heavy grab,
+        # the player may still be holding L,
+        # and grab_pressed can make the next grab attempt feel unresponsive until release.
+        # Failed grab consumes the grab press
+        # Player must release and press L again for another grab attempt
+        self.grab_pressed = True
+        self.failed_grab_feedback = True
 
     def grab_enemy(self, owner, enemy):
         self.grabbed_enemy = enemy

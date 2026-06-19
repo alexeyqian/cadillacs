@@ -95,9 +95,6 @@ class FakeEnemy:
     def get_attack_total_duration(self):
         return self.attack_data.total_duration
 
-    def uses_melee_attack_slot(self):
-        return True
-
     def start_attack(self):
         self.combat_controller.start_attack(self)
 
@@ -201,7 +198,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
         player = ReactionPlayer()
 
-        EnemyCombatController().damage_player(player, attack_data)
+        player.take_damage(DamageRequest.from_attack_data(attack_data))
 
         self.assertEqual(player.damage_taken, 12)
         self.assertEqual(player.reaction_taken.stun_frames, 18)

@@ -1,4 +1,12 @@
-from game.settings import *
+from game.settings import (
+    FIST_DAMAGE,
+    PLAYER_CLASH_RECOVERY,
+    PLAYER_COMBO_WINDOW,
+    RUN_ATTACK_FULL_POWER_DISTANCE,
+    RUN_ATTACK_FULL_POWER_ENEMY_HIT_STUN_BONUS,
+    RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
+    RUN_ATTACK_REQUIRED_DISTANCE,
+)
 
 from game.combat.attack_manager import AttackManager
 from game.combat.hit_reaction import HitReaction
@@ -58,6 +66,12 @@ class PlayerCombatController:
     # then walk in and land the stronger hit. 
     # The combo damage has to be earned.
     def update_timers(self, owner):
+        if self.update_action_lock(owner):
+            return
+        self.update_combo_window()
+        self.finish_attack_if_done(owner)
+
+    def update_action_lock(self, owner):
         # action lock remaining means: the player cannot start a new action yet.
         if self.action_lock_remaining > 0:
             self.action_lock_remaining -= 1
@@ -70,47 +84,67 @@ class PlayerCombatController:
                 # Clash -> player enters RECOIL
                 # Player stays RECOIL for clash recovery duration
                 # Then returns to IDLE
-                return
+                return True
+        return False
 
+    def update_combo_window(self):
         if self.combo_window_remaining > 0:
             self.combo_window_remaining -= 1
         else:
             self.combo_step = 0
 
-        if self.is_attacking:
-            if self.attack_manager.advance():
-                finished_attack_name, finished_move, attack_connected = (
-                    self.attack_manager.finish()
-                )
+    def finish_attack_if_done(self, owner):
+        if not self.is_attacking:
+            return
+        if not self.attack_manager.advance():
+            return
 
-                # expected behavior:
-                # Punch hits enemy -> combo can continue
-                # Punch misses enemy -> combo resets
-                # Player cannot build third hit by punching empty space
-                attack_missed = (
-                    finished_attack_name in [owner.ATTACK_1, owner.ATTACK_2, owner.ATTACK_3]
-                    and not attack_connected
-                )
-                if attack_missed:
-                    self.combo_window_remaining = 0
-                    self.combo_step = 0
+        finished_attack_name, finished_move, attack_connected = (
+            self.attack_manager.finish()
+        )
 
-                if finished_move and finished_move.cooldown > 0:
-                    self.action_lock_remaining = finished_move.cooldown
-                    if finished_attack_name not in [owner.ATTACK_1, owner.ATTACK_2]:
-                        self.combo_window_remaining = 0
-                        self.combo_step = 0
+        self.update_combo_after_finished_attack(
+            owner,
+            finished_attack_name,
+            finished_move,
+            attack_connected,
+        )
+        if finished_attack_name == owner.RUN_ATTACK:
+            owner.movement.start_run_attack_cooldown()
 
-                if finished_attack_name == owner.RUN_ATTACK:
-                    movement = getattr(owner, "movement", None)
-                    if movement and hasattr(movement, "start_run_attack_cooldown"):
-                        movement.start_run_attack_cooldown()
+        self.return_to_ready_state(owner)
 
-                air = getattr(owner, "air", None)
-                if air and air.is_landing and owner.state != owner.DEAD:
-                    owner.state_machine.change_to(owner, owner.LANDING)
-                elif owner.state != owner.DEAD:
-                    owner.state_machine.change_to(owner, owner.IDLE)
+    def update_combo_after_finished_attack(
+        self,
+        owner,
+        finished_attack_name,
+        finished_move,
+        attack_connected,
+    ):
+        # expected behavior:
+        # Punch hits enemy -> combo can continue
+        # Punch misses enemy -> combo resets
+        # Player cannot build third hit by punching empty space
+        attack_missed = (
+            finished_attack_name in [owner.ATTACK_1, owner.ATTACK_2, owner.ATTACK_3]
+            and not attack_connected
+        )
+        if attack_missed:
+            self.reset_combo()
+
+        if finished_move and finished_move.cooldown > 0:
+            self.action_lock_remaining = finished_move.cooldown
+            if finished_attack_name not in [owner.ATTACK_1, owner.ATTACK_2]:
+                self.reset_combo()
+
+    def return_to_ready_state(self, owner):
+        if owner.state == owner.DEAD:
+            return
+        air = getattr(owner, "air", None)
+        if air and air.is_landing:
+            owner.state_machine.change_to(owner, owner.LANDING)
+        else:
+            owner.state_machine.change_to(owner, owner.IDLE)
 
     def start_attack(self, owner):
         if self.is_attacking:
@@ -121,25 +155,33 @@ class PlayerCombatController:
         if air and air.is_landing:
             return
 
+        if self.can_start_run_attack(owner):
+            self.start_run_attack(owner)
+            return
+
+        self.start_combo_attack(owner)
+
+    def can_start_run_attack(self, owner):
         input_state = getattr(owner, "input_state", None)
         requires_run_attack_release = bool(
             input_state and input_state.run_attack_requires_attack_release
         )
-        can_start_run_attack = (
+        return (
             owner.movement.can_start_run_attack()
             and not requires_run_attack_release
         )
-        if can_start_run_attack:
-            move_data = self._get_attack_data(owner, owner.RUN_ATTACK)
-            self.attack_manager.start(owner.RUN_ATTACK, move_data)
-            owner.movement.start_run_attack_momentum(owner)
-            self.combo_window_remaining = 0
-            self.combo_step = 0
-            if input_state:
-                input_state.run_attack_requires_attack_release = True
-            owner.state_machine.change_to(owner, owner.RUN_ATTACK)
-            return
 
+    def start_run_attack(self, owner):
+        move_data = self._get_attack_data(owner, owner.RUN_ATTACK)
+        self.attack_manager.start(owner.RUN_ATTACK, move_data)
+        owner.movement.start_run_attack_momentum(owner)
+        self.reset_combo()
+        input_state = getattr(owner, "input_state", None)
+        if input_state:
+            input_state.run_attack_requires_attack_release = True
+        owner.state_machine.change_to(owner, owner.RUN_ATTACK)
+
+    def start_combo_attack(self, owner):
         if self.combo_window_remaining > 0:
             self.combo_step += 1
         else:
@@ -192,9 +234,12 @@ class PlayerCombatController:
     # enemy hits should fully cancel the player’s combo.
     def cancel_attack(self):
         self.attack_manager.cancel()
+        self.reset_combo()
+        self.action_lock_remaining = 0
+
+    def reset_combo(self):
         self.combo_step = 0
         self.combo_window_remaining = 0
-        self.action_lock_remaining = 0
 
     def get_attack_damage(self, owner):
         attack_data = self._get_current_or_state_attack_data(owner)
@@ -235,8 +280,7 @@ class PlayerCombatController:
         if self.current_attack_name != owner.RUN_ATTACK:
             return 0
 
-        movement = getattr(owner, "movement", None)
-        run_distance = getattr(movement, "last_run_attack_distance", 0)
+        run_distance = getattr(owner.movement, "last_run_attack_distance", 0)
         bonus_distance = max(1, RUN_ATTACK_FULL_POWER_DISTANCE - RUN_ATTACK_REQUIRED_DISTANCE)
         bonus_ratio = (run_distance - RUN_ATTACK_REQUIRED_DISTANCE) / bonus_distance
         bonus_ratio = max(0, min(1, bonus_ratio))

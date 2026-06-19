@@ -1,4 +1,4 @@
-from game.settings import *
+from game.settings import ENEMY_FLANK_Y_TOLERANCE, MAX_MELEE_ATTACKERS
 
 class EnemyStateController:
     def __init__(self):
@@ -15,18 +15,22 @@ class EnemyStateController:
             owner.flanking.clear_target()
             self.prepare_or_start_attack(owner, player)
         elif distance_x <= owner.movement.detect_range:
-            self.reset_attack_decision(owner)
-            if self.should_flank(owner, player, distance_x, distance_y, enemies):
-                owner.flanking.set_target(owner, player, enemies)
-            else:
-                owner.flanking.clear_target()
-            # todo: replace with entry function like: start_chase()
-            owner.state = owner.CHASE
+            self.enter_chase(owner, player, distance_x, distance_y, enemies)
         else:
-            self.reset_attack_decision(owner)
+            self.enter_patrol(owner)
+
+    def enter_chase(self, owner, player, distance_x, distance_y, enemies):
+        self.reset_attack_decision(owner)
+        if self.should_flank(owner, player, distance_x, distance_y, enemies):
+            owner.flanking.set_target(owner, player, enemies)
+        else:
             owner.flanking.clear_target()
-            # todo: replace with: start_patrol()
-            owner.state = owner.PATROL
+        owner.state = owner.CHASE
+
+    def enter_patrol(self, owner):
+        self.reset_attack_decision(owner)
+        owner.flanking.clear_target()
+        owner.state = owner.PATROL
 
     def execute_state(self, owner, level, player, enemies, dx, dy):
         if owner.state == owner.PATROL:
@@ -50,23 +54,27 @@ class EnemyStateController:
     def can_attack_player(self, owner, level, player, distance_x, distance_y, enemies):
         if self.get_attack_cooldown(owner) > 0:
             return False
+        if not self.is_in_attack_range(owner, level, player, distance_x):
+            return False
+        if not self.has_available_attack_slot(owner, player, enemies):
+            return False
+
+        return True
+
+    def is_in_attack_range(self, owner, level, player, distance_x):
         if distance_x > owner.combat_controller.attack_range:
             return False
         lane_distance = level.get_lane_distance(owner.y, player.y)
-        if lane_distance > owner.combat_controller.get_attack_data(owner).lane_reach:
-            return False
-        if self.can_bypass_attack_slot_limit(owner):
-            return True
-        # only the closest eligible melee enemy should take the slot. 
+        return lane_distance <= owner.combat_controller.get_attack_data(owner).lane_reach
+
+    def has_available_attack_slot(self, owner, player, enemies):
+        # only the closest eligible melee enemy should take the slot.
         # This makes group behavior feel more intentional.
         if self.count_active_melee_attackers(enemies) >= self.get_melee_attack_slot_limit(owner):
             return False
         if self.side_already_has_attacker(owner, player, enemies):
             return False
-        if not self.is_closest_melee_attacker_on_side(owner, player, enemies):
-            return False
-
-        return True
+        return self.is_closest_melee_attacker_on_side(owner, player, enemies)
     
     def is_closest_melee_attacker_on_side(self, owner, player, enemies):
         closest_enemy = owner
@@ -86,8 +94,6 @@ class EnemyStateController:
         return closest_enemy is owner
 
     def is_eligible_melee_attacker(self, enemy, player):
-        if not self.uses_melee_attack_slot(enemy):
-            return False
         if self.get_attack_cooldown(enemy) > 0:
             return False
         # That means an enemy that already owns a slot remains counted as eligible 
@@ -129,10 +135,6 @@ class EnemyStateController:
         return count
     
     def should_flank(self, owner, player, distance_x, distance_y, enemies):
-        if self.can_bypass_attack_slot_limit(owner):
-            return False
-        if not self.uses_melee_attack_slot(owner):
-            return False
         if distance_x > owner.combat_controller.attack_range:
             return False
         # Why: enemies slightly above/below the attack lane should still
@@ -143,9 +145,6 @@ class EnemyStateController:
             return False
 
         return True
-
-    def get_combat(self, owner):
-        return getattr(owner, "combat_controller", None)
 
     def reset_attack_decision(self, owner):
         self.decision_timer = 0
@@ -160,22 +159,10 @@ class EnemyStateController:
         return owner.combat_controller.get_attack_data(owner).delay
 
     def get_attack_cooldown(self, owner):
-        combat = self.get_combat(owner)
-        if combat:
-            return combat.cooldown_remaining
-        return owner.attack_cooldown
+        return owner.combat_controller.cooldown_remaining
 
     def has_attack_slot(self, owner):
-        combat = self.get_combat(owner)
-        if combat:
-            return combat.has_attack_slot
-        return owner.has_attack_slot
-
-    def uses_melee_attack_slot(self, owner):
-        return True
-
-    def can_bypass_attack_slot_limit(self, owner):
-        return False
+        return owner.combat_controller.has_attack_slot
 
     def get_side_of_player(self, owner, player):
         if owner.x < player.x:

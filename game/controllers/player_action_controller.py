@@ -13,16 +13,21 @@ class PlayerActionController:
     def update_jump_input(self, owner, player_input):
         if player_input.jump:
             if not owner.movement.jump_pressed:
-                self.buffer_action(owner, self.JUMP_ACTION, self.JUMP_BUFFER_FRAMES)
-                if self.try_start_jump(owner, player_input):
-                    self.consume_action(owner, self.JUMP_ACTION)
+                self.buffer_and_try_action(
+                    owner,
+                    self.JUMP_ACTION,
+                    self.JUMP_BUFFER_FRAMES,
+                    lambda: self.try_start_jump(owner, player_input),
+                )
                 owner.movement.jump_pressed = True
         else:
             owner.movement.jump_pressed = False
 
-        if self.has_buffered_action(owner, self.JUMP_ACTION):
-            if self.try_start_jump(owner, player_input):
-                self.consume_action(owner, self.JUMP_ACTION)
+        self.try_buffered_action(
+            owner,
+            self.JUMP_ACTION,
+            lambda: self.try_start_jump(owner, player_input),
+        )
 
     # avoid doing this:
     # as soon as the attack timer ends, 
@@ -32,9 +37,12 @@ class PlayerActionController:
         if player_input.attack:
             if owner.movement.is_jumping:
                 if not owner.input_state.jump_attack_pressed:
-                    self.buffer_action(owner, self.ATTACK_ACTION, self.ATTACK_BUFFER_FRAMES)
-                    if self.try_start_attack(owner):
-                        self.consume_action(owner, self.ATTACK_ACTION)
+                    self.buffer_and_try_action(
+                        owner,
+                        self.ATTACK_ACTION,
+                        self.ATTACK_BUFFER_FRAMES,
+                        lambda: self.try_start_attack(owner),
+                    )
                     owner.input_state.jump_attack_pressed = True
             else:
                 if owner.input_state.run_attack_requires_attack_release:
@@ -43,18 +51,23 @@ class PlayerActionController:
                     return
 
                 if not owner.input_state.attack_pressed:
-                    self.buffer_action(owner, self.ATTACK_ACTION, self.ATTACK_BUFFER_FRAMES)
-                    if self.try_start_attack(owner):
-                        self.consume_action(owner, self.ATTACK_ACTION)
+                    self.buffer_and_try_action(
+                        owner,
+                        self.ATTACK_ACTION,
+                        self.ATTACK_BUFFER_FRAMES,
+                        lambda: self.try_start_attack(owner),
+                    )
                     owner.input_state.attack_pressed = True
         else:
             owner.input_state.attack_pressed = False
             owner.input_state.jump_attack_pressed = False
             owner.input_state.run_attack_requires_attack_release = False
 
-        if self.has_buffered_action(owner, self.ATTACK_ACTION):
-            if self.try_start_attack(owner):
-                self.consume_action(owner, self.ATTACK_ACTION)
+        self.try_buffered_action(
+            owner,
+            self.ATTACK_ACTION,
+            lambda: self.try_start_attack(owner),
+        )
 
     def update_fire_input(self, owner, player_input):
         if player_input.fire:
@@ -85,6 +98,16 @@ class PlayerActionController:
         input_buffer = getattr(owner, "input_buffer", None)
         if input_buffer:
             input_buffer.press(action, frames=frames)
+
+    def buffer_and_try_action(self, owner, action, frames, start_action):
+        self.buffer_action(owner, action, frames)
+        if start_action():
+            self.consume_action(owner, action)
+
+    def try_buffered_action(self, owner, action, start_action):
+        if self.has_buffered_action(owner, action):
+            if start_action():
+                self.consume_action(owner, action)
 
     def consume_action(self, owner, action):
         input_buffer = getattr(owner, "input_buffer", None)
