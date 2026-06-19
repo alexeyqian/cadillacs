@@ -299,3 +299,12 @@ Animation uses frames.
 
 ROM download:
 https://archive.org/download/mame-0.221-roms-merged
+
+Use a controller when something decides what one object should do.
+A controller usually belongs to one entity.
+Use a manager when something owns or coordinates many objects.
+A manager usually handles collections or systems.
+
+Controller = controls one thing.
+Manager = manages many things.
+System = applies rules across many things.
