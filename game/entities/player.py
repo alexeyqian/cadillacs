@@ -1,5 +1,6 @@
 from game.settings import *
 from game.entities.character import Character
+from game.entities.character_state import CharacterState
 from game.entities.player_config import get_player_config
 from game.entities.player_geometry import PlayerGeometry
 from game.entities.player_health import PlayerHealth
@@ -18,10 +19,10 @@ from game.entities.player_input_state import PlayerInputState
 from game.entities.player_air_state import PlayerAirState
 
 class Player(Character):
-    IDLE = "IDLE"
-    WALK = "WALK"
-    RUN="RUN"
-    ATTACK = "ATTACK" # including 1,2,3
+    IDLE = CharacterState.IDLE
+    WALK = CharacterState.WALK
+    RUN = CharacterState.RUN
+    ATTACK = CharacterState.ATTACK # including 1,2,3
     RUN_ATTACK="RUN_ATTACK"
     JUMP_TAKEOFF = "JUMP_TAKEOFF"
     JUMP = "JUMP"
@@ -31,9 +32,12 @@ class Player(Character):
     ATTACK_1 = "ATTACK_1"
     ATTACK_2 = "ATTACK_2"
     ATTACK_3 = "ATTACK_3"
-    HIT = "HIT" # hit by enemies
-    RECOIL = "RECOIL"
-    DEAD = "DEAD"
+    HIT = CharacterState.HIT # hit by enemies
+    RECOIL = CharacterState.RECOIL
+    DEAD = CharacterState.DEAD
+    GRABBED = CharacterState.GRABBED
+    KNOCKDOWN = CharacterState.KNOCKDOWN
+    GETUP = CharacterState.GETUP
     GRAB = "GRAB"
     GRAB_KNEE="GRAB_KNEE"
     THROW = "THROW"

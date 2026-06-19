@@ -70,6 +70,18 @@ class DeadState(PlayerState):
     name = "DEAD"
 
 
+class GrabbedState(PlayerState):
+    name = "GRABBED"
+
+
+class KnockdownState(PlayerState):
+    name = "KNOCKDOWN"
+
+
+class GetupState(PlayerState):
+    name = "GETUP"
+
+
 class GrabState(PlayerState):
     name = "GRAB"
 
@@ -100,6 +112,9 @@ class PlayerStateMachine:
             owner.HIT: HitState(),
             owner.RECOIL: RecoilState(),
             owner.DEAD: DeadState(),
+            owner.GRABBED: GrabbedState(),
+            owner.KNOCKDOWN: KnockdownState(),
+            owner.GETUP: GetupState(),
             owner.GRAB: GrabState(),
             owner.GRAB_KNEE: GrabKneeState(),
             owner.THROW: ThrowState(),

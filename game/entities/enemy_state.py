@@ -1,15 +1,12 @@
-class EnemyState:
-    IDLE = "IDLE"
-    WALK = "WALK" # deprecated, patrol is good enough
+from game.entities.character_state import CharacterState
+
+
+class EnemyState(CharacterState):
+    WALK = CharacterState.WALK # deprecated, patrol is good enough
     PATROL = "PATROL" # ai decisions
     CHASE = "CHASE"
-    ATTACK = "ATTACK"
     # HIT means damaged; 
     # RECOIL means clash bounce/no damage
-    HIT = "HIT"
-    RECOIL = "RECOIL"
-    DEAD = "DEAD"
-    GRABBED = "GRABBED"
     THROWN = "THROWN"
-    KNOCKDOWN = "KNOCKDOWN" # heavy hit or thrown cause enemy falls down briefly
-    GETUP = "GETUP" # gets up after knockdown
+    KNOCKDOWN = CharacterState.KNOCKDOWN # heavy hit or thrown cause enemy falls down briefly
+    GETUP = CharacterState.GETUP # gets up after knockdown
