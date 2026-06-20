@@ -32,6 +32,7 @@ class Enemy(Character, EnemyState):
         self.configure_from_enemy_config(get_enemy_config(self.enemy_type))
         self.build_presentation_components(animation_data, anim_fps)
 
+    ##### begin of init #####
     def configure_spawn_state(self, x, enemy_type):
         self.enemy_type = enemy_type
         self.pending_projectile = None
@@ -102,17 +103,9 @@ class Enemy(Character, EnemyState):
     def apply_reward_config(self, config):
         self.score_points = config.score_points
 
-    def update(self, level, player, enemies):
-        if self.update_lifecycle_state():
-            self.update_animation()
-            return
+    ##### end of init #####
 
-        self.advance_timers()
-        self.apply_knockback()
-        self.update_ai(level, player, enemies)
-        self.update_movement(level, player, enemies)
-        self.update_animation()
-
+    ##### begin of main loop update #####
     def update_lifecycle_state(self):
         if self.lifecycle_controller.update_special_states(self):
             return True
@@ -121,17 +114,11 @@ class Enemy(Character, EnemyState):
     def advance_timers(self):
         self.lifecycle_controller.update_timers(self)
 
-    def apply_knockback(self):
-        self.reaction_controller.apply_knockback(self)
-
-    def get_player_distance(self, player):
-        return self.movement.get_player_distance(self, player)
-
     def update_ai(self, level, player, enemies):
         dx, dy, distance_x, distance_y = self.movement.get_player_distance(self, player)
 
         if distance_x <= self.movement.detect_range:
-            self.face_player(player)
+            self._face_player(player)
 
         self.state_controller.choose_state(
             self, level, player, distance_x, distance_y, enemies
@@ -139,7 +126,8 @@ class Enemy(Character, EnemyState):
         return dx, dy
 
     def update_movement(self, level, player, enemies):
-        dx, dy, distance_x, distance_y = self.get_player_distance(player)
+        self._apply_knockback()
+        dx, dy, distance_x, distance_y = self._get_player_distance(player)
         if self.state == self.ATTACK:
             return
         self.state_controller.execute_movement_state(self, level, player, enemies, dx, dy)
@@ -151,6 +139,14 @@ class Enemy(Character, EnemyState):
 
     def update_animation(self):
         self.animation_controller.update(self)
+
+    ##### end of main loop update #####
+        
+    def _apply_knockback(self):
+        self.reaction_controller.apply_knockback(self)
+
+    def _get_player_distance(self, player):
+        return self.movement.get_player_distance(self, player)
 
     # Lifecycle / reactions
     def is_ready_to_remove(self):
@@ -186,7 +182,7 @@ class Enemy(Character, EnemyState):
     def take_grab_knee_damage(self, damage):
         self.reaction_controller.take_grab_knee_damage(self, damage)
 
-    def face_player(self, player):
+    def _face_player(self, player):
         self.movement.face_player(self, player)
 
     # Combat

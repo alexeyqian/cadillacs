@@ -24,12 +24,12 @@ class Player(Character, PlayerState):
         super().__init__(x=300, y=500, state=self.IDLE, facing_right=True)
         self.player_type = player_type
 
-        self.configure_from_player_config(
+        self._configure_from_player_config(
             get_player_config(player_type),
             animation_data, anim_fps)
 
-    # Construction groups
-    def configure_from_player_config(self, config, animation_data, anim_fps):
+    ##### begin of init #####
+    def _configure_from_player_config(self, config, animation_data, anim_fps):
         self.apply_identity_config(config)
         self.apply_body_config(config)
         self.apply_movement_config(config)
@@ -102,21 +102,9 @@ class Player(Character, PlayerState):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 
-    def reset_for_stage_start(self, x, y):
-        self.lifecycle_controller.reset_for_stage_start(self, x, y)
+    ##### end of init #####
 
-    def update(self, player_input):
-        if self.update_lifecycle_state():
-            self.update_animation()
-            return
-
-        self.advance_timers()
-        self.request_actions(player_input)
-        moving = self.update_movement(player_input)
-        self.update_jump_physics(player_input)
-        self.update_state_after_movement(moving)
-        self.update_grabbed_enemy_position()
-        self.update_animation()
+    ##### begin of main loop update #####
 
     def update_lifecycle_state(self):
         if self.state == self.DEAD:
@@ -128,29 +116,29 @@ class Player(Character, PlayerState):
 
         return False
 
-    def request_actions(self, player_input):
-        self.action_controller.update(self, player_input)
-
-    def update_movement(self, player_input):
-        return self.movement.update_movement(self, player_input)
-
-    def update_jump_physics(self, player_input):
-        self.movement.update_jump_physics(self, player_input)
-
-    def update_state_after_movement(self, moving):
-        self.state_controller.update_after_movement(self, moving)
-
-    def update_grabbed_enemy_position(self):
-        self.grab_controller.update_grabbed_enemy_position(self)
-
-    def update_animation(self):
-        self.animation_controller.update(self)
-
-    # Timers
     def advance_timers(self):
         self.combat_controller.update_timers(self)
         self.grab_controller.update_timers(self)
         self.movement.update_timers()
+
+    def request_actions(self, player_input):
+        self.action_controller.update(self, player_input)
+
+    def update_movement(self, player_input):
+        moving = self.movement.update_movement(self, player_input)
+        self.movement.update_jump_physics(self, player_input)
+        self.state_controller.update_after_movement(self, moving)
+        self.grab_controller.update_grabbed_enemy_position(self)
+        return moving
+
+    def update_animation(self):
+        self.animation_controller.update(self)
+
+    ##### end of main loop update #####
+
+    # todo: move to stage controller/manager?
+    def reset_for_stage_start(self, x, y):
+        self.lifecycle_controller.reset_for_stage_start(self, x, y)
 
     def get_attack_data(self, attack_name):
         weapon = self.weapon_slot.weapon

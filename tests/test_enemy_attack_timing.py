@@ -334,12 +334,12 @@ class EnemyAttackTimingTests(unittest.TestCase):
         raptor.combat_controller.attack_manager.elapsed_frames = (
             raptor.attack_data.windup - raptor.leap_startup_frames - 1
         )
-        self.assertFalse(RaptorEnemy.should_leap_now(raptor))
+        self.assertFalse(RaptorEnemy._should_leap_now(raptor))
 
         raptor.combat_controller.attack_manager.elapsed_frames = (
             raptor.attack_data.windup - raptor.leap_startup_frames
         )
-        self.assertTrue(RaptorEnemy.should_leap_now(raptor))
+        self.assertTrue(RaptorEnemy._should_leap_now(raptor))
 
 
 if __name__ == "__main__":

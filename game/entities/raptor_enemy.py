@@ -21,9 +21,6 @@ class RaptorEnemy(Enemy):
         self.leap_speed = 12
         self.has_leaped_this_attack = False
 
-    def update(self, level, player, enemies):
-        super().update(level, player, enemies)
-
     def advance_timers(self):
         if self.leap_cooldown > 0:
             self.leap_cooldown -= 1
@@ -37,8 +34,8 @@ class RaptorEnemy(Enemy):
         if self.state != self.ATTACK:
             return
 
-        if self.should_leap_now():
-            self.leap_toward_player(player)
+        if self._should_leap_now():
+            self._leap_toward_player(player)
             self.leap_cooldown = self.leap_cooldown_duration
             self.has_leaped_this_attack = True
 
@@ -47,7 +44,7 @@ class RaptorEnemy(Enemy):
         if self.state != self.ATTACK:
             self.has_leaped_this_attack = False
 
-    def leap_toward_player(self, player):
+    def _leap_toward_player(self, player):
         if player.x > self.x:
             self.facing_right = True
             self.x += self.leap_speed
@@ -55,7 +52,7 @@ class RaptorEnemy(Enemy):
             self.facing_right = False
             self.x -= self.leap_speed
 
-    def should_leap_now(self):
+    def _should_leap_now(self):
         if self.leap_cooldown > 0:
             return False
         if self.has_leaped_this_attack:

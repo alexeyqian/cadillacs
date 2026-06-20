@@ -113,19 +113,30 @@ def make_player_like():
     return player
 
 
+def update_player_frame(player, player_input):
+    if player.update_lifecycle_state():
+        player.update_animation()
+        return
+
+    player.advance_timers()
+    player.request_actions(player_input)
+    player.update_movement(player_input)
+    player.update_animation()
+
+
 def test_player_update_uses_buffered_attack_after_recovery():
     player = make_player_like()
 
-    player.update(FakeInput(attack=True))
+    update_player_frame(player, FakeInput(attack=True))
     assert player.combat_controller.current_attack_name == player.ATTACK_1
 
-    player.update(FakeInput())
-    player.update(FakeInput(attack=True))
+    update_player_frame(player, FakeInput())
+    update_player_frame(player, FakeInput(attack=True))
     assert player.input_buffer.has("attack") is True
 
     player.combat_controller.attack_manager.mark_connected()
     while player.combat_controller.current_attack_name == player.ATTACK_1:
-        player.update(FakeInput())
+        update_player_frame(player, FakeInput())
 
     assert player.combat_controller.current_attack_name == player.ATTACK_2
     assert player.input_buffer.has("attack") is False
@@ -134,8 +145,8 @@ def test_player_update_uses_buffered_attack_after_recovery():
 def test_player_update_jump_buffer_does_not_bypass_attack_lock():
     player = make_player_like()
 
-    player.update(FakeInput(attack=True))
-    player.update(FakeInput(jump=True))
+    update_player_frame(player, FakeInput(attack=True))
+    update_player_frame(player, FakeInput(jump=True))
 
     assert player.input_buffer.has("jump") is True
     assert player.state == player.ATTACK_1

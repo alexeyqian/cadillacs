@@ -63,9 +63,6 @@ def _advance_lifecycle_and_timers(game_state):
     player_can_act = not game_state.player.update_lifecycle_state()
     if player_can_act:
         game_state.player.advance_timers()
-    game_state.score_manager.update()
-    game_state.announcement_manager.update()
-    game_state.stage_clear_manager.update()
 
     active_enemies = []
     for enemy in game_state.enemies:
@@ -73,6 +70,11 @@ def _advance_lifecycle_and_timers(game_state):
             continue
         enemy.advance_timers()
         active_enemies.append(enemy)
+
+    # TODO: move to other places?
+    game_state.score_manager.update()
+    game_state.announcement_manager.update()
+    game_state.stage_clear_manager.update()
 
     return player_can_act, active_enemies
 
@@ -93,13 +95,9 @@ def _update_character_movement(game_state, player_input, player_can_act, active_
     old_player_position = (game_state.player.x, game_state.player.y)
 
     if player_can_act:
-        moving = game_state.player.update_movement(player_input)
-        game_state.player.update_jump_physics(player_input)
-        game_state.player.update_state_after_movement(moving)
-        game_state.player.update_grabbed_enemy_position()
+        game_state.player.update_movement(player_input)
 
     for enemy in active_enemies:
-        enemy.apply_knockback()
         enemy.update_movement(game_state.level, game_state.player, game_state.enemies)
 
     apply_enemy_level_bounds(game_state)

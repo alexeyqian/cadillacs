@@ -9,3 +9,18 @@ The Order of a Game FrameEvery frame in a 2D game follows a strict, linear timel
 
 Projectile and Frame
 So a projectile collected in this lifecycle phase will not move or hit the player until the next frame. That matches the frame sequence idea: spawn late, begin logic next frame.
+
+Player interface
+update_lifecycle_state()
+advance_timers()
+request_actions(...)
+update_movement(...)
+update_animation()
+
+Enemy Interface
+update_lifecycle_state()
+advance_timers()
+update_ai(...)
+update_movement(...)
+update_attack(...)
+update_animation()
