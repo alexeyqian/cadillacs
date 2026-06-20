@@ -55,7 +55,7 @@ def update_gameplay(game_state, keys):
     _update_projectile_movement(game_state)
     _resolve_collisions(game_state, old_player_position)
     _update_combat(game_state, active_enemies, player_can_act)
-    _update_reactions(game_state, active_enemies)
+    _update_reactions(game_state, active_enemies, player_can_act)
 
     # 10. Spawn / Cleanup, then presentation state before camera/render
     _update_lifecycle(game_state)
@@ -142,8 +142,9 @@ def _update_combat(game_state, active_enemies, player_can_act):
         enemy.update_attack(game_state.level, game_state.player)
 
 
-def _update_reactions(game_state, active_enemies):
-    game_state.player.update_reactions()
+def _update_reactions(game_state, active_enemies, player_can_act):
+    if player_can_act:
+        game_state.player.update_reactions()
 
     for enemy in active_enemies:
         enemy.update_reactions()
