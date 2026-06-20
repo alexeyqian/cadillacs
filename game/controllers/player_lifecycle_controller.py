@@ -39,10 +39,11 @@ class PlayerLifecycleController:
         owner.movement.cancel_combo_finisher_nudge()
         owner.grab_controller.grabbed_enemy = None
 
-        lost_life = owner.health.take_damage(damage)
+        owner.health.take_damage(damage)
         owner.state_machine.change_to(owner, owner.HIT)
 
-        if lost_life:
+        if owner.health.is_dead():
+            owner.health.lose_life()
             self.lost_life(owner)
             return
 

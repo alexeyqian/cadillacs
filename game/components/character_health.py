@@ -3,7 +3,7 @@ class CharacterHealth:
         self.max_hp = max_hp
         self.hp = max_hp
 
-    def apply_damage(self, damage):
+    def take_damage(self, damage):
         self.hp = max(0, self.hp - damage)
 
     def is_dead(self):

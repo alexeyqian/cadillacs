@@ -7,20 +7,14 @@ class PlayerHealth(CharacterHealth):
         self.lives = lives
         self.respawn_remaining = 0
 
-    def take_damage(self, damage):
-        self.apply_damage(damage)
-        if self.is_dead():
-            return self.lose_life()
-
-        return False
+    def advance_timers(self):
+        self._advance_respawn_timer()
 
     def lose_life(self):
         self.lives -= 1
         self.respawn_remaining = 90
-        return True
 
-    def advance_timers(self):
-        self._advance_respawn_timer()
+    
 
     def is_respawn_ready(self):
         return self.lives > 0 and self.respawn_remaining <= 0

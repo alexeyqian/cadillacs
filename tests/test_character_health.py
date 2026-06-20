@@ -6,7 +6,7 @@ from game.entities.player_health import PlayerHealth
 def test_character_health_applies_damage_and_clamps_to_zero():
     health = CharacterHealth(max_hp=30)
 
-    result = health.apply_damage(40)
+    result = health.take_damage(40)
 
     assert result is None
     assert health.hp == 0
@@ -14,7 +14,7 @@ def test_character_health_applies_damage_and_clamps_to_zero():
 
 def test_character_health_can_restore_full_hp():
     health = CharacterHealth(max_hp=30)
-    health.apply_damage(10)
+    health.take_damage(10)
 
     health.hp = health.max_hp
 
@@ -34,9 +34,10 @@ def test_enemy_health_uses_shared_depletion_logic():
 def test_player_health_keeps_lives_and_respawn_rules_on_depletion():
     health = PlayerHealth(max_hp=20, lives=2)
 
-    lost_life = health.take_damage(25)
+    result = health.take_damage(25)
+    health.lose_life()
 
-    assert lost_life is True
+    assert result is None
     assert health.hp == 0
     assert health.lives == 1
     assert health.respawn_remaining == 90
