@@ -107,9 +107,7 @@ class Enemy(Character, EnemyState):
 
     ##### begin of main loop update #####
     def update_lifecycle_state(self):
-        if self.lifecycle_controller.update_special_states(self):
-            return True
-        return self.lifecycle_controller.update_hit_state(self)
+        return self.lifecycle_controller.update_special_states(self)
 
     def advance_timers(self):
         self.lifecycle_controller.update_timers(self)
@@ -126,7 +124,6 @@ class Enemy(Character, EnemyState):
         return dx, dy
 
     def update_movement(self, level, player, enemies):
-        self.reaction_controller.apply_knockback(self)
         dx, dy, distance_x, distance_y = self._get_player_distance(player)
         if self.state == self.ATTACK:
             return
@@ -136,6 +133,12 @@ class Enemy(Character, EnemyState):
         if self.state != self.ATTACK:
             return
         self.combat_controller.update_attack(self, level, player)
+
+    def update_reactions(self):
+        if self.lifecycle_controller.update_hit_state(self):
+            return True
+        self.reaction_controller.apply_knockback(self)
+        return False
 
     def update_animation(self):
         self.animation_controller.update(self)

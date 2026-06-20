@@ -114,7 +114,7 @@ def make_player_like():
 
 
 def update_player_frame(player, player_input):
-    if player.update_lifecycle_state():
+    if player.update_lifecycle_state() or player.update_reactions():
         player.update_animation()
         return
 

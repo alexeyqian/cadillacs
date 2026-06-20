@@ -24,3 +24,14 @@ update_ai(...)
 update_movement(...)
 update_attack(...)
 update_animation()
+
+Correct structure
+_advance_lifecycle_and_timers   ← timers only
+_update_enemy_decisions         ← AI
+_request_player_actions         ← input
+_update_character_movement      ← voluntary movement only (no apply_knockback)
+_resolve_collisions             ← push-apart, bounds
+_update_combat                  ← hitbox/hurtbox detection → sets damage + knockback velocity
+_update_damage_and_reactions    ← apply_knockback, apply_hit_stun effects ← NEW
+_update_lifecycle               ← spawn/cleanup
+_update_presentation            ← animation, camera, render

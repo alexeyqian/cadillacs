@@ -27,7 +27,7 @@ from game.systems.projectile_system import (
 )
 from game.systems.wave_system import update_wave_completion, update_wave_system
 
-# Frame order: timers -> intentions -> movement -> collision -> combat -> lifecycle.
+# Frame order: timers -> intentions -> movement -> collision -> combat -> reactions -> lifecycle.
 # Camera and render happen after gameplay in main.py.
 def update_gameplay(game_state, keys):
     # 1. Convert Player Keys Input to game logic input
@@ -39,11 +39,13 @@ def update_gameplay(game_state, keys):
     _update_enemy_decisions(game_state, active_enemies)
     _request_player_actions(game_state, keys, player_input, player_can_act)
 
-    # 6-8. Movement, Collision, Combat / Reactions
-    # Characters move
+    # 6-9. Movement -> Collision -> Combat -> Reactions
+    # Characters move voluntarily (running, jumping, chasing)
     # Characters are clamped to level/arena bounds
     # Projectiles move
     # Projectile collisions are checked
+    # Hitbox/hurtbox overlap detected, damage and knockback velocity set
+    # Knockback velocity applied as position change (consequence of this frame's hits)
     old_player_position = _update_character_movement(
         game_state,
         player_input,
@@ -52,22 +54,28 @@ def update_gameplay(game_state, keys):
     )
     _update_projectile_movement(game_state)
     _resolve_collisions(game_state, old_player_position)
-    _update_combat(game_state, active_enemies)
+    _update_combat(game_state, active_enemies, player_can_act)
+    _update_reactions(game_state, active_enemies)
 
-    # 9. Spawn / Cleanup, then presentation state before camera/render
+    # 10. Spawn / Cleanup, then presentation state before camera/render
     _update_lifecycle(game_state)
     _update_presentation(game_state)
 
 
 def _advance_lifecycle_and_timers(game_state):
-    player_can_act = not game_state.player.update_lifecycle_state()
+    player_is_blocked = (
+        game_state.player.update_lifecycle_state()
+        or game_state.player.update_reactions()
+    )
+    player_can_act = not player_is_blocked
     if player_can_act:
         game_state.player.advance_timers()
-        game_state.player.update_attack()
 
     active_enemies = []
     for enemy in game_state.enemies:
         if enemy.update_lifecycle_state():
+            continue
+        if enemy.update_reactions():
             continue
         enemy.advance_timers()
         active_enemies.append(enemy)
@@ -123,13 +131,22 @@ def _resolve_collisions(game_state, old_player_position):
     handle_enemy_projectile_collision(game_state)
 
 
-def _update_combat(game_state, active_enemies):
+def _update_combat(game_state, active_enemies, player_can_act):
+    if player_can_act:
+        game_state.player.update_attack()
     handle_player_attack_collision(game_state)
 
     for enemy in active_enemies:
         if enemy.state == enemy.DEAD:
             continue
         enemy.update_attack(game_state.level, game_state.player)
+
+
+def _update_reactions(game_state, active_enemies):
+    game_state.player.update_reactions()
+
+    for enemy in active_enemies:
+        enemy.update_reactions()
 
 
 def _update_lifecycle(game_state):

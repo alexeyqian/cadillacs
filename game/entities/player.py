@@ -111,10 +111,10 @@ class Player(Character, PlayerState):
             self.lifecycle_controller.update_dead_state(self)
             return True
 
-        if self.lifecycle_controller.update_hit_state(self):
-            return True
-
         return False
+
+    def update_reactions(self):
+        return self.lifecycle_controller.update_hit_state(self)
 
     def advance_timers(self):
         self.combat_controller.update_timers(self)
@@ -164,6 +164,6 @@ class Player(Character, PlayerState):
             hit_stun_bonus=hit_stun_bonus,
         )
 
-    # Geometry
+    # todo: should return hurbox top?
     def get_top(self):
         return self.get_frame_rect().top
