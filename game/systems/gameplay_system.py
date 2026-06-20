@@ -1,7 +1,6 @@
 from game.input.player_input import PlayerInput
 from game.systems.arena_system import apply_arena_bounds
 from game.systems.bounds_system import apply_enemy_level_bounds, apply_player_level_bounds
-from game.systems.camera_system import update_camera_system
 from game.systems.cleanup_system import cleanup_game_state
 from game.systems.collision_system import (
     resolve_enemy_enemy_collisions,
@@ -111,5 +110,3 @@ def update_gameplay(game_state, keys):
         if enemy.state != enemy.ATTACK:
             enemy.update_animation()
 
-    # 10. Camera Update
-    update_camera_system(game_state) # camera follows player or stays locked

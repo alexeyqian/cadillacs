@@ -8,6 +8,8 @@ from game.system_event_handler import handle_system_events
 
 from game.level.stage_loader import advance_to_next_stage
 from game.systems.gameplay_system import update_gameplay
+from game.systems.camera_system import update_camera
+
 from main_draw import main_draw
 
 os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
@@ -56,8 +58,9 @@ def main():
         # 2. update/advance timers
         # info: advance timers happens at each component's beginning
         
-        # 3. update
+        # 3. gameplay and camera update
         update_gameplay(game_state, keys)
+        update_camera(game_state)
         
         # 4. render and clock tick
         main_draw(game_state)

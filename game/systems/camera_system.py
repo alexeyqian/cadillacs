@@ -1,6 +1,6 @@
 from game.settings import PLAYER_SCREEN_EDGE_MARGIN, SCREEN_WIDTH
 
-def update_camera_system(game_state):
+def update_camera(game_state):
     level = game_state.level
     camera = game_state.camera
     player = game_state.player
@@ -9,9 +9,9 @@ def update_camera_system(game_state):
         camera.update(player, level.world_width, level.lock_x)
     else:
         camera.update(player, level.world_width)
-        keep_player_inside_camera_view(player, camera)
+        _keep_player_inside_camera_view(player, camera)
 
-def keep_player_inside_camera_view(player, camera):
+def _keep_player_inside_camera_view(player, camera):
     half_w = player.width // 2
     left_limit = camera.x + half_w + PLAYER_SCREEN_EDGE_MARGIN
     right_limit = camera.x + SCREEN_WIDTH - half_w - PLAYER_SCREEN_EDGE_MARGIN
