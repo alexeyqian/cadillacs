@@ -50,6 +50,27 @@ class EnemyReactionController:
         if damage >= self.get_flinch_threshold(owner):
             self.apply_flinch(owner, attacker_x, reaction)
 
+    def update_reactions(self, owner):
+        if self._update_hit_state(owner):
+            return True
+
+        self.apply_knockback(owner)
+        return False
+
+    def _update_hit_state(self, owner):
+        if not owner.life_cycle.has_hit_stun():
+            return False
+
+        owner.life_cycle.tick_hit_stun()
+        self.apply_knockback(owner)
+
+        if owner.life_cycle.has_hit_stun():
+            owner.state = owner.HIT
+        else:
+            owner.state = owner.IDLE
+
+        return True
+
     def apply_flinch(self, owner, attacker_x, reaction):
         stun_frames = reaction.stun_frames
         if stun_frames is None:

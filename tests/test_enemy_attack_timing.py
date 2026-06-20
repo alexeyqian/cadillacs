@@ -151,15 +151,15 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy = FakeEnemy()
         resolver = enemy.state_controller
 
-        resolver.prepare_or_start_attack(enemy)
+        resolver._prepare_or_start_attack(enemy)
         self.assertEqual(enemy.state, enemy.IDLE)
         self.assertEqual(resolver.decision_timer, 1)
 
-        resolver.prepare_or_start_attack(enemy)
+        resolver._prepare_or_start_attack(enemy)
         self.assertEqual(enemy.state, enemy.IDLE)
         self.assertEqual(resolver.decision_timer, 2)
 
-        resolver.prepare_or_start_attack(enemy)
+        resolver._prepare_or_start_attack(enemy)
         self.assertEqual(enemy.state, enemy.ATTACK)
         self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
         self.assertEqual(resolver.decision_timer, 0)
@@ -295,7 +295,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         player.combat_controller = FakePlayerCombat("RECOVERY")
         resolver = EnemyStateController()
 
-        self.assertEqual(resolver.get_required_attack_delay(enemy, player), enemy.attack_data.delay)
+        self.assertEqual(resolver._get_required_attack_delay(enemy, player), enemy.attack_data.delay)
 
     def test_enemy_attack_delay_stays_normal_outside_player_recovery(self):
         enemy = FakeEnemy()
@@ -303,7 +303,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         player.combat_controller = FakePlayerCombat("ACTIVE")
         resolver = EnemyStateController()
 
-        self.assertEqual(resolver.get_required_attack_delay(enemy, player), enemy.attack_data.delay)
+        self.assertEqual(resolver._get_required_attack_delay(enemy, player), enemy.attack_data.delay)
 
     def test_enemy_configs_raise_pressure_without_removing_archetype_identity(self):
         ferris = get_enemy_config("ferris")
