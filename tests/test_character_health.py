@@ -1,6 +1,5 @@
 from game.components.character_health import CharacterHealth
 from game.entities.enemy_health import EnemyHealth
-from game.combat.hit_reaction import HitReaction
 from game.entities.player_health import PlayerHealth
 
 
@@ -33,7 +32,7 @@ def test_enemy_health_uses_shared_depletion_logic():
 
 
 def test_player_health_keeps_lives_and_respawn_rules_on_depletion():
-    health = PlayerHealth(max_hp=20, lives=2, hit_stun_duration=8)
+    health = PlayerHealth(max_hp=20, lives=2)
 
     lost_life = health.take_damage(25)
 
@@ -43,32 +42,8 @@ def test_player_health_keeps_lives_and_respawn_rules_on_depletion():
     assert health.respawn_remaining == 90
 
 
-def test_player_health_accepts_shared_hit_reaction_stun_frames():
-    health = PlayerHealth(max_hp=50, lives=1, hit_stun_duration=8)
-
-    health.take_damage(5, reaction=HitReaction(stun_frames=14))
-
-    assert health.hp == 45
-    assert health.hit_stun_remaining == 14
-
-
-def test_player_health_advance_timers_updates_hit_stun():
-    health = PlayerHealth(max_hp=50, lives=1, hit_stun_duration=8)
-    health.hit_stun_remaining = 2
-
-    health.advance_timers()
-
-    assert health.hit_stun_remaining == 1
-    assert health.is_in_hit_stun() is True
-
-    health.advance_timers()
-
-    assert health.hit_stun_remaining == 0
-    assert health.is_in_hit_stun() is False
-
-
 def test_player_health_advance_timers_updates_respawn():
-    health = PlayerHealth(max_hp=50, lives=1, hit_stun_duration=8)
+    health = PlayerHealth(max_hp=50, lives=1)
     health.respawn_remaining = 2
 
     health.advance_timers()

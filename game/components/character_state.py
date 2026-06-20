@@ -4,6 +4,7 @@ class CharacterState:
     RUN = "RUN"
     ATTACK = "ATTACK"
     HIT = "HIT"
+    # RECOIL means clash bounce/no damage
     RECOIL = "RECOIL"
     DEAD = "DEAD"
 
