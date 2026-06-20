@@ -1,5 +1,7 @@
 from game.controllers.player_action_controller import PlayerActionController
+from game.controllers.player_action_context import PlayerActionContext
 from game.controllers.player_combat_controller import PlayerCombatController
+from game.components.player_intent import PlayerIntent
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS
 from game.entities.player import Player
 from game.entities.player_state_machine import PlayerStateMachine
@@ -103,6 +105,7 @@ def make_player_like():
     player.y = 500
     player.state = Player.IDLE
     player.state_machine = PlayerStateMachine(player)
+    player.intent = PlayerIntent()
     player.input_buffer = InputBuffer()
     player.input_state = PlayerInputState()
     player.movement = FakeMovement()
@@ -121,6 +124,7 @@ def make_player_like():
 
 
 def update_player_frame(player, player_input):
+    context = PlayerActionContext(player_input)
     lifecycle_blocked = player.state == player.DEAD
     player.update_lifecycle_state()
     if lifecycle_blocked or player.update_reactions():
@@ -128,9 +132,9 @@ def update_player_frame(player, player_input):
         return
 
     player.advance_timers()
-    player.update_attack()
-    player.request_actions(player_input)
-    player.update_movement(player_input)
+    player.request_actions(context)
+    player.update_movement(context)
+    player.update_attack(context)
     player.update_animation()
 
 

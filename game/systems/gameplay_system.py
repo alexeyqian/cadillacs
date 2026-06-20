@@ -1,5 +1,6 @@
 from game.input.player_input import PlayerInput
 from game.controllers.enemy_ai_context import EnemyAIContext
+from game.controllers.player_action_context import PlayerActionContext
 from game.systems.arena_system import apply_arena_bounds
 from game.systems.bounds_system import apply_enemy_level_bounds, apply_player_level_bounds
 from game.systems.cleanup_system import cleanup_game_state
@@ -33,13 +34,14 @@ from game.systems.wave_system import update_wave_completion, update_wave_system
 def update_gameplay(game_state, keys):
     # 1. Convert Player Keys Input to game logic input
     player_input = PlayerInput(keys)
+    player_context = PlayerActionContext(player_input)
     # 2-3. Lifecycle Guards, then Timer / Cooldown Advance
     player_can_act, active_enemies = _advance_lifecycle_and_timers(game_state)
     enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
 
     # 4-5. Enemy Decisions, then Player Action Requests
     _update_enemy_decisions(enemy_context, active_enemies)
-    _request_player_actions(game_state, keys, player_input, player_can_act)
+    _request_player_actions(game_state, keys, player_context, player_can_act)
 
     # 6-9. Movement -> Collision -> Combat -> Reactions
     # Characters move voluntarily (running, jumping, chasing)
@@ -51,13 +53,13 @@ def update_gameplay(game_state, keys):
     old_player_position = _update_character_movement(
         game_state,
         enemy_context,
-        player_input,
+        player_context,
         player_can_act,
         active_enemies,
     )
     _update_projectile_movement(game_state)
     _resolve_collisions(game_state, old_player_position)
-    _update_combat(game_state, enemy_context, active_enemies, player_can_act)
+    _update_combat(game_state, player_context, enemy_context, active_enemies, player_can_act)
     _update_reactions(game_state, active_enemies, player_can_act)
 
     # 10. Spawn / Cleanup, then presentation state before camera/render
@@ -95,18 +97,18 @@ def _update_enemy_decisions(enemy_context, active_enemies):
         enemy.update_ai(enemy_context)
 
 
-def _request_player_actions(game_state, keys, player_input, player_can_act):
+def _request_player_actions(game_state, keys, player_context, player_can_act):
     if not player_can_act:
         return
 
     update_player_input_system(game_state, keys)
-    game_state.player.request_actions(player_input)
+    game_state.player.request_actions(player_context)
 
-def _update_character_movement(game_state, enemy_context, player_input, player_can_act, active_enemies):
+def _update_character_movement(game_state, enemy_context, player_context, player_can_act, active_enemies):
     old_player_position = (game_state.player.x, game_state.player.y)
 
     if player_can_act:
-        game_state.player.update_movement(player_input)
+        game_state.player.update_movement(player_context)
 
     for enemy in active_enemies:
         enemy.update_movement(enemy_context)
@@ -133,9 +135,9 @@ def _resolve_collisions(game_state, old_player_position):
     handle_enemy_projectile_collision(game_state)
 
 
-def _update_combat(game_state, enemy_context, active_enemies, player_can_act):
+def _update_combat(game_state, player_context, enemy_context, active_enemies, player_can_act):
     if player_can_act:
-        game_state.player.update_attack()
+        game_state.player.update_attack(player_context)
     handle_player_attack_collision(game_state)
 
     for enemy in active_enemies:

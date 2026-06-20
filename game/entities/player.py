@@ -3,6 +3,7 @@ from game.entities.player_state import PlayerState
 from game.data.player_config import get_player_config
 from game.components.character_health import CharacterHealth
 from game.components.character_geometry import CharacterGeometry
+from game.components.player_intent import PlayerIntent
 from game.components.player_weapon_slot import PlayerWeaponSlot
 from game.components.player_movement import PlayerMovement
 from game.controllers.player_combat_controller import PlayerCombatController
@@ -83,6 +84,7 @@ class Player(Character, PlayerState):
         self.state_machine = PlayerStateMachine(self)
 
     def build_input_components(self):
+        self.intent = PlayerIntent()
         self.input_buffer = InputBuffer()
         self.input_state = PlayerInputState()
 
@@ -124,17 +126,24 @@ class Player(Character, PlayerState):
         self.grab_controller.update_timers(self)
         self.movement.update_timers()
 
-    def request_actions(self, player_input):
-        self.action_controller.update(self, player_input)
+    def request_actions(self, context):
+        self.action_controller.update(self, context.player_input)
 
-    def update_movement(self, player_input):
-        self.movement.update_movement(self, player_input)
-        self.movement.update_jump_physics(self, player_input)
+    def update_movement(self, context):
+        self._try_start_requested_jump()
+        self.movement.update_movement(self, context.player_input)
+        self.movement.update_jump_physics(self, context.player_input)
         self.state_controller.update_after_movement(self, self.movement.moving)
         self.grab_controller.update_grabbed_enemy_position(self)
 
-    def update_attack(self):
+    def update_attack(self, context=None):
+        self._try_start_requested_fire()
+        attack_was_requested = self.intent.wants_attack()
+        if attack_was_requested:
+            self._try_start_requested_attack(clear_if_failed=False)
         self.combat_controller.update_attack(self)
+        if attack_was_requested and self.intent.wants_attack():
+            self._try_start_requested_attack()
 
     def update_animation(self):
         self.animation_controller.update(self)
@@ -153,6 +162,45 @@ class Player(Character, PlayerState):
             return weapon_attack
 
         return self.combat_controller.attacks.get(attack_name)
+
+    def _try_start_requested_jump(self):
+        if not self.intent.wants_jump():
+            return
+
+        previous_state = self.state
+        self.movement.start_jump(self, self.intent.jump_input)
+        if self.state != previous_state:
+            self.input_buffer.consume(PlayerActionController.JUMP_ACTION)
+        self.intent.clear_jump()
+
+    def _try_start_requested_fire(self):
+        if not self.intent.wants_fire():
+            return
+
+        self.weapon_slot.fire(self)
+        self.intent.clear_fire()
+
+    def _try_start_requested_attack(self, clear_if_failed=True):
+        if not self.intent.wants_attack():
+            return False
+
+        previous_attack_name = self.combat_controller.current_attack_name
+
+        if self.movement.is_jumping:
+            self.combat_controller.start_jump_attack(self)
+        elif self.grab_controller.grabbed_enemy:
+            self.combat_controller.start_grab_knee_attack(self)
+        else:
+            self.combat_controller.start_attack(self)
+
+        if self.combat_controller.current_attack_name != previous_attack_name:
+            self.input_buffer.consume(PlayerActionController.ATTACK_ACTION)
+            self.intent.clear_attack()
+            return True
+
+        if clear_if_failed:
+            self.intent.clear_attack()
+        return False
 
     def take_damage(self, damage, reaction=None):
         if isinstance(damage, DamageRequest):

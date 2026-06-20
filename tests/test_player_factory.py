@@ -58,6 +58,7 @@ def test_player_factory_builds_default_player_runtime_groups(monkeypatch):
     assert player.state == PlayerState.IDLE
     assert player.air is not None
     assert player.state_machine is not None
+    assert player.intent is not None
     assert player.input_buffer is not None
     assert player.input_state is not None
 
