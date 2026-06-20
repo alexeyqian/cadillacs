@@ -12,6 +12,8 @@ class BreakableObject:
         self.hp = 10
         self.destroyed = False
         self.loot_generated = False
+        self.explosive = False
+        self.exploded = False
         self.box_image_file = "game/assets/objects/box.png"
         self.loot_type = loot_type
     
@@ -56,4 +58,3 @@ class BreakableObject:
             return Loot(self.x, self.y, "ammo")
 
         return Loot(self.x, self.y, "health")
-

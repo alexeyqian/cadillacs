@@ -7,10 +7,11 @@ def collect_player_projectiles(game_state):
         projectiles.append(event["payload"])
 
 def collect_enemy_projectile(game_state, enemy):
-    if hasattr(enemy, "pending_projectile"):
-        if enemy.pending_projectile:
-            game_state.enemy_projectiles.append(enemy.pending_projectile)
-            enemy.pending_projectile = None
+    if not enemy.pending_projectile:
+        return
+
+    game_state.enemy_projectiles.append(enemy.pending_projectile)
+    enemy.pending_projectile = None
         
 def update_projectiles(game_state):
     # update player projectiles

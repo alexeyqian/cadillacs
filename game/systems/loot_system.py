@@ -42,8 +42,7 @@ def create_object_loot(game_state):
 def update_loot_pickup(game_state):
     player = game_state.player
     loot_items = game_state.loot_items
-    air = getattr(player, "air", None)
-    if air and not air.is_grounded:
+    if player.air and not player.air.is_grounded:
         return
 
     # inflate for easy to pickup
@@ -60,6 +59,6 @@ def update_loot_pickup(game_state):
             # add condition to keep ammo pack if player doesn't have gun
             elif loot.loot_type == "ammo":
                 weapon = player.weapon_slot.weapon
-                if weapon and weapon.is_ranged and hasattr(weapon, "ammo"):
+                if weapon and weapon.is_ranged:
                     weapon.ammo += 5
                     loot.active = False

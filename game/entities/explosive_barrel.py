@@ -7,4 +7,3 @@ class ExplosiveBarrel(BreakableObject):
         self.height = 160
         self.hp = 30
         self.explosive = True
-        self.exploded = False

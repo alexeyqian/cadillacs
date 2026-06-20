@@ -4,7 +4,7 @@ from game.systems.camera_effect_system import explosion_shake
 
 def create_explosions_from_objects(game_state):
     for obj in game_state.objects:
-        if not getattr(obj, "explosive", False):
+        if not obj.explosive:
             continue
         if not obj.destroyed:
             continue

@@ -34,6 +34,7 @@ class Enemy(Character, EnemyState):
 
     def configure_spawn_state(self, x, enemy_type):
         self.enemy_type = enemy_type
+        self.pending_projectile = None
 
     def build_components(self):
         self.life_cycle = EnemyLifeCycle()

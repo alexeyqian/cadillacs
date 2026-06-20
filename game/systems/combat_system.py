@@ -13,10 +13,6 @@ def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, colo
     spark_y = attack_rect.top
     game_state.hit_sparks.append(HitSpark(spark_x, spark_y, color))
 
-def get_enemy_frame_rect(enemy):
-    return enemy.get_frame_rect()
-
-
 def damage_enemy(enemy, damage, attacker_x=None, hit_reaction=None):
     if isinstance(damage, DamageRequest):
         request = damage
@@ -56,7 +52,7 @@ def handle_grab_knee_collision(game_state):
 
     damage = player.combat_controller.attack_result.get_damage(player)
     enemy.take_grab_knee_damage(damage)
-    enemy_rect = get_enemy_frame_rect(enemy)
+    enemy_rect = enemy.get_frame_rect()
     game_state.floating_texts.append(
         FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), YELLOW_COLOR)
     )
@@ -141,7 +137,7 @@ def damage_enemy_with_player_attack(game_state, enemy, attack_rect, lane_reach):
     damage = player.combat_controller.attack_result.get_damage(player)
     hit_reaction = player.combat_controller.attack_result.get_hit_reaction(player)
     damage_enemy(enemy, damage, player.x, hit_reaction)
-    enemy_rect = get_enemy_frame_rect(enemy)
+    enemy_rect = enemy.get_frame_rect()
     game_state.floating_texts.append(
         FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255, 80, 80))
     )
@@ -169,47 +165,58 @@ def handle_player_breakable_collision(game_state, attack_rect):
                 break
 
 def handle_player_projectile_collision(game_state):
-    player = game_state.player
-    enemies = game_state.enemies
-    objects = game_state.objects
-    projectiles = game_state.projectiles
-
-    for projectile in projectiles:
+    for projectile in game_state.projectiles:
         if not projectile.active:
             continue
 
         projectile_rect = projectile.get_rect()
-        # projectile hit enemy
-        for enemy in enemies:
-            # So player bullets hit same-lane enemies only.
-            lane_distance = game_state.level.get_lane_distance(projectile.lane_y, enemy.y)
-            if lane_distance > projectile.lane_reach:
-                continue
-            enemy_hurt_rect = enemy.get_hurt_rect()
-            if enemy_hurt_rect and projectile_rect.colliderect(enemy_hurt_rect):
-                damage = projectile.damage
-                damage_enemy(enemy, damage, player.x)
-                enemy_rect = get_enemy_frame_rect(enemy)
-                game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,120,120)))
-                game_state.score_manager.register_hit() # for combo score
-                projectile.active = False
-                create_hit_spark(
-                    game_state,
-                    projectile_rect,
-                    enemy_hurt_rect,
-                    projectile.direction > 0,
-                )
-                break
+        if damage_enemy_with_player_projectile(game_state, projectile, projectile_rect):
+            continue
 
-        # projectile hit breakable
-        for obj in objects:
-            if obj.destroyed:
-                continue
+        damage_object_with_player_projectile(game_state, projectile, projectile_rect)
 
-            if projectile_rect.colliderect(obj.get_rect()):
-                obj.take_damage(projectile.damage)
-                projectile.active = False
-                break
+
+def damage_enemy_with_player_projectile(game_state, projectile, projectile_rect):
+    player = game_state.player
+    for enemy in game_state.enemies:
+        # So player bullets hit same-lane enemies only.
+        lane_distance = game_state.level.get_lane_distance(projectile.lane_y, enemy.y)
+        if lane_distance > projectile.lane_reach:
+            continue
+
+        enemy_hurt_rect = enemy.get_hurt_rect()
+        if not enemy_hurt_rect or not projectile_rect.colliderect(enemy_hurt_rect):
+            continue
+
+        damage_enemy(enemy, projectile.damage, player.x)
+        enemy_rect = enemy.get_frame_rect()
+        game_state.floating_texts.append(
+            FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(projectile.damage)), (255, 120, 120))
+        )
+        game_state.score_manager.register_hit() # for combo score
+        projectile.active = False
+        create_hit_spark(
+            game_state,
+            projectile_rect,
+            enemy_hurt_rect,
+            projectile.direction > 0,
+        )
+        return True
+
+    return False
+
+
+def damage_object_with_player_projectile(game_state, projectile, projectile_rect):
+    for obj in game_state.objects:
+        if obj.destroyed:
+            continue
+
+        if projectile_rect.colliderect(obj.get_rect()):
+            obj.take_damage(projectile.damage)
+            projectile.active = False
+            return True
+
+    return False
 
 def handle_player_grab_or_throw(game_state, keys):
     player = game_state.player
@@ -241,7 +248,7 @@ def handle_player_thrown_enemy_collision(game_state):
     for thrown_enemy in game_state.enemies:
         if thrown_enemy.state != thrown_enemy.THROWN:
             continue
-        thrown_rect = get_enemy_frame_rect(thrown_enemy)
+        thrown_rect = thrown_enemy.get_frame_rect()
         for enemy in game_state.enemies:
             if enemy is thrown_enemy:
                 continue
@@ -259,7 +266,7 @@ def handle_player_thrown_enemy_collision(game_state):
             if thrown_rect.colliderect(enemy_hurt_rect):
                 damage = thrown_enemy.life_cycle.throw_damage
                 damage_enemy(enemy, damage, thrown_enemy.x)
-                enemy_rect = get_enemy_frame_rect(enemy)
+                enemy_rect = enemy.get_frame_rect()
                 game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255,150,0)))
                 thrown_enemy.life_cycle.mark_thrown_hit(enemy)
 
