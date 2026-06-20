@@ -1,5 +1,7 @@
-from game.settings import *
 import random
+
+from game.settings import PLAYER_SCREEN_EDGE_MARGIN, SCREEN_WIDTH
+
 
 class Camera:
     def __init__(self):

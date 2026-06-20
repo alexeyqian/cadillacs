@@ -2,13 +2,13 @@ class PlayerState:
     name = ""
 
     def enter(self, owner):
-        pass
+        return None
 
     def exit(self, owner):
-        pass
+        return None
 
     def update(self, owner):
-        pass
+        return None
 
 
 class IdleState(PlayerState):

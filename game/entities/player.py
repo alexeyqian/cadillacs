@@ -90,8 +90,6 @@ class Player(Character, PlayerState):
         )
         self.weapon_slot = PlayerWeaponSlot()
         self.events = GameEventQueue()
-        if not self.geometry:
-            self.geometry = CharacterGeometry()
 
     def build_controllers(self):
         self.combat_controller = PlayerCombatController()
@@ -130,14 +128,10 @@ class Player(Character, PlayerState):
         self.movement.update_timers()
 
     def get_attack_data(self, attack_name):
-        weapon = None
-        weapon_slot = getattr(self, "weapon_slot", None)
-        if weapon_slot:
-            weapon = getattr(weapon_slot, "weapon", None)
-
-        weapon_type = getattr(weapon, "weapon_type", weapon)
+        weapon = self.weapon_slot.weapon
+        weapon_type = weapon.weapon_type if weapon else None
         weapon_attack = self.combat_controller.weapon_attacks.get((weapon_type, attack_name))
-        if weapon_attack and not getattr(weapon, "is_ranged", False):
+        if weapon_attack and not weapon.is_ranged:
             return weapon_attack
 
         return self.combat_controller.attacks.get(attack_name)

@@ -140,8 +140,6 @@ class Enemy(Character, EnemyState):
         damage,
         attacker_x=None,
         reaction=None,
-        hit_stun_duration=None,
-        knockback_velocity=None,
     ):
         if isinstance(damage, DamageRequest):
             request = damage
@@ -156,8 +154,6 @@ class Enemy(Character, EnemyState):
             damage,
             attacker_x,
             reaction=reaction,
-            hit_stun_duration=hit_stun_duration,
-            knockback_velocity=knockback_velocity,
         )
 
     def grabbed_by_player(self):

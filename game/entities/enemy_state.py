@@ -2,7 +2,6 @@ from game.components.character_state import CharacterState
 
 
 class EnemyState(CharacterState):
-    WALK = CharacterState.WALK # deprecated, patrol is good enough
     PATROL = "PATROL" # ai decisions
     CHASE = "CHASE"
     # HIT means damaged; 

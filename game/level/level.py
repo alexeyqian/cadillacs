@@ -1,8 +1,6 @@
-from game.settings import *
 from game.level.lane import LaneSystem
 from game.level.background import Background
-from game.level.prop import Prop
-from game.level.wave import *
+from game.level.wave import BossWave, SpawnInstruction, Wave
 
 
 # background image, far layer, ground layer foreground layer

@@ -13,19 +13,19 @@ def apply_arena_bounds(game_state):
     # prevent player escaping arena
     arena_left = level.lock_x
     arena_right = level.lock_x + SCREEN_WIDTH
-    clamp_entity(game_state.player, arena_left, arena_right)
+    _clamp_entity(game_state.player, arena_left, arena_right)
     # prevent enemy escaping arena
     for enemy in game_state.enemies:
         if enemy.state == enemy.DEAD:
             continue
-        clamp_entity(
+        _clamp_entity(
             enemy,
             arena_left - ENEMY_ARENA_ENTRY_MARGIN,
             arena_right + ENEMY_ARENA_ENTRY_MARGIN,
             use_collision_width=True,
         )
 
-def clamp_entity(entity, arena_left, arena_right, use_collision_width=False):
+def _clamp_entity(entity, arena_left, arena_right, use_collision_width=False):
     if use_collision_width:
         width = entity.geometry.collision_box_w
     else:

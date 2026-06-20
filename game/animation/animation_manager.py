@@ -13,11 +13,13 @@ class AnimationManager:
     def play(self, name):
         if name == self.current_name:
             return
+
+        next_animation = self.animations.get(name)
+        if next_animation is None:
+            return
+
         self.current_name = name
-        try:
-            self.current_animation = self.animations[name]
-        except: # just in case some animation doesn't exist, crashing game
-            pass
+        self.current_animation = next_animation
         self.current_animation.reset()
 
     def update(self):
@@ -26,4 +28,3 @@ class AnimationManager:
 
     def get_image(self):
         return self.current_animation.get_image()
-

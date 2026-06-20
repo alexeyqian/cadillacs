@@ -1,4 +1,4 @@
-from game.combat.hit_reaction import HitReaction, normalize_hit_reaction
+from game.combat.hit_reaction import HitReaction
 
 
 class EnemyReactionController:
@@ -13,22 +13,15 @@ class EnemyReactionController:
         owner.state = owner.DEAD
         owner.life_cycle.start_death_countdown(30)
 
-    # Public damage entry point. It accepts the new HitReaction object and a
-    # small legacy shape so older callers can migrate gradually.
     def take_damage(
         self,
         owner,
         damage,
         attacker_x,
         reaction=None,
-        hit_stun_duration=None,
-        knockback_velocity=None,
     ):
-        reaction = normalize_hit_reaction(
-            reaction,
-            hit_stun_duration,
-            knockback_velocity,
-        )
+        if reaction is None:
+            reaction = HitReaction()
         self.apply_hit(owner, damage, attacker_x, reaction)
 
     def apply_hit(

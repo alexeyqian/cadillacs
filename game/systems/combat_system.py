@@ -5,7 +5,7 @@ from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import heavy_hit_shake
 from game.combat.damage_request import DamageRequest
 
-def create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):
+def _create_hit_spark(game_state, attack_rect, hurt_rect, facing_right=True, color=YELLOW_COLOR):
     if facing_right:
         spark_x = attack_rect.right
     else:
@@ -35,14 +35,14 @@ def handle_player_attack_collision(game_state):
         return
 
     if player.state == player.GRAB_KNEE:
-        handle_grab_knee_collision(game_state)
+        _handle_grab_knee_collision(game_state)
         return
 
-    handle_player_melee_enemy_collision(game_state, attack_rect)
-    handle_player_breakable_collision(game_state, attack_rect)
+    _handle_player_melee_enemy_collision(game_state, attack_rect)
+    _handle_player_breakable_collision(game_state, attack_rect)
 
 
-def handle_grab_knee_collision(game_state):
+def _handle_grab_knee_collision(game_state):
     player = game_state.player
     enemy = player.grab_controller.grabbed_enemy
     if not enemy or enemy.state == enemy.DEAD:
@@ -62,7 +62,7 @@ def handle_grab_knee_collision(game_state):
         player.grab_controller.grabbed_enemy = None
 
 
-def handle_player_melee_enemy_collision(game_state, attack_rect):
+def _handle_player_melee_enemy_collision(game_state, attack_rect):
     player = game_state.player
     lane_reach = player.combat_controller.attack_result.get_lane_reach(player)
 
@@ -76,7 +76,7 @@ def handle_player_melee_enemy_collision(game_state, attack_rect):
         # It prevents the player from always winning by punching into enemy attack frames.
         enemy_attack_rect = enemy.get_attack_rect()
         if enemy.state == enemy.ATTACK and enemy_attack_rect:
-            if player_attack_clashes_with_enemy(
+            if _player_attack_clashes_with_enemy(
                 game_state,
                 enemy,
                 attack_rect,
@@ -90,7 +90,7 @@ def handle_player_melee_enemy_collision(game_state, attack_rect):
                 # No one takes damage
                 player.combat_controller.start_clash_recovery(player)
                 enemy.combat_controller.start_clash_recovery(enemy)
-                create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right, YELLOW_COLOR)
+                _create_hit_spark(game_state, attack_rect, enemy_attack_rect, player.facing_right, YELLOW_COLOR)
                 # used for debug
                 game_state.floating_texts.append(
                     FloatingText(attack_rect.centerx,
@@ -99,12 +99,12 @@ def handle_player_melee_enemy_collision(game_state, attack_rect):
                 return
 
         # NORMAL DAMAGE BLOCK
-        if damage_enemy_with_player_attack(game_state, enemy, attack_rect, lane_reach):
+        if _damage_enemy_with_player_attack(game_state, enemy, attack_rect, lane_reach):
             if not player.combat_controller.can_hit_more_targets():
                 break
 
 
-def player_attack_clashes_with_enemy(
+def _player_attack_clashes_with_enemy(
     game_state,
     enemy,
     attack_rect,
@@ -124,7 +124,7 @@ def player_attack_clashes_with_enemy(
     )
 
 
-def damage_enemy_with_player_attack(game_state, enemy, attack_rect, lane_reach):
+def _damage_enemy_with_player_attack(game_state, enemy, attack_rect, lane_reach):
     player = game_state.player
     lane_distance = game_state.level.get_lane_distance(player.y, enemy.y)
     if lane_distance > lane_reach:
@@ -146,11 +146,11 @@ def damage_enemy_with_player_attack(game_state, enemy, attack_rect, lane_reach):
     if enemy.health.hp > 0 and enemy.health.max_hp >= 200:
         heavy_hit_shake(game_state)
     enemy_rect = enemy.get_hurt_rect()
-    create_hit_spark(game_state, attack_rect, enemy_rect, player.facing_right, WHITE_COLOR)
+    _create_hit_spark(game_state, attack_rect, enemy_rect, player.facing_right, WHITE_COLOR)
     return True
 
 
-def handle_player_breakable_collision(game_state, attack_rect):
+def _handle_player_breakable_collision(game_state, attack_rect):
     player = game_state.player
 
     for obj in game_state.objects:
@@ -170,13 +170,13 @@ def handle_player_projectile_collision(game_state):
             continue
 
         projectile_rect = projectile.get_rect()
-        if damage_enemy_with_player_projectile(game_state, projectile, projectile_rect):
+        if _damage_enemy_with_player_projectile(game_state, projectile, projectile_rect):
             continue
 
-        damage_object_with_player_projectile(game_state, projectile, projectile_rect)
+        _damage_object_with_player_projectile(game_state, projectile, projectile_rect)
 
 
-def damage_enemy_with_player_projectile(game_state, projectile, projectile_rect):
+def _damage_enemy_with_player_projectile(game_state, projectile, projectile_rect):
     player = game_state.player
     for enemy in game_state.enemies:
         # So player bullets hit same-lane enemies only.
@@ -195,7 +195,7 @@ def damage_enemy_with_player_projectile(game_state, projectile, projectile_rect)
         )
         game_state.score_manager.register_hit() # for combo score
         projectile.active = False
-        create_hit_spark(
+        _create_hit_spark(
             game_state,
             projectile_rect,
             enemy_hurt_rect,
@@ -206,7 +206,7 @@ def damage_enemy_with_player_projectile(game_state, projectile, projectile_rect)
     return False
 
 
-def damage_object_with_player_projectile(game_state, projectile, projectile_rect):
+def _damage_object_with_player_projectile(game_state, projectile, projectile_rect):
     for obj in game_state.objects:
         if obj.destroyed:
             continue

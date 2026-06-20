@@ -1,6 +1,6 @@
 import pygame
-from game.settings import *
-from game.colors import *
+from game.colors import WHITE_COLOR
+from game.settings import PLAYER_H, PLAYER_W
 
 def make_frame(body_color, head_color, leg_offset):
     image = pygame.Surface((PLAYER_W, PLAYER_H), pygame.SRCALPHA)
@@ -57,4 +57,3 @@ def create_dead_frames():
     image = pygame.Surface((PLAYER_H,PLAYER_W),pygame.SRCALPHA)
     pygame.draw.rect(image,(80,80,80),(0,20,60,20))
     return [image]
-

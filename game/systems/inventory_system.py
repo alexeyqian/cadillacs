@@ -1,7 +1,7 @@
 import pygame
 
 # add weapon.pickup_priority in future
-def weapon_power(weapon):
+def _weapon_power(weapon):
     if weapon is None:
         return 0
     return weapon.damage
@@ -24,8 +24,8 @@ def update_player_weapon_interaction(game_state, keys):
             player.weapon_slot.pick_up(weapon)
             break
 
-        current_power = weapon_power(player.weapon_slot.weapon)
-        ground_power = weapon_power(weapon)
+        current_power = _weapon_power(player.weapon_slot.weapon)
+        ground_power = _weapon_power(weapon)
         if ground_power > current_power:
             player.weapon_slot.drop(player)
             player.weapon_slot.pick_up(weapon)

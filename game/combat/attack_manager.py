@@ -93,7 +93,7 @@ class AttackManager:
     def get_max_targets(self):
         if not self.current_attack:
             return 0
-        return getattr(self.current_attack, "max_targets", 1)
+        return self.current_attack.max_targets
 
     def finish(self):
         finished_attack_name = self.current_attack_name

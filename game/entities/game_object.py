@@ -8,7 +8,7 @@ class GameObject:
         self.visible = True
 
     def update(self, *args, **kwargs):
-        pass
+        return None
 
     def draw(self, *args, **kwargs):
-        pass
+        return None

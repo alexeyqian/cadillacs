@@ -3,6 +3,7 @@ from dataclasses import replace
 
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.combat.damage_request import DamageRequest
+from game.combat.hit_reaction import HitReaction
 from game.data.enemy_config import get_enemy_config
 from game.entities.enemy import Enemy
 from game.controllers.enemy_combat_controller import EnemyCombatController
@@ -280,7 +281,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
             enemy,
             10,
             attacker_x=50,
-            knockback_velocity=18,
+            reaction=HitReaction(knockback_velocity=18),
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
@@ -293,7 +294,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
             enemy,
             10,
             attacker_x=-100,
-            hit_stun_duration=24,
+            reaction=HitReaction(stun_frames=24),
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
