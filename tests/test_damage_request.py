@@ -8,8 +8,8 @@ class FakeLifecycle:
     def __init__(self):
         self.calls = []
 
-    def take_damage(self, owner, damage, reaction=None, hit_stun_bonus=0):
-        self.calls.append((owner, damage, reaction, hit_stun_bonus))
+    def take_damage(self, owner, damage, reaction=None):
+        self.calls.append((owner, damage, reaction))
 
 
 class FakeReactions:
@@ -27,7 +27,7 @@ def test_player_accepts_damage_request():
 
     player.take_damage(DamageRequest(12, reaction=reaction))
 
-    assert player.lifecycle_controller.calls == [(player, 12, reaction, 0)]
+    assert player.lifecycle_controller.calls == [(player, 12, reaction)]
 
 
 def test_enemy_accepts_damage_request():

@@ -12,6 +12,7 @@ from game.components.player_renderer import PlayerRenderer
 from game.controllers.player_action_controller import PlayerActionController
 from game.controllers.player_state_controller import PlayerStateController
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
+from game.controllers.hit_reaction_controller import HitReactionController
 from game.combat.damage_request import DamageRequest
 from game.core.events import GameEventQueue
 from game.entities.player_state_machine import PlayerStateMachine
@@ -56,7 +57,8 @@ class Player(Character, PlayerState):
             config.hurt_box_offset_x,
             config.hurt_box_offset_y,
         )
-        self.health = PlayerHealth(config.max_hp, config.lives, config.hit_stun_duration)
+        self.health = PlayerHealth(config.max_hp, config.lives)
+        self.hit_reaction_controller = HitReactionController(config.hit_stun_duration)
         self.sprite_scale = config.sprite_scale
 
     def apply_movement_config(self, config):

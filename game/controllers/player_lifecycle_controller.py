@@ -7,6 +7,7 @@ class PlayerLifecycleController:
         self.respawn_x = x
         self.respawn_y = y
         self.reset_position_and_movement(owner, x, y)
+        owner.hit_reaction_controller.reset()
         owner.state_machine.change_to(owner, owner.IDLE)
         owner.facing_right = True
 
@@ -14,11 +15,11 @@ class PlayerLifecycleController:
         self.update_respawn(owner)
 
     def update_hit_state(self, owner):
-        if not owner.health.is_in_hit_stun():
+        if not owner.hit_reaction_controller.is_in_hit_stun():
             return False
 
-        owner.health.advance_timers()
-        if owner.health.is_in_hit_stun():
+        owner.hit_reaction_controller.advance_timers()
+        if owner.hit_reaction_controller.is_in_hit_stun():
             owner.state_machine.change_to(owner, owner.HIT)
         else:
             owner.state_machine.change_to(owner, owner.IDLE)
@@ -38,14 +39,14 @@ class PlayerLifecycleController:
         owner.movement.cancel_combo_finisher_nudge()
         owner.grab_controller.grabbed_enemy = None
 
-        lost_life = owner.health.take_damage(
-            damage,
-            reaction=reaction,
-        )
+        lost_life = owner.health.take_damage(damage)
         owner.state_machine.change_to(owner, owner.HIT)
 
         if lost_life:
             self.lost_life(owner)
+            return
+
+        owner.hit_reaction_controller.start_hit_stun(reaction)
 
     def lost_life(self, owner):
         owner.state_machine.change_to(owner, owner.DEAD)
@@ -61,6 +62,7 @@ class PlayerLifecycleController:
 
     def respawn(self, owner):
         owner.health.reset_for_respawn()
+        owner.hit_reaction_controller.reset()
         self.reset_position_and_movement(owner, self.respawn_x, self.respawn_y)
         owner.state_machine.change_to(owner, owner.IDLE)
         owner.combat_controller.is_attacking = False

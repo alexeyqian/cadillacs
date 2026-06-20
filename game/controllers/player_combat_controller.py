@@ -6,7 +6,7 @@ from game.settings import (
 from game.combat.attack_manager import AttackManager
 from game.combat.player_attack_result import PlayerAttackResult
 
-# TODO: attack buffering, counter-hit, clash/parry, and attack configs 
+# TODO: attack buffering, clash/parry, and attack configs
 class PlayerCombatController:
     def __init__(self):
         self.attack_manager = AttackManager()
