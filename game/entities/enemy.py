@@ -103,16 +103,35 @@ class Enemy(Character, EnemyState):
         self.score_points = config.score_points
 
     def update(self, level, player, enemies):
-        if self.lifecycle_controller.update_special_states(self):
+        if self.update_special_lifecycle():
             return
 
+        self.update_timers()
+
+        if self.update_hit_state():
+            return
+
+        self.apply_knockback()
+        self.update_ai_state(level, player, enemies)
+        self.update_movement_state(level, player, enemies)
+        self.update_animation()
+
+    def update_special_lifecycle(self):
+        return self.lifecycle_controller.update_special_states(self)
+
+    def update_timers(self):
         self.lifecycle_controller.update_timers(self)
 
-        if self.lifecycle_controller.update_hit_state(self):
-            return
+    def update_hit_state(self):
+        return self.lifecycle_controller.update_hit_state(self)
 
+    def apply_knockback(self):
         self.reaction_controller.apply_knockback(self)
 
+    def get_player_distance(self, player):
+        return self.movement.get_player_distance(self, player)
+
+    def update_ai_state(self, level, player, enemies):
         dx, dy, distance_x, distance_y = self.movement.get_player_distance(self, player)
 
         if distance_x <= self.movement.detect_range:
@@ -121,15 +140,21 @@ class Enemy(Character, EnemyState):
         self.state_controller.choose_state(
             self, level, player, distance_x, distance_y, enemies
         )
-        # During ATTACK animation advances first so the active hitbox frame is set
-        # before state logic checks for collision; all other states update state first
-        # so animation reacts to the new state in the same frame.
+        return dx, dy
+
+    def update_movement_state(self, level, player, enemies):
+        dx, dy, distance_x, distance_y = self.get_player_distance(player)
         if self.state == self.ATTACK:
-            self.animation_controller.update(self)
-            self.state_controller.execute_state(self, level, player, enemies, dx, dy)
-        else:
-            self.state_controller.execute_state(self, level, player, enemies, dx, dy)
-            self.animation_controller.update(self)
+            return
+        self.state_controller.execute_movement_state(self, level, player, enemies, dx, dy)
+
+    def update_attack_state(self, level, player):
+        if self.state != self.ATTACK:
+            return
+        self.update_attack(level, player)
+
+    def update_animation(self):
+        self.animation_controller.update(self)
 
     # Lifecycle / reactions
     def is_ready_to_remove(self):

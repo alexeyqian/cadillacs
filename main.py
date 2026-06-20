@@ -12,7 +12,6 @@ from game.entities.explosive_barrel import ExplosiveBarrel
 from game.game_state import GameState
 from game.systems.continue_system import *
 from game.systems.gameplay_system import *
-from game.systems.player_input_system import *
 from game.managers.score_manager import ScoreManager
 from game.managers.stage_clear_manager import StageClearManager
 from game.level.stage_manager import StageManager
@@ -233,9 +232,6 @@ def main():
             if game_state.stage_clear_manager.timer <= 0:
                 running = advance_to_next_stage(game_state)
         else:
-            # 3. update player input
-            update_player_input_system(game_state, keys)
-            # 4 update gameplay
             update_gameplay(game_state, keys)
 
         # 5. draw

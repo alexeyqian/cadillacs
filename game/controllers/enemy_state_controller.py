@@ -32,14 +32,12 @@ class EnemyStateController:
         owner.flanking.clear_target()
         owner.state = owner.PATROL
 
-    def execute_state(self, owner, level, player, enemies, dx, dy):
+    def execute_movement_state(self, owner, level, player, enemies, dx, dy):
         if owner.state == owner.PATROL:
             owner.movement.update_patrol(owner)
         elif owner.state == owner.CHASE:
             owner.movement.update_chasing(owner, player, dx, dy)
             owner.movement.separate_from_other_enemies(owner, enemies)
-        elif owner.state == owner.ATTACK:
-            owner.update_attack(level, player)
 
     def prepare_or_start_attack(self, owner, player=None):
         self.increment_attack_decision(owner)

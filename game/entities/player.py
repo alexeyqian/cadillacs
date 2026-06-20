@@ -106,19 +106,43 @@ class Player(Character, PlayerState):
         self.lifecycle_controller.reset_for_stage_start(self, x, y)
 
     def update(self, player_input):
-        if self.state == self.DEAD:
-            self.lifecycle_controller.update_dead_state(self)
-            return
-
-        if self.lifecycle_controller.update_hit_state(self):
+        if self.update_lifecycle_state():
             return
 
         self.update_timers()
-        moving = self.movement.update_movement(self, player_input)
+        self.request_actions(player_input)
+        moving = self.update_movement(player_input)
+        self.update_jump_physics(player_input)
+        self.update_state_after_movement(moving)
+        self.update_grabbed_enemy_position()
+        self.update_animation()
+
+    def update_lifecycle_state(self):
+        if self.state == self.DEAD:
+            self.lifecycle_controller.update_dead_state(self)
+            return True
+
+        if self.lifecycle_controller.update_hit_state(self):
+            return True
+
+        return False
+
+    def request_actions(self, player_input):
         self.action_controller.update(self, player_input)
+
+    def update_movement(self, player_input):
+        return self.movement.update_movement(self, player_input)
+
+    def update_jump_physics(self, player_input):
         self.movement.update_jump_physics(self, player_input)
+
+    def update_state_after_movement(self, moving):
         self.state_controller.update_after_movement(self, moving)
+
+    def update_grabbed_enemy_position(self):
         self.grab_controller.update_grabbed_enemy_position(self)
+
+    def update_animation(self):
         self.animation_controller.update(self)
 
     # Timers
