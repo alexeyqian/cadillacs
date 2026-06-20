@@ -8,7 +8,6 @@ from game.system_event_handler import handle_system_events
 
 from game.level.stage_loader import advance_to_next_stage
 from game.systems.gameplay_system import update_gameplay
-from game.systems.camera_system import update_camera
 
 from main_draw import main_draw
 
@@ -60,7 +59,7 @@ def main():
         
         # 3. gameplay and camera update
         update_gameplay(game_state, keys)
-        update_camera(game_state)
+        game_state.camera.update_for_level(game_state.player, game_state.level)
         
         # 4. render and clock tick
         main_draw(game_state)
