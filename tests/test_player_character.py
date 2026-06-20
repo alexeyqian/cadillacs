@@ -55,7 +55,7 @@ def test_player_reset_for_stage_start_resets_runtime_position_state():
     player.IDLE = "IDLE"
     player.state = "JUMP"
     player.facing_right = False
-    player.lifecycle_controller = PlayerLifecycleController(0, 0)
+    player.lifecycle_controller = PlayerLifecycleController(0, 0, lives=2)
     player.movement = FakeMovement()
     player.air = FakeAir()
     player.state_machine = FakeStateMachine()
@@ -74,3 +74,31 @@ def test_player_reset_for_stage_start_resets_runtime_position_state():
     assert player.hit_reaction_controller.reset_called is True
     assert player.state == player.IDLE
     assert player.facing_right is True
+
+
+def test_player_lifecycle_tracks_lives_and_respawn_timer():
+    lifecycle = PlayerLifecycleController(0, 0, lives=2)
+
+    lifecycle.lose_life()
+
+    assert lifecycle.lives == 1
+    assert lifecycle.respawn_remaining == 90
+
+    lifecycle.respawn_remaining = 2
+    lifecycle.advance_timers()
+
+    assert lifecycle.respawn_remaining == 1
+    assert lifecycle.is_respawn_ready() is False
+
+    lifecycle.advance_timers()
+
+    assert lifecycle.respawn_remaining == 0
+    assert lifecycle.is_respawn_ready() is True
+
+
+def test_player_lifecycle_can_gain_life():
+    lifecycle = PlayerLifecycleController(0, 0, lives=2)
+
+    lifecycle.gain_life()
+
+    assert lifecycle.lives == 3

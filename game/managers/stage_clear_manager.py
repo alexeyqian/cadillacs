@@ -10,7 +10,7 @@ class StageClearManager:
     def activate(self, player):
         self.active = True
         # bonus are just points
-        self.life_bonus = player.health.lives*1000
+        self.life_bonus = player.lifecycle_controller.lives * 1000
         self.score_bonus = 1500
         self.total_bonus = self.life_bonus + self.score_bonus
         self.timer = 100

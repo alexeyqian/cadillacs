@@ -37,7 +37,7 @@ class Player(Character, PlayerState):
         self.build_state_components(config)
         self.build_input_components()
         self.build_capability_components()
-        self.build_controllers()
+        self.build_controllers(config)
         self.apply_combat_config(config)
         self.build_presentation_components(animation_data, anim_fps)
 
@@ -57,7 +57,7 @@ class Player(Character, PlayerState):
             config.hurt_box_offset_x,
             config.hurt_box_offset_y,
         )
-        self.health = PlayerHealth(config.max_hp, config.lives)
+        self.health = PlayerHealth(config.max_hp)
         self.hit_reaction_controller = HitReactionController(config.hit_stun_duration)
         self.sprite_scale = config.sprite_scale
 
@@ -93,12 +93,12 @@ class Player(Character, PlayerState):
         self.weapon_slot = PlayerWeaponSlot()
         self.events = GameEventQueue()
 
-    def build_controllers(self):
+    def build_controllers(self, config):
         self.combat_controller = PlayerCombatController()
         self.action_controller = PlayerActionController()
         self.grab_controller = PlayerGrabController()
         self.state_controller = PlayerStateController()
-        self.lifecycle_controller = PlayerLifecycleController(self.x, self.y)
+        self.lifecycle_controller = PlayerLifecycleController(self.x, self.y, config.lives)
 
     def build_presentation_components(self, animation_data, anim_fps):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)

@@ -6,7 +6,7 @@ def update_life_reward_system(game_state):
     
     # if scores enough for multiple lives
     while score_manager.should_award_extra_life():
-        player.health.lives += 1
+        player.lifecycle_controller.gain_life()
         game_state.floating_texts.append(FloatingText(
             player.x, player.y - 40, "+1 LIFE", (0, 255, 255)))
         score_manager.advance_extra_life_threshold()
