@@ -14,11 +14,11 @@ class PlayerLifecycleController:
         self.update_respawn(owner)
 
     def update_hit_state(self, owner):
-        if owner.health.hit_stun_remaining <= 0:
+        if not owner.health.is_in_hit_stun():
             return False
 
-        still_in_hit_stun = owner.health.update_hit_stun()
-        if still_in_hit_stun:
+        owner.health.advance_timers()
+        if owner.health.is_in_hit_stun():
             owner.state_machine.change_to(owner, owner.HIT)
         else:
             owner.state_machine.change_to(owner, owner.IDLE)
@@ -56,7 +56,8 @@ class PlayerLifecycleController:
             return
         if owner.health.lives <= 0:
             return
-        if owner.health.update_respawn():
+        owner.health.advance_timers()
+        if owner.health.is_respawn_ready():
             self.respawn(owner)
 
     def respawn(self, owner):

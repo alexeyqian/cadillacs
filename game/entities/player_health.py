@@ -38,21 +38,23 @@ class PlayerHealth(CharacterHealth):
         self.respawn_remaining = 90
         return True
 
-    def update_hit_stun(self):
-        if self.hit_stun_remaining <= 0:
-            return False
+    def advance_timers(self):
+        self._advance_hit_stun_timer()
+        self._advance_respawn_timer()
 
-        self.hit_stun_remaining -= 1
+    def is_in_hit_stun(self):
         return self.hit_stun_remaining > 0
 
-    def update_respawn(self):
-        if self.lives <= 0:
-            return False
+    def is_respawn_ready(self):
+        return self.lives > 0 and self.respawn_remaining <= 0
 
-        if self.respawn_remaining > 0:
+    def _advance_hit_stun_timer(self):
+        if self.hit_stun_remaining > 0:
+            self.hit_stun_remaining -= 1
+
+    def _advance_respawn_timer(self):
+        if self.lives > 0 and self.respawn_remaining > 0:
             self.respawn_remaining -= 1
-
-        return self.respawn_remaining <= 0
 
     def reset_for_respawn(self):
         self.restore_full()

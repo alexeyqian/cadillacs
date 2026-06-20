@@ -59,3 +59,33 @@ def test_player_health_keeps_legacy_hit_stun_bonus_argument():
 
     assert health.hp == 45
     assert health.hit_stun_remaining == 11
+
+
+def test_player_health_advance_timers_updates_hit_stun():
+    health = PlayerHealth(max_hp=50, lives=1, hit_stun_duration=8)
+    health.hit_stun_remaining = 2
+
+    health.advance_timers()
+
+    assert health.hit_stun_remaining == 1
+    assert health.is_in_hit_stun() is True
+
+    health.advance_timers()
+
+    assert health.hit_stun_remaining == 0
+    assert health.is_in_hit_stun() is False
+
+
+def test_player_health_advance_timers_updates_respawn():
+    health = PlayerHealth(max_hp=50, lives=1, hit_stun_duration=8)
+    health.respawn_remaining = 2
+
+    health.advance_timers()
+
+    assert health.respawn_remaining == 1
+    assert health.is_respawn_ready() is False
+
+    health.advance_timers()
+
+    assert health.respawn_remaining == 0
+    assert health.is_respawn_ready() is True
