@@ -1,3 +1,5 @@
+from game.settings import PLAYER_EXTRA_LIFE_SCORE_BASE
+from game.settings import PLAYER_EXTRA_LIFE_SCORE_STEP
 class ScoreManager:
     def __init__(self):
         self.score = 0
@@ -8,8 +10,8 @@ class ScoreManager:
         self.combo_timeout = 60
         self.max_combo_count = 3
         
-        self.next_extra_life_score = 5000
-        self.extra_life_step = 10000
+        self.next_extra_life_score = PLAYER_EXTRA_LIFE_SCORE_BASE
+        self.extra_life_step = PLAYER_EXTRA_LIFE_SCORE_STEP
         
     def register_hit(self):
         self.combo_count = min(self.combo_count + 1, self.max_combo_count)

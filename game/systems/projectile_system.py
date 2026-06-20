@@ -12,7 +12,7 @@ def collect_enemy_projectile(game_state, enemy):
 
     game_state.enemy_projectiles.append(enemy.pending_projectile)
     enemy.pending_projectile = None
-        
+
 def update_projectiles(game_state):
     # update player projectiles
     for projectile in game_state.projectiles:

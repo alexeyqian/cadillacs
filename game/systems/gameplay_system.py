@@ -29,10 +29,31 @@ from game.systems.projectile_system import (
 from game.systems.wave_system import update_wave_completion, update_wave_system
 
 def update_gameplay(game_state, keys):
-    # 1. Input Collection
+    # 1. Convert Player Keys Input to game logic input
     player_input = PlayerInput(keys)
+    # 2-3. Lifecycle Guards, then Timer / Cooldown Advance
+    player_can_act, active_enemies = _advance_lifecycle_and_timers(game_state)
 
-    # 2. Timer / Cooldown Advance
+    # 4-5. Enemy Decisions, then Player Action Requests
+    _update_enemy_decisions(game_state, active_enemies)
+    _request_player_actions(game_state, keys, player_input, player_can_act)
+
+    # 6-8. Movement, Collision, Combat / Reactions
+    old_player_position = _update_movement(
+        game_state,
+        player_input,
+        player_can_act,
+        active_enemies,
+    )
+    _resolve_collisions(game_state, old_player_position)
+    _update_combat(game_state, active_enemies)
+
+    # 9. Spawn / Cleanup, then presentation state before camera/render
+    _update_lifecycle(game_state)
+    _update_presentation(game_state, active_enemies, player_can_act)
+
+
+def _advance_lifecycle_and_timers(game_state):
     player_can_act = not game_state.player.update_lifecycle_state()
     game_state.player.update_timers()
     update_manager_system(game_state)
@@ -46,18 +67,25 @@ def update_gameplay(game_state, keys):
             continue
         active_enemies.append(enemy)
 
-    # 3. AI / State Decisions
+    return player_can_act, active_enemies
+
+
+def _update_enemy_decisions(game_state, active_enemies):
     for enemy in active_enemies:
         enemy.update_ai_state(game_state.level, game_state.player, game_state.enemies)
 
-    # 4. Player Input -> Action Requests
-    if player_can_act:
-        update_player_input_system(game_state, keys)
-        game_state.player.request_actions(player_input)
 
-    # 5. Movement
-    old_x = game_state.player.x
-    old_y = game_state.player.y
+def _request_player_actions(game_state, keys, player_input, player_can_act):
+    if not player_can_act:
+        return
+
+    update_player_input_system(game_state, keys)
+    game_state.player.request_actions(player_input)
+
+
+def _update_movement(game_state, player_input, player_can_act, active_enemies):
+    old_player_position = (game_state.player.x, game_state.player.y)
+
     if player_can_act:
         moving = game_state.player.update_movement(player_input)
         game_state.player.update_jump_physics(player_input)
@@ -73,7 +101,12 @@ def update_gameplay(game_state, keys):
     apply_player_level_bounds(game_state)
     apply_arena_bounds(game_state)
 
-    # 6. Collision Detection & Resolution
+    return old_player_position
+
+
+def _resolve_collisions(game_state, old_player_position):
+    old_x, old_y = old_player_position
+
     resolve_enemy_enemy_collisions(game_state)
     resolve_player_enemy_collisions(game_state, old_x, old_y)
     apply_player_level_bounds(game_state)
@@ -81,32 +114,40 @@ def update_gameplay(game_state, keys):
     handle_player_projectile_collision(game_state)
     handle_enemy_projectile_collision(game_state)
 
-    # 7-8. Combat — Hitbox vs Hurtbox, then Damage/Reactions
+
+def _update_combat(game_state, active_enemies):
     handle_player_attack_collision(game_state)
+
     for enemy in active_enemies:
         if enemy.state == enemy.DEAD:
             continue
         enemy.update_animation()
         enemy.update_attack_state(game_state.level, game_state.player)
 
-    # 9. Entity Lifecycle — Spawn & Cleanup
+
+def _update_lifecycle(game_state):
     collect_player_projectiles(game_state)
-    for enemy in game_state.enemies:
-        collect_enemy_projectile(game_state, enemy)
+    _collect_enemy_projectiles(game_state)
     create_explosions_from_objects(game_state)
     create_enemy_loot(game_state)
     create_object_loot(game_state)
     update_loot_pickup(game_state)
     update_wave_system(game_state) # may lock camera and spawn enemies for next frame
-    update_wave_completion(game_state)
     update_life_reward_system(game_state)
     update_effect_system(game_state)
     cleanup_game_state(game_state)
+    update_wave_completion(game_state)
 
-    # Presentation state before camera/render.
+# collected projectiles in this frame, then hurt players in future frames
+def _collect_enemy_projectiles(game_state):
+    for enemy in game_state.enemies:
+        collect_enemy_projectile(game_state, enemy)
+
+
+def _update_presentation(game_state, active_enemies, player_can_act):
     if player_can_act:
         game_state.player.update_animation()
+
     for enemy in active_enemies:
         if enemy.state != enemy.ATTACK:
             enemy.update_animation()
-

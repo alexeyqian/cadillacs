@@ -59,7 +59,7 @@ def main():
         
         # 3. gameplay and camera update
         update_gameplay(game_state, keys)
-        game_state.camera.update_for_level(game_state.player, game_state.level)
+        game_state.camera.update(game_state.player, game_state.level)
         
         # 4. render and clock tick
         main_draw(game_state)
