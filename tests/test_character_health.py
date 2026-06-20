@@ -1,5 +1,4 @@
 from game.components.character_health import CharacterHealth
-from game.entities.enemy_health import EnemyHealth
 
 
 def test_character_health_applies_damage_and_clamps_to_zero():
@@ -20,12 +19,11 @@ def test_character_health_can_restore_full_hp():
     assert health.hp == 30
 
 
-def test_enemy_health_uses_shared_depletion_logic():
-    health = EnemyHealth(max_hp=20)
+def test_character_health_reports_dead_state():
+    health = CharacterHealth(max_hp=20)
 
     assert health.take_damage(10) is None
     assert health.hp == 10
     assert health.is_dead() is False
     assert health.take_damage(10) is None
     assert health.is_dead() is True
-

@@ -16,18 +16,6 @@ class PlayerLifecycleController:
     def update_dead_state(self, owner):
         self.update_respawn(owner)
 
-    def update_hit_state(self, owner):
-        if not owner.hit_reaction_controller.is_in_hit_stun():
-            return False
-
-        owner.hit_reaction_controller.advance_timers()
-        if owner.hit_reaction_controller.is_in_hit_stun():
-            owner.state_machine.change_to(owner, owner.HIT)
-        else:
-            owner.state_machine.change_to(owner, owner.IDLE)
-
-        return True
-
     def take_damage(self, owner, damage, reaction=None):
         if owner.state == owner.DEAD:
             return

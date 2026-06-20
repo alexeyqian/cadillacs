@@ -1,7 +1,7 @@
 from game.entities.character import Character
 from game.data.enemy_config import get_enemy_config
 from game.entities.enemy_state import EnemyState
-from game.entities.enemy_health import EnemyHealth
+from game.components.character_health import CharacterHealth
 from game.components.character_geometry import CharacterGeometry
 from game.controllers.enemy_animation_controller import EnemyAnimationController
 from game.components.enemy_renderer import EnemyRenderer
@@ -76,7 +76,7 @@ class Enemy(Character, EnemyState):
             config.hurt_box_offset_y,
         )
 
-        self.health = EnemyHealth(config.max_hp)
+        self.health = CharacterHealth(config.max_hp)
         self.sprite_scale = config.sprite_scale
 
     def apply_movement_config(self, config):

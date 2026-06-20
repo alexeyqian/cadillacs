@@ -1,8 +1,8 @@
 from game.entities.character import Character
 from game.entities.player_state import PlayerState
 from game.data.player_config import get_player_config
+from game.components.character_health import CharacterHealth
 from game.components.character_geometry import CharacterGeometry
-from game.entities.player_health import PlayerHealth
 from game.components.player_weapon_slot import PlayerWeaponSlot
 from game.components.player_movement import PlayerMovement
 from game.controllers.player_combat_controller import PlayerCombatController
@@ -57,7 +57,7 @@ class Player(Character, PlayerState):
             config.hurt_box_offset_x,
             config.hurt_box_offset_y,
         )
-        self.health = PlayerHealth(config.max_hp)
+        self.health = CharacterHealth(config.max_hp)
         self.hit_reaction_controller = HitReactionController(config.hit_stun_duration)
         self.sprite_scale = config.sprite_scale
 
@@ -116,7 +116,9 @@ class Player(Character, PlayerState):
         return False
 
     def update_reactions(self):
-        return self.lifecycle_controller.update_hit_state(self)
+        was_in_hit_stun = self.hit_reaction_controller.is_in_hit_stun()
+        self.hit_reaction_controller.update_hit_state(self)
+        return was_in_hit_stun
 
     def advance_timers(self):
         self.combat_controller.update_timers(self)

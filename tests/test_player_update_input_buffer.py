@@ -76,8 +76,13 @@ class FakeLifecycle:
     def update_dead_state(self, owner):
         pass
 
-    def update_hit_state(self, owner):
+
+class FakeHitReactionController:
+    def is_in_hit_stun(self):
         return False
+
+    def update_hit_state(self, owner):
+        pass
 
 
 class FakeStateController:
@@ -108,6 +113,7 @@ def make_player_like():
     player.grab_controller = FakeGrab()
     player.weapon_slot = FakeWeaponSlot()
     player.lifecycle_controller = FakeLifecycle()
+    player.hit_reaction_controller = FakeHitReactionController()
     player.state_controller = FakeStateController()
     player.animation_controller = FakeAnimationController()
     return player
