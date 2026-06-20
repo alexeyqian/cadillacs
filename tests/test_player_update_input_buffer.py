@@ -120,7 +120,9 @@ def make_player_like():
 
 
 def update_player_frame(player, player_input):
-    if player.update_lifecycle_state() or player.update_reactions():
+    lifecycle_blocked = player.state == player.DEAD
+    player.update_lifecycle_state()
+    if lifecycle_blocked or player.update_reactions():
         player.update_animation()
         return
 

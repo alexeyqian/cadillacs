@@ -63,10 +63,9 @@ def update_gameplay(game_state, keys):
 
 
 def _advance_lifecycle_and_timers(game_state):
-    player_is_blocked = (
-        game_state.player.update_lifecycle_state()
-        or game_state.player.update_reactions()
-    )
+    player_lifecycle_blocked = game_state.player.state == game_state.player.DEAD
+    game_state.player.update_lifecycle_state()
+    player_is_blocked = player_lifecycle_blocked or game_state.player.update_reactions()
     player_can_act = not player_is_blocked
     if player_can_act:
         game_state.player.advance_timers()

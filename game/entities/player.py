@@ -111,9 +111,6 @@ class Player(Character, PlayerState):
     def update_lifecycle_state(self):
         if self.state == self.DEAD:
             self.lifecycle_controller.update_dead_state(self)
-            return True
-
-        return False
 
     def update_reactions(self):
         was_in_hit_stun = self.hit_reaction_controller.is_in_hit_stun()
@@ -133,7 +130,6 @@ class Player(Character, PlayerState):
         self.movement.update_jump_physics(self, player_input)
         self.state_controller.update_after_movement(self, moving)
         self.grab_controller.update_grabbed_enemy_position(self)
-        return moving
 
     def update_attack(self):
         self.combat_controller.update_attack(self)
