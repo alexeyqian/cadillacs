@@ -10,6 +10,7 @@ class PlayerMovement:
         self.run = PlayerRunMovement(run_attack_min_distance)
         self.attack_motion = PlayerAttackMovement()
         self.jump = PlayerJumpMovement(air_state)
+        self.moving = False
 
     @property
     def is_jumping(self):
@@ -40,12 +41,14 @@ class PlayerMovement:
 
     # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):
-        if self.is_jumping or self.is_landing():
-            return False
+        if self.is_jumping or self._is_landing():
+            self.moving = False
+            return
         if owner.combat_controller.is_attacking:
-            return self.attack_motion.update_attack_movement(owner)
+            self.moving = self.attack_motion.update_attack_movement(owner)
+            return
 
-        return self.run.update_ground_movement(owner, player_input)
+        self.moving = self.run.update_ground_movement(owner, player_input)
 
     def can_start_run_attack(self):
         return self.run.can_start_run_attack()
@@ -76,7 +79,7 @@ class PlayerMovement:
     def start_jump(self, owner, player_input):
         self.jump.start_jump(owner, player_input)
 
-    def is_landing(self):
+    def _is_landing(self):
         return self.jump.is_landing()
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):

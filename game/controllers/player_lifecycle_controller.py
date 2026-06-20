@@ -1,9 +1,13 @@
 class PlayerLifecycleController:
     def __init__(self, respawn_x, respawn_y, lives):
+        self.lives = lives
         self.respawn_x = respawn_x
         self.respawn_y = respawn_y
-        self.lives = lives
         self.respawn_remaining = 0
+
+    def advance_timers(self):
+        if self.lives > 0 and self.respawn_remaining > 0:
+            self.respawn_remaining -= 1
 
     def reset_for_stage_start(self, owner, x, y):
         self.respawn_x = x
@@ -66,10 +70,6 @@ class PlayerLifecycleController:
     def lose_life(self):
         self.lives -= 1
         self.respawn_remaining = 90
-
-    def advance_timers(self):
-        if self.lives > 0 and self.respawn_remaining > 0:
-            self.respawn_remaining -= 1
 
     def is_respawn_ready(self):
         return self.lives > 0 and self.respawn_remaining <= 0

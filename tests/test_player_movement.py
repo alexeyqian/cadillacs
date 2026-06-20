@@ -75,14 +75,14 @@ class PlayerMovementTests(unittest.TestCase):
 
         movement.start_run_attack_momentum(owner)
         starting_momentum = movement.attack_motion.run_attack_momentum_remaining
-        moved = movement.update_movement(owner, FakeInput())
+        movement.update_movement(owner, FakeInput())
 
         self.assertEqual(starting_momentum, RUN_ATTACK_MOMENTUM_FRAMES)
         self.assertEqual(
             movement.attack_motion.run_attack_momentum_speed,
             max(owner.speed, owner.run_speed * RUN_ATTACK_MOMENTUM_SPEED_SCALE),
         )
-        self.assertTrue(moved)
+        self.assertTrue(movement.moving)
         self.assertGreater(owner.x, 300)
         self.assertEqual(
             movement.attack_motion.run_attack_momentum_remaining,
@@ -96,9 +96,9 @@ class PlayerMovementTests(unittest.TestCase):
         owner.combat_controller.current_attack_name = "ATTACK_1"
 
         movement.start_run_attack_momentum(owner)
-        moved = movement.update_movement(owner, FakeInput())
+        movement.update_movement(owner, FakeInput())
 
-        self.assertFalse(moved)
+        self.assertFalse(movement.moving)
         self.assertEqual(owner.x, 300)
         self.assertEqual(movement.attack_motion.run_attack_momentum_remaining, 0)
 
@@ -106,12 +106,12 @@ class PlayerMovementTests(unittest.TestCase):
         owner = FakeOwner()
         movement = PlayerMovement()
 
-        moved = movement.update_movement(
+        movement.update_movement(
             owner,
             FakeInput(right=True, up=True, run=True),
         )
 
-        self.assertTrue(moved)
+        self.assertTrue(movement.moving)
         self.assertTrue(movement.is_running)
         self.assertEqual(owner.x, 300 + owner.run_speed)
         self.assertEqual(owner.y, 500 - owner.run_speed)
@@ -300,9 +300,9 @@ class PlayerMovementTests(unittest.TestCase):
 
         movement.start_combo_finisher_nudge(owner)
         starting_nudge = movement.attack_motion.combo_finisher_nudge_remaining
-        moved = movement.update_movement(owner, FakeInput())
+        movement.update_movement(owner, FakeInput())
 
-        self.assertTrue(moved)
+        self.assertTrue(movement.moving)
         self.assertGreater(owner.x, 300)
         self.assertEqual(
             movement.attack_motion.combo_finisher_nudge_remaining,

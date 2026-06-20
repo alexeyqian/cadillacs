@@ -23,13 +23,14 @@ class FakeMovement:
     def __init__(self):
         self.is_running = False
         self.is_jumping = False
+        self.moving = False
         self.last_run_attack_distance = 0
 
     def update_timers(self):
         pass
 
     def update_movement(self, owner, player_input):
-        return False
+        self.moving = False
 
     def update_jump_physics(self, owner, player_input):
         pass

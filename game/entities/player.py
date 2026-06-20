@@ -126,9 +126,9 @@ class Player(Character, PlayerState):
         self.action_controller.update(self, player_input)
 
     def update_movement(self, player_input):
-        moving = self.movement.update_movement(self, player_input)
+        self.movement.update_movement(self, player_input)
         self.movement.update_jump_physics(self, player_input)
-        self.state_controller.update_after_movement(self, moving)
+        self.state_controller.update_after_movement(self, self.movement.moving)
         self.grab_controller.update_grabbed_enemy_position(self)
 
     def update_attack(self):
