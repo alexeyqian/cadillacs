@@ -9,8 +9,9 @@ from game.entities.enemy import Enemy
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
-from game.controllers.enemy_state_controller import EnemyStateController
-from game.components.enemy_life_cycle import EnemyLifeCycle
+from game.controllers.enemy_ai_controller import EnemyAIController
+from game.components.enemy_condition import EnemyCondition
+from game.components.enemy_intent import EnemyIntent
 from game.settings import BAT_DAMAGE
 
 
@@ -34,6 +35,11 @@ class FakeAnimationController:
 
 class FakeMovement:
     def face_player(self, owner, player):
+        pass
+
+
+class FakeFlanking:
+    def clear_target(self):
         pass
 
 
@@ -66,7 +72,7 @@ class FakeEnemy:
         self.x = 0
         self.y = 0
         self.health = FakeHealth()
-        self.life_cycle = EnemyLifeCycle()
+        self.condition = EnemyCondition()
         self.animation_controller = FakeAnimationController()
         self.attack_data = replace(
             DEFAULT_ENEMY_ATTACK_DATA,
@@ -82,7 +88,9 @@ class FakeEnemy:
         self.combat_controller.attack_range = 40
         self.combat_controller.attack_lane_range = 20
         self.reaction_controller = EnemyReactionController()
-        self.state_controller = EnemyStateController()
+        self.ai_controller = EnemyAIController()
+        self.intent = EnemyIntent()
+        self.flanking = FakeFlanking()
 
     def face_player(self, player):
         self.facing_right = player.x > self.x
@@ -149,19 +157,21 @@ class FakePlayerCombat:
 class EnemyAttackTimingTests(unittest.TestCase):
     def test_attack_delay_waits_before_starting_attack(self):
         enemy = FakeEnemy()
-        resolver = enemy.state_controller
+        resolver = enemy.ai_controller
 
-        resolver._prepare_or_start_attack(enemy)
+        resolver._prepare_attack_intent(enemy, FakePlayer())
         self.assertEqual(enemy.state, enemy.IDLE)
         self.assertEqual(resolver.decision_timer, 1)
+        self.assertFalse(enemy.intent.wants_attack_player())
 
-        resolver._prepare_or_start_attack(enemy)
+        resolver._prepare_attack_intent(enemy, FakePlayer())
         self.assertEqual(enemy.state, enemy.IDLE)
         self.assertEqual(resolver.decision_timer, 2)
+        self.assertFalse(enemy.intent.wants_attack_player())
 
-        resolver._prepare_or_start_attack(enemy)
-        self.assertEqual(enemy.state, enemy.ATTACK)
-        self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
+        resolver._prepare_attack_intent(enemy, FakePlayer())
+        self.assertTrue(enemy.intent.wants_attack_player())
+        self.assertTrue(enemy.combat_controller.owns_attack_slot)
         self.assertEqual(resolver.decision_timer, 0)
 
     def test_enemy_attack_damages_only_during_active_frames(self):
@@ -219,7 +229,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy = FakeEnemy()
         enemy.state = enemy.ATTACK
         enemy.combat_controller.attack_manager.elapsed_frames = 4
-        enemy.state_controller.decision_timer = 2  # pre-set AI decision progress
+        enemy.ai_controller.decision_timer = 2  # pre-set AI decision progress
         enemy.combat_controller.already_hit = True
         enemy.combat_controller.owns_attack_slot = True
         controller = enemy.combat_controller
@@ -227,9 +237,9 @@ class EnemyAttackTimingTests(unittest.TestCase):
         controller.start_clash_recovery(enemy)
 
         self.assertEqual(enemy.state, enemy.RECOIL)
-        self.assertEqual(enemy.life_cycle.action_lock_remaining, enemy.attack_data.cooldown)
+        self.assertEqual(enemy.condition.action_lock_remaining, enemy.attack_data.cooldown)
         self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
-        self.assertEqual(enemy.state_controller.decision_timer, 0)
+        self.assertEqual(enemy.ai_controller.decision_timer, 0)
         self.assertFalse(enemy.combat_controller.attack_manager.has_connected)
         self.assertFalse(enemy.combat_controller.owns_attack_slot)
         self.assertEqual(enemy.combat_controller.cooldown_remaining, enemy.attack_data.cooldown)
@@ -274,7 +284,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
-        self.assertEqual(enemy.life_cycle.knockback_velocity, 18)
+        self.assertEqual(enemy.condition.knockback_velocity, 18)
 
     def test_enemy_reaction_uses_custom_hit_stun_duration(self):
         enemy = FakeEnemy()
@@ -287,13 +297,13 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
-        self.assertEqual(enemy.life_cycle.hit_stun_remaining, 24)
+        self.assertEqual(enemy.condition.hit_stun_remaining, 24)
 
     def test_enemy_uses_shorter_attack_delay_during_player_recovery(self):
         enemy = FakeEnemy()
         player = FakePlayer()
         player.combat_controller = FakePlayerCombat("RECOVERY")
-        resolver = EnemyStateController()
+        resolver = EnemyAIController()
 
         self.assertEqual(resolver._get_required_attack_delay(enemy, player), enemy.attack_data.delay)
 
@@ -301,7 +311,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy = FakeEnemy()
         player = FakePlayer()
         player.combat_controller = FakePlayerCombat("ACTIVE")
-        resolver = EnemyStateController()
+        resolver = EnemyAIController()
 
         self.assertEqual(resolver._get_required_attack_delay(enemy, player), enemy.attack_data.delay)
 

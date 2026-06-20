@@ -43,3 +43,18 @@ combat_system calls enemy.take_damage(DamageRequest)   ← entity: thin public A
     → delegates to reaction_controller.take_damage()   ← controller: all decisions
         → health.take_damage()                         ← component: pure data
         → state transitions (die, knockdown, flinch)
+
+
+enemy ai controller
+owner.intent.move_toward_player()
+owner.intent.attack_player()
+owner.intent.patrol()
+owner.intent.flank_to(position)
+
+enemy flow
+enemy.update_lifecycle_state()
+enemy.advance_timers()
+enemy.update_ai(context)        # decide intent/state only
+enemy.update_movement(context)  # execute movement intent
+enemy.update_attack(context)    # execute attack intent
+enemy.update_animation()

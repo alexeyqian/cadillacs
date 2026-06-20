@@ -1,4 +1,4 @@
-class EnemyLifeCycle:
+class EnemyCondition:
     def __init__(self):
         # Lifecycle
         self.death_remaining = 30

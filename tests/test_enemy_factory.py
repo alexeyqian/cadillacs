@@ -54,7 +54,8 @@ def test_enemy_factory_builds_default_enemy_runtime_groups(monkeypatch):
 
     # State
     assert enemy.state == EnemyState.IDLE
-    assert enemy.life_cycle is not None
+    assert enemy.condition is not None
+    assert enemy.intent is not None
 
     # Capabilities
     assert enemy.health is not None
@@ -62,7 +63,7 @@ def test_enemy_factory_builds_default_enemy_runtime_groups(monkeypatch):
     assert enemy.geometry.collision_box_w == get_enemy_config(DEFAULT_ENEMY_TYPE).collision_box_w
     assert enemy.geometry.hurt_box_w == get_enemy_config(DEFAULT_ENEMY_TYPE).hurt_box_w
     assert enemy.movement is not None
-    assert enemy.movement.spawn_x == 100
+    assert enemy.lifecycle_controller.spawn_x == 100
     assert enemy.movement.speed == get_enemy_config(DEFAULT_ENEMY_TYPE).speed
     assert enemy.movement.patrol_distance == get_enemy_config(DEFAULT_ENEMY_TYPE).patrol_distance
     assert enemy.movement.detect_range == get_enemy_config(DEFAULT_ENEMY_TYPE).detect_range
@@ -72,7 +73,7 @@ def test_enemy_factory_builds_default_enemy_runtime_groups(monkeypatch):
     assert enemy.combat_controller is not None
     assert enemy.reaction_controller is not None
     assert enemy.lifecycle_controller is not None
-    assert enemy.state_controller is not None
+    assert enemy.ai_controller is not None
     assert enemy.loot_controller is not None
 
     # Presentation

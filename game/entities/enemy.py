@@ -7,11 +7,12 @@ from game.controllers.enemy_animation_controller import EnemyAnimationController
 from game.components.enemy_renderer import EnemyRenderer
 from game.components.enemy_movement import EnemyMovement
 from game.components.enemy_flanking import EnemyFlanking
-from game.components.enemy_life_cycle import EnemyLifeCycle
+from game.components.enemy_condition import EnemyCondition
+from game.components.enemy_intent import EnemyIntent
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
-from game.controllers.enemy_state_controller import EnemyStateController
+from game.controllers.enemy_ai_controller import EnemyAIController
 from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.damage_request import DamageRequest
 
@@ -38,16 +39,17 @@ class Enemy(Character, EnemyState):
         self.pending_projectile = None
 
     def build_components(self):
-        self.life_cycle = EnemyLifeCycle()
+        self.condition = EnemyCondition()
+        self.intent = EnemyIntent()
         self.geometry = CharacterGeometry()
-        self.movement = EnemyMovement(spawn_x=self.x)
+        self.movement = EnemyMovement()
         self.flanking = EnemyFlanking()
 
     def build_controllers(self):
         self.combat_controller = EnemyCombatController()
         self.reaction_controller = EnemyReactionController()
-        self.lifecycle_controller = EnemyLifecycleController()
-        self.state_controller = EnemyStateController()
+        self.lifecycle_controller = EnemyLifecycleController(spawn_x=self.x)
+        self.ai_controller = EnemyAIController()
         self.loot_controller = EnemyLootController()
 
     def configure_from_enemy_config(self, config):
@@ -113,27 +115,30 @@ class Enemy(Character, EnemyState):
         self.combat_controller.update_timers()
         self.flanking.update_timers()
 
-    def update_ai(self, level, player, enemies):
-        dx, dy, distance_x, distance_y = self.movement.get_player_distance(self, player)
+    def update_ai(self, context):
+        self.ai_controller.update(self, context)
 
-        if distance_x <= self.movement.detect_range:
-            self._face_player(player)
-
-        self.state_controller.choose_state(
-            self, level, player, distance_x, distance_y, enemies
-        )
-        return dx, dy
-
-    def update_movement(self, level, player, enemies):
-        dx, dy, distance_x, distance_y = self.movement.get_player_distance(self, player)
-        if self.state == self.ATTACK:
+    def update_movement(self, context):
+        if self.state == self.ATTACK or self.intent.wants_attack_player():
             return
-        self.state_controller.execute_movement_state(self, level, player, enemies, dx, dy)
 
-    def update_attack(self, level, player):
+        if self.intent.wants_patrol():
+            self.movement.patrol(self, self.lifecycle_controller.spawn_x)
+        elif self.intent.wants_move_toward_player():
+            self.movement.move_toward_player(self, context.player)
+            self.movement.separate_from_enemies(self, context.enemies)
+        elif self.intent.wants_flank():
+            self.movement.move_toward_position(self, self.intent.flank_position)
+            self.movement.separate_from_enemies(self, context.enemies)
+
+    def update_attack(self, context):
+        if self.intent.wants_attack_player() and self.state != self.ATTACK:
+            self.start_attack()
+            self.intent.clear()
+
         if self.state != self.ATTACK:
             return
-        self.combat_controller.update_attack(self, level, player)
+        self.combat_controller.update_attack(self, context.level, context.player)
 
     def update_reactions(self):
         return self.reaction_controller.update_reactions(self)
@@ -175,9 +180,6 @@ class Enemy(Character, EnemyState):
 
     def take_grab_knee_damage(self, damage):
         self.reaction_controller.take_grab_knee_damage(self, damage)
-
-    def _face_player(self, player):
-        self.movement.face_player(self, player)
 
     # Combat
     def start_attack(self):

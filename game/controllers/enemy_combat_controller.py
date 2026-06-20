@@ -18,7 +18,7 @@ class EnemyCombatController:
     def start_attack(self, owner):
         owner.state = owner.ATTACK
         self.owns_attack_slot = True
-        owner.state_controller.reset_decision_timer()
+        owner.ai_controller.reset_decision_timer()
         self.attack_manager.start(owner.ATTACK, self.get_attack_data(owner))
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
@@ -26,9 +26,9 @@ class EnemyCombatController:
     def start_clash_recovery(self, owner):
         attack_data = self.get_attack_data(owner)
         owner.state = owner.RECOIL
-        owner.life_cycle.set_action_lock(attack_data.cooldown)
+        owner.condition.set_action_lock(attack_data.cooldown)
         self.attack_manager.cancel()
-        owner.state_controller.reset_decision_timer()
+        owner.ai_controller.reset_decision_timer()
         self.owns_attack_slot = False
         self.cooldown_remaining = max(self.cooldown_remaining, attack_data.cooldown)
 
@@ -77,6 +77,9 @@ class EnemyCombatController:
 
     def release_attack_slot(self, owner):
         self.owns_attack_slot = False
+
+    def reserve_attack_slot(self, owner):
+        self.owns_attack_slot = True
 
     def get_attack_data(self, owner):
         if self.attack_data:

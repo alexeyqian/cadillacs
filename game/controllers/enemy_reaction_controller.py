@@ -8,10 +8,10 @@ class EnemyReactionController:
         self.knockdown_damage_threshold = 40
 
     def die(self, owner):
-        self.clear_combat_commitment(owner)
+        self._clear_combat_commitment(owner)
         owner.health.hp = 0
         owner.state = owner.DEAD
-        owner.life_cycle.start_death_countdown(30)
+        owner.condition.start_death_countdown(30)
 
     def take_damage(
         self,
@@ -58,13 +58,13 @@ class EnemyReactionController:
         return False
 
     def _update_hit_state(self, owner):
-        if not owner.life_cycle.has_hit_stun():
+        if not owner.condition.has_hit_stun():
             return False
 
-        owner.life_cycle.tick_hit_stun()
+        owner.condition.tick_hit_stun()
         self.apply_knockback(owner)
 
-        if owner.life_cycle.has_hit_stun():
+        if owner.condition.has_hit_stun():
             owner.state = owner.HIT
         else:
             owner.state = owner.IDLE
@@ -75,18 +75,18 @@ class EnemyReactionController:
         stun_frames = reaction.stun_frames
         if stun_frames is None:
             stun_frames = owner.combat_controller.get_attack_data(owner).hit_stun_duration
-        owner.life_cycle.set_hit_stun(stun_frames)
+        owner.condition.set_hit_stun(stun_frames)
         owner.state = owner.HIT
         # So if an enemy is interrupted, it releases the slot.
-        self.clear_combat_commitment(owner)
+        self._clear_combat_commitment(owner)
 
         if attacker_x < owner.x:
-            owner.life_cycle.set_knockback(reaction.knockback_velocity)
+            owner.condition.set_knockback(reaction.knockback_velocity)
         else:
-            owner.life_cycle.set_knockback(-reaction.knockback_velocity)
+            owner.condition.set_knockback(-reaction.knockback_velocity)
 
     def apply_knockback(self, owner):
-        owner.life_cycle.apply_knockback(owner)
+        owner.condition.apply_knockback(owner)
 
     def should_knockdown_from_damage(self, damage):
         return damage >= self.knockdown_damage_threshold
@@ -100,35 +100,35 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
 
-        self.clear_combat_commitment(owner)
+        self._clear_combat_commitment(owner)
         owner.state = owner.KNOCKDOWN
-        owner.life_cycle.start_knockdown(60)
-        owner.life_cycle.clear_knockback()
+        owner.condition.start_knockdown(60)
+        owner.condition.clear_knockback()
 
     def grabbed_by_player(self, owner):
         if owner.state == owner.DEAD:
             return
 
-        self.clear_combat_commitment(owner)
+        self._clear_combat_commitment(owner)
         owner.state = owner.GRABBED
-        owner.life_cycle.clear_knockback()
-        owner.life_cycle.clear_hit_stun()
+        owner.condition.clear_knockback()
+        owner.condition.clear_hit_stun()
 
     def thrown_by_player(self, owner, direction, damage):
         if owner.state == owner.DEAD:
             return
 
-        self.clear_combat_commitment(owner)
+        self._clear_combat_commitment(owner)
         owner.state = owner.THROWN
         owner.facing_right = direction > 0
-        owner.life_cycle.start_thrown(direction, damage)
+        owner.condition.start_thrown(direction, damage)
         self.take_throw_damage(owner, damage)
 
     def take_grab_knee_damage(self, owner, damage):
         if owner.state == owner.DEAD:
             return
 
-        self.clear_combat_commitment(owner)
+        self._clear_combat_commitment(owner)
         owner.health.take_damage(damage)
 
         if owner.health.is_dead():
@@ -140,23 +140,23 @@ class EnemyReactionController:
     def take_throw_damage(self, owner, damage):
         if owner.state == owner.DEAD:
             return
-        self.clear_combat_commitment(owner)
+        self._clear_combat_commitment(owner)
 
         owner.health.take_damage(damage)
 
         if owner.health.is_dead():
             self.die(owner)
 
-    def clear_combat_commitment(self, owner):
-        self.cancel_attack(owner)
-        self.reset_attack_decision(owner)
-        self.release_attack_slot(owner)
+    def _clear_combat_commitment(self, owner):
+        self._cancel_attack(owner)
+        self._reset_attack_decision(owner)
+        self._release_attack_slot(owner)
 
-    def cancel_attack(self, owner):
+    def _cancel_attack(self, owner):
         owner.combat_controller.cancel_attack_timing(owner)
 
-    def reset_attack_decision(self, owner):
-        owner.state_controller.reset_decision_timer()
+    def _reset_attack_decision(self, owner):
+        owner.ai_controller.reset_decision_timer()
 
-    def release_attack_slot(self, owner):
+    def _release_attack_slot(self, owner):
         owner.combat_controller.release_attack_slot(owner)

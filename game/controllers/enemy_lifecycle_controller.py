@@ -1,12 +1,15 @@
 class EnemyLifecycleController:
+    def __init__(self, spawn_x=0):
+        self.spawn_x = spawn_x
+
     def update_lifecycle_state(self, owner):
         if owner.state == owner.DEAD:
             self._update_dead_state(owner)
             return True
 
         # give enemies their own clash recovery timer,
-        if owner.life_cycle.has_action_lock():
-            owner.life_cycle.tick_action_lock()
+        if owner.condition.has_action_lock():
+            owner.condition.tick_action_lock()
             owner.state = owner.RECOIL
             return True
         
@@ -28,25 +31,25 @@ class EnemyLifecycleController:
         return False
 
     def _update_thrown_state(self, owner):
-        if owner.life_cycle.tick_thrown(owner):
+        if owner.condition.tick_thrown(owner):
             owner.state = owner.KNOCKDOWN
-            owner.life_cycle.start_knockdown(60)
-            owner.life_cycle.stop_thrown_motion()
+            owner.condition.start_knockdown(60)
+            owner.condition.stop_thrown_motion()
 
     def _update_knockdown_state(self, owner):
-        if owner.life_cycle.tick_knockdown():
+        if owner.condition.tick_knockdown():
             owner.state = owner.GETUP
-            owner.life_cycle.start_getup(20)
+            owner.condition.start_getup(20)
 
     def _update_getup_state(self, owner):
-        if owner.life_cycle.tick_getup():
+        if owner.condition.tick_getup():
             owner.state = owner.IDLE
 
     def _update_dead_state(self, owner):
-        if not owner.life_cycle.death_countdown_started:
-            owner.life_cycle.begin_death_countdown()
+        if not owner.condition.death_countdown_started:
+            owner.condition.begin_death_countdown()
 
-        owner.life_cycle.tick_death()
+        owner.condition.tick_death()
 
     def is_ready_to_remove(self, owner):
-        return owner.state == owner.DEAD and owner.life_cycle.is_death_finished()
+        return owner.state == owner.DEAD and owner.condition.is_death_finished()
