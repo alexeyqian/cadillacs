@@ -13,6 +13,7 @@ from game.controllers.player_action_controller import PlayerActionController
 from game.controllers.player_state_controller import PlayerStateController
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
 from game.controllers.hit_reaction_controller import HitReactionController
+from game.controllers.player_reaction_controller import PlayerReactionController
 from game.combat.damage_request import DamageRequest
 from game.core.events import GameEventQueue
 from game.entities.player_state_machine import PlayerStateMachine
@@ -99,6 +100,7 @@ class Player(Character, PlayerState):
         self.grab_controller = PlayerGrabController()
         self.state_controller = PlayerStateController()
         self.lifecycle_controller = PlayerLifecycleController(self.x, self.y, config.lives)
+        self.reaction_controller = PlayerReactionController()
 
     def build_presentation_components(self, animation_data, anim_fps):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
@@ -157,7 +159,7 @@ class Player(Character, PlayerState):
             reaction = damage.reaction
             damage = damage.damage
 
-        self.lifecycle_controller.take_damage(
+        self.reaction_controller.take_damage(
             self,
             damage,
             reaction=reaction,

@@ -124,7 +124,7 @@ class Enemy(Character, EnemyState):
         return dx, dy
 
     def update_movement(self, level, player, enemies):
-        dx, dy, distance_x, distance_y = self._get_player_distance(player)
+        dx, dy, distance_x, distance_y = self.movement.get_player_distance(self, player)
         if self.state == self.ATTACK:
             return
         self.state_controller.execute_movement_state(self, level, player, enemies, dx, dy)
@@ -145,10 +145,6 @@ class Enemy(Character, EnemyState):
 
     ##### end of main loop update #####
 
-    def _get_player_distance(self, player):
-        return self.movement.get_player_distance(self, player)
-
-    # Lifecycle / reactions
     def is_ready_to_remove(self):
         return self.lifecycle_controller.is_ready_to_remove(self)
 

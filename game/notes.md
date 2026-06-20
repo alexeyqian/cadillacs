@@ -35,3 +35,11 @@ _update_combat                  ← hitbox/hurtbox detection → sets damage + k
 _update_damage_and_reactions    ← apply_knockback, apply_hit_stun effects ← NEW
 _update_lifecycle               ← spawn/cleanup
 _update_presentation            ← animation, camera, render
+
+Best practice: the entity owns the API surface, the controller owns the logic.
+
+combat_system calls enemy.take_damage(DamageRequest)   ← entity: thin public API
+    → unpacks DamageRequest
+    → delegates to reaction_controller.take_damage()   ← controller: all decisions
+        → health.take_damage()                         ← component: pure data
+        → state transitions (die, knockdown, flinch)

@@ -4,7 +4,7 @@ from game.entities.enemy import Enemy
 from game.entities.player import Player
 
 
-class FakeLifecycle:
+class FakePlayerReactions:
     def __init__(self):
         self.calls = []
 
@@ -22,12 +22,12 @@ class FakeReactions:
 
 def test_player_accepts_damage_request():
     player = Player.__new__(Player)
-    player.lifecycle_controller = FakeLifecycle()
+    player.reaction_controller = FakePlayerReactions()
     reaction = HitReaction(stun_frames=8, knockback_velocity=4)
 
     player.take_damage(DamageRequest(12, reaction=reaction))
 
-    assert player.lifecycle_controller.calls == [(player, 12, reaction)]
+    assert player.reaction_controller.calls == [(player, 12, reaction)]
 
 
 def test_enemy_accepts_damage_request():
