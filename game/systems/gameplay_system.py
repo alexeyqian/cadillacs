@@ -39,12 +39,17 @@ def update_gameplay(game_state, keys):
     _request_player_actions(game_state, keys, player_input, player_can_act)
 
     # 6-8. Movement, Collision, Combat / Reactions
-    old_player_position = _update_movement(
+    # Characters move
+    # Characters are clamped to level/arena bounds
+    # Projectiles move
+    # Projectile collisions are checked
+    old_player_position = _update_character_movement(
         game_state,
         player_input,
         player_can_act,
         active_enemies,
     )
+    _update_projectile_movement(game_state)
     _resolve_collisions(game_state, old_player_position)
     _update_combat(game_state, active_enemies)
 
@@ -82,8 +87,7 @@ def _request_player_actions(game_state, keys, player_input, player_can_act):
     update_player_input_system(game_state, keys)
     game_state.player.request_actions(player_input)
 
-
-def _update_movement(game_state, player_input, player_can_act, active_enemies):
+def _update_character_movement(game_state, player_input, player_can_act, active_enemies):
     old_player_position = (game_state.player.x, game_state.player.y)
 
     if player_can_act:
@@ -96,12 +100,15 @@ def _update_movement(game_state, player_input, player_can_act, active_enemies):
         enemy.apply_knockback()
         enemy.update_movement_state(game_state.level, game_state.player, game_state.enemies)
 
-    update_projectiles(game_state)
     apply_enemy_level_bounds(game_state)
     apply_player_level_bounds(game_state)
     apply_arena_bounds(game_state)
 
     return old_player_position
+
+
+def _update_projectile_movement(game_state):
+    update_projectiles(game_state)
 
 
 def _resolve_collisions(game_state, old_player_position):
@@ -126,22 +133,27 @@ def _update_combat(game_state, active_enemies):
 
 
 def _update_lifecycle(game_state):
+    # collected projectiles in this frame, 
+    # then hurt players/enemies in future frames
     collect_player_projectiles(game_state)
-    _collect_enemy_projectiles(game_state)
+    for enemy in game_state.enemies:
+        collect_enemy_projectile(game_state, enemy)
+
     create_explosions_from_objects(game_state)
     create_enemy_loot(game_state)
     create_object_loot(game_state)
+
     update_loot_pickup(game_state)
-    update_wave_system(game_state) # may lock camera and spawn enemies for next frame
     update_life_reward_system(game_state)
     update_effect_system(game_state)
-    cleanup_game_state(game_state)
-    update_wave_completion(game_state)
 
-# collected projectiles in this frame, then hurt players in future frames
-def _collect_enemy_projectiles(game_state):
-    for enemy in game_state.enemies:
-        collect_enemy_projectile(game_state, enemy)
+    cleanup_game_state(game_state)
+    # complete current wave using cleaned enemy list
+    update_wave_completion(game_state)
+    # spawn/start next wave late, for next frame logic
+    #  If cleanup hasn’t run yet, 
+    # dead/removable enemies still count and can delay spawning by one frame.
+    update_wave_system(game_state)
 
 
 def _update_presentation(game_state, active_enemies, player_can_act):
