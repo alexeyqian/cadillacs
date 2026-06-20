@@ -1,5 +1,4 @@
 import os
-from typing import Callable, Dict, Iterable, List, Optional, Tuple
 import pygame
 from game.animation.asset_loader import AssetLoader
 
@@ -13,7 +12,13 @@ class AssetManager:
     @classmethod
     def file_exists(cls, path):
         return path and os.path.exists(path)
-    
+
+    @classmethod
+    def _missing_asset(cls, path, fallback_factory=None):
+        if path:
+            cls._missing_assets.add(path)
+        return fallback_factory() if fallback_factory else None
+
     @classmethod
     def load_image(cls, path, alpha=True, fallback_factory=None):
         if not path:
@@ -24,8 +29,7 @@ class AssetManager:
             return cls._image_cache[key]
 
         if not cls.file_exists(path):
-            cls._missing_assets.add(path)
-            image = fallback_factory() if fallback_factory else None
+            image = cls._missing_asset(path, fallback_factory)
             cls._image_cache[key] = image
             return image
         
@@ -33,8 +37,7 @@ class AssetManager:
             image = pygame.image.load(path)
             image = image.convert_alpha() if alpha else image.convert()
         except pygame.error:
-            cls._missing_assets.add(path)
-            image = fallback_factory() if fallback_factory else None
+            image = cls._missing_asset(path, fallback_factory)
 
         cls._image_cache[key] = image
         return image
@@ -78,11 +81,10 @@ class AssetManager:
                 frames = AssetLoader.load_animation(
                     path, frame_width, frame_height, frame_count, start_frame)
             except pygame.error:
-                cls._missing_assets.add(path)
+                cls._missing_asset(path)
                 frames = fallback_frame_factory()
         else:
-            if path:
-                cls._missing_assets.add(path)
+            cls._missing_asset(path)
             frames = fallback_frame_factory()
 
         if not frames:
@@ -99,14 +101,14 @@ class AssetManager:
             return cls._sound_cache[path]
 
         if not cls.file_exists(path):
-            cls._missing_assets.add(path)
-            cls._sound_cache[path] = None
-            return None
+            sound = cls._missing_asset(path)
+            cls._sound_cache[path] = sound
+            return sound
 
         try:
             sound = pygame.mixer.Sound(path)
         except pygame.error:
-            cls._missing_assets.add(path)
+            cls._missing_asset(path)
             sound = None
 
         cls._sound_cache[path] = sound
