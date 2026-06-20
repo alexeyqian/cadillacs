@@ -29,8 +29,6 @@ from game.systems.projectile_system import (
 )
 from game.systems.wave_system import update_wave_completion, update_wave_system
 
-# do not put arena lock logic inside player, enemy, camera
-# arena system controls temporary battle boundaries
 def update_gameplay(game_state, keys):
     # 1. Input Collection
     player_input = PlayerInput(keys)

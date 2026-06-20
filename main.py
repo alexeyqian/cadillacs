@@ -1,246 +1,92 @@
 import os
 import pygame
-# used for dynamic setting values
-import game.settings as settings
-from game.settings import *
-from game.camera import Camera
-from game.level.level import Level
-from game.factories.player_factory import PlayerFactory
-from game.entities.weapon import Weapon
-from game.entities.breakable_object import BreakableObject
-from game.entities.explosive_barrel import ExplosiveBarrel
-from game.game_state import GameState
-from game.systems.continue_system import *
-from game.systems.gameplay_system import *
-from game.managers.score_manager import ScoreManager
-from game.managers.stage_clear_manager import StageClearManager
-from game.level.stage_manager import StageManager
-from game.level.stage_config import EPISODE_1_STAGES
-from main_draw import *
+
+from game.settings import FPS
+from game.bootstrap import create_display, create_game_state
+from game.display import present_screen
+from game.system_event_handler import handle_system_events
+
+from game.level.stage_loader import advance_to_next_stage
+from game.systems.gameplay_system import update_gameplay
+from main_draw import main_draw
 
 os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
 #info = pygame.display.Info()
 
-def get_window_size():
-    display_info = pygame.display.Info()
-    display_w = display_info.current_w or EXTERNAL_WIDTH
-    display_h = display_info.current_h or EXTERNAL_HEIGHT
-
-    max_window_w = min(EXTERNAL_WIDTH, display_w)
-    max_window_h = min(EXTERNAL_HEIGHT, display_h)
-    scale = min(max_window_w / SCREEN_WIDTH, max_window_h / SCREEN_HEIGHT)
-    scale = min(1.0, scale)
-
-    return (
-        max(1, int(SCREEN_WIDTH * scale)),
-        max(1, int(SCREEN_HEIGHT * scale))
-    )
-
-def present_screen(screen, window):
-    if screen.get_size() == window.get_size():
-        window.blit(screen, (0, 0))
-    else:
-        scaled = pygame.transform.smoothscale(screen, window.get_size())
-        window.blit(scaled, (0, 0))
-
-    pygame.display.flip()
-
-def create_stage_weapons(stage_data):
-    weapons = []
-
-    for weapon_config in stage_data["weapons"]:
-        weapons.append(Weapon(
-            weapon_config["x"],
-            weapon_config["y"],
-            weapon_config["type"]
-        ))
-
-    return weapons
-
-def create_stage_objects(stage_data):
-    objects = []
-
-    for object_config in stage_data["objects"]:
-        kind = object_config["kind"]
-        loot_type = object_config.get("loot_type", None)
-        if kind == "breakable":
-            objects.append(BreakableObject(
-                object_config["x"],
-                object_config["y"],
-                loot_type=loot_type
-            ))
-
-        elif kind == "barrel":
-            objects.append(ExplosiveBarrel(
-                object_config["x"],
-                object_config["y"]
-            ))
-
-    return objects
-
-def load_stage(game_state, stage_data):
-    game_state.level = Level(stage_data)
-
-    # Do not create a new Player. Keep the same player so lives, score, 
-    # and weapon behavior can be decided intentionally later.
-    start_x, start_y = stage_data["player_start"]
-    game_state.player.reset_for_stage_start(start_x, start_y)
-
-    game_state.camera.x = 0
-
-    game_state.enemies.clear()
-    game_state.weapons.clear()
-    game_state.projectiles.clear()
-    game_state.enemy_projectiles.clear()
-    game_state.objects.clear()
-    game_state.loot_items.clear()
-    game_state.hit_sparks.clear()
-    game_state.floating_texts.clear()
-    game_state.explosions.clear()
-
-    game_state.weapons.extend(create_stage_weapons(stage_data))
-    game_state.objects.extend(create_stage_objects(stage_data))
-
-    game_state.stage_clear_manager.active = False
-    game_state.stage_clear_manager.timer = 0
-    game_state.stage_clear_manager.bonus_applied = False
-
-    game_state.announcement_manager.active = False
-
-def advance_to_next_stage(game_state):
-    next_stage_data = game_state.stage_manager.advance_stage()
-    if next_stage_data:
-        load_stage(game_state, next_stage_data)
-        return True
-
-    return False
-
 def main():
     pygame.init()
 
-    # Keep game logic/rendering in the 1920x1080 world coordinate system,
-    # then scale the final frame to the actual display-sized window.
-    window = pygame.display.set_mode(get_window_size(), pygame.NOFRAME)
-    screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Cadillacs and Dinosaurs")
-
+    window, screen = create_display()
     clock = pygame.time.Clock()
-    player = PlayerFactory.create_player()
-    stage_manager = StageManager(EPISODE_1_STAGES, settings.START_STAGE)
-    level = Level(stage_manager.get_current_stage())
-    camera = Camera()
-    
-    score_manager = ScoreManager()
-    stage_clear_manager = StageClearManager()
+    game_state = create_game_state(screen, clock)
 
-    enemies = []
-    weapons = create_stage_weapons(stage_manager.get_current_stage())
+    while game_state.running:
+        # 0. System event check, such as: show menu, pause/resume, debug etc
+        handle_system_events(game_state)
+        # above function might set game_state.running to False
+        if not game_state.running:
+            break
 
-    projectiles = []
-    enemy_projectiles = []
-    objects = create_stage_objects(stage_manager.get_current_stage())
-    loot_items = []
-    hit_sparks = []
-    floating_texts = []
-    explosions = []
-
-    game_state = GameState(
-        screen=screen,
-        clock=clock,
-        player=player,
-        stage_manager=stage_manager,
-        level=level,
-        camera=camera,
-        enemies=enemies,
-        weapons=weapons,
-        projectiles=projectiles,
-        enemy_projectiles=enemy_projectiles,
-        objects=objects,
-        loot_items=loot_items,
-        hit_sparks=hit_sparks,
-        score_manager=score_manager,
-        floating_texts=floating_texts,
-        stage_clear_manager=stage_clear_manager,
-        explosions=explosions
-    )
-    load_stage(game_state, stage_manager.get_current_stage())
-
-    running = True
-    while running:
-        # 1 handle events
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    running = False
-                if event.key == pygame.K_F1:
-                    settings.SHOW_COMBAT_BOXES = not settings.SHOW_COMBAT_BOXES
-                # Pause/resume with P
-                if event.key == pygame.K_p:
-                    game_state.paused = not getattr(game_state, 'paused', False)
-                    if game_state.paused:
-                        # initialize menu selection when entering pause
-                        game_state.pause_menu_index = 0
-                # If paused, handle menu navigation and selection
-                if getattr(game_state, 'paused', False):
-                    if event.key == pygame.K_UP:
-                        game_state.pause_menu_index = (
-                            (game_state.pause_menu_index - 1) % len(game_state.pause_menu_options)
-                        )
-                    elif event.key == pygame.K_DOWN:
-                        game_state.pause_menu_index = (
-                            (game_state.pause_menu_index + 1) % len(game_state.pause_menu_options)
-                        )
-                    elif event.key in (pygame.K_RETURN, pygame.K_KP_ENTER):
-                        choice = game_state.pause_menu_options[game_state.pause_menu_index]
-                        if choice == "Resume":
-                            game_state.paused = False
-                        elif choice == "Restart Stage":
-                            # reload current stage
-                            load_stage(game_state, game_state.stage_manager.get_current_stage())
-                            game_state.paused = False
-                        elif choice == "Quit":
-                            game_state.running = False
-                            running = False
-                            break
-                # todo: insert coin as credit, only use for dev
-                if event.key == pygame.K_5:
-                    game_state.credits += 1
-
-        # 2 update continue
+        # 1. collect inputs
         keys = pygame.key.get_pressed()
-        # player death and lives check, and related continue status
-        if (player.state == player.DEAD 
-            and player.health.lives <= 0 
+
+        # 0. Pre-gameplay check
+        # 0.1 player death check
+        if (game_state.player.state == game_state.player.DEAD
+            and game_state.player.health.lives <= 0
             and game_state.credits > 0):
             game_state.continue_active = True
 
-        update_continue_system(game_state, keys)
-
-        # prevent gameplay while continue screen active
+        # 0.2 continue screen active check and update
         if game_state.continue_active:
+            update_continue(game_state, keys)
             main_draw(game_state)
             present_screen(screen, window)
             clock.tick(FPS)
             continue
 
+        # 0.3 end of current stage check
         if game_state.stage_clear_manager.active:
-            # update stage clear manager
             game_state.stage_clear_manager.update()
-            game_state.stage_clear_manager.apply_bonus(score_manager)
+            game_state.stage_clear_manager.apply_bonus(game_state.score_manager)
             if game_state.stage_clear_manager.timer <= 0:
-                running = advance_to_next_stage(game_state)
-        else:
-            update_gameplay(game_state, keys)
+                game_state.running = advance_to_next_stage(game_state)
+                continue
 
-        # 5. draw
+        # 2. update/advance timers
+        # info: advance timers happens at each component's beginning
+        
+        # 3. update
+        update_gameplay(game_state, keys)
+        
+        # 4. render and clock tick
         main_draw(game_state)
-
         present_screen(screen, window)
         clock.tick(FPS)
 
     pygame.quit()
+
+def update_continue(game_state, keys):
+    if game_state.continue_timer > 0:
+        game_state.continue_timer -= 1
+    if game_state.continue_timer <= 0:
+        game_state.continue_active = False
+
+    if keys[pygame.K_c]:
+        if game_state.credits <= 0:
+            return
+        game_state.credits -= 1
+        player = game_state.player
+        player.health.lives = 3
+        player.health.hp = player.health.max_hp
+        player.state_machine.change_to(player, player.IDLE)
+        player.x = 960
+        player.y = 540
+
+        game_state.continue_timer = 600
+        game_state.continue_active = False
+        # todo: add limits for continue times
+        game_state.continue_used += 1
 
 if __name__ == "__main__":
     main()

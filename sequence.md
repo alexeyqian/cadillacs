@@ -6,12 +6,22 @@ Per-frame update order for a 2D beat-em-up, with reasoning for each position.
 
 ## Update Order
 
-### 1. Input Collection
-Read raw device state (keyboard, gamepad) into a clean input snapshot. Done first so every subsequent step works from the same input data this frame.
+### 1. Input Collection (system level)
+Read raw device state (keyboard, gamepad) into a clean input snapshot. Done once per frame before any entity updates. This is just hardware → struct; no game logic runs here yet.
 
 ---
 
-### 2. Timer / Cooldown Advance
+### 2. Lifecycle Guards (per entity)
+Check dead / hit-stunned / frozen states **before** doing anything else with the entity.
+
+- Dead player → run death animation, skip all input and movement
+- Hit-stunned enemy → skip AI and movement
+
+**Why before timers:** a dead entity should not process input, advance its own attack timers, or move. Guarding first keeps the rest of the update clean and free of invalid-state edge cases.
+
+---
+
+### 3. Timer / Cooldown Advance
 Decrement all countdowns **before** anything else reads them.
 
 - Attack animations finish → state transitions to IDLE
@@ -92,17 +102,18 @@ Draw everything. Always last — you render the final committed state of the wor
 
 | Step | What | Why here |
 |------|------|----------|
-| 1 | Input snapshot | Single source of truth for the frame |
-| 2 | Timers advance | State transitions happen before anyone reads timer state |
-| 3 | AI decisions | Needs current timer state, drives movement |
-| 4 | Player action requests | Drives movement path choices |
-| 5 | Movement | Positions finalized |
-| 6 | Collision detection | Works on final positions |
-| 7 | Hitbox vs hurtbox | Needs final positions; produces damage requests |
-| 8 | Damage/reactions | Consumes damage requests cleanly |
-| 9 | Spawn/cleanup | Safe to add/remove after all iteration |
-| 10 | Camera | Tracks final positions |
-| 11 | Render | Always last |
+| 1 | Input snapshot (system) | Single source of truth; just hardware → struct, no logic |
+| 2 | Lifecycle guards (per entity) | Dead/stunned entities skip all further steps |
+| 3 | Timers advance | State transitions happen before anyone reads timer state |
+| 4 | AI decisions | Needs current timer state, drives movement |
+| 5 | Player action requests | Drives movement path choices |
+| 6 | Movement | Positions finalized |
+| 7 | Collision detection | Works on final positions |
+| 8 | Hitbox vs hurtbox | Needs final positions; produces damage requests |
+| 9 | Damage/reactions | Consumes damage requests cleanly |
+| 10 | Spawn/cleanup | Safe to add/remove after all iteration |
+| 11 | Camera | Tracks final positions |
+| 12 | Render | Always last |
 
 ---
 

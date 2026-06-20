@@ -2,6 +2,7 @@ from game.settings import SCREEN_WIDTH
 
 ENEMY_ARENA_ENTRY_MARGIN = 560
 
+# arena bounds control temporary battle boundaries
 def apply_arena_bounds(game_state):
     level = game_state.level
     if not level.camera_locked:
