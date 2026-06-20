@@ -180,30 +180,6 @@ ENEMY_CONFIGS = {
         score_points=int(ENEMY_SCORE_POINTS * WALTHER_SCALER),
     ),
 
-    "raptor": EnemyConfig(
-        enemy_id="raptor",
-        display_name="Raptor",
-        archetype="leaper",
-        max_hp=int(ENEMY_MAX_HP * 1.4),
-        speed=int(ENEMY_SPEED * 1.2),
-        attack_range=int(ENEMY_ATTACK_RANGE * 1.3),
-        attack_lane_range=ENEMY_ATTACK_LANE_RANGE,
-        attack=replace(
-            DEFAULT_ENEMY_ATTACK_DATA,
-            damage=int(ENEMY_ATTACK_DAMAGE * 1.3),
-            delay=int(ENEMY_ATTACK_DELAY * 0.7),
-            cooldown=int(ENEMY_ATTACK_COOLDOWN * 1.1),
-            windup=int(ENEMY_ATTACK_WINDUP * 1.2),
-            active=ENEMY_ATTACK_ACTIVE,
-            recovery=ENEMY_ATTACK_RECOVERY,
-            hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
-            hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
-            hitbox_w=ENEMY_HITBOX_W,
-            hitbox_h=ENEMY_HITBOX_H,
-            lane_reach=1,
-        ),
-        score_points=int(ENEMY_SCORE_POINTS * 1.4),
-    ),
 }
 
 def get_enemy_config(enemy_type):

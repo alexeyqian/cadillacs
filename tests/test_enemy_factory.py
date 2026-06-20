@@ -5,7 +5,6 @@ from game.data.enemy_config import DEFAULT_ENEMY_TYPE, get_enemy_config
 from game.entities.enemy_state import EnemyState
 from game.factories.enemy_factory import EnemyFactory
 from game.entities.ferris_enemy import FerrisEnemy
-from game.entities.raptor_enemy import RaptorEnemy
 
 
 class FakeEnemy:
@@ -39,18 +38,9 @@ def test_enemy_factory_falls_back_to_default_enemy_class():
     )
 
 
-def test_enemy_factory_registers_raptor_enemy_type():
-    assert EnemyFactory.get_enemy_class("raptor") is RaptorEnemy
-    assert "raptor" in EnemyFactory.registered_enemy_types()
-
-
-def test_enemy_config_has_raptor_data_and_default_fallback():
-    raptor_config = get_enemy_config("raptor")
+def test_enemy_config_uses_default_fallback():
     fallback_config = get_enemy_config("unknown")
 
-    assert raptor_config.enemy_id == "raptor"
-    assert raptor_config.display_name == "Raptor"
-    assert raptor_config.archetype == "leaper"
     assert fallback_config.enemy_id == DEFAULT_ENEMY_TYPE
 
 

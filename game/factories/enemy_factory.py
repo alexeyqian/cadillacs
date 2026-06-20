@@ -2,7 +2,6 @@ from game.entities.ferris_enemy import FerrisEnemy
 from game.entities.gneiss_enemy import GneissEnemy
 from game.entities.black_elmer_enemy import BlackElmerEnemy
 from game.entities.walther_enemy import WaltherEnemy
-from game.entities.raptor_enemy import RaptorEnemy
 from game.data.enemy_config import DEFAULT_ENEMY_TYPE
 
 class EnemyFactory:
@@ -11,7 +10,6 @@ class EnemyFactory:
         "gneiss": GneissEnemy,
         "black_elmer": BlackElmerEnemy,
         "walther": WaltherEnemy,
-        "raptor": RaptorEnemy,
     }
 
     @staticmethod

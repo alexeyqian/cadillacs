@@ -10,7 +10,6 @@ from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
 from game.controllers.enemy_state_controller import EnemyStateController
-from game.entities.raptor_enemy import RaptorEnemy
 from game.components.enemy_life_cycle import EnemyLifeCycle
 from game.settings import BAT_DAMAGE
 
@@ -145,18 +144,6 @@ class FakePlayerCombat:
 
     def get_attack_phase_name(self):
         return self.phase_name
-
-
-class FakeRaptor:
-    def __init__(self):
-        self.leap_cooldown = 0
-        self.has_leaped_this_attack = False
-        self.leap_startup_frames = 4
-        self.attack_data = replace(
-            DEFAULT_ENEMY_ATTACK_DATA,
-            windup=18,
-        )
-        self.combat_controller = EnemyCombatController(self.attack_data)
 
 
 class EnemyAttackTimingTests(unittest.TestCase):
@@ -329,20 +316,6 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertLess(gneiss.attack.cooldown, ferris.attack.cooldown)
         self.assertGreater(black_elmer.attack_range, ferris.attack_range)
         self.assertEqual(black_elmer.attack_flinch_damage_threshold, BAT_DAMAGE)
-
-    def test_raptor_leaps_in_late_windup(self):
-        raptor = FakeRaptor()
-
-        raptor.combat_controller.attack_manager.elapsed_frames = (
-            raptor.attack_data.windup - raptor.leap_startup_frames - 1
-        )
-        self.assertFalse(RaptorEnemy._should_leap_now(raptor))
-
-        raptor.combat_controller.attack_manager.elapsed_frames = (
-            raptor.attack_data.windup - raptor.leap_startup_frames
-        )
-        self.assertTrue(RaptorEnemy._should_leap_now(raptor))
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -165,68 +165,6 @@ HEAVY_ENEMY_ATTACK = {
 }
 
 # ==========================================
-# Raptor Enemy
-# ==========================================
-
-RAPTOR_ENEMY_SPRITESHEET = "game/assets/enemy/raptor_enemy_spritesheet.png"
-
-RAPTOR_ENEMY_IDLE = {
-    "file": RAPTOR_ENEMY_SPRITESHEET,
-    "frame_width":80,
-    "frame_height":160,
-    "frame_count":4,
-    "start_frame":0
-}
-
-RAPTOR_ENEMY_PATROL = {
-    "file": RAPTOR_ENEMY_SPRITESHEET,
-    "frame_width":80,
-    "frame_height":160,
-    "frame_count":4,
-    "start_frame":4
-}
-
-RAPTOR_ENEMY_WALK = {
-    "file": RAPTOR_ENEMY_SPRITESHEET,
-    "frame_width":80,
-    "frame_height":160,
-    "frame_count":4,
-    "start_frame":8
-}
-
-RAPTOR_ENEMY_CHASE = {
-    "file": RAPTOR_ENEMY_SPRITESHEET,
-    "frame_width":80,
-    "frame_height":160,
-    "frame_count":4,
-    "start_frame":8
-}
-
-RAPTOR_ENEMY_JUMP = {
-    "file": RAPTOR_ENEMY_SPRITESHEET,
-    "frame_width":80,
-    "frame_height":160,
-    "frame_count":4,
-    "start_frame":12
-}
-
-RAPTOR_ENEMY_ATTACK = {
-    "file": RAPTOR_ENEMY_SPRITESHEET,
-    "frame_width":80,
-    "frame_height":160,
-    "frame_count":4,
-    "start_frame":16
-}
-
-RAPTOR_ENEMY_JUMP_ATTACK = {
-    "file": RAPTOR_ENEMY_SPRITESHEET,
-    "frame_width":80,
-    "frame_height":160,
-    "frame_count":4,
-    "start_frame":20
-}
-
-# ==========================================
 # Boss Enemy
 # ==========================================
 
