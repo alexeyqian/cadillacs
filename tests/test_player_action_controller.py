@@ -133,6 +133,7 @@ class PlayerActionControllerTests(unittest.TestCase):
         owner.combat_controller.attack_manager.mark_connected()
         while owner.combat_controller.current_attack_name == owner.ATTACK_1:
             owner.combat_controller.update_timers(owner)
+            owner.combat_controller.update_attack(owner)
             actions.update(owner, FakeInput(attack=False))
 
         self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK_2)

@@ -65,6 +65,8 @@ class PlayerCombatController:
         if self.update_action_lock(owner):
             return
         self.update_combo_window()
+
+    def update_attack(self, owner):
         self.finish_attack_if_done(owner)
 
     def update_action_lock(self, owner):

@@ -131,6 +131,9 @@ class Player(Character, PlayerState):
         self.grab_controller.update_grabbed_enemy_position(self)
         return moving
 
+    def update_attack(self):
+        self.combat_controller.update_attack(self)
+
     def update_animation(self):
         self.animation_controller.update(self)
 
@@ -162,14 +165,5 @@ class Player(Character, PlayerState):
         )
 
     # Geometry
-    def get_left(self):
-        return self.get_frame_rect().left
-
     def get_top(self):
         return self.get_frame_rect().top
-    
-    def get_right(self):
-        return self.get_frame_rect().right
-    
-    def get_bottom(self):
-        return self.get_frame_rect().bottom

@@ -126,7 +126,7 @@ class Enemy(Character, EnemyState):
         return dx, dy
 
     def update_movement(self, level, player, enemies):
-        self._apply_knockback()
+        self.reaction_controller.apply_knockback(self)
         dx, dy, distance_x, distance_y = self._get_player_distance(player)
         if self.state == self.ATTACK:
             return
@@ -141,9 +141,6 @@ class Enemy(Character, EnemyState):
         self.animation_controller.update(self)
 
     ##### end of main loop update #####
-        
-    def _apply_knockback(self):
-        self.reaction_controller.apply_knockback(self)
 
     def _get_player_distance(self, player):
         return self.movement.get_player_distance(self, player)

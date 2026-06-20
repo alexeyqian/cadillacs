@@ -63,6 +63,7 @@ def _advance_lifecycle_and_timers(game_state):
     player_can_act = not game_state.player.update_lifecycle_state()
     if player_can_act:
         game_state.player.advance_timers()
+        game_state.player.update_attack()
 
     active_enemies = []
     for enemy in game_state.enemies:

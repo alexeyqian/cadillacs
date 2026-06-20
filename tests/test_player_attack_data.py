@@ -86,6 +86,7 @@ class AttackDataTests(unittest.TestCase):
         combat.attack_manager.mark_connected()
         for _ in range(combat.attack_manager.remaining_frames):
             combat.update_timers(owner)
+            combat.update_attack(owner)
 
     def test_standing_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
@@ -239,7 +240,7 @@ class AttackDataTests(unittest.TestCase):
         combat = PlayerCombatController()
 
         combat.start_attack(owner)
-        combat.update_timers(owner)
+        combat.update_attack(owner)
 
         self.assertEqual(combat.attack_manager.elapsed_frames, 1)
         self.assertEqual(
@@ -248,7 +249,7 @@ class AttackDataTests(unittest.TestCase):
         )
 
         for _ in range(DEFAULT_PLAYER_ATTACKS["ATTACK_1"].total_duration - 1):
-            combat.update_timers(owner)
+            combat.update_attack(owner)
 
         self.assertFalse(combat.is_attacking)
         self.assertEqual(combat.attack_manager.elapsed_frames, 0)
@@ -279,7 +280,7 @@ class AttackDataTests(unittest.TestCase):
 
         combat.start_attack(owner)
         for _ in range(attack.windup + attack.active):
-            combat.update_timers(owner)
+            combat.update_attack(owner)
 
         self.assertTrue(combat.is_attacking)
         self.assertFalse(combat.attack_manager.is_active())

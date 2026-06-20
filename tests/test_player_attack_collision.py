@@ -63,7 +63,7 @@ class FakePlayer:
         self.air = None
         self.combat_controller.start_attack(self)
         while not self.combat_controller.attack_manager.is_active():
-            self.combat_controller.update_timers(self)
+            self.combat_controller.update_attack(self)
         self.grab_controller = type("FakeGrab", (), {"grabbed_enemy": None})()
 
     def start_running_attack(self):
@@ -72,7 +72,7 @@ class FakePlayer:
         self.movement.can_run_attack = True
         self.combat_controller.start_attack(self)
         while not self.combat_controller.attack_manager.is_active():
-            self.combat_controller.update_timers(self)
+            self.combat_controller.update_attack(self)
 
     def get_attack_rect(self):
         return pygame.Rect(100, 100, 100, 100)

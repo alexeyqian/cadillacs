@@ -83,7 +83,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         owner.combat_controller.start_attack(owner)
         for _ in range(attack_data.windup):
-            owner.combat_controller.update_timers(owner)
+            owner.combat_controller.update_attack(owner)
 
         attack_rect = hitboxes.get_attack_rect(owner)
 
@@ -100,7 +100,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         owner.combat_controller.start_attack(owner)
         for _ in range(attack_data.windup):
-            owner.combat_controller.update_timers(owner)
+            owner.combat_controller.update_attack(owner)
 
         attack_rect = hitboxes.get_attack_rect(owner)
 
@@ -123,7 +123,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         owner.combat_controller.attack_manager.start(owner.JUMP_ATTACK, attack_data)
         for _ in range(attack_data.windup):
-            owner.combat_controller.update_timers(owner)
+            owner.combat_controller.update_attack(owner)
 
         attack_rect = hitboxes.get_attack_rect(owner)
 

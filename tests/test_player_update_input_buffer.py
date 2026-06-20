@@ -119,6 +119,7 @@ def update_player_frame(player, player_input):
         return
 
     player.advance_timers()
+    player.update_attack()
     player.request_actions(player_input)
     player.update_movement(player_input)
     player.update_animation()
