@@ -37,13 +37,13 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
 
-        died = owner.health.take_damage(damage)
+        owner.health.take_damage(damage)
 
         if owner.health.hp > 0 and self.should_knockdown_from_damage(damage):
             self.knockdown(owner)
             return
 
-        if died:
+        if owner.health.is_dead():
             self.die(owner)
             return
 
@@ -108,9 +108,9 @@ class EnemyReactionController:
             return
 
         self.clear_combat_commitment(owner)
-        died = owner.health.take_damage(damage)
+        owner.health.take_damage(damage)
 
-        if died:
+        if owner.health.is_dead():
             self.die(owner)
             return
 
@@ -121,9 +121,9 @@ class EnemyReactionController:
             return
         self.clear_combat_commitment(owner)
 
-        died = owner.health.take_damage(damage)
+        owner.health.take_damage(damage)
 
-        if died:
+        if owner.health.is_dead():
             self.die(owner)
 
     def clear_combat_commitment(self, owner):

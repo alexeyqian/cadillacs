@@ -43,7 +43,9 @@ class FakeHealth:
         self.hp = hp
 
     def take_damage(self, damage):
-        self.hp -= damage
+        self.hp = max(0, self.hp - damage)
+
+    def is_dead(self):
         return self.hp <= 0
 
 

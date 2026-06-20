@@ -25,7 +25,7 @@ class PlayerLifecycleController:
 
         return True
 
-    def take_damage(self, owner, damage, reaction=None, hit_stun_bonus=0):
+    def take_damage(self, owner, damage, reaction=None):
         if owner.state == owner.DEAD:
             return
 
@@ -41,7 +41,6 @@ class PlayerLifecycleController:
         lost_life = owner.health.take_damage(
             damage,
             reaction=reaction,
-            hit_stun_bonus=hit_stun_bonus,
         )
         owner.state_machine.change_to(owner, owner.HIT)
 

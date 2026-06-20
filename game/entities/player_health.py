@@ -10,28 +10,20 @@ class PlayerHealth(CharacterHealth):
         self.hit_stun_remaining = 0
         self.respawn_remaining = 0
 
-    # A counter-hit should feel like “you got caught during your attack,” not just ordinary damage.
-    def take_damage(self, damage, reaction=None, hit_stun_bonus=0):
-        # Legacy callers used the second positional argument as hit_stun_bonus.
-        if isinstance(reaction, (int, float)) and hit_stun_bonus == 0:
-            hit_stun_bonus = reaction
-            reaction = None
+    def take_damage(self, damage, reaction=None):
+        self.hit_stun_remaining = self.get_hit_stun_frames(reaction)
 
-        self.hit_stun_remaining = self.get_hit_stun_frames(
-            reaction,
-            hit_stun_bonus,
-        )
-
-        if self.apply_damage(damage):
+        self.apply_damage(damage)
+        if self.is_dead():
             return self.lose_life()
 
         return False
 
-    def get_hit_stun_frames(self, reaction=None, hit_stun_bonus=0):
+    def get_hit_stun_frames(self, reaction=None):
         if isinstance(reaction, HitReaction) and reaction.stun_frames is not None:
             return reaction.stun_frames
 
-        return self.hit_stun_duration + hit_stun_bonus
+        return self.hit_stun_duration
 
     def lose_life(self):
         self.lives -= 1
@@ -57,6 +49,6 @@ class PlayerHealth(CharacterHealth):
             self.respawn_remaining -= 1
 
     def reset_for_respawn(self):
-        self.restore_full()
+        self.hp = self.max_hp
         self.hit_stun_remaining = 0
         self.respawn_remaining = 0

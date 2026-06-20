@@ -4,15 +4,7 @@ class CharacterHealth:
         self.hp = max_hp
 
     def apply_damage(self, damage):
-        self.hp -= damage
-        if self.hp <= 0:
-            self.hp = 0
-            return True
+        self.hp = max(0, self.hp - damage)
 
-        return False
-
-    def restore_full(self):
-        self.hp = self.max_hp
-
-    def is_depleted(self):
+    def is_dead(self):
         return self.hp <= 0

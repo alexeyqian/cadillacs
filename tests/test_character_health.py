@@ -7,18 +7,17 @@ from game.entities.player_health import PlayerHealth
 def test_character_health_applies_damage_and_clamps_to_zero():
     health = CharacterHealth(max_hp=30)
 
-    depleted = health.apply_damage(40)
+    result = health.apply_damage(40)
 
-    assert depleted is True
+    assert result is None
     assert health.hp == 0
-    assert health.is_depleted() is True
 
 
 def test_character_health_can_restore_full_hp():
     health = CharacterHealth(max_hp=30)
     health.apply_damage(10)
 
-    health.restore_full()
+    health.hp = health.max_hp
 
     assert health.hp == 30
 
@@ -26,9 +25,10 @@ def test_character_health_can_restore_full_hp():
 def test_enemy_health_uses_shared_depletion_logic():
     health = EnemyHealth(max_hp=20)
 
-    assert health.take_damage(10) is False
+    assert health.take_damage(10) is None
     assert health.hp == 10
-    assert health.take_damage(10) is True
+    assert health.is_dead() is False
+    assert health.take_damage(10) is None
     assert health.is_dead() is True
 
 
@@ -50,15 +50,6 @@ def test_player_health_accepts_shared_hit_reaction_stun_frames():
 
     assert health.hp == 45
     assert health.hit_stun_remaining == 14
-
-
-def test_player_health_keeps_legacy_hit_stun_bonus_argument():
-    health = PlayerHealth(max_hp=50, lives=1, hit_stun_duration=8)
-
-    health.take_damage(5, 3)
-
-    assert health.hp == 45
-    assert health.hit_stun_remaining == 11
 
 
 def test_player_health_advance_timers_updates_hit_stun():

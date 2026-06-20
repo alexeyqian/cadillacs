@@ -152,7 +152,7 @@ class Player(Character, PlayerState):
 
         return self.combat_controller.attacks.get(attack_name)
 
-    def take_damage(self, damage, reaction=None, hit_stun_bonus=0):
+    def take_damage(self, damage, reaction=None):
         if isinstance(damage, DamageRequest):
             reaction = damage.reaction
             damage = damage.damage
@@ -161,7 +161,6 @@ class Player(Character, PlayerState):
             self,
             damage,
             reaction=reaction,
-            hit_stun_bonus=hit_stun_bonus,
         )
 
     # todo: should return hurbox top?

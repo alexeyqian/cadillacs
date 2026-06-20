@@ -6,7 +6,4 @@ class EnemyHealth(CharacterHealth):
         super().__init__(max_hp)
 
     def take_damage(self, damage):
-        return self.apply_damage(damage)
-
-    def is_dead(self):
-        return self.is_depleted()
+        self.apply_damage(damage)
