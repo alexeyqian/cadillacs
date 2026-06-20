@@ -12,7 +12,6 @@ class PlayerLifecycleController:
 
     def update_dead_state(self, owner):
         self.update_respawn(owner)
-        owner.animation_controller.update(owner)
 
     def update_hit_state(self, owner):
         if owner.health.hit_stun_remaining <= 0:
@@ -24,7 +23,6 @@ class PlayerLifecycleController:
         else:
             owner.state_machine.change_to(owner, owner.IDLE)
 
-        owner.animation_controller.update(owner)
         return True
 
     def take_damage(self, owner, damage, reaction=None, hit_stun_bonus=0):

@@ -24,16 +24,19 @@ class RaptorEnemy(Enemy):
     def update(self, level, player, enemies):
         super().update(level, player, enemies)
 
-    def update_timers(self):
+    def advance_timers(self):
         if self.leap_cooldown > 0:
             self.leap_cooldown -= 1
-        super().update_timers()
+        super().advance_timers()
 
     def start_attack(self):
         super().start_attack()
         self.has_leaped_this_attack = False
 
     def update_attack(self, level, player):
+        if self.state != self.ATTACK:
+            return
+
         if self.should_leap_now():
             self.leap_toward_player(player)
             self.leap_cooldown = self.leap_cooldown_duration

@@ -19,7 +19,6 @@ from game.systems.loot_system import (
     create_object_loot,
     update_loot_pickup,
 )
-from game.systems.manager_system import update_manager_system
 from game.systems.player_input_system import update_player_input_system
 from game.systems.projectile_system import (
     collect_enemy_projectile,
@@ -28,6 +27,8 @@ from game.systems.projectile_system import (
 )
 from game.systems.wave_system import update_wave_completion, update_wave_system
 
+# Frame order: timers -> intentions -> movement -> collision -> combat -> lifecycle.
+# Camera and render happen after gameplay in main.py.
 def update_gameplay(game_state, keys):
     # 1. Convert Player Keys Input to game logic input
     player_input = PlayerInput(keys)
@@ -55,21 +56,22 @@ def update_gameplay(game_state, keys):
 
     # 9. Spawn / Cleanup, then presentation state before camera/render
     _update_lifecycle(game_state)
-    _update_presentation(game_state, active_enemies, player_can_act)
+    _update_presentation(game_state)
 
 
 def _advance_lifecycle_and_timers(game_state):
     player_can_act = not game_state.player.update_lifecycle_state()
-    game_state.player.update_timers()
-    update_manager_system(game_state)
+    if player_can_act:
+        game_state.player.advance_timers()
+    game_state.score_manager.update()
+    game_state.announcement_manager.update()
+    game_state.stage_clear_manager.update()
 
     active_enemies = []
     for enemy in game_state.enemies:
-        if enemy.update_special_lifecycle():
+        if enemy.update_lifecycle_state():
             continue
-        enemy.update_timers()
-        if enemy.update_hit_state():
-            continue
+        enemy.advance_timers()
         active_enemies.append(enemy)
 
     return player_can_act, active_enemies
@@ -77,7 +79,7 @@ def _advance_lifecycle_and_timers(game_state):
 
 def _update_enemy_decisions(game_state, active_enemies):
     for enemy in active_enemies:
-        enemy.update_ai_state(game_state.level, game_state.player, game_state.enemies)
+        enemy.update_ai(game_state.level, game_state.player, game_state.enemies)
 
 
 def _request_player_actions(game_state, keys, player_input, player_can_act):
@@ -98,7 +100,7 @@ def _update_character_movement(game_state, player_input, player_can_act, active_
 
     for enemy in active_enemies:
         enemy.apply_knockback()
-        enemy.update_movement_state(game_state.level, game_state.player, game_state.enemies)
+        enemy.update_movement(game_state.level, game_state.player, game_state.enemies)
 
     apply_enemy_level_bounds(game_state)
     apply_player_level_bounds(game_state)
@@ -128,8 +130,7 @@ def _update_combat(game_state, active_enemies):
     for enemy in active_enemies:
         if enemy.state == enemy.DEAD:
             continue
-        enemy.update_animation()
-        enemy.update_attack_state(game_state.level, game_state.player)
+        enemy.update_attack(game_state.level, game_state.player)
 
 
 def _update_lifecycle(game_state):
@@ -151,15 +152,13 @@ def _update_lifecycle(game_state):
     # complete current wave using cleaned enemy list
     update_wave_completion(game_state)
     # spawn/start next wave late, for next frame logic
-    #  If cleanup hasn’t run yet, 
+    # If cleanup has not run yet,
     # dead/removable enemies still count and can delay spawning by one frame.
     update_wave_system(game_state)
 
 
-def _update_presentation(game_state, active_enemies, player_can_act):
-    if player_can_act:
-        game_state.player.update_animation()
+def _update_presentation(game_state):
+    game_state.player.update_animation()
 
-    for enemy in active_enemies:
-        if enemy.state != enemy.ATTACK:
-            enemy.update_animation()
+    for enemy in game_state.enemies:
+        enemy.update_animation()

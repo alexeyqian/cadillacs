@@ -107,9 +107,10 @@ class Player(Character, PlayerState):
 
     def update(self, player_input):
         if self.update_lifecycle_state():
+            self.update_animation()
             return
 
-        self.update_timers()
+        self.advance_timers()
         self.request_actions(player_input)
         moving = self.update_movement(player_input)
         self.update_jump_physics(player_input)
@@ -146,7 +147,7 @@ class Player(Character, PlayerState):
         self.animation_controller.update(self)
 
     # Timers
-    def update_timers(self):
+    def advance_timers(self):
         self.combat_controller.update_timers(self)
         self.grab_controller.update_timers(self)
         self.movement.update_timers()

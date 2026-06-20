@@ -103,27 +103,23 @@ class Enemy(Character, EnemyState):
         self.score_points = config.score_points
 
     def update(self, level, player, enemies):
-        if self.update_special_lifecycle():
+        if self.update_lifecycle_state():
+            self.update_animation()
             return
 
-        self.update_timers()
-
-        if self.update_hit_state():
-            return
-
+        self.advance_timers()
         self.apply_knockback()
-        self.update_ai_state(level, player, enemies)
-        self.update_movement_state(level, player, enemies)
+        self.update_ai(level, player, enemies)
+        self.update_movement(level, player, enemies)
         self.update_animation()
 
-    def update_special_lifecycle(self):
-        return self.lifecycle_controller.update_special_states(self)
-
-    def update_timers(self):
-        self.lifecycle_controller.update_timers(self)
-
-    def update_hit_state(self):
+    def update_lifecycle_state(self):
+        if self.lifecycle_controller.update_special_states(self):
+            return True
         return self.lifecycle_controller.update_hit_state(self)
+
+    def advance_timers(self):
+        self.lifecycle_controller.update_timers(self)
 
     def apply_knockback(self):
         self.reaction_controller.apply_knockback(self)
@@ -131,7 +127,7 @@ class Enemy(Character, EnemyState):
     def get_player_distance(self, player):
         return self.movement.get_player_distance(self, player)
 
-    def update_ai_state(self, level, player, enemies):
+    def update_ai(self, level, player, enemies):
         dx, dy, distance_x, distance_y = self.movement.get_player_distance(self, player)
 
         if distance_x <= self.movement.detect_range:
@@ -142,16 +138,16 @@ class Enemy(Character, EnemyState):
         )
         return dx, dy
 
-    def update_movement_state(self, level, player, enemies):
+    def update_movement(self, level, player, enemies):
         dx, dy, distance_x, distance_y = self.get_player_distance(player)
         if self.state == self.ATTACK:
             return
         self.state_controller.execute_movement_state(self, level, player, enemies, dx, dy)
 
-    def update_attack_state(self, level, player):
+    def update_attack(self, level, player):
         if self.state != self.ATTACK:
             return
-        self.update_attack(level, player)
+        self.combat_controller.update_attack(self, level, player)
 
     def update_animation(self):
         self.animation_controller.update(self)
@@ -196,9 +192,6 @@ class Enemy(Character, EnemyState):
     # Combat
     def start_attack(self):
         self.combat_controller.start_attack(self)
-
-    def update_attack(self, level, player):
-        self.combat_controller.update_attack(self, level, player)
 
     # Loot
     def create_loot(self):

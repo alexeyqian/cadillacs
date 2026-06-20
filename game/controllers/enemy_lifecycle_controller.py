@@ -8,11 +8,9 @@ class EnemyLifecycleController:
         if owner.life_cycle.has_action_lock():
             owner.life_cycle.tick_action_lock()
             owner.state = owner.RECOIL
-            owner.animation_controller.update(owner)
             return True
         
         if owner.state == owner.GRABBED:
-            owner.animation_controller.update(owner)
             return True
 
         if owner.state == owner.THROWN:
@@ -35,20 +33,14 @@ class EnemyLifecycleController:
             owner.life_cycle.start_knockdown(60)
             owner.life_cycle.stop_thrown_motion()
 
-        owner.animation_controller.update(owner)
-
     def update_knockdown_state(self, owner):
         if owner.life_cycle.tick_knockdown():
             owner.state = owner.GETUP
             owner.life_cycle.start_getup(20)
 
-        owner.animation_controller.update(owner)
-
     def update_getup_state(self, owner):
         if owner.life_cycle.tick_getup():
             owner.state = owner.IDLE
-
-        owner.animation_controller.update(owner)
 
     def update_hit_state(self, owner):
         if not owner.life_cycle.has_hit_stun():
@@ -62,8 +54,6 @@ class EnemyLifecycleController:
         else:
             owner.state = owner.HIT
 
-        owner.animation_controller.update(owner)
-
         return True
 
     def update_dead_state(self, owner):
@@ -71,8 +61,6 @@ class EnemyLifecycleController:
             owner.life_cycle.begin_death_countdown()
 
         owner.life_cycle.tick_death()
-
-        owner.animation_controller.update(owner)
 
     def update_timers(self, owner):
         owner.combat_controller.update_timers()

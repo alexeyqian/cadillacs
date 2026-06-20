@@ -88,12 +88,19 @@ Apply pending `DamageRequest`s: reduce HP, trigger hit stun, start knockback, ch
 
 ---
 
-### 10. Camera Update
-Follow player/action center. Runs after all positions are final so the camera tracks actual this-frame positions, not last-frame.
+### 10. Animation Update
+Advance animation frames for all entities based on their final state this frame.
+
+**Why before camera:** animation commits the final visual representation of each entity — sprite frame, facing direction, any frame-level offsets. The camera should track this committed visual state, not last frame's.
 
 ---
 
-### 11. Render
+### 11. Camera Update
+Follow player/action center. Runs after animation so the camera tracks the entity's final visual state, not an intermediate one.
+
+---
+
+### 12. Render
 Draw everything. Always last — you render the final committed state of the world.
 
 ---
@@ -112,8 +119,9 @@ Draw everything. Always last — you render the final committed state of the wor
 | 8 | Hitbox vs hurtbox | Needs final positions; produces damage requests |
 | 9 | Damage/reactions | Consumes damage requests cleanly |
 | 10 | Spawn/cleanup | Safe to add/remove after all iteration |
-| 11 | Camera | Tracks final positions |
-| 12 | Render | Always last |
+| 11 | Animation update | Commits final visual state before camera reads it |
+| 12 | Camera | Tracks final position and visual state |
+| 13 | Render | Always last |
 
 ---
 
