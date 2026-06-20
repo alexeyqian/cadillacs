@@ -18,7 +18,7 @@ class FakeMovement:
         self.run_attack_momentum_started = False
         self.can_run_attack = False
         self.last_run_attack_distance = 0
-        self.attack_3_nudge_started = False
+        self.combo_finisher_nudge_started = False
         self.run_attack_cooldown_started = False
 
     def can_start_run_attack(self):
@@ -30,8 +30,8 @@ class FakeMovement:
     def start_run_attack_cooldown(self):
         self.run_attack_cooldown_started = True
 
-    def start_attack_3_nudge(self, owner):
-        self.attack_3_nudge_started = True
+    def start_combo_finisher_nudge(self, owner):
+        self.combo_finisher_nudge_started = True
 
 
 class FakeStateMachine:
@@ -375,7 +375,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK_3)
-        self.assertTrue(owner.movement.attack_3_nudge_started)
+        self.assertTrue(owner.movement.combo_finisher_nudge_started)
 
     def test_third_combo_hit_resets_when_followup_is_too_late(self):
         owner = FakeOwner()

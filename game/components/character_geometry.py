@@ -73,19 +73,19 @@ class CharacterGeometry:
 
     def get_collision_rect(self, owner):
         box = pygame.Rect(
-            -1 * self._get_collision_box_w(owner) // 2,
-            -1 * self._get_collision_box_h(owner),
-            self._get_collision_box_w(owner),
-            self._get_collision_box_h(owner),
+            -1 * self.collision_box_w // 2,
+            -1 * self.collision_box_h,
+            self.collision_box_w,
+            self.collision_box_h,
         )
         return self._rect_to_world(owner, box)
 
     def get_hurt_rect(self, owner):
         box = pygame.Rect(
-            self._get_hurt_box_offset_x(owner),
-            self._get_hurt_box_offset_y(owner),
-            self._get_hurt_box_w(owner),
-            self._get_hurt_box_h(owner),
+            self.hurt_box_offset_x,
+            self.hurt_box_offset_y,
+            self.hurt_box_w,
+            self.hurt_box_h,
         )
         return self._rect_to_world(owner, box)
 
@@ -128,21 +128,3 @@ class CharacterGeometry:
         if not owner.air:
             return owner.y
         return owner.air.get_visual_y(owner.y)
-
-    def _get_collision_box_w(self, owner):
-        return self.collision_box_w
-
-    def _get_collision_box_h(self, owner):
-        return self.collision_box_h
-
-    def _get_hurt_box_w(self, owner):
-        return self.hurt_box_w
-
-    def _get_hurt_box_h(self, owner):
-        return self.hurt_box_h
-
-    def _get_hurt_box_offset_x(self, owner):
-        return self.hurt_box_offset_x
-
-    def _get_hurt_box_offset_y(self, owner):
-        return self.hurt_box_offset_y

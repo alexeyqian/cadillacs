@@ -5,8 +5,6 @@ from game.entities.projectile import Projectile
 class PlayerWeaponSlot:
     def __init__(self):
         self.weapon = None
-        self.fire_pressed = False
-        self.drop_pressed = False
 
     def pick_up(self, weapon):
         self.weapon = weapon

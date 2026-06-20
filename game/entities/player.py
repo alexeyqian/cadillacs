@@ -88,7 +88,6 @@ class Player(Character, PlayerState):
             self.air,
             run_attack_min_distance=self.run_attack_min_distance,
         )
-        self.movement.ground_y = self.y
         self.weapon_slot = PlayerWeaponSlot()
         self.events = GameEventQueue()
         if not self.geometry:

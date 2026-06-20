@@ -12,16 +12,16 @@ class PlayerActionController:
 
     def update_jump_input(self, owner, player_input):
         if player_input.jump:
-            if not owner.movement.jump_pressed:
+            if not owner.input_state.jump_pressed:
                 self.buffer_and_try_action(
                     owner,
                     self.JUMP_ACTION,
                     self.JUMP_BUFFER_FRAMES,
                     lambda: self.try_start_jump(owner, player_input),
                 )
-                owner.movement.jump_pressed = True
+                owner.input_state.jump_pressed = True
         else:
-            owner.movement.jump_pressed = False
+            owner.input_state.jump_pressed = False
 
         self.try_buffered_action(
             owner,
@@ -71,11 +71,11 @@ class PlayerActionController:
 
     def update_fire_input(self, owner, player_input):
         if player_input.fire:
-            if not owner.weapon_slot.fire_pressed:
+            if not owner.input_state.fire_pressed:
                 owner.weapon_slot.fire(owner)
-                owner.weapon_slot.fire_pressed = True
+                owner.input_state.fire_pressed = True
         else:
-            owner.weapon_slot.fire_pressed = False
+            owner.input_state.fire_pressed = False
 
     def try_start_jump(self, owner, player_input):
         previous_state = owner.state

@@ -5,18 +5,15 @@ from game.controllers.player_lifecycle_controller import PlayerLifecycleControll
 
 class FakeMovement:
     def __init__(self):
-        self.ground_y = 0
         self.is_jumping = True
-        self.vx = 3
-        self.vy = -4
         self.cancelled_run_attack_momentum = False
-        self.cancelled_attack_nudge = False
+        self.cancelled_combo_finisher_nudge = False
 
     def cancel_run_attack_momentum(self):
         self.cancelled_run_attack_momentum = True
 
-    def cancel_attack_nudge(self):
-        self.cancelled_attack_nudge = True
+    def cancel_combo_finisher_nudge(self):
+        self.cancelled_combo_finisher_nudge = True
 
 
 class FakeAir:
@@ -61,12 +58,9 @@ def test_player_reset_for_stage_start_resets_runtime_position_state():
     assert player.y == 340
     assert player.lifecycle_controller.respawn_x == 120
     assert player.lifecycle_controller.respawn_y == 340
-    assert player.movement.ground_y == 340
     assert player.movement.is_jumping is False
-    assert player.movement.vx == 0
-    assert player.movement.vy == 0
     assert player.movement.cancelled_run_attack_momentum is True
-    assert player.movement.cancelled_attack_nudge is True
+    assert player.movement.cancelled_combo_finisher_nudge is True
     assert player.air.reset_called is True
     assert player.state == player.IDLE
     assert player.facing_right is True

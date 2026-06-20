@@ -23,7 +23,6 @@ class FakeMovement:
     def __init__(self):
         self.is_running = False
         self.is_jumping = False
-        self.jump_pressed = False
         self.last_run_attack_distance = 0
 
     def update_timers(self):
@@ -46,13 +45,13 @@ class FakeMovement:
     def start_run_attack_momentum(self, owner):
         pass
 
-    def start_attack_3_nudge(self, owner):
+    def start_combo_finisher_nudge(self, owner):
         pass
 
     def cancel_run_attack_momentum(self):
         pass
 
-    def cancel_attack_nudge(self):
+    def cancel_combo_finisher_nudge(self):
         pass
 
 
@@ -67,7 +66,6 @@ class FakeGrab:
 
 
 class FakeWeaponSlot:
-    fire_pressed = False
     weapon = None
 
     def fire(self, owner):

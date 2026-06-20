@@ -37,7 +37,7 @@ class PlayerLifecycleController:
         # Player must restart pressure after recovering
         owner.combat_controller.cancel_attack()
         owner.movement.cancel_run_attack_momentum()
-        owner.movement.cancel_attack_nudge()
+        owner.movement.cancel_combo_finisher_nudge()
         owner.grab_controller.grabbed_enemy = None
 
         lost_life = owner.health.take_damage(
@@ -71,11 +71,8 @@ class PlayerLifecycleController:
     def reset_position_and_movement(self, owner, x, y):
         owner.x = x
         owner.y = y
-        owner.movement.ground_y = y
-        owner.movement.vx = 0
-        owner.movement.vy = 0
         owner.movement.is_jumping = False
         if owner.air:
             owner.air.reset()
         owner.movement.cancel_run_attack_momentum()
-        owner.movement.cancel_attack_nudge()
+        owner.movement.cancel_combo_finisher_nudge()

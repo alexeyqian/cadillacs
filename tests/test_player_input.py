@@ -78,5 +78,7 @@ def test_player_input_state_defaults_edge_flags_to_false():
     input_state = PlayerInputState()
 
     assert input_state.attack_pressed is False
+    assert input_state.jump_pressed is False
     assert input_state.jump_attack_pressed is False
+    assert input_state.fire_pressed is False
     assert input_state.run_attack_requires_attack_release is False

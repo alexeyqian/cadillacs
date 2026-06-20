@@ -39,8 +39,7 @@ class PlayerRenderer:
         else:
             sprite_world_x = owner.x - image.get_width() - offset_x
 
-        air = getattr(owner, "air", None)
-        visual_y = air.get_visual_y(owner.y) if air else owner.y
+        visual_y = owner.air.get_visual_y(owner.y) if owner.air else owner.y
         sprite_y = visual_y + offset_y
         screen.blit(image, (sprite_world_x - camera_x, sprite_y))
 
@@ -54,11 +53,7 @@ class PlayerRenderer:
 
         pygame.draw.rect(screen, (100, 100, 100), (hb_x, hb_y, hb_w, hb_h))
 
-        try:
-            fill_ratio = max(0.0, min(1.0, float(owner.health.hp) / float(owner.health.max_hp)))
-        except Exception:
-            fill_ratio = 0
-
+        fill_ratio = max(0.0, min(1.0, float(owner.health.hp) / float(owner.health.max_hp)))
         hp_w = int(hb_w * fill_ratio)
         pygame.draw.rect(screen, (0, 255, 0), (hb_x, hb_y, hp_w, hb_h))
 

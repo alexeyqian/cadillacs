@@ -48,7 +48,7 @@ def clamp_to_world_and_lane(
         raise ValueError(f"{owner_name}.apply_world_bounds requires lane_top and lane_bottom")
 
     if half_width is None:
-        half_width = getattr(owner, "collision_box_w", getattr(owner, "width", 0)) // 2
+        raise ValueError(f"{owner_name}.apply_world_bounds requires half_width")
 
     owner.x = max(half_width, owner.x)
     owner.x = min(owner.x, world_width - half_width)

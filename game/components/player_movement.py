@@ -10,11 +10,6 @@ class PlayerMovement:
         self.run = PlayerRunMovement(run_attack_min_distance)
         self.attack_motion = PlayerAttackMovement()
         self.jump = PlayerJumpMovement(air_state)
-        self.jump_pressed = False
-
-    @property
-    def air_state(self):
-        return self.jump.air_state
 
     @property
     def is_jumping(self):
@@ -39,30 +34,6 @@ class PlayerMovement:
     @last_run_attack_distance.setter
     def last_run_attack_distance(self, value):
         self.attack_motion.last_run_attack_distance = value
-
-    @property
-    def ground_y(self):
-        return self.jump.ground_y
-
-    @ground_y.setter
-    def ground_y(self, value):
-        self.jump.ground_y = value
-
-    @property
-    def vx(self):
-        return self.jump.vx
-
-    @vx.setter
-    def vx(self, value):
-        self.jump.vx = value
-
-    @property
-    def vy(self):
-        return self.jump.vy
-
-    @vy.setter
-    def vy(self, value):
-        self.jump.vy = value
 
     def update_timers(self):
         self.run.update_timers()
@@ -90,20 +61,14 @@ class PlayerMovement:
         )
         self.run.run_distance = 0
 
-    def update_run_attack_momentum(self, owner):
-        return self.attack_motion.update_run_attack_momentum(owner)
-
     def cancel_run_attack_momentum(self):
         self.attack_motion.cancel_run_attack_momentum()
 
-    def start_attack_3_nudge(self, owner):
-        self.attack_motion.start_attack_3_nudge(owner)
+    def start_combo_finisher_nudge(self, owner):
+        self.attack_motion.start_combo_finisher_nudge(owner)
 
-    def update_attack_nudge(self, owner):
-        return self.attack_motion.update_attack_nudge(owner)
-
-    def cancel_attack_nudge(self):
-        self.attack_motion.cancel_attack_nudge()
+    def cancel_combo_finisher_nudge(self):
+        self.attack_motion.cancel_combo_finisher_nudge()
 
     def update_jump_physics(self, owner, player_input):
         self.jump.update_jump_physics(owner, player_input)

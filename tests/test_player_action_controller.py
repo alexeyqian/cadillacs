@@ -11,7 +11,6 @@ class FakeMovement:
     def __init__(self):
         self.is_running = True
         self.is_jumping = False
-        self.jump_pressed = False
         self.run_attack_momentum_started = False
         self.can_run_attack = True
         self.last_run_attack_distance = 0
@@ -34,7 +33,6 @@ class FakeStateMachine:
 class FakeWeaponSlot:
     def __init__(self):
         self.weapon = None
-        self.fire_pressed = False
 
     def fire(self, owner):
         pass

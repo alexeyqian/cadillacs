@@ -4,9 +4,6 @@ from game.components.movement_math import get_input_direction
 class PlayerJumpMovement:
     def __init__(self, air_state=None):
         self.air_state = air_state
-        self.ground_y = 0
-        self.vx = 0
-        self.vy = 0
 
     @property
     def is_jumping(self):
@@ -55,8 +52,6 @@ class PlayerJumpMovement:
         if not landed:
             return
 
-        self.vx = 0
-        self.vy = 0
         owner.input_state.jump_attack_pressed = False
         if owner.combat_controller.current_attack_name == owner.JUMP_ATTACK:
             owner.combat_controller.cancel_attack()
@@ -79,9 +74,6 @@ class PlayerJumpMovement:
             return
         if owner.grab_controller.grabbed_enemy:
             return
-
-        self.ground_y = owner.y
-        self.vx = 0
 
         direction_x, direction_y = get_input_direction(player_input)
         if direction_x < 0:

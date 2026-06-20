@@ -292,30 +292,33 @@ class PlayerMovementTests(unittest.TestCase):
         self.assertEqual(owner.state, owner.LANDING)
         self.assertIsNone(owner.combat_controller.current_attack_name)
 
-    def test_attack_3_nudge_moves_forward_briefly(self):
+    def test_combo_finisher_nudge_moves_forward_briefly(self):
         owner = FakeOwner()
         movement = PlayerMovement()
         owner.combat_controller.is_attacking = True
         owner.combat_controller.current_attack_name = owner.ATTACK_3
 
-        movement.start_attack_3_nudge(owner)
-        starting_nudge = movement.attack_motion.attack_nudge_remaining
+        movement.start_combo_finisher_nudge(owner)
+        starting_nudge = movement.attack_motion.combo_finisher_nudge_remaining
         moved = movement.update_movement(owner, FakeInput())
 
         self.assertTrue(moved)
         self.assertGreater(owner.x, 300)
-        self.assertEqual(movement.attack_motion.attack_nudge_remaining, starting_nudge - 1)
+        self.assertEqual(
+            movement.attack_motion.combo_finisher_nudge_remaining,
+            starting_nudge - 1,
+        )
 
-    def test_attack_3_nudge_can_be_canceled(self):
+    def test_combo_finisher_nudge_can_be_canceled(self):
         owner = FakeOwner()
         movement = PlayerMovement()
 
-        movement.start_attack_3_nudge(owner)
-        movement.cancel_attack_nudge()
+        movement.start_combo_finisher_nudge(owner)
+        movement.cancel_combo_finisher_nudge()
 
-        self.assertEqual(movement.attack_motion.attack_nudge_remaining, 0)
-        self.assertEqual(movement.attack_motion.attack_nudge_direction, 0)
-        self.assertEqual(movement.attack_motion.attack_nudge_speed, 0)
+        self.assertEqual(movement.attack_motion.combo_finisher_nudge_remaining, 0)
+        self.assertEqual(movement.attack_motion.combo_finisher_nudge_direction, 0)
+        self.assertEqual(movement.attack_motion.combo_finisher_nudge_speed, 0)
 
 
 if __name__ == "__main__":
