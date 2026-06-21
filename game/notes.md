@@ -58,3 +58,31 @@ enemy.update_ai(context)        # decide intent/state only
 enemy.update_movement(context)  # execute movement intent
 enemy.update_attack(context)    # execute attack intent
 enemy.update_animation()
+
+def _advance_timers(game_state, active_enemies):
+    game_state.player.advance_timers()
+
+    for enemy in active_enemies:
+        enemy.advance_timers()
+
+    for projectile in game_state.player_projectiles:
+        projectile.advance_timers()
+
+    for projectile in game_state.enemy_projectiles:
+        projectile.advance_timers()
+
+    game_state.advance_timers()
+
+The right hybrid approach
+DataUnitReasonvelocity, gravity, timersseconds (dt)frame-rate independent, physics correctstartup_frames, active_frames, recovery_framesframesdesigner-facing, deterministic, genre conventionPhysics simulation stepfixed dt (e.g. 1/60s)deterministic collision, same as frame count but expressed clearly
+
+int() in Python truncates toward zero. For damage you probably want floor (always round down, favoring the defender slightly), which int() achieves for positive values. But make the intent explicit.
+The rounding policy is a design decision worth naming explicitly in the code rather than leaving as an implicit side effect of the type conversion.
+
+class CollisionLayer(IntFlag):
+    NONE       = 0
+    PLAYER     = auto()
+    ENEMY      = auto()
+    PROJECTILE = auto()
+    WORLD      = auto()
+    PICKUP     = auto()

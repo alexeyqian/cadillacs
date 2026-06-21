@@ -153,10 +153,10 @@ class PlayerMovementTests(unittest.TestCase):
         movement.start_run_attack_cooldown(frames=2)
         self.assertFalse(movement.can_start_run_attack())
 
-        movement.update_timers()
+        movement.advance_timers()
         self.assertFalse(movement.can_start_run_attack())
 
-        movement.update_timers()
+        movement.advance_timers()
         self.assertTrue(movement.can_start_run_attack())
 
     def test_run_attack_records_run_distance_before_consuming_it(self):

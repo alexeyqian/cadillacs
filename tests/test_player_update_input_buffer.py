@@ -28,7 +28,7 @@ class FakeMovement:
         self.moving = False
         self.last_run_attack_distance = 0
 
-    def update_timers(self):
+    def advance_timers(self):
         pass
 
     def update_movement(self, owner, player_input):
@@ -61,7 +61,7 @@ class FakeMovement:
 class FakeGrab:
     grabbed_enemy = None
 
-    def update_timers(self, owner):
+    def advance_timers(self, owner):
         pass
 
     def update_grabbed_enemy_position(self, owner):

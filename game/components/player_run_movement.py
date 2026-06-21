@@ -21,7 +21,7 @@ class PlayerRunMovement:
         self.left_was_down = False
         self.right_was_down = False
 
-    def update_timers(self):
+    def advance_timers(self):
         if self.double_tap_timer > 0:
             self.double_tap_timer -= 1
         if self.run_attack_cooldown_remaining > 0:

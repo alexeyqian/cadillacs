@@ -91,6 +91,6 @@ class EnemyCombatController:
             return ""
         return self.attack_manager.get_timing_label()
 
-    def update_timers(self):
+    def advance_timers(self):
         if self.cooldown_remaining > 0:
             self.cooldown_remaining -= 1

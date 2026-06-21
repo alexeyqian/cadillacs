@@ -112,8 +112,8 @@ class Enemy(Character, EnemyState):
         return self.lifecycle_controller.update_lifecycle_state(self)
 
     def advance_timers(self):
-        self.combat_controller.update_timers()
-        self.flanking.update_timers()
+        self.combat_controller.advance_timers()
+        self.flanking.advance_timers()
 
     def update_ai(self, context):
         self.ai_controller.update(self, context)

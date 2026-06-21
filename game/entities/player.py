@@ -122,9 +122,10 @@ class Player(Character, PlayerState):
         return was_in_hit_stun
 
     def advance_timers(self):
-        self.combat_controller.update_timers(self)
-        self.grab_controller.update_timers(self)
-        self.movement.update_timers()
+        self.action_controller.advance_timers(self)
+        self.combat_controller.advance_timers(self)
+        self.grab_controller.advance_timers(self)
+        self.movement.advance_timers()
 
     def request_actions(self, context):
         self.action_controller.update(self, context.player_input)

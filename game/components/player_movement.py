@@ -36,8 +36,8 @@ class PlayerMovement:
     def last_run_attack_distance(self, value):
         self.attack_motion.last_run_attack_distance = value
 
-    def update_timers(self):
-        self.run.update_timers()
+    def advance_timers(self):
+        self.run.advance_timers()
 
     # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):

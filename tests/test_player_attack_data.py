@@ -85,7 +85,7 @@ class AttackDataTests(unittest.TestCase):
     def finish_connected_attack(self, combat, owner):
         combat.attack_manager.mark_connected()
         for _ in range(combat.attack_manager.remaining_frames):
-            combat.update_timers(owner)
+            combat.advance_timers(owner)
             combat.update_attack(owner)
 
     def test_standing_attack_duration_comes_from_attack_data(self):
@@ -346,7 +346,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
         self.finish_connected_attack(combat, owner)
         for _ in range(13):
-            combat.update_timers(owner)
+            combat.advance_timers(owner)
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK_2)
@@ -358,7 +358,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
         self.finish_connected_attack(combat, owner)
         for _ in range(14):
-            combat.update_timers(owner)
+            combat.advance_timers(owner)
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK_1)
@@ -372,7 +372,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
         self.finish_connected_attack(combat, owner)
         for _ in range(6):
-            combat.update_timers(owner)
+            combat.advance_timers(owner)
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK_3)
@@ -387,7 +387,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
         self.finish_connected_attack(combat, owner)
         for _ in range(7):
-            combat.update_timers(owner)
+            combat.advance_timers(owner)
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK_1)
@@ -407,7 +407,7 @@ class AttackDataTests(unittest.TestCase):
         self.assertEqual(owner.state, owner.IDLE)
 
         for _ in range(24):
-            combat.update_timers(owner)
+            combat.advance_timers(owner)
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK_1)

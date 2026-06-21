@@ -22,7 +22,7 @@ class EnemyFlanking:
     def has_target(self):
         return self.target_side is not None
 
-    def update_timers(self):
+    def advance_timers(self):
         if self.decision_remaining > 0:
             self.decision_remaining -= 1
 

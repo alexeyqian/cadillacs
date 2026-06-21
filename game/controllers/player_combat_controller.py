@@ -61,7 +61,7 @@ class PlayerCombatController:
     # That means the player can “charge” into ATTACK_3 by punching air, 
     # then walk in and land the stronger hit. 
     # The combo damage has to be earned.
-    def update_timers(self, owner):
+    def advance_timers(self, owner):
         if self.update_action_lock(owner):
             return
         self.update_combo_window()

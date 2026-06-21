@@ -9,7 +9,9 @@ class PlayerActionController:
         self._update_jump_input(owner, player_input)
         self._update_attack_input(owner, player_input)
         self._update_fire_input(owner, player_input)
-        self._update_input_buffer(owner)
+
+    def advance_timers(self, owner):
+        owner.input_buffer.update()
 
     def _update_jump_input(self, owner, player_input):
         if player_input.jump:
@@ -65,6 +67,3 @@ class PlayerActionController:
 
     def _has_buffered_action(self, owner, action):
         return owner.input_buffer.has(action)
-
-    def _update_input_buffer(self, owner):
-        owner.input_buffer.update()

@@ -17,7 +17,7 @@ class PlayerGrabController:
         self.grab_knee_duration = PLAYER_GRAB_KNEE_DURATION
         self.grab_knee_hit_frame = PLAYER_GRAB_KNEE_HIT_FRAME
 
-    def update_timers(self, owner):
+    def advance_timers(self, owner):
         if self.throw_remaining > 0:
             self.throw_remaining -= 1
 

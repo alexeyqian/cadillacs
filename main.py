@@ -31,7 +31,8 @@ def main():
         # 1. collect inputs
         keys = pygame.key.get_pressed()
 
-        # 0. Pre-gameplay check
+        # 0. Pre-gameplay check, 
+        # including lifecycle guard, decide if player/entity can participate this frame.
         # 0.1 player death check
         if (game_state.player.state == game_state.player.DEAD
             and game_state.player.health.lives <= 0
