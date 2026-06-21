@@ -116,7 +116,7 @@ def main_draw_ui(game_state):
     score_rect = score_text.get_rect(topleft=(left_x, top_y))
 
     status_text = small_font.render(
-        f"CREDITS {game_state.credits} | LIVES {player.health.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
+        f"CREDITS {game_state.credits} | LIVES {player.lifecycle_controller.lives} | NEXT LIFE {game_state.score_manager.next_extra_life_score}",
         True, YELLOW_COLOR)
     status_rect = status_text.get_rect(topright=(right_x, top_y))
     if status_rect.left <= score_rect.right + 24:
@@ -319,7 +319,7 @@ def main_draw_ui(game_state):
         screen.blit(hint, hint.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2 + 140)))
         return
 
-    if player.state == player.DEAD and player.health.lives <= 0:
+    if player.state == player.DEAD and player.lifecycle_controller.lives <= 0:
         game_over_text = big_font.render("GAME OVER", True, RED_COLOR)
         game_over_rect = game_over_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2))
         screen.blit(game_over_text, game_over_rect)
