@@ -36,6 +36,28 @@ class PlayerAnimationDataTests(unittest.TestCase):
                     self.assertLessEqual(x + width, sheet_width)
                     self.assertLessEqual(y + height, sheet_height)
 
+    def test_mustapha_animations_without_frames_use_256_defaults(self):
+        for animation_key, config in MUSTAPHA_ANIMATIONS.items():
+            if "frames" in config:
+                continue
+
+            with self.subTest(animation_key=animation_key):
+                self.assertEqual(config["default_frame_size"], (256, 256))
+                self.assertEqual(config["default_offset"], (-128, -256))
+
+    def test_mustapha_animations_without_frames_fit_their_sheets(self):
+        for animation_key, config in MUSTAPHA_ANIMATIONS.items():
+            if "frames" in config:
+                continue
+
+            image = Image.open(config["file"])
+            sheet_width, sheet_height = image.size
+            frame_width, frame_height = config["default_frame_size"]
+
+            with self.subTest(animation_key=animation_key):
+                self.assertLessEqual(config["frames_count"] * frame_width, sheet_width)
+                self.assertLessEqual(frame_height, sheet_height)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,41 @@
+Create a 2D game character sprite sheet for a side-scrolling arcade beat'em-up game. 
+The character looks similar to Mustapha in game Cadillacs and Dinosaurs. with more realistic style.
+you can use uploaded image as reference
+
+Character:
+A muscular adult male fighter with short black hair, wearing a yellow hat, stern face, athletic build, open-collar green short-sleeve button shirt with chest pockets, yellow pants, brown belt, and brown combat boots. Keep the character appearance, proportions, outfit, colors, and face consistent across all frames.
+
+Sprite sheet:
+Create a sprite sheet Each frame should be 256x256 pixels if not specified, some frames with more than 256 will be specified. 
+The character's feet should be on bottom, no padding between feet and bottom.
+character might have different dynamic heights and widths due to some movements like bending knees, stretch arms, 
+but the character's static size should be consistent. do not scale down static size during movement.
+
+Animation:
+Row 1: 
+Walking animation, 6 frames, facing right. Make six distinct frames: contact, recoil, passing, high point, opposite contact, recovery. 
+The character should have a grounded walk cycle, moderate stride, natural arm swing, subtle torso bob, and consistent foot baseline.
+Row 2:
+Running animation, 6 frames, the walk should looks natural, swing arms and feet naturally.
+Row 3:
+Jump animation, 4 frames, the jump should feels natural
+Row 4
+Punch animation, 3 frames: windup, active, recovery, light punch from left hand, then heavy punch from right hand.
+Row 5:
+Kick animation,  3 frames: windup, active, recovery, light kick from left leg, then power tuning kick from right leg.
+Row 6:
+Flying kick animation: 3 frames: windup, active, recovery. the body is flying horizontally with double feet kick.
+for this sprite, you can make the width wider more than 256 if needed.
+
+
+Style:
+Polished 2D arcade sprite, hand-painted pixel-art-inspired look, strong readable silhouette, clean dark outline, high contrast shading, game-ready, similar to 1990s side-scrolling beat'em-up characters.
+
+Framing:
+Keep the full body visible in every frame. Do not crop any body part. Keep the feet aligned to a consistent baseline. Center the character inside each 256x256 cell with natural padding if width is not wider than 256.
+
+Background:
+Use a perfectly flat solid #ff00ff chroma-key background for later background removal. No shadows, gradients, texture, floor plane, labels, text, watermark, or frame numbers. Do not use #ff00ff anywhere in the character.
+
+Important:
+Keep most frames in its own 256x256 cell. Do not let body parts or pixels from one frame cross into neighboring frames.

@@ -10,10 +10,10 @@ class EnemyRenderer:
             raise ValueError(f"Missing frame data for enemy state: {owner.state}")
 
         image = owner.animation_controller.get_image()
-        scale = owner.sprite_scale
+        scale = frame.get_scale(owner.sprite_scale)
         image = pygame.transform.scale(image,
-            (image.get_width() * scale,
-            image.get_height() * scale))
+            (int(image.get_width() * scale),
+            int(image.get_height() * scale)))
         if not owner.facing_right:
             image = pygame.transform.flip(image, True, False)
 

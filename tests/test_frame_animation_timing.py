@@ -1,7 +1,12 @@
 import pygame
 import pytest
 
-from game.animation.frame_animation import FrameAnimation, FrameData
+from game.animation.frame_animation import (
+    FrameAnimation,
+    FrameData,
+    build_default_frame_configs,
+    load_frame_animation,
+)
 from game.controllers.frame_animation_controller import FrameAnimationController
 from game.tuning import scale_animation_fps_map
 
@@ -52,6 +57,67 @@ def test_frame_animation_controller_rejects_wrong_duration_count():
 
     with pytest.raises(ValueError):
         controller.frame_duration("attack", frame_count=3)
+
+
+def test_build_default_frame_configs_uses_horizontal_256_frames():
+    frame_configs = build_default_frame_configs(3, (256, 256), (-128, -256))
+
+    assert frame_configs == [
+        {"frame_rect": (0, 0, 256, 256), "offset": (-128, -256)},
+        {"frame_rect": (256, 0, 256, 256), "offset": (-128, -256)},
+        {"frame_rect": (512, 0, 256, 256), "offset": (-128, -256)},
+    ]
+
+
+def test_load_frame_animation_uses_default_configs_when_frames_missing(monkeypatch):
+    class LoadedImage:
+        def convert_alpha(self):
+            return pygame.Surface((512, 256), pygame.SRCALPHA)
+
+    monkeypatch.setattr(pygame.image, "load", lambda _filename: LoadedImage())
+
+    frames = load_frame_animation(
+        {
+            "walk": {
+                "file": "unused.png",
+                "frames_count": 2,
+                "default_frame_size": (256, 256),
+                "default_offset": (-128, -256),
+            }
+        },
+        "walk",
+    )
+
+    assert len(frames) == 2
+    assert frames[0].image.get_size() == (256, 256)
+    assert frames[0].offset == (-128, -256)
+    assert frames[1].image.get_size() == (256, 256)
+    assert frames[1].offset == (-128, -256)
+
+
+def test_load_frame_animation_copies_animation_scale_to_frames(monkeypatch):
+    class LoadedImage:
+        def convert_alpha(self):
+            return pygame.Surface((64, 32), pygame.SRCALPHA)
+
+    monkeypatch.setattr(pygame.image, "load", lambda _filename: LoadedImage())
+
+    frames = load_frame_animation(
+        {
+            "walk": {
+                "file": "unused.png",
+                "frames_count": 1,
+                "scale": 1,
+                "frames": [
+                    {"frame_rect": (0, 0, 64, 32), "offset": (-32, -32)},
+                ],
+            }
+        },
+        "walk",
+    )
+
+    assert frames[0].scale == 1
+    assert frames[0].get_scale(default_scale=2) == 1
 
 
 def test_animation_tuning_scales_fps_and_duration_lists():

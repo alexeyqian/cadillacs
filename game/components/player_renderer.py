@@ -19,17 +19,17 @@ class PlayerRenderer:
         # shadow_rect = pygame.Rect(screen_x,self.y + self.height - 10,self.width,12)
         #pygame.draw.ellipse(screen,(50, 50, 50),shadow_rect)
         # end of depth
+        frame = owner.animation_controller.get_current_frame()
         image = owner.animation_controller.get_image()
-        scale = owner.sprite_scale
+        scale = frame.get_scale(owner.sprite_scale)
         image = pygame.transform.scale(
             image,
-            (image.get_width() * scale, image.get_height() * scale)
+            (int(image.get_width() * scale), int(image.get_height() * scale))
         )
 
         if not owner.facing_right:
             image = pygame.transform.flip(image, True, False)
 
-        frame = owner.animation_controller.get_current_frame()
         offset_x, offset_y = frame.offset
         offset_x *= scale
         offset_y *= scale

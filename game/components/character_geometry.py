@@ -49,7 +49,7 @@ class CharacterGeometry:
         if not frame:
             raise ValueError(f"Missing frame data for {owner.state}")
 
-        scale = owner.sprite_scale
+        scale = frame.get_scale(owner.sprite_scale)
         offset_x, offset_y = frame.offset
 
         frame_w = frame.image.get_width() * scale

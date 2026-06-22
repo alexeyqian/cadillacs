@@ -1,85 +1,18 @@
 # frame_rect format: (x, y, width, height) -  x, y is the left top location in the png file
 # offset format: (x, y) - x, y  = (0,0) - (feet_center_x, feet_center_y)
+MUSTAPHA_DEFAULT_FRAME_SIZE = (256, 256)
+MUSTAPHA_DEFAULT_OFFSET = (-128, -256)
+
 MUSTAPHA_ANIMATIONS = {
     "idle": {
-        "file": "assets/player/mustapha_idle.png",
-        "frames_count": 6,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 94, 178),
-                "offset": (-50, -178),
-            },
-            {
-                "frame_rect": (94, 0, 96, 178),
-                "offset": (-50, -178),
-            },
-            {
-                "frame_rect": (190, 0, 119, 178),
-                "offset": (-50, -178),
-            },
-            {
-                "frame_rect": (309, 0, 120, 178),
-                "offset": (-50, -178),
-            },
-            {
-                "frame_rect": (429, 0, 119, 178),
-                "offset": (-50, -178),
-            },
-            {
-                "frame_rect": (548, 0, 98, 178),
-                "offset": (-50, -178),
-            }
-        ]
+        "file": "assets/player/mustapha_walk_2.png",
+        "frames_count": 2,
+        "scale": 1.5
     },
     "walk": {
-        "file": "assets/player/mustapha_walk.png",
-        "frames_count": 11,
-        "frames": [
-            {
-                "frame_rect": (0,0,54,170),
-                "offset": (-25, -170),
-            },
-            {
-                "frame_rect": (54,0,56,170),
-                "offset": (-25, -170),
-            },
-            {
-                "frame_rect": (110,0,116,170),
-                "offset": (-70, -170),
-            },
-            {
-                "frame_rect": (226,0,94,170),
-                "offset": (-50, -170),
-            },
-            {
-                "frame_rect": (320,0,80,170),
-                "offset": (-45, -170),
-            },
-            {
-                "frame_rect": (400,0,54,170),
-                "offset": (-25, -170),
-            },
-            {
-                "frame_rect": (454,0,60,170),
-                "offset": (-30, -170),
-            },
-            {
-                "frame_rect": (514,0,95,170),
-                "offset": (-45, -170),
-            },
-            {
-                "frame_rect": (609,0,114,170),
-                "offset": (-55, -170),
-            },
-            {
-                "frame_rect": (723,0,92,170),
-                "offset": (-40, -170),
-            },
-            {
-                "frame_rect": (815,0,68,170),
-                "offset": (-30, -170),
-            },
-        ]
+        "file": "assets/player/mustapha_walk_2.png",
+        "frames_count": 6,
+        "scale": 1.5
     },
     "run": {
         "file": "assets/player/mustapha_run.png",
@@ -267,6 +200,11 @@ MUSTAPHA_ANIMATIONS["attack_3"] = {
     **MUSTAPHA_ANIMATIONS["attack"],
     "file": "assets/player/mustapha_attack_3.png",
 }
+
+for config in MUSTAPHA_ANIMATIONS.values():
+    if "frames" not in config:
+        config["default_frame_size"] = MUSTAPHA_DEFAULT_FRAME_SIZE
+        config["default_offset"] = MUSTAPHA_DEFAULT_OFFSET
 
 MUSTAPHA_ANIM_FPS = {
     "idle": 6,
