@@ -20,7 +20,7 @@ class FrameAnimation:
     # Animation no longer loops while attack_timer is still running
     def update(self):
         self.timer += 1
-        if self.timer < self.frame_duration:
+        if self.timer < self.get_current_frame_duration():
             return
 
         self.timer = 0
@@ -42,6 +42,18 @@ class FrameAnimation:
     
     def get_frame_index(self):
         return self.current_frame
+
+    def get_current_frame_duration(self):
+        if isinstance(self.frame_duration, (list, tuple)):
+            return self.frame_duration[self.current_frame]
+
+        return self.frame_duration
+
+    def get_total_duration(self):
+        if isinstance(self.frame_duration, (list, tuple)):
+            return sum(self.frame_duration)
+
+        return len(self.frames) * self.frame_duration
     
     def reset(self):
         self.current_frame = 0

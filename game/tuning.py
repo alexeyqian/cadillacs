@@ -148,13 +148,35 @@ def scale_animation_fps(base_fps, scale=None, minimum=1.0):
     return max(minimum, base_fps * scale)
 
 
-def scale_animation_fps_map(base_fps_map, scale=None, minimum=1.0):
-    """Scale every value in an animation FPS dictionary."""
+def scale_animation_frame_duration(base_frames, scale=None, minimum=1):
+    """Scale a sprite-frame duration measured in game frames.
 
-    return {
-        name: scale_animation_fps(fps, scale=scale, minimum=minimum)
-        for name, fps in base_fps_map.items()
-    }
+    Larger animation scale means shorter per-frame durations.
+    """
+
+    if scale is None:
+        scale = get_timing_preset().animation
+    return max(minimum, int(round(base_frames / scale)))
+
+
+def scale_animation_fps_map(base_fps_map, scale=None, minimum=1.0):
+    """Scale animation timing values.
+
+    Numeric values are animation FPS. Lists/tuples are per-frame game-frame
+    durations and are scaled inversely so larger animation scale is faster.
+    """
+
+    scaled = {}
+    for name, timing in base_fps_map.items():
+        if isinstance(timing, (list, tuple)):
+            scaled[name] = [
+                scale_animation_frame_duration(duration, scale=scale)
+                for duration in timing
+            ]
+        else:
+            scaled[name] = scale_animation_fps(timing, scale=scale, minimum=minimum)
+
+    return scaled
 
 
 def scale_speed(base_speed, scale=None, minimum=0.0):

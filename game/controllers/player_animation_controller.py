@@ -10,11 +10,12 @@ class PlayerAnimationController(FrameAnimationController):
     def init_animations(self, owner):
         for state, animation_name in self.get_animation_specs(owner):
             frames, duration = self.add_frame_animation(state, animation_name)
+            total_duration = self.animation_total_duration(len(frames), duration)
 
             if state == owner.THROW:
-                owner.grab_controller.throw_duration = len(frames) * duration
+                owner.grab_controller.throw_duration = total_duration
             elif state == owner.GRAB_KNEE:
-                owner.grab_controller.grab_knee_duration = len(frames) * duration
+                owner.grab_controller.grab_knee_duration = total_duration
 
     def get_animation_specs(self, owner):
         return [

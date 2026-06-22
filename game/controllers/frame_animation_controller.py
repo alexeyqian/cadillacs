@@ -29,15 +29,30 @@ class FrameAnimationController:
 
     def add_frame_animation(self, state, animation_name, loop=True):
         frames = load_frame_animation(self.animation_data, animation_name)
-        duration = self.frame_duration(animation_name)
+        duration = self.frame_duration(animation_name, len(frames))
         self.animation_manager.add_animation(
             state,
             FrameAnimation(frames, duration, loop=loop),
         )
         return frames, duration
 
-    def frame_duration(self, animation_name):
-        return max(1, int(FPS / self.anim_fps[animation_name]))
+    def frame_duration(self, animation_name, frame_count=None):
+        timing = self.anim_fps[animation_name]
+        if isinstance(timing, (list, tuple)):
+            if frame_count is not None and len(timing) != frame_count:
+                raise ValueError(
+                    f"Animation '{animation_name}' has {frame_count} frames "
+                    f"but {len(timing)} frame durations"
+                )
+            return [max(1, int(duration)) for duration in timing]
+
+        return max(1, int(FPS / timing))
+
+    def animation_total_duration(self, frame_count, frame_duration):
+        if isinstance(frame_duration, (list, tuple)):
+            return sum(frame_duration)
+
+        return frame_count * frame_duration
 
     def update(self, owner):
         self.animation_manager.play(self.get_animation_state(owner))
