@@ -19,6 +19,14 @@ BLADE_ANIMATIONS = {
         "hitbox": (24, -240, 170, 100),
         "frame_durations": (4,8,6)
     },
+    "jump_attack": {
+        "file": "assets/enemies/blade_jump_attack_3x.png",
+        "frames_count": 4,
+        "frame_width": 384,
+        "frame_height": 384,
+        "hitbox": (64, -354, 85, 100),
+        "frame_durations": (2,2,8,6)
+    },
     "hit": {
         "file": "assets/enemies/blade_hit_3x.png",
         "frames_count": 1,

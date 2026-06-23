@@ -27,8 +27,10 @@ class EnemyAIController:
         if owner.state == owner.ATTACK:
             return
 
-        # Continue jump arc — don't interrupt with a new decision.
+        # While airborne, only allow jump attack — no other decisions.
         if owner.movement.is_jumping:
+            if owner.state not in (owner.JUMP_ATTACK,):
+                self._try_jump_attack(owner, context)
             return
 
         dx, dy, distance_x, distance_y = owner.movement.get_player_distance(
@@ -73,6 +75,15 @@ class EnemyAIController:
         owner.intent.attack_player()
         owner.combat_controller.reserve_attack_slot(owner)
         self.reset_decision_timer()
+
+    def _try_jump_attack(self, owner, context):
+        if not owner.combat_controller.can_jump_attack:
+            return
+        if self._get_attack_cooldown(owner) > 0:
+            return
+        dx, dy, distance_x, distance_y = owner.movement.get_player_distance(owner, context.player)
+        if distance_x <= owner.combat_controller.attack_range * 2:
+            owner.intent.jump_attack()
 
     def _should_jump(self, owner, distance_x):
         if not owner.movement.can_jump:

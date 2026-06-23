@@ -4,6 +4,7 @@ class EnemyIntent:
     MOVE_TOWARD_PLAYER = "move_toward_player"
     RUN_TOWARD_PLAYER = "run_toward_player"
     JUMP = "jump"
+    JUMP_ATTACK = "jump_attack"
     ATTACK_PLAYER = "attack_player"
     FLANK = "flank"
 
@@ -50,6 +51,13 @@ class EnemyIntent:
 
     def wants_jump(self):
         return self.action == self.JUMP
+
+    def jump_attack(self):
+        self.clear()
+        self.action = self.JUMP_ATTACK
+
+    def wants_jump_attack(self):
+        return self.action == self.JUMP_ATTACK
 
     def wants_attack_player(self):
         return self.action == self.ATTACK_PLAYER

@@ -6,6 +6,7 @@ class EnemyState(CharacterState):
     CHASE = "CHASE"
     RUN = "RUN"
     JUMP = "JUMP"
+    JUMP_ATTACK = "JUMP_ATTACK"
     THROWN = "THROWN"
     KNOCKDOWN = CharacterState.KNOCKDOWN # heavy hit or thrown cause enemy falls down briefly
     GETUP = CharacterState.GETUP # gets up after knockdown

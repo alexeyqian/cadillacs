@@ -25,6 +25,8 @@ class EnemyAnimationController(FrameAnimationController):
             specs.append((owner.RUN, "run", True))
         if owner.movement.can_jump and "jump" in self.animation_data:
             specs.append((owner.JUMP, "jump", False))
+        if owner.combat_controller.can_jump_attack and "jump_attack" in self.animation_data:
+            specs.append((owner.JUMP_ATTACK, "jump_attack", False))
         return specs
 
     def get_animation_state(self, owner):
@@ -35,6 +37,7 @@ class EnemyAnimationController(FrameAnimationController):
             owner.CHASE: owner.WALK,
             owner.RUN: owner.RUN if owner.movement.can_run else owner.WALK,
             owner.JUMP: owner.JUMP if owner.movement.can_jump else owner.IDLE,
+            owner.JUMP_ATTACK: owner.JUMP_ATTACK if owner.combat_controller.can_jump_attack else owner.IDLE,
             owner.ATTACK: owner.ATTACK,
             owner.HIT: owner.HIT,
             owner.RECOIL: owner.HIT,
