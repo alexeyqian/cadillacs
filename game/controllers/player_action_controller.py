@@ -31,9 +31,10 @@ class PlayerActionController:
     def _update_attack_input(self, owner, player_input):
         if player_input.attack:
             if owner.movement.is_jumping:
-                if not owner.input_state.jump_attack_pressed:
-                    self._buffer_action(owner, self.ATTACK_ACTION, self.ATTACK_BUFFER_FRAMES)
-                    owner.input_state.jump_attack_pressed = True
+                #if not owner.input_state.jump_attack_pressed:
+                #    self._buffer_action(owner, self.ATTACK_ACTION, self.ATTACK_BUFFER_FRAMES)
+                #    owner.input_state.jump_attack_pressed = True
+                pass  # jump attack disabled
             else:
                 if owner.input_state.run_attack_requires_attack_release:
                     owner.input_state.attack_pressed = True
