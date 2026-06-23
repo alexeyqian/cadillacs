@@ -9,17 +9,15 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 1,
         "frame_width": 256,
         "frame_height": 256,
-        "scale": 1
     },
     "walk": {
         "file": "assets/player/mustapha_walk_3x.png",
         "frames_count": 4,
         "frame_width": 256,
         "frame_height": 256,
-        "scale": 1
     },
     "run": {
-        "file": "assets/player/mustapha_run_2.png",
+        "file": "assets/player/mustapha_run.png",
         "frames_count": 8,
         "scale": 1.3
     },
@@ -48,14 +46,13 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
     "attack": {
-        "file": "assets/player/mustapha_attack_1.png",
+        "file": "assets/player/mustapha_attack_3x.png",
         "frames_count": 3,
-        "frame_width": 148,
-        "frame_height": 168,
-        "scale": 1
+        "frame_width": 384,
+        "frame_height": 384,
     },
     "attack2": {
-        "file": "assets/player/mustapha_attack_2.png",
+        "file": "assets/player/mustapha_attack.png",
         "frames_count": 3,
         "frame_width": 152,
         "frame_height": 168,
@@ -91,7 +88,7 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
     "jump_attack": {
-        "file": "assets/player/mustapha_run_attack.png",
+        "file": "assets/player/mustapha_run_attack_3x.png",
         "frames_count": 2,
         "frames": [
             {
@@ -144,7 +141,7 @@ MUSTAPHA_ANIMATIONS["attack_1"] = MUSTAPHA_ANIMATIONS["attack"]
 MUSTAPHA_ANIMATIONS["attack_2"] = MUSTAPHA_ANIMATIONS["attack2"]
 MUSTAPHA_ANIMATIONS["attack_3"] = {
     **MUSTAPHA_ANIMATIONS["attack"],
-    "file": "assets/player/mustapha_attack_3.png",
+    "file": "assets/player/mustapha_attack_3x.png",
     "frame_width": 162,
 }
 
