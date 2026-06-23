@@ -5,6 +5,7 @@ class EnemyState(CharacterState):
     PATROL = "PATROL" # ai decisions
     CHASE = "CHASE"
     RUN = "RUN"
+    RUN_ATTACK = "RUN_ATTACK"
     JUMP = "JUMP"
     JUMP_ATTACK = "JUMP_ATTACK"
     THROWN = "THROWN"

@@ -98,6 +98,8 @@ class Enemy(Character, EnemyState):
         self.combat_controller.attack_data = config.attack
         self.combat_controller.attack_range = config.attack_range
         self.combat_controller.attack_lane_range = config.attack_lane_range
+        self.combat_controller.can_run_attack = config.can_run_attack
+        self.combat_controller.run_attack_data = config.run_attack
         self.combat_controller.can_jump_attack = config.can_jump_attack
         self.combat_controller.jump_attack_data = config.jump_attack
         self.combat_controller.melee_attack_slot_limit = config.melee_attack_slot_limit
@@ -127,9 +129,9 @@ class Enemy(Character, EnemyState):
         self.ai_controller.update(self, context)
 
     def update_movement(self, context):
-        if self.state in (self.ATTACK, self.JUMP_ATTACK):
+        if self.state in (self.ATTACK, self.RUN_ATTACK, self.JUMP_ATTACK):
             return
-        if self.intent.wants_attack_player() or self.intent.wants_jump_attack():
+        if self.intent.wants_attack_player() or self.intent.wants_run_attack() or self.intent.wants_jump_attack():
             return
 
         if self.intent.wants_jump():
@@ -151,14 +153,19 @@ class Enemy(Character, EnemyState):
             self.movement.separate_from_enemies(self, context.enemies)
 
     def update_attack(self, context):
-        if self.intent.wants_jump_attack() and self.state != self.JUMP_ATTACK:
+        if self.intent.wants_run_attack() and self.state != self.RUN_ATTACK:
+            self.combat_controller.start_run_attack(self)
+            self.intent.clear()
+        elif self.intent.wants_jump_attack() and self.state != self.JUMP_ATTACK:
             self.combat_controller.start_jump_attack(self)
             self.intent.clear()
         elif self.intent.wants_attack_player() and self.state != self.ATTACK:
             self.start_attack()
             self.intent.clear()
 
-        if self.state == self.JUMP_ATTACK:
+        if self.state == self.RUN_ATTACK:
+            self.combat_controller.update_run_attack(self, context.level, context.player)
+        elif self.state == self.JUMP_ATTACK:
             self.combat_controller.update_jump_attack(self, context.level, context.player)
         elif self.state == self.ATTACK:
             self.combat_controller.update_attack(self, context.level, context.player)

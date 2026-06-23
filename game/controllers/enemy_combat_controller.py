@@ -9,6 +9,8 @@ class EnemyCombatController:
     def __init__(self, attack_data=None):
         self.attack_manager = AttackManager()
         self.attack_data = attack_data
+        self.run_attack_data = None
+        self.can_run_attack = False
         self.jump_attack_data = None
         self.can_jump_attack = False
         self.cooldown_remaining = 0
@@ -28,6 +30,37 @@ class EnemyCombatController:
         self.attack_manager.start(owner.ATTACK, self.get_attack_data(owner))
         owner.animation_controller.play(owner.ATTACK)
         owner.animation_controller.reset_current_animation()
+
+    def start_run_attack(self, owner):
+        owner.state = owner.RUN_ATTACK
+        owner.ai_controller.reset_decision_timer()
+        self.attack_manager.start(owner.RUN_ATTACK, self.get_run_attack_data(owner))
+        owner.animation_controller.play(owner.RUN_ATTACK)
+        owner.animation_controller.reset_current_animation()
+
+    def update_run_attack(self, owner, level, player):
+        attack_finished = self.attack_manager.advance()
+
+        attack_rect = owner.get_attack_rect()
+        player_hurt_rect = player.get_hurt_rect()
+
+        if (self.attack_manager.is_active()
+            and attack_rect and player_hurt_rect
+            and not self.attack_manager.has_connected):
+            lane_distance = level.get_lane_distance(owner.y, player.y)
+            attack_data = self.get_run_attack_data(owner)
+            if (lane_distance <= attack_data.lane_reach
+                and attack_rect.colliderect(player_hurt_rect)):
+                player.take_damage(DamageRequest.from_attack_data(attack_data))
+                self.attack_manager.mark_target_hit(player)
+
+        if attack_finished:
+            self.finish_run_attack(owner)
+
+    def finish_run_attack(self, owner):
+        self.attack_manager.cancel()
+        owner.state = owner.PATROL
+        self.cooldown_remaining = self.get_run_attack_data(owner).cooldown
 
     def start_jump_attack(self, owner):
         owner.state = owner.JUMP_ATTACK
@@ -122,6 +155,11 @@ class EnemyCombatController:
         if self.attack_data:
             return self.attack_data
         return DEFAULT_ENEMY_ATTACK_DATA
+
+    def get_run_attack_data(self, owner):
+        if self.run_attack_data:
+            return self.run_attack_data
+        return self.get_attack_data(owner)
 
     def get_jump_attack_data(self, owner):
         if self.jump_attack_data:

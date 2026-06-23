@@ -23,6 +23,8 @@ class EnemyAnimationController(FrameAnimationController):
         ]
         if owner.movement.can_run and "run" in self.animation_data:
             specs.append((owner.RUN, "run", True))
+        if owner.combat_controller.can_run_attack and "run_attack" in self.animation_data:
+            specs.append((owner.RUN_ATTACK, "run_attack", False))
         if owner.movement.can_jump and "jump" in self.animation_data:
             specs.append((owner.JUMP, "jump", False))
         if owner.combat_controller.can_jump_attack and "jump_attack" in self.animation_data:
@@ -36,6 +38,7 @@ class EnemyAnimationController(FrameAnimationController):
             owner.PATROL: owner.IDLE,
             owner.CHASE: owner.WALK,
             owner.RUN: owner.RUN if owner.movement.can_run else owner.WALK,
+            owner.RUN_ATTACK: owner.RUN_ATTACK if owner.combat_controller.can_run_attack else owner.ATTACK,
             owner.JUMP: owner.JUMP if owner.movement.can_jump else owner.IDLE,
             owner.JUMP_ATTACK: owner.JUMP_ATTACK if owner.combat_controller.can_jump_attack else owner.IDLE,
             owner.ATTACK: owner.ATTACK,

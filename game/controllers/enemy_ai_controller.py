@@ -24,8 +24,14 @@ class EnemyAIController:
         if self._jump_cooldown > 0:
             self._jump_cooldown -= 1
 
-        if owner.state == owner.ATTACK:
+        if owner.state in (owner.ATTACK, owner.RUN_ATTACK):
             return
+
+        # While running, check for run attack opportunity before any other decision.
+        if owner.state == owner.RUN:
+            self._try_run_attack(owner, context)
+            if owner.intent.wants_run_attack():
+                return
 
         # While airborne, only allow jump attack — no other decisions.
         if owner.movement.is_jumping:
@@ -75,6 +81,16 @@ class EnemyAIController:
         owner.intent.attack_player()
         owner.combat_controller.reserve_attack_slot(owner)
         self.reset_decision_timer()
+
+    def _try_run_attack(self, owner, context):
+        if not owner.combat_controller.can_run_attack:
+            return
+        if self._get_attack_cooldown(owner) > 0:
+            return
+        dx, dy, distance_x, distance_y = owner.movement.get_player_distance(owner, context.player)
+        if distance_x <= owner.combat_controller.attack_range * 1.5:
+            owner.intent.run_attack()
+            owner.combat_controller.reserve_attack_slot(owner)
 
     def _try_jump_attack(self, owner, context):
         if not owner.combat_controller.can_jump_attack:

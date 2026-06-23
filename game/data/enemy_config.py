@@ -52,6 +52,8 @@ class EnemyConfig:
     speed: float = ENEMY_SPEED
     can_run: bool = False
     run_speed: float = ENEMY_RUN_SPEED
+    can_run_attack: bool = False
+    run_attack: Optional[AttackData] = None
     can_jump: bool = False
     can_jump_attack: bool = False
     jump_attack: Optional[AttackData] = None
@@ -148,6 +150,20 @@ ENEMY_CONFIGS = {
         speed=int(ENEMY_SPEED * 0.7),
         can_run=True,
         run_speed=int(ENEMY_RUN_SPEED * 0.9),
+        can_run_attack=True,
+        run_attack=replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
+            damage=int(ENEMY_ATTACK_DAMAGE * BLACK_ELMER_SCALER * 1.3),
+            windup=3,
+            active=10,
+            recovery=8,
+            cooldown=int(ENEMY_ATTACK_COOLDOWN * BLACK_ELMER_SCALER),
+            hitbox_offset_x=200,
+            hitbox_offset_y=-190,
+            hitbox_w=120,
+            hitbox_h=250,
+            lane_reach=1,
+        ),
         can_jump=True,
         can_jump_attack=True,
         jump_attack=replace(
