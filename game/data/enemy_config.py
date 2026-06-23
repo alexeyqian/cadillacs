@@ -52,6 +52,7 @@ class EnemyConfig:
     speed: float = ENEMY_SPEED
     can_run: bool = False
     run_speed: float = ENEMY_RUN_SPEED
+    can_jump: bool = False
 
     attack: AttackData = DEFAULT_ENEMY_ATTACK_DATA
     score_points: int = ENEMY_SCORE_POINTS
@@ -145,6 +146,7 @@ ENEMY_CONFIGS = {
         speed=int(ENEMY_SPEED * 0.7),
         can_run=True,
         run_speed=int(ENEMY_RUN_SPEED * 0.9),
+        can_jump=True,
 
         attack_range=int(ENEMY_ATTACK_RANGE * BLACK_ELMER_SCALER),
         attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * BLACK_ELMER_SCALER),

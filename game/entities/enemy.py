@@ -44,6 +44,7 @@ class Enemy(Character, EnemyState):
         self.geometry = CharacterGeometry()
         self.movement = EnemyMovement()
         self.flanking = EnemyFlanking()
+        self.air = None  # set to EnemyAirState when can_jump=True
 
     def build_controllers(self):
         self.combat_controller = EnemyCombatController()
@@ -88,7 +89,10 @@ class Enemy(Character, EnemyState):
             detect_range=config.detect_range,
             can_run=config.can_run,
             run_speed=config.run_speed,
+            can_jump=config.can_jump,
         )
+        if config.can_jump:
+            self.air = self.movement.air_state
 
     def apply_combat_config(self, config):
         self.combat_controller.attack_data = config.attack
@@ -124,7 +128,13 @@ class Enemy(Character, EnemyState):
         if self.state == self.ATTACK or self.intent.wants_attack_player():
             return
 
-        if self.intent.wants_patrol():
+        if self.intent.wants_jump():
+            self.movement.start_jump()
+        elif self.movement.is_jumping:
+            self.movement.update_jump()
+            if not self.movement.is_jumping:
+                self.state = self.IDLE
+        elif self.intent.wants_patrol():
             self.movement.patrol(self, self.lifecycle_controller.spawn_x)
         elif self.intent.wants_run_toward_player():
             self.movement.run_toward_player(self, context.player)

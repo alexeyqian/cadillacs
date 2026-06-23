@@ -4,6 +4,7 @@ from game.components.movement_math import (
     get_distance_to,
     move_x,
 )
+from game.components.enemy_air_state import EnemyAirState
 from game.settings import ENEMY_Y_SPEED
 
 
@@ -25,15 +26,22 @@ class EnemyMovement:
         self.speed = speed
         self.run_speed = speed
         self.can_run = False
+        self.can_jump = False
+        self.air_state = EnemyAirState()
         self.y_speed = y_speed if y_speed is not None else ENEMY_Y_SPEED
         self.patrol_distance = patrol_distance
         self.detect_range = detect_range
         self.patrol_direction = patrol_direction
 
-    def configure(self, speed, patrol_distance, detect_range, can_run=False, run_speed=None):
+    @property
+    def is_jumping(self):
+        return self.air_state.is_jumping
+
+    def configure(self, speed, patrol_distance, detect_range, can_run=False, run_speed=None, can_jump=False):
         self.speed = speed
         self.run_speed = run_speed if run_speed is not None else speed
         self.can_run = can_run
+        self.can_jump = can_jump
         self.patrol_distance = patrol_distance
         self.detect_range = detect_range
 
@@ -133,6 +141,15 @@ class EnemyMovement:
                 owner.y += self.y_speed * FLANK_VERTICAL_SPEED_SCALE
             else:
                 owner.y -= self.y_speed * FLANK_VERTICAL_SPEED_SCALE
+
+    def start_jump(self):
+        self.air_state.start_jump()
+
+    def update_jump(self):
+        self.air_state.update()
+
+    def get_jump_visual_y_offset(self):
+        return self.air_state.get_visual_y_offset()
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
         clamp_to_world_and_lane(

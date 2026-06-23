@@ -2,6 +2,8 @@ from game.settings import ENEMY_FLANK_Y_TOLERANCE, ENEMY_RUN_CHASE_THRESHOLD, MA
 
 # Frames the enemy pauses before turning when the player crosses to the other side.
 DIRECTION_CHANGE_DELAY = 60
+# Minimum frames between jumps.
+JUMP_COOLDOWN = 120
 
 
 class EnemyAIController:
@@ -9,6 +11,7 @@ class EnemyAIController:
         self.decision_timer = 0
         self._direction_change_timer = 0
         self._last_player_side = None
+        self._jump_cooldown = 0
 
     def reset_decision_timer(self):
         self.decision_timer = 0
@@ -18,7 +21,14 @@ class EnemyAIController:
     def update(self, owner, context):
         owner.intent.clear()
 
+        if self._jump_cooldown > 0:
+            self._jump_cooldown -= 1
+
         if owner.state == owner.ATTACK:
+            return
+
+        # Continue jump arc — don't interrupt with a new decision.
+        if owner.movement.is_jumping:
             return
 
         dx, dy, distance_x, distance_y = owner.movement.get_player_distance(
@@ -45,7 +55,10 @@ class EnemyAIController:
         if self._can_attack_player(owner, context, distance_x):
             self._prepare_attack_intent(owner, context.player)
         elif distance_x <= owner.movement.detect_range:
-            self._request_chase_intent(owner, context, distance_x, distance_y)
+            if self._should_jump(owner, distance_x):
+                self._request_jump_intent(owner)
+            else:
+                self._request_chase_intent(owner, context, distance_x, distance_y)
         else:
             self._request_patrol_intent(owner)
 
@@ -60,6 +73,19 @@ class EnemyAIController:
         owner.intent.attack_player()
         owner.combat_controller.reserve_attack_slot(owner)
         self.reset_decision_timer()
+
+    def _should_jump(self, owner, distance_x):
+        if not owner.movement.can_jump:
+            return False
+        if self._jump_cooldown > 0:
+            return False
+        # Jump only when close enough to matter but not already in attack range.
+        return distance_x <= owner.combat_controller.attack_range * 3
+
+    def _request_jump_intent(self, owner):
+        self._jump_cooldown = JUMP_COOLDOWN
+        owner.intent.jump()
+        owner.state = owner.JUMP
 
     def _request_chase_intent(self, owner, context, distance_x, distance_y):
         self.reset_decision_timer()
