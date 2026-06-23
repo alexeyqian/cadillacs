@@ -211,7 +211,7 @@ class PlayerConfig:
     attack: AttackData = DEFAULT_PLAYER_ATTACKS["ATTACK"]
     jump_power: float = 12
     jump_gravity: float = 0.7
-    air_move_speed: float = 3.0
+    air_move_speed: float = PLAYER_RUN_SPEED
     jump_takeoff_frames: int = 6
     landing_recovery_frames: int = 6
     grab_range: int = PLAYER_GRAB_RANGE

@@ -28,18 +28,7 @@ MUSTAPHA_ANIMATIONS = {
         "frame_width": 384,
         "frame_height": 384,
     },
-    "hit": {
-        "file": "assets/player/mustapha_hit_3x.png",
-        "frames_count": 1,
-        "frame_width": 256,
-        "frame_height": 256,
-    },
-    "dead": {
-        "file": "assets/player/mustapha_dead_3x.png",
-        "frames_count": 1,
-        "frame_width": 384,
-        "frame_height": 384,
-    },
+
     "attack": {
         "file": "assets/player/mustapha_attack_3x.png",
         "frames_count": 3,
@@ -115,6 +104,18 @@ MUSTAPHA_ANIMATIONS = {
                 "offset": (-40, -162),
             }
         ]
+    },
+    "hit": {
+        "file": "assets/player/mustapha_hit_3x.png",
+        "frames_count": 1,
+        "frame_width": 256,
+        "frame_height": 256,
+    },
+    "dead": {
+        "file": "assets/player/mustapha_dead_3x.png",
+        "frames_count": 1,
+        "frame_width": 384,
+        "frame_height": 384,
     },
 }
 

@@ -35,7 +35,7 @@ class PlayerJumpMovement:
         if self.air_state.is_grounded:
             return
 
-        self.update_air_movement(owner)
+        self.update_air_movement(owner, player_input)
         self.update_jump_arc(owner)
 
     def update_landing(self, owner):
@@ -59,8 +59,14 @@ class PlayerJumpMovement:
         if owner.state in [owner.JUMP, owner.JUMP_ATTACK]:
             owner.state_machine.change_to(owner, owner.LANDING)
 
-    def update_air_movement(self, owner):
-        owner.x += self.air_state.direction_x * self.air_state.air_move_speed
+    def update_air_movement(self, owner, player_input):
+        horizontal_direction, _vertical_direction = get_input_direction(player_input)
+        if horizontal_direction < 0:
+            owner.facing_right = False
+        elif horizontal_direction > 0:
+            owner.facing_right = True
+
+        owner.x += horizontal_direction * self.air_state.air_move_speed
         owner.y += self.air_state.direction_y * self.air_state.air_move_speed * 0.6
 
     def start_jump(self, owner, player_input):

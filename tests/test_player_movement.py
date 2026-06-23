@@ -230,7 +230,7 @@ class PlayerMovementTests(unittest.TestCase):
         self.assertFalse(movement.is_jumping)
         self.assertEqual(owner.state, owner.IDLE)
 
-    def test_air_movement_uses_captured_jump_direction(self):
+    def test_air_movement_uses_current_horizontal_input(self):
         owner = FakeOwner()
         air = PlayerAirState(
             jump_power=4,
@@ -245,8 +245,18 @@ class PlayerMovementTests(unittest.TestCase):
         movement.update_jump_physics(owner, FakeInput())
         movement.update_jump_physics(owner, FakeInput())
 
-        self.assertEqual(owner.x, 303)
+        self.assertEqual(owner.x, 300)
         self.assertAlmostEqual(owner.y, 500 - 1.8)
+
+        movement.update_jump_physics(owner, FakeInput(left=True))
+
+        self.assertEqual(owner.x, 297)
+        self.assertFalse(owner.facing_right)
+
+        movement.update_jump_physics(owner, FakeInput(right=True))
+
+        self.assertEqual(owner.x, 300)
+        self.assertTrue(owner.facing_right)
 
     def test_landing_recovery_holds_landing_state_before_idle(self):
         owner = FakeOwner()

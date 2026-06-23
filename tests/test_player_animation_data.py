@@ -16,8 +16,8 @@ class PlayerAnimationDataTests(unittest.TestCase):
     def test_mustapha_combo_punches_use_distinct_three_phase_sheets(self):
         expected_files = {
             "attack": "assets/player/mustapha_attack_3x.png",
-            "attack2": "assets/player/mustapha_attack_3x.png",
-            "attack3": "assets/player/mustapha_attack_3x.png",
+            "attack2": "assets/player/mustapha_attack2_3x.png",
+            "attack3": "assets/player/mustapha_attack3_3x.png",
         }
         for animation_key in ["attack", "attack2", "attack3"]:
             with self.subTest(animation_key=animation_key):
@@ -27,6 +27,8 @@ class PlayerAnimationDataTests(unittest.TestCase):
 
     def test_mustapha_attack_can_define_animation_hitbox(self):
         self.assertEqual(MUSTAPHA_ANIMATIONS["attack"]["hitbox"], (64, -256, 128, 100))
+        self.assertEqual(MUSTAPHA_ANIMATIONS["attack2"]["hitbox"], (64, -192, 128, 100))
+        self.assertEqual(MUSTAPHA_ANIMATIONS["attack3"]["hitbox"], (64, -192, 128, 100))
 
     def test_mustapha_combo_punch_frame_rects_fit_their_sheets(self):
         for animation_key in ["attack", "attack2", "attack3"]:
