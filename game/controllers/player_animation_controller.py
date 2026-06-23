@@ -41,7 +41,7 @@ class PlayerAnimationController(FrameAnimationController):
             owner.WALK: owner.WALK,
             owner.RUN: owner.RUN,
             owner.JUMP: owner.JUMP,
-            owner.ATTACK1: owner.ATTACK1,
+            owner.ATTACK: owner.ATTACK,
             owner.ATTACK2: owner.ATTACK2,
             owner.ATTACK3: owner.ATTACK3,
             owner.RUN_ATTACK: owner.RUN_ATTACK,

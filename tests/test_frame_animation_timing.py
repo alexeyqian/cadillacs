@@ -163,6 +163,58 @@ def test_load_frame_animation_copies_animation_scale_to_frames(monkeypatch):
     assert frames[0].get_scale(default_scale=2) == 1
 
 
+def test_load_frame_animation_copies_animation_hitbox_to_frames(monkeypatch):
+    class LoadedImage:
+        def convert_alpha(self):
+            return pygame.Surface((64, 32), pygame.SRCALPHA)
+
+    monkeypatch.setattr(pygame.image, "load", lambda _filename: LoadedImage())
+
+    frames = load_frame_animation(
+        {
+            "attack": {
+                "file": "unused.png",
+                "frames_count": 1,
+                "hitbox": (10, -20, 30, 40),
+                "frames": [
+                    {"frame_rect": (0, 0, 64, 32), "offset": (-32, -32)},
+                ],
+            }
+        },
+        "attack",
+    )
+
+    assert frames[0].hitbox == (10, -20, 30, 40)
+
+
+def test_load_frame_animation_prefers_frame_hitbox_over_animation_hitbox(monkeypatch):
+    class LoadedImage:
+        def convert_alpha(self):
+            return pygame.Surface((64, 32), pygame.SRCALPHA)
+
+    monkeypatch.setattr(pygame.image, "load", lambda _filename: LoadedImage())
+
+    frames = load_frame_animation(
+        {
+            "attack": {
+                "file": "unused.png",
+                "frames_count": 1,
+                "hitbox": (10, -20, 30, 40),
+                "frames": [
+                    {
+                        "frame_rect": (0, 0, 64, 32),
+                        "offset": (-32, -32),
+                        "hitbox": (1, -2, 3, 4),
+                    },
+                ],
+            }
+        },
+        "attack",
+    )
+
+    assert frames[0].hitbox == (1, -2, 3, 4)
+
+
 def test_animation_tuning_scales_fps_and_duration_lists():
     scaled = scale_animation_fps_map(
         {

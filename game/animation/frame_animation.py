@@ -6,6 +6,7 @@ class FrameData:
     image: pygame.Surface
     offset: tuple
     scale: float = None
+    hitbox: tuple = None
 
     def get_scale(self, default_scale):
         if self.scale is None:
@@ -128,6 +129,7 @@ def load_frame_animation(animation_data, animation_key):
             image=image,
             offset=get_bottom_center_offset((frame_w, frame_h)),
             scale=frame_config.get("scale", config.get("scale")),
+            hitbox=frame_config.get("hitbox", config.get("hitbox")),
         ))
     if not frames:
         raise ValueError(f"No frames loaded for animation: {animation_key}")

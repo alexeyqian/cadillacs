@@ -45,6 +45,7 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 3,
         "frame_width": 384,
         "frame_height": 384,
+        "hitbox": (64, -256, 128, 100)
     },
     "attack2": {
         "file": "assets/player/mustapha_attack_3x.png",
@@ -63,7 +64,6 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 3,
         "frame_width":384,
         "frame_height":384,
-        "scale": 1
     },
     "jump_attack": {
         "file": "assets/player/mustapha_run_attack_3x.png",
@@ -80,24 +80,10 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
     "grab": {
-        "file": "assets/player/mustapha_grab.png",
+        "file": "assets/player/mustapha_grab_3x.png",
         "frames_count": 1,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 123, 162),
-                "offset": (-40, -162),
-            }
-        ]
-    },
-    "throw": {
-        "file": "assets/player/mustapha_throw.png",
-        "frames_count": 1,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 153, 162),
-                "offset": (-40, -162),
-            }
-        ]
+        "frame_width":256,
+        "frame_height":256,
     },
     "grab_knee": {
         "file": "assets/player/mustapha_grab_knee.png",
@@ -110,6 +96,16 @@ MUSTAPHA_ANIMATIONS = {
             {
                 "frame_rect": (123, 0, 88, 165),
                 "offset": (-35, -165),
+            }
+        ]
+    },
+    "throw": {
+        "file": "assets/player/mustapha_throw.png",
+        "frames_count": 1,
+        "frames": [
+            {
+                "frame_rect": (0, 0, 153, 162),
+                "offset": (-40, -162),
             }
         ]
     },

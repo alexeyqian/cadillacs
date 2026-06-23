@@ -94,12 +94,15 @@ class CharacterGeometry:
         if not hitbox:
             return None
 
-        box = pygame.Rect(
-            hitbox.hitbox_offset_x,
-            hitbox.hitbox_offset_y,
-            hitbox.hitbox_w,
-            hitbox.hitbox_h,
-        )
+        box = self._get_animation_attack_box(owner)
+        if box is None:
+            box = pygame.Rect(
+                hitbox.hitbox_offset_x,
+                hitbox.hitbox_offset_y,
+                hitbox.hitbox_w,
+                hitbox.hitbox_h,
+            )
+
         return combat_box_to_world_rect(
             owner.x,
             self._get_attack_anchor_y(owner),
@@ -112,6 +115,14 @@ class CharacterGeometry:
 
     def _get_active_hitbox_data(self, owner):
         return owner.combat_controller.get_active_hitbox_data()
+
+    def _get_animation_attack_box(self, owner):
+        frame = self._get_current_frame(owner)
+        animation_hitbox = getattr(frame, "hitbox", None)
+        if not animation_hitbox:
+            return None
+
+        return pygame.Rect(animation_hitbox)
 
     def _rect_to_world(self, owner, box):
         return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)

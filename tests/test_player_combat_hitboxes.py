@@ -22,12 +22,15 @@ class FakeStateMachine:
 
 
 class FakeFrame:
-    pass
+    hitbox = None
 
 
 class FakeAnimationController:
+    def __init__(self):
+        self.frame = FakeFrame()
+
     def get_current_frame(self):
-        return FakeFrame()
+        return self.frame
 
 
 class FakeOwner:
@@ -91,6 +94,41 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         self.assertEqual(attack_rect.y, owner.y + attack_data.hitbox_offset_y)
         self.assertEqual(attack_rect.width, attack_data.hitbox_w)
         self.assertEqual(attack_rect.height, attack_data.hitbox_h)
+
+    def test_attack_rect_uses_animation_hitbox_when_available(self):
+        owner = FakeOwner()
+        owner.animation_controller.frame.hitbox = (64, -256, 128, 100)
+        hitboxes = CharacterGeometry()
+        attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK"]
+
+        owner.combat_controller.start_attack(owner)
+        for _ in range(attack_data.windup):
+            owner.combat_controller.update_attack(owner)
+
+        attack_rect = hitboxes.get_attack_rect(owner)
+
+        self.assertEqual(attack_rect.x, owner.x + 64)
+        self.assertEqual(attack_rect.y, owner.y - 256)
+        self.assertEqual(attack_rect.width, 128)
+        self.assertEqual(attack_rect.height, 100)
+
+    def test_animation_hitbox_mirrors_around_player_anchor_when_facing_left(self):
+        owner = FakeOwner()
+        owner.facing_right = False
+        owner.animation_controller.frame.hitbox = (64, -256, 128, 100)
+        hitboxes = CharacterGeometry()
+        attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK"]
+
+        owner.combat_controller.start_attack(owner)
+        for _ in range(attack_data.windup):
+            owner.combat_controller.update_attack(owner)
+
+        attack_rect = hitboxes.get_attack_rect(owner)
+
+        self.assertEqual(attack_rect.x, owner.x - 64 - 128)
+        self.assertEqual(attack_rect.y, owner.y - 256)
+        self.assertEqual(attack_rect.width, 128)
+        self.assertEqual(attack_rect.height, 100)
 
     def test_attack_rect_mirrors_around_player_anchor_when_facing_left(self):
         owner = FakeOwner()
