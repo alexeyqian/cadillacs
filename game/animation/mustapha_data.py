@@ -64,6 +64,7 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 3,
         "frame_width":384,
         "frame_height":384,
+        "hitbox": (50, -230, 128, 100)
     },
     "jump_attack": {
         "file": "assets/player/mustapha_run_attack_3x.png",
