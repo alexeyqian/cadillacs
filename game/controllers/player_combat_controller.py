@@ -1,6 +1,4 @@
-from game.settings import (
-    PLAYER_CLASH_RECOVERY,
-)
+import game.settings as settings
 
 from game.combat.attack_manager import AttackManager
 from game.combat.player_attack_result import PlayerAttackResult
@@ -24,7 +22,7 @@ class PlayerCombatController:
 
         # make clash create a tiny recovery pause 
         # where the player cannot attack again instantly.
-        self.clash_recovery_duration = PLAYER_CLASH_RECOVERY
+        self.clash_recovery_duration = settings.PLAYER_CLASH_RECOVERY
         # add a short recovery after a knee so the player cannot mash knee as freely.
         self.grab_knee_recovery_duration = 6
 
@@ -143,7 +141,7 @@ class PlayerCombatController:
             finished_attack_name in [owner.ATTACK, owner.ATTACK2, owner.ATTACK3]
             and not attack_connected
         )
-        if attack_missed:
+        if attack_missed and not settings.ALLOW_COMBO_NOT_HIT:
             self.reset_combo()
 
         if finished_move and finished_move.cooldown > 0:

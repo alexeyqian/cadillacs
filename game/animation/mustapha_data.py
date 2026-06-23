@@ -62,6 +62,7 @@ MUSTAPHA_ANIMATIONS = {
         "frame_durations": (4,16,6)
     },
     "jump_attack": {
+        "not_used": True,
         "file": "assets/player/mustapha_run_attack_3x.png",
         "frames_count": 2,
         "frames": [
@@ -82,28 +83,18 @@ MUSTAPHA_ANIMATIONS = {
         "frame_height":256,
     },
     "grab_knee": {
-        "file": "assets/player/mustapha_grab_knee.png",
-        "frames_count": 2,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 123, 165),
-                "offset": (-40, -165),
-            },
-            {
-                "frame_rect": (123, 0, 88, 165),
-                "offset": (-35, -165),
-            }
-        ]
+        "file": "assets/player/mustapha_grab_knee_3x.png",
+        "frames_count": 3,
+        "frame_width":256,
+        "frame_height":256,
+        "hitbox": (64, -180, 64, 100),
+        "frame_durations": (4,16,6)
     },
     "throw": {
-        "file": "assets/player/mustapha_throw.png",
-        "frames_count": 1,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 153, 162),
-                "offset": (-40, -162),
-            }
-        ]
+        "file": "assets/player/mustapha_throw_3x.png",
+        "frames_count": 2,
+        "frame_width":256,
+        "frame_height":256,
     },
     "hit": {
         "file": "assets/player/mustapha_hit_3x.png",
@@ -146,5 +137,5 @@ MUSTAPHA_ANIM_FPS = {
     "throw": 6,
     "grab_knee": 6,
     "hit": 6,
-    "dead": 999,
+    "dead": 1,
 }

@@ -1,6 +1,7 @@
 import unittest
 
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
+import game.settings as settings
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.input.player_input_state import PlayerInputState
 from game.managers.score_manager import ScoreManager
@@ -87,6 +88,14 @@ class AttackDataTests(unittest.TestCase):
         for _ in range(combat.attack_manager.remaining_frames):
             combat.advance_timers(owner)
             combat.update_attack(owner)
+
+    def finish_missed_attack(self, combat, owner):
+        for _ in range(combat.attack_manager.remaining_frames):
+            combat.advance_timers(owner)
+            combat.update_attack(owner)
+
+    def remaining_followup_window_after_attack(self, attack):
+        return max(0, attack.combo_window - attack.total_duration)
 
     def test_standing_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
@@ -280,8 +289,8 @@ class AttackDataTests(unittest.TestCase):
         self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK3"].recovery, 6)
 
     def test_standing_combo_windows_are_defined_on_attack_data(self):
-        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK"].combo_window, 23)
-        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK2"].combo_window, 20)
+        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK"].combo_window, 30)
+        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK2"].combo_window, 60)
         self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK3"].combo_window, 0)
 
     def test_standing_combo_hitboxes_progress_from_jab_to_finisher(self):
@@ -372,13 +381,38 @@ class AttackDataTests(unittest.TestCase):
 
         self.assertEqual(owner.state, owner.ATTACK2)
 
+    def test_missed_combo_can_continue_when_debug_flag_enabled(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+        self.finish_missed_attack(combat, owner)
+        combat.start_attack(owner)
+
+        self.assertEqual(owner.state, owner.ATTACK2)
+
+    def test_missed_combo_resets_when_debug_flag_disabled(self):
+        previous_value = settings.ALLOW_COMBO_NOT_HIT
+        settings.ALLOW_COMBO_NOT_HIT = False
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        try:
+            combat.start_attack(owner)
+            self.finish_missed_attack(combat, owner)
+            combat.start_attack(owner)
+        finally:
+            settings.ALLOW_COMBO_NOT_HIT = previous_value
+
+        self.assertEqual(owner.state, owner.ATTACK)
+
     def test_second_combo_hit_resets_when_followup_is_too_late(self):
         owner = FakeOwner()
         combat = PlayerCombatController()
 
         combat.start_attack(owner)
         self.finish_connected_attack(combat, owner)
-        for _ in range(14):
+        for _ in range(self.remaining_followup_window_after_attack(DEFAULT_PLAYER_ATTACKS["ATTACK"]) + 1):
             combat.advance_timers(owner)
         combat.start_attack(owner)
 
@@ -392,7 +426,7 @@ class AttackDataTests(unittest.TestCase):
         self.finish_connected_attack(combat, owner)
         combat.start_attack(owner)
         self.finish_connected_attack(combat, owner)
-        for _ in range(6):
+        for _ in range(self.remaining_followup_window_after_attack(DEFAULT_PLAYER_ATTACKS["ATTACK2"]) - 1):
             combat.advance_timers(owner)
         combat.start_attack(owner)
 
@@ -407,7 +441,7 @@ class AttackDataTests(unittest.TestCase):
         self.finish_connected_attack(combat, owner)
         combat.start_attack(owner)
         self.finish_connected_attack(combat, owner)
-        for _ in range(7):
+        for _ in range(self.remaining_followup_window_after_attack(DEFAULT_PLAYER_ATTACKS["ATTACK2"]) + 1):
             combat.advance_timers(owner)
         combat.start_attack(owner)
 

@@ -137,6 +137,8 @@ ATTACK_3_FORWARD_NUDGE_SPEED_SCALE=0.35
 
 PLAYER_THIRD_HIT_RECOVERY = 24
 PLAYER_CLASH_RECOVERY = 8
+# Debug helper: allow ATTACK -> ATTACK2 -> ATTACK3 even when punches hit nothing.
+ALLOW_COMBO_NOT_HIT=True
 
 # RUN ATTACK
 # it's 0.25 seconds, should we use game frames as timer counter here?

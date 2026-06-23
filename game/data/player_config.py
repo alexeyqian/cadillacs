@@ -63,7 +63,7 @@ DEFAULT_PLAYER_ATTACKS = {
         #hitbox_w=PLAYER_HITBOX_W,
         #hitbox_h=PLAYER_HITBOX_H,
 
-        combo_window=23,
+        combo_window=13, # difficult: 22 -> 13
     ),
     # medium baseline hitbox
     "ATTACK2": replace(
@@ -76,7 +76,7 @@ DEFAULT_PLAYER_ATTACKS = {
         hitbox_offset_y=PLAYER_HIT_BOX_OFFSET_Y,
         hitbox_w=PLAYER_HITBOX_W,
         hitbox_h=PLAYER_HITBOX_H,
-        combo_window=20,
+        combo_window=15, # difficult: 30 -> 15
     ),
     # wider/taller finisher hitbox. Keep it larger than ATTACK2, but avoid
     # overextending it because ATTACK3 also gets a small forward nudge.
