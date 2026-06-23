@@ -8,6 +8,7 @@ from game.settings import (
     PLAYER_HURTBOX_OFFSET_X,
     PLAYER_HURTBOX_OFFSET_Y,
     PLAYER_HURTBOX_W,
+    PLAYER_JUMP_BOX_Y_OFFSET,
 )
 
 
@@ -125,7 +126,21 @@ class CharacterGeometry:
         return pygame.Rect(animation_hitbox)
 
     def _rect_to_world(self, owner, box):
-        return combat_box_to_world_rect(owner.x, owner.y, owner.facing_right, box)
+        return combat_box_to_world_rect(
+            owner.x,
+            self._get_body_box_anchor_y(owner),
+            owner.facing_right,
+            box,
+        )
+
+    def _get_body_box_anchor_y(self, owner):
+        if self._uses_jump_body_box_offset(owner):
+            return owner.y - PLAYER_JUMP_BOX_Y_OFFSET
+        return owner.y
+
+    def _uses_jump_body_box_offset(self, owner):
+        movement = getattr(owner, "movement", None)
+        return bool(movement and getattr(movement, "is_jumping", False))
 
     def _get_attack_anchor_y(self, owner):
         if self._uses_visual_y_for_attack(owner):

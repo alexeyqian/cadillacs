@@ -279,8 +279,10 @@ class AttackDataTests(unittest.TestCase):
         self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK2"].recovery, 5)
         self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK3"].recovery, 6)
 
-        for attack_name in ["ATTACK", "ATTACK2", "ATTACK3"]:
-            attack = DEFAULT_PLAYER_ATTACKS[attack_name]
+    def test_standing_combo_windows_are_defined_on_attack_data(self):
+        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK"].combo_window, 23)
+        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK2"].combo_window, 20)
+        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK3"].combo_window, 0)
 
     def test_standing_combo_hitboxes_progress_from_jab_to_finisher(self):
         attack = DEFAULT_PLAYER_ATTACKS["ATTACK"]

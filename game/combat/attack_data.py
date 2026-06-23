@@ -7,7 +7,6 @@ from game.settings import (
     ATTACK_1_KNOCKBACK_VELOCITY,
     ATTACK_1_RECOVERY_DURATION,
     ATTACK_1_WINDUP_DURATION,
-    ATTACK_COMBO_WINDOW,
     ENEMY_ATTACK_ACTIVE,
     ENEMY_ATTACK_COOLDOWN,
     ENEMY_ATTACK_DAMAGE,
@@ -67,7 +66,7 @@ DEFAULT_PLAYER_ATTACK_DATA = AttackData(
     knockback_velocity=ATTACK_1_KNOCKBACK_VELOCITY,
     lane_reach=1,
     max_targets=1,
-    combo_window=ATTACK_COMBO_WINDOW,
+    combo_window=0,
 )
 
 
@@ -86,5 +85,5 @@ DEFAULT_ENEMY_ATTACK_DATA = AttackData(
     knockback_velocity=ENEMY_ATTACK_KNOCKBACK_VELOCITY,
     lane_reach=0,
     max_targets=1,
-    combo_window=ATTACK_COMBO_WINDOW,
+    combo_window=0,
 )

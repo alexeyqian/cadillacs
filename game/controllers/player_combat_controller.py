@@ -1,6 +1,5 @@
 from game.settings import (
     PLAYER_CLASH_RECOVERY,
-    PLAYER_COMBO_WINDOW,
 )
 
 from game.combat.attack_manager import AttackManager
@@ -196,16 +195,22 @@ class PlayerCombatController:
 
         self.combo_step = min(self.combo_step, 3)
         if self.combo_step == 1:
-            owner.state_machine.change_to(owner, owner.ATTACK)
+            attack_name = owner.ATTACK
         elif self.combo_step == 2:
-            owner.state_machine.change_to(owner, owner.ATTACK2)
+            attack_name = owner.ATTACK2
         else:
-            owner.state_machine.change_to(owner, owner.ATTACK3)
+            attack_name = owner.ATTACK3
+
+        move_data = self._get_attack_data(owner, attack_name)
+        if not move_data:
+            raise ValueError(f"Missing player attack data: {attack_name}")
+
+        owner.state_machine.change_to(owner, attack_name)
+        if attack_name == owner.ATTACK3:
             owner.movement.start_combo_finisher_nudge(owner)
 
-        move_data = self._get_attack_data(owner, owner.state)
-        self.attack_manager.start(owner.state, move_data)
-        self.combo_window_remaining = move_data.combo_window if move_data else PLAYER_COMBO_WINDOW
+        self.attack_manager.start(attack_name, move_data)
+        self.combo_window_remaining = move_data.combo_window
 
     def start_jump_attack(self, owner):
         if not owner.movement.is_jumping:

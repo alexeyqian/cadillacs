@@ -1,7 +1,15 @@
 import unittest
 
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
-from game.settings import PLAYER_HURTBOX_H, PLAYER_HURTBOX_OFFSET_X, PLAYER_HURTBOX_OFFSET_Y, PLAYER_HURTBOX_W
+from game.settings import (
+    PLAYER_COLLISION_H,
+    PLAYER_COLLISION_W,
+    PLAYER_HURTBOX_H,
+    PLAYER_HURTBOX_OFFSET_X,
+    PLAYER_HURTBOX_OFFSET_Y,
+    PLAYER_HURTBOX_W,
+    PLAYER_JUMP_BOX_Y_OFFSET,
+)
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.components.character_geometry import CharacterGeometry
 from game.input.player_input_state import PlayerInputState
@@ -14,6 +22,10 @@ class FakeMovement:
 
     def can_start_run_attack(self):
         return False
+
+
+class FakeEnemyMovement:
+    pass
 
 
 class FakeStateMachine:
@@ -64,6 +76,7 @@ class FakeHurtboxOwner:
     x = 300
     y = 500
     facing_right = True
+    movement = FakeMovement()
     hurt_box_w = PLAYER_HURTBOX_W
     hurt_box_h = PLAYER_HURTBOX_H
     hurt_box_offset_x = PLAYER_HURTBOX_OFFSET_X
@@ -177,6 +190,46 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         self.assertEqual(hurt_rect.y, owner.y + PLAYER_HURTBOX_OFFSET_Y)
         self.assertEqual(hurt_rect.width, PLAYER_HURTBOX_W)
         self.assertEqual(hurt_rect.height, PLAYER_HURTBOX_H)
+
+    def test_player_collision_rect_moves_up_while_jumping(self):
+        owner = FakeOwner()
+        owner.movement.is_jumping = True
+        hitboxes = CharacterGeometry()
+
+        collision_rect = hitboxes.get_collision_rect(owner)
+
+        self.assertEqual(collision_rect.x, owner.x - PLAYER_COLLISION_W // 2)
+        self.assertEqual(
+            collision_rect.y,
+            owner.y - PLAYER_JUMP_BOX_Y_OFFSET - PLAYER_COLLISION_H,
+        )
+        self.assertEqual(collision_rect.width, PLAYER_COLLISION_W)
+        self.assertEqual(collision_rect.height, PLAYER_COLLISION_H)
+
+    def test_player_hurt_rect_moves_up_while_jumping(self):
+        owner = FakeOwner()
+        owner.movement.is_jumping = True
+        hitboxes = CharacterGeometry()
+
+        hurt_rect = hitboxes.get_hurt_rect(owner)
+
+        self.assertEqual(hurt_rect.x, owner.x + PLAYER_HURTBOX_OFFSET_X)
+        self.assertEqual(
+            hurt_rect.y,
+            owner.y - PLAYER_JUMP_BOX_Y_OFFSET + PLAYER_HURTBOX_OFFSET_Y,
+        )
+        self.assertEqual(hurt_rect.width, PLAYER_HURTBOX_W)
+        self.assertEqual(hurt_rect.height, PLAYER_HURTBOX_H)
+
+    def test_collision_rect_does_not_require_enemy_movement_to_have_is_jumping(self):
+        owner = FakeOwner()
+        owner.movement = FakeEnemyMovement()
+        hitboxes = CharacterGeometry()
+
+        collision_rect = hitboxes.get_collision_rect(owner)
+
+        self.assertEqual(collision_rect.x, owner.x - PLAYER_COLLISION_W // 2)
+        self.assertEqual(collision_rect.y, owner.y - PLAYER_COLLISION_H)
 
 
 if __name__ == "__main__":

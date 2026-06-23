@@ -36,6 +36,9 @@ PLAYER_H=256
 # COLLISION UNIT == UNIT_LENGTH == PIXEL_PER_GRID == player shoulder width
 PLAYER_COLLISION_W = 128
 PLAYER_COLLISION_H = 50
+# Lift player collision and hurt boxes while jumping so ground collisions do not
+# keep using the feet anchor while the character is airborne.
+PLAYER_JUMP_BOX_Y_OFFSET = 256 # can use 128 should be good enough to avoid enemies' collision box
 # default for most of times
 # some special movement might need special hurtbox
 PLAYER_HURTBOX_W = PLAYER_COLLISION_W
@@ -90,6 +93,7 @@ ENEMY_SCORE_POINTS = 100
 ######## speed ########
 PLAYER_SPEED = 10
 PLAYER_RUN_SPEED= PLAYER_SPEED * 2
+PLAYER_AIR_MOVE_SPEED=PLAYER_SPEED*1.5
 ENEMY_SPEED=int(PLAYER_SPEED*0.5)
 PROJECTILE_SPEED=PLAYER_SPEED*3
 
@@ -131,16 +135,6 @@ ATTACK_3_KNOCKBACK_VELOCITY=10
 ATTACK_3_FORWARD_NUDGE_FRAMES=3
 ATTACK_3_FORWARD_NUDGE_SPEED_SCALE=0.35
 
-# todo: merge with PLAYER_COMBO_WINDOW
-ATTACK_COMBO_WINDOW=30
-# Combo windows are measured from attack start, not from attack finish.
-# Because standing punches now have recovery frames, these values include
-# attack duration plus the desired follow-up grace period.
-PLAYER_COMBO_WINDOW = 29
-# the window starts when the attack starts, not when it finishes. 
-# That is why the settings comment says the value includes attack duration plus follow-up grace.
-PLAYER_FIRST_TO_SECOND_COMBO_WINDOW = 29
-PLAYER_SECOND_TO_THIRD_COMBO_WINDOW = 24
 PLAYER_THIRD_HIT_RECOVERY = 24
 PLAYER_CLASH_RECOVERY = 8
 
