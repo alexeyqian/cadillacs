@@ -56,6 +56,23 @@ class PlayerCombatController:
             return None
         return self.attack_manager.current_attack
 
+    def get_attack_data(self, owner):
+        if self.attack_manager.current_attack:
+            return self.attack_manager.current_attack
+        return self._get_attack_data(owner, owner.state)
+
+    def get_attack_damage(self, owner):
+        attack_data = self.get_attack_data(owner)
+        if not attack_data:
+            return 0
+        return attack_data.damage
+
+    def get_attack_lane_reach(self, owner):
+        attack_data = self.get_attack_data(owner)
+        if not attack_data:
+            return 0
+        return attack_data.lane_reach
+
     # Avoiding the combo step advances when the player presses attack inside the combo window, 
     # even if the previous punch hit nothing. 
     # That means the player can “charge” into ATTACK_3 by punching air, 

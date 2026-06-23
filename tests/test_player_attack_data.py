@@ -102,6 +102,25 @@ class AttackDataTests(unittest.TestCase):
             DEFAULT_PLAYER_ATTACKS["ATTACK_1"].total_duration,
         )
 
+    def test_attack_debug_accessors_use_active_attack_data(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        combat.start_attack(owner)
+
+        attack = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
+        self.assertEqual(combat.get_attack_data(owner), attack)
+        self.assertEqual(combat.get_attack_damage(owner), attack.damage)
+        self.assertEqual(combat.get_attack_lane_reach(owner), attack.lane_reach)
+
+    def test_attack_debug_accessors_are_safe_when_idle(self):
+        owner = FakeOwner()
+        combat = PlayerCombatController()
+
+        self.assertIsNone(combat.get_attack_data(owner))
+        self.assertEqual(combat.get_attack_damage(owner), 0)
+        self.assertEqual(combat.get_attack_lane_reach(owner), 0)
+
     def test_running_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         owner.movement.is_running = True

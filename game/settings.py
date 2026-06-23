@@ -4,6 +4,10 @@ FPS=60
 # external window width: for real monitor/display
 EXTERNAL_WIDTH=1920
 EXTERNAL_HEIGHT=1080
+# When False, render the window at the internal game resolution so sprite pixels
+# keep their configured size. When True, the final framebuffer is scaled down to
+# fit the current desktop display.
+FIT_WINDOW_TO_DISPLAY=False
 # internal window width: for entire game area
 SCREEN_WIDTH=1920
 SCREEN_HEIGHT=1080

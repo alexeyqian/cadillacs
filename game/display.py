@@ -1,9 +1,18 @@
 import pygame
 
-from game.settings import EXTERNAL_HEIGHT, EXTERNAL_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH
+from game.settings import (
+    EXTERNAL_HEIGHT,
+    EXTERNAL_WIDTH,
+    FIT_WINDOW_TO_DISPLAY,
+    SCREEN_HEIGHT,
+    SCREEN_WIDTH,
+)
 
 
 def get_window_size():
+    if not FIT_WINDOW_TO_DISPLAY:
+        return (SCREEN_WIDTH, SCREEN_HEIGHT)
+
     display_info = pygame.display.Info()
     display_w = display_info.current_w or EXTERNAL_WIDTH
     display_h = display_info.current_h or EXTERNAL_HEIGHT

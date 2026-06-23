@@ -37,6 +37,18 @@ class PlayerAnimationDataTests(unittest.TestCase):
                     self.assertLessEqual(x + width, sheet_width)
                     self.assertLessEqual(y + height, sheet_height)
 
+    def test_mustapha_walk_3x_uses_unscaled_256_frames(self):
+        config = MUSTAPHA_ANIMATIONS["walk"]
+
+        self.assertEqual(config["file"], "assets/player/mustapha_walk_3x.png")
+        self.assertEqual(config["frame_width"], 256)
+        self.assertEqual(config["frame_height"], 256)
+        self.assertEqual(config["scale"], 1)
+
+        for frame in get_frame_configs(config):
+            with self.subTest(frame_rect=frame["frame_rect"]):
+                self.assertEqual(frame["frame_rect"][2:], (256, 256))
+
     def test_mustapha_animations_without_frames_use_256_defaults(self):
         for animation_key, config in MUSTAPHA_ANIMATIONS.items():
             if "frames" in config or "frame_width" in config or "frame_height" in config:

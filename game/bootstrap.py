@@ -15,8 +15,9 @@ from game.settings import SCREEN_HEIGHT, SCREEN_WIDTH
 
 
 def create_display():
-    # Keep game logic/rendering in the 1920x1080 world coordinate system,
-    # then scale the final frame to the actual display-sized window.
+    # Keep game logic/rendering in the 1920x1080 world coordinate system.
+    # By default the window uses the same size, so sprite pixels are not
+    # silently reduced by final framebuffer scaling.
     window = pygame.display.set_mode(get_window_size(), pygame.NOFRAME)
     screen = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT))
     pygame.display.set_caption("Cadillacs and Dinosaurs")
