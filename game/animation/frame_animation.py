@@ -57,6 +57,21 @@ def get_frame_configs(config):
         config.get("default_offset"),
     )
 
+
+def get_frame_durations(config, frame_count):
+    frame_durations = config.get("frame_durations")
+    if frame_durations is None:
+        return None
+
+    if len(frame_durations) != frame_count:
+        raise ValueError(
+            f"Animation has {frame_count} frames but "
+            f"{len(frame_durations)} frame durations"
+        )
+
+    return [max(1, int(duration)) for duration in frame_durations]
+
+
 class FrameAnimation:
     def __init__(self, frames, frame_duration=8, loop=True):
         self.frames = frames

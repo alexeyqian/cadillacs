@@ -5,6 +5,7 @@ from game.animation.frame_animation import (
     FrameAnimation,
     FrameData,
     build_default_frame_configs,
+    get_frame_durations,
     get_frame_configs,
     load_frame_animation,
 )
@@ -53,11 +54,34 @@ def test_frame_animation_controller_accepts_fps_or_frame_duration_list():
     assert controller.animation_total_duration(3, [4, 6, 8]) == 18
 
 
+def test_frame_animation_controller_uses_config_frame_durations():
+    controller = FrameAnimationController(
+        {"attack": {"frame_durations": (3, 3, 5)}},
+        {"attack": 12},
+    )
+
+    assert controller.configured_frame_duration("attack", frame_count=3) == [3, 3, 5]
+
+
+def test_config_frame_durations_override_anim_fps_duration_list():
+    controller = FrameAnimationController(
+        {"attack": {"frame_durations": (3, 3, 5)}},
+        {"attack": [4, 6, 8]},
+    )
+
+    assert controller.configured_frame_duration("attack", frame_count=3) == [3, 3, 5]
+
+
 def test_frame_animation_controller_rejects_wrong_duration_count():
     controller = FrameAnimationController({}, {"attack": [4, 6]})
 
     with pytest.raises(ValueError):
         controller.frame_duration("attack", frame_count=3)
+
+
+def test_config_frame_durations_reject_wrong_duration_count():
+    with pytest.raises(ValueError):
+        get_frame_durations({"frame_durations": (3, 5)}, frame_count=3)
 
 
 def test_build_default_frame_configs_uses_horizontal_256_frames():

@@ -12,7 +12,11 @@ class FakePlayer:
 
 
 def fake_frame_animation(animation_data, animation_key):
-    return [FrameData(pygame.Surface((1, 1), pygame.SRCALPHA), (0, 0))]
+    frame_count = animation_data[animation_key].get("frames_count", 1)
+    return [
+        FrameData(pygame.Surface((1, 1), pygame.SRCALPHA), (0, 0))
+        for _ in range(frame_count)
+    ]
 
 
 def test_player_factory_uses_registered_player_classes():

@@ -1,6 +1,10 @@
 from game.settings import FPS
 from game.animation.animation_manager import AnimationManager
-from game.animation.frame_animation import FrameAnimation, load_frame_animation
+from game.animation.frame_animation import (
+    FrameAnimation,
+    get_frame_durations,
+    load_frame_animation,
+)
 
 
 class FrameAnimationController:
@@ -29,12 +33,22 @@ class FrameAnimationController:
 
     def add_frame_animation(self, state, animation_name, loop=True):
         frames = load_frame_animation(self.animation_data, animation_name)
-        duration = self.frame_duration(animation_name, len(frames))
+        duration = self.configured_frame_duration(animation_name, len(frames))
         self.animation_manager.add_animation(
             state,
             FrameAnimation(frames, duration, loop=loop),
         )
         return frames, duration
+
+    def configured_frame_duration(self, animation_name, frame_count):
+        duration = get_frame_durations(
+            self.animation_data[animation_name],
+            frame_count,
+        )
+        if duration is not None:
+            return duration
+
+        return self.frame_duration(animation_name, frame_count)
 
     def frame_duration(self, animation_name, frame_count=None):
         timing = self.anim_fps[animation_name]
