@@ -82,6 +82,7 @@ ENEMY_CONFIGS = {
     "gneiss": EnemyConfig(
         enemy_id="gneiss",
         display_name="Gneiss",
+        sprite_scale=1,
         max_hp=int(ENEMY_MAX_HP * GNEISS_SCALER),
         speed=int(ENEMY_SPEED),
 
