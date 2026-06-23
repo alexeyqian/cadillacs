@@ -7,54 +7,17 @@ MUSTAPHA_ANIMATIONS = {
     "idle": {
         "file": "assets/player/mustapha_walk_2.png",
         "frames_count": 2,
-        "scale": 1.5
+        "scale": 1.3
     },
     "walk": {
         "file": "assets/player/mustapha_walk_2.png",
         "frames_count": 6,
-        "scale": 1.5
+        "scale": 1.3
     },
     "run": {
-        "file": "assets/player/mustapha_run.png",
-        "frames_count": 9,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 142, 153),
-                "offset": (-55, -153),
-            },
-            {
-                "frame_rect": (142, 0, 180, 153),
-                "offset": (-55, -153),
-            },
-            {
-                "frame_rect": (322, 0, 140, 153),
-                "offset": (-50, -153),
-            },
-            {
-                "frame_rect": (462, 0, 148, 153),
-                "offset": (-60, -153),
-            },
-            {
-                "frame_rect": (610, 0, 158, 153),
-                "offset": (-64, -153),
-            },
-            {
-                "frame_rect": (768, 0, 156, 153),
-                "offset": (-20, -153),
-            },
-            {
-                "frame_rect": (924, 0, 143, 153),
-                "offset": (-60, -153),
-            },
-            {
-                "frame_rect": (1067, 0, 158, 153),
-                "offset": (-70, -153),
-            },
-            {
-                "frame_rect": (1225, 0, 172, 153),
-                "offset": (-70, -153),
-            }
-        ]
+        "file": "assets/player/mustapha_run_2.png",
+        "frames_count": 8,
+        "scale": 1.3
     },
     "hit": {
         "file": "assets/player/mustapha_hit.png",
@@ -81,22 +44,14 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
     "attack": {
-        "file": "assets/player/mustapha_attack.png",
+        "file": "assets/player/mustapha_attack_new_1.png",
         "frames_count": 3,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 111, 168),
-                "offset": (-60, -168),
-            },
-            {
-                "frame_rect": (111, 0, 193, 168),
-                "offset": (-63, -168),
-            },
-            {
-                "frame_rect": (304, 0, 111, 168),
-                "offset": (-76, -168),
-            }
-        ]
+        "scale": 1
+    },
+    "attack2": {
+        "file": "assets/player/mustapha_attack_new_2.png",
+        "frames_count": 3,
+        "scale": 1
     },
     "run_attack": {
         "file": "assets/player/mustapha_run_attack.png",
@@ -188,14 +143,8 @@ MUSTAPHA_ANIMATIONS = {
     },
 }
 
-MUSTAPHA_ANIMATIONS["attack_1"] = {
-    **MUSTAPHA_ANIMATIONS["attack"],
-    "file": "assets/player/mustapha_attack_1.png",
-}
-MUSTAPHA_ANIMATIONS["attack_2"] = {
-    **MUSTAPHA_ANIMATIONS["attack"],
-    "file": "assets/player/mustapha_attack_2.png",
-}
+MUSTAPHA_ANIMATIONS["attack_1"] = MUSTAPHA_ANIMATIONS["attack"]
+MUSTAPHA_ANIMATIONS["attack_2"] = MUSTAPHA_ANIMATIONS["attack2"]
 MUSTAPHA_ANIMATIONS["attack_3"] = {
     **MUSTAPHA_ANIMATIONS["attack"],
     "file": "assets/player/mustapha_attack_3.png",

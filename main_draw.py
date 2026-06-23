@@ -180,10 +180,10 @@ def main_draw_ui(game_state):
         max_slots = MAX_MELEE_ATTACKERS
 
         for enemy in enemies:
-            has_attack_slot = enemy.combat_controller.has_attack_slot
+            has_attack_slot = enemy.combat_controller.owns_attack_slot
             if has_attack_slot:
                 active_slots += 1
-                max_slots = getattr(enemy, "melee_attack_slot_limit", None) or max_slots
+                max_slots = enemy.combat_controller.melee_attack_slot_limit or max_slots
 
         slot_text = small_font.render(f"Attack Slots: {active_slots}/{max_slots}",True,BLACK_COLOR)
         screen.blit(slot_text, (left_x, debug_y))

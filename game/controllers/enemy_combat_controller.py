@@ -15,6 +15,10 @@ class EnemyCombatController:
         self.attack_lane_range = ENEMY_ATTACK_LANE_RANGE
         self.melee_attack_slot_limit = None
 
+    @property
+    def has_attack_slot(self):
+        return self.owns_attack_slot
+
     def start_attack(self, owner):
         owner.state = owner.ATTACK
         self.owns_attack_slot = True

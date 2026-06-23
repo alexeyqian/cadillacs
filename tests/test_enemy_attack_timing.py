@@ -225,6 +225,15 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
         self.assertEqual(enemy.combat_controller.get_attack_data(enemy).total_duration, 6)
 
+    def test_has_attack_slot_matches_owned_attack_slot_for_debug_ui(self):
+        controller = EnemyCombatController()
+
+        self.assertFalse(controller.has_attack_slot)
+
+        controller.owns_attack_slot = True
+
+        self.assertTrue(controller.has_attack_slot)
+
     def test_clash_recovery_cancels_enemy_attack(self):
         enemy = FakeEnemy()
         enemy.state = enemy.ATTACK
