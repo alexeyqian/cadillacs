@@ -115,6 +115,18 @@ class Enemy(Character, EnemyState):
     def apply_reward_config(self, config):
         self.score_points = config.score_points
 
+    def apply_capability_overrides(self, overrides):
+        if "can_run" in overrides:
+            self.movement.can_run = overrides["can_run"]
+        if "can_jump" in overrides:
+            self.movement.can_jump = overrides["can_jump"]
+            if overrides["can_jump"]:
+                self.air = self.movement.air_state
+        if "can_run_attack" in overrides:
+            self.combat_controller.can_run_attack = overrides["can_run_attack"]
+        if "can_jump_attack" in overrides:
+            self.combat_controller.can_jump_attack = overrides["can_jump_attack"]
+
     ##### end of init #####
 
     ##### begin of main loop update #####

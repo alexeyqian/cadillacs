@@ -49,6 +49,7 @@ class Level:
                         y_max=spawn_config.get("y_max"),
                         enter_offset=spawn_config.get("enter_offset", -100),
                         min_player_distance=spawn_config.get("min_player_distance", 360),
+                        capability_overrides=spawn_config.get("capability_overrides"),
                     ))
 
             self.waves.append(Wave(

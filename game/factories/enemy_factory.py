@@ -15,9 +15,12 @@ class EnemyFactory:
     }
 
     @staticmethod
-    def create_enemy(enemy_type, x, y):
+    def create_enemy(enemy_type, x, y, capability_overrides=None):
         enemy_class = EnemyFactory.get_enemy_class(enemy_type)
-        return enemy_class(x, y)
+        enemy = enemy_class(x, y)
+        if capability_overrides:
+            enemy.apply_capability_overrides(capability_overrides)
+        return enemy
 
     @staticmethod
     def get_enemy_class(enemy_type):

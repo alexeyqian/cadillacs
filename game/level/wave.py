@@ -15,6 +15,7 @@ class SpawnInstruction:
     y_max: int = 800
     enter_offset: int = -50 # how far offscreen the enemy starts.
     min_player_distance: int = 100
+    capability_overrides: Optional[dict] = None
 
 @dataclass
 class PendingSpawn:
@@ -22,6 +23,7 @@ class PendingSpawn:
     x: int
     y: int
     delay: int
+    capability_overrides: Optional[dict] = None
 
 class Wave:
     def __init__(self, trigger_x, spawn_instructions, max_active=4):
@@ -74,6 +76,7 @@ class Wave:
                 x=spawn_x,
                 y=spawn_y,
                 delay=delay,
+                capability_overrides=instruction.capability_overrides,
             ))
 
         if self.pending_spawns:
@@ -95,7 +98,8 @@ class Wave:
         enemy = EnemyFactory.create_enemy(
             pending_spawn.enemy_type,
             pending_spawn.x,
-            pending_spawn.y
+            pending_spawn.y,
+            capability_overrides=pending_spawn.capability_overrides,
         )
 
         if self.pending_spawns:
