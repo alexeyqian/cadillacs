@@ -5,6 +5,7 @@ from game.animation.frame_animation import (
     FrameAnimation,
     FrameData,
     build_default_frame_configs,
+    get_frame_configs,
     load_frame_animation,
 )
 from game.controllers.frame_animation_controller import FrameAnimationController
@@ -93,6 +94,48 @@ def test_load_frame_animation_uses_default_configs_when_frames_missing(monkeypat
     assert frames[0].offset == (-128, -256)
     assert frames[1].image.get_size() == (256, 256)
     assert frames[1].offset == (-128, -256)
+
+
+def test_frame_width_and_height_override_explicit_frames():
+    frame_configs = get_frame_configs(
+        {
+            "frames_count": 2,
+            "frame_width": 80,
+            "frame_height": 120,
+            "default_frame_size": (256, 256),
+            "frames": [
+                {"frame_rect": (0, 0, 10, 10), "offset": (99, 99)},
+            ],
+        }
+    )
+
+    assert frame_configs == [
+        {"frame_rect": (0, 0, 80, 120), "offset": (-40, -120)},
+        {"frame_rect": (80, 0, 80, 120), "offset": (-40, -120)},
+    ]
+
+
+def test_load_frame_animation_offsets_from_frame_bottom_center(monkeypatch):
+    class LoadedImage:
+        def convert_alpha(self):
+            return pygame.Surface((100, 64), pygame.SRCALPHA)
+
+    monkeypatch.setattr(pygame.image, "load", lambda _filename: LoadedImage())
+
+    frames = load_frame_animation(
+        {
+            "hit": {
+                "file": "unused.png",
+                "frames_count": 1,
+                "frames": [
+                    {"frame_rect": (0, 0, 77, 64), "offset": (0, 0)},
+                ],
+            }
+        },
+        "hit",
+    )
+
+    assert frames[0].offset == (-38.5, -64)
 
 
 def test_load_frame_animation_copies_animation_scale_to_frames(monkeypatch):

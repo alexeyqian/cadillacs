@@ -10,7 +10,11 @@ class EnemyRenderer:
             raise ValueError(f"Missing frame data for enemy state: {owner.state}")
 
         image = owner.animation_controller.get_image()
-        scale = frame.get_scale(owner.sprite_scale)
+        scale = (
+            frame.get_scale(owner.sprite_scale)
+            if hasattr(frame, "get_scale")
+            else owner.sprite_scale
+        )
         image = pygame.transform.scale(image,
             (int(image.get_width() * scale),
             int(image.get_height() * scale)))

@@ -2,6 +2,7 @@ import unittest
 
 from PIL import Image
 
+from game.animation.frame_animation import get_frame_configs
 from game.animation.mustapha_data import MUSTAPHA_ANIMATIONS, MUSTAPHA_ANIM_FPS
 
 
@@ -30,7 +31,7 @@ class PlayerAnimationDataTests(unittest.TestCase):
             image = Image.open(config["file"])
             sheet_width, sheet_height = image.size
 
-            for frame in config["frames"]:
+            for frame in get_frame_configs(config):
                 with self.subTest(animation_key=animation_key, frame_rect=frame["frame_rect"]):
                     x, y, width, height = frame["frame_rect"]
                     self.assertLessEqual(x + width, sheet_width)
@@ -38,12 +39,17 @@ class PlayerAnimationDataTests(unittest.TestCase):
 
     def test_mustapha_animations_without_frames_use_256_defaults(self):
         for animation_key, config in MUSTAPHA_ANIMATIONS.items():
-            if "frames" in config:
+            if "frames" in config or "frame_width" in config or "frame_height" in config:
                 continue
 
             with self.subTest(animation_key=animation_key):
                 self.assertEqual(config["default_frame_size"], (256, 256))
                 self.assertEqual(config["default_offset"], (-128, -256))
+
+    def test_mustapha_animations_without_explicit_scale_render_at_source_size(self):
+        for animation_key in ["hit", "dead", "jump", "jump_attack", "grab", "throw", "grab_knee"]:
+            with self.subTest(animation_key=animation_key):
+                self.assertEqual(MUSTAPHA_ANIMATIONS[animation_key]["scale"], 1)
 
     def test_mustapha_animations_without_frames_fit_their_sheets(self):
         for animation_key, config in MUSTAPHA_ANIMATIONS.items():

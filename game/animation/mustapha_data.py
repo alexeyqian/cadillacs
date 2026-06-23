@@ -1,18 +1,22 @@
 # frame_rect format: (x, y, width, height) -  x, y is the left top location in the png file
-# offset format: (x, y) - x, y  = (0,0) - (feet_center_x, feet_center_y)
+# offset is derived from the frame size: (0, 0) means the character's bottom-center anchor.
 MUSTAPHA_DEFAULT_FRAME_SIZE = (256, 256)
 MUSTAPHA_DEFAULT_OFFSET = (-128, -256)
 
 MUSTAPHA_ANIMATIONS = {
     "idle": {
-        "file": "assets/player/mustapha_walk_2.png",
-        "frames_count": 2,
-        "scale": 1.3
+        "file": "assets/player/mustapha_walk_3x.png",
+        "frames_count": 1,
+        "frame_width": 256,
+        "frame_height": 256,
+        "scale": 1
     },
     "walk": {
-        "file": "assets/player/mustapha_walk_2.png",
-        "frames_count": 6,
-        "scale": 1.3
+        "file": "assets/player/mustapha_walk_3x.png",
+        "frames_count": 4,
+        "frame_width": 256,
+        "frame_height": 256,
+        "scale": 1
     },
     "run": {
         "file": "assets/player/mustapha_run_2.png",
@@ -44,32 +48,25 @@ MUSTAPHA_ANIMATIONS = {
         ]
     },
     "attack": {
-        "file": "assets/player/mustapha_attack_new_1.png",
+        "file": "assets/player/mustapha_attack_1.png",
         "frames_count": 3,
+        "frame_width": 148,
+        "frame_height": 168,
         "scale": 1
     },
     "attack2": {
-        "file": "assets/player/mustapha_attack_new_2.png",
+        "file": "assets/player/mustapha_attack_2.png",
         "frames_count": 3,
+        "frame_width": 152,
+        "frame_height": 168,
         "scale": 1
     },
     "run_attack": {
-        "file": "assets/player/mustapha_run_attack.png",
+        "file": "assets/player/mustapha_run_attack_3x.png",
         "frames_count": 3,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 120, 92),
-                "offset": (-60, -150),
-            },
-            {
-                "frame_rect": (120, 0, 223, 92),
-                "offset": (-110, -150),
-            },
-            {
-                "frame_rect": (343, 0, 120, 92),
-                "offset": (-60, -150),
-            }
-        ]
+        "frame_width":384,
+        "frame_height":384,
+        "scale": 1
     },
     "jump": {
         "file": "assets/player/mustapha_jump.png",
@@ -148,12 +145,21 @@ MUSTAPHA_ANIMATIONS["attack_2"] = MUSTAPHA_ANIMATIONS["attack2"]
 MUSTAPHA_ANIMATIONS["attack_3"] = {
     **MUSTAPHA_ANIMATIONS["attack"],
     "file": "assets/player/mustapha_attack_3.png",
+    "frame_width": 162,
 }
 
 for config in MUSTAPHA_ANIMATIONS.values():
-    if "frames" not in config:
+    if "scale" not in config:
+        config["scale"] = 1
+
+    if "frame_width" in config and "frame_height" in config:
+        config["default_frame_size"] = (config["frame_width"], config["frame_height"])
+    elif "frames" not in config:
         config["default_frame_size"] = MUSTAPHA_DEFAULT_FRAME_SIZE
-        config["default_offset"] = MUSTAPHA_DEFAULT_OFFSET
+
+    if "frames" not in config:
+        frame_width, frame_height = config["default_frame_size"]
+        config["default_offset"] = (-frame_width / 2, -frame_height)
 
 MUSTAPHA_ANIM_FPS = {
     "idle": 6,
