@@ -13,7 +13,7 @@ class SpawnInstruction:
     delay_max: int = 120
     y_min: int = 700
     y_max: int = 800
-    enter_offset: int = 50 # how far offscreen the enemy starts.
+    enter_offset: int = -50 # how far offscreen the enemy starts.
     min_player_distance: int = 100
 
 @dataclass
@@ -115,7 +115,7 @@ class BossWave(Wave):
                 side="right",
                 delay_min=120,
                 delay_max=180,
-                enter_offset=160,
+                enter_offset=-100,
             )
         ]
         super().__init__(

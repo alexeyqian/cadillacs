@@ -1,5 +1,6 @@
 from game.entities.ferris_enemy import FerrisEnemy
 from game.entities.gneiss_enemy import GneissEnemy
+from game.entities.blade_enemy import BladeEnemy
 from game.entities.black_elmer_enemy import BlackElmerEnemy
 from game.entities.walther_enemy import WaltherEnemy
 from game.data.enemy_config import DEFAULT_ENEMY_TYPE
@@ -8,6 +9,7 @@ class EnemyFactory:
     enemy_classes = {
         "ferris": FerrisEnemy,
         "gneiss": GneissEnemy,
+        "blade": BladeEnemy,
         "black_elmer": BlackElmerEnemy,
         "walther": WaltherEnemy,
     }

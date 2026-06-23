@@ -101,6 +101,29 @@ ENEMY_CONFIGS = {
         ),
         score_points=int(ENEMY_SCORE_POINTS*GNEISS_SCALER),
     ),
+    
+    "blade": EnemyConfig(
+        enemy_id="blade",
+        display_name="Blade",
+        sprite_scale=1,
+        max_hp=int(ENEMY_MAX_HP * 1.5),
+        speed=int(ENEMY_SPEED),
+
+        attack=replace(
+            DEFAULT_ENEMY_ATTACK_DATA,
+            damage=int(ENEMY_ATTACK_DAMAGE * 1.5),
+            delay=int(ENEMY_ATTACK_DELAY * 0.8),
+            cooldown=int(ENEMY_ATTACK_COOLDOWN * 0.8),
+            windup=ENEMY_ATTACK_WINDUP,
+            active=ENEMY_ATTACK_ACTIVE,
+            recovery=ENEMY_ATTACK_RECOVERY,
+            hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
+            hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
+            hitbox_w=ENEMY_HITBOX_W,
+            hitbox_h=ENEMY_HITBOX_H,
+        ),
+        score_points=int(ENEMY_SCORE_POINTS*1.5),
+    ),
 
     "black_elmer": EnemyConfig(
         enemy_id="black_elmer",

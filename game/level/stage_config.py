@@ -16,7 +16,8 @@ EPISODE_1_STAGES = [
                     {
                         "enemy_type": "ferris",
                         "count": 2
-                    }
+                    },
+                    
                 ],
             },
             {
@@ -91,8 +92,12 @@ EPISODE_1_STAGES = [
                 "spawns": [
                     {
                         "enemy_type": "gneiss",
-                        "count": 3
+                        "count": 2
                     },
+                    {
+                        "enemy_type": "blade",
+                        "count": 2
+                    }
                 ],
             },
             {
