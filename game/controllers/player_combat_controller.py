@@ -18,9 +18,9 @@ class PlayerCombatController:
         # J punch 1, J punch 2, J punch 3
         self.combo_step = 0
         self.combo_window_remaining = 0
-        # add a short lockout after ATTACK_3, 
-        # so the finisher cannot immediately loop back into ATTACK_1.
-        # expected feel: ATTACK_1 -> ATTACK_2 -> ATTACK_3 -> tiny recovery pause
+        # add a short lockout after ATTACK3, 
+        # so the finisher cannot immediately loop back into ATTACK.
+        # expected feel: ATTACK -> ATTACK2 -> ATTACK3 -> tiny recovery pause
         self.action_lock_remaining = 0
 
         # make clash create a tiny recovery pause 
@@ -75,7 +75,7 @@ class PlayerCombatController:
 
     # Avoiding the combo step advances when the player presses attack inside the combo window, 
     # even if the previous punch hit nothing. 
-    # That means the player can “charge” into ATTACK_3 by punching air, 
+    # That means the player can “charge” into ATTACK3 by punching air, 
     # then walk in and land the stronger hit. 
     # The combo damage has to be earned.
     def advance_timers(self, owner):
@@ -141,7 +141,7 @@ class PlayerCombatController:
         # Punch misses enemy -> combo resets
         # Player cannot build third hit by punching empty space
         attack_missed = (
-            finished_attack_name in [owner.ATTACK_1, owner.ATTACK_2, owner.ATTACK_3]
+            finished_attack_name in [owner.ATTACK, owner.ATTACK2, owner.ATTACK3]
             and not attack_connected
         )
         if attack_missed:
@@ -149,7 +149,7 @@ class PlayerCombatController:
 
         if finished_move and finished_move.cooldown > 0:
             self.action_lock_remaining = finished_move.cooldown
-            if finished_attack_name not in [owner.ATTACK_1, owner.ATTACK_2]:
+            if finished_attack_name not in [owner.ATTACK, owner.ATTACK2]:
                 self.reset_combo()
 
     def return_to_ready_state(self, owner):
@@ -196,11 +196,11 @@ class PlayerCombatController:
 
         self.combo_step = min(self.combo_step, 3)
         if self.combo_step == 1:
-            owner.state_machine.change_to(owner, owner.ATTACK_1)
+            owner.state_machine.change_to(owner, owner.ATTACK)
         elif self.combo_step == 2:
-            owner.state_machine.change_to(owner, owner.ATTACK_2)
+            owner.state_machine.change_to(owner, owner.ATTACK2)
         else:
-            owner.state_machine.change_to(owner, owner.ATTACK_3)
+            owner.state_machine.change_to(owner, owner.ATTACK3)
             owner.movement.start_combo_finisher_nudge(owner)
 
         move_data = self._get_attack_data(owner, owner.state)

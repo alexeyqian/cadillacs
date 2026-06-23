@@ -22,7 +22,7 @@ class FakeOwner:
     JUMP_ATTACK = "JUMP_ATTACK"
     LANDING = "LANDING"
     RUN_ATTACK = "RUN_ATTACK"
-    ATTACK_3 = "ATTACK_3"
+    ATTACK3 = "ATTACK3"
 
     def __init__(self):
         self.x = 300
@@ -93,7 +93,7 @@ class PlayerMovementTests(unittest.TestCase):
         owner = FakeOwner()
         movement = PlayerMovement()
         owner.combat_controller.is_attacking = True
-        owner.combat_controller.current_attack_name = "ATTACK_1"
+        owner.combat_controller.current_attack_name = "ATTACK"
 
         movement.start_run_attack_momentum(owner)
         movement.update_movement(owner, FakeInput())
@@ -296,7 +296,7 @@ class PlayerMovementTests(unittest.TestCase):
         owner = FakeOwner()
         movement = PlayerMovement()
         owner.combat_controller.is_attacking = True
-        owner.combat_controller.current_attack_name = owner.ATTACK_3
+        owner.combat_controller.current_attack_name = owner.ATTACK3
 
         movement.start_combo_finisher_nudge(owner)
         starting_nudge = movement.attack_motion.combo_finisher_nudge_remaining

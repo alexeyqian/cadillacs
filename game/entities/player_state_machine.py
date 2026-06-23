@@ -36,15 +36,15 @@ class AttackState(PlayerState):
 
 
 class Attack1State(PlayerState):
-    name = "ATTACK_1"
+    name = "ATTACK"
 
 
 class Attack2State(PlayerState):
-    name = "ATTACK_2"
+    name = "ATTACK2"
 
 
 class Attack3State(PlayerState):
-    name = "ATTACK_3"
+    name = "ATTACK3"
 
 
 class RunAttackState(PlayerState):
@@ -103,9 +103,9 @@ class PlayerStateMachine:
             owner.JUMP_TAKEOFF: JumpTakeoffState(),
             owner.JUMP: JumpState(),
             owner.ATTACK: AttackState(),
-            owner.ATTACK_1: Attack1State(),
-            owner.ATTACK_2: Attack2State(),
-            owner.ATTACK_3: Attack3State(),
+            owner.ATTACK: Attack1State(),
+            owner.ATTACK2: Attack2State(),
+            owner.ATTACK3: Attack3State(),
             owner.RUN_ATTACK: RunAttackState(),
             owner.JUMP_ATTACK: JumpAttackState(),
             owner.LANDING: LandingState(),

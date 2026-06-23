@@ -627,7 +627,7 @@ Future structure:
 
 ```python
 animation_events = {
-    "attack_1": {
+    "attack": {
         6: ["enable_hitbox"],
         10: ["disable_hitbox"],
         14: ["allow_combo"],

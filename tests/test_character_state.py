@@ -41,7 +41,7 @@ def test_player_state_machine_registers_shared_recovery_states():
 
 
 def test_player_specific_states_are_grouped_under_player_state():
-    assert Player.ATTACK_1 == PlayerState.ATTACK_1
+    assert Player.ATTACK == PlayerState.ATTACK
     assert Player.RUN_ATTACK == PlayerState.RUN_ATTACK
     assert Player.JUMP_ATTACK == PlayerState.JUMP_ATTACK
     assert Player.GRAB_KNEE == PlayerState.GRAB_KNEE

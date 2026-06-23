@@ -16,9 +16,9 @@ The player fist combo uses three attack phases in code:
 
 | Attack | Windup | Active | Recovery |
 | --- | ---: | ---: | ---: |
-| ATTACK_1 | 8 | 4 | 3 |
-| ATTACK_2 | 8 | 4 | 5 |
-| ATTACK_3 | 8 | 4 | 6 |
+| ATTACK | 8 | 4 | 3 |
+| ATTACK2 | 8 | 4 | 5 |
+| ATTACK3 | 8 | 4 | 6 |
 
 The active hitbox is only available during the active phase.
 
@@ -72,11 +72,11 @@ it snaps directly from full extension back to idle or the next combo step.
 
 1. Set normal attack animation FPS to 10 or 12 after judging the 3-frame punch in game.
 2. Split combo visuals later:
-   - ATTACK_1: quick jab
-   - ATTACK_2: stronger straight punch
-   - ATTACK_3: heavier finisher with more body twist
+   - ATTACK: quick jab
+   - ATTACK2: stronger straight punch
+   - ATTACK3: heavier finisher with more body twist
 3. Tune hitboxes after animation feels right:
-   - ATTACK_1: shorter reach
-   - ATTACK_2: medium reach
-   - ATTACK_3: larger finisher hitbox
-4. Consider a tiny forward nudge on ATTACK_3 only, not on every punch.
+   - ATTACK: shorter reach
+   - ATTACK2: medium reach
+   - ATTACK3: larger finisher hitbox
+4. Consider a tiny forward nudge on ATTACK3 only, not on every punch.

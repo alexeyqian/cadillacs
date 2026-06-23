@@ -41,7 +41,7 @@ DEAD
 ```
 
 Keep jump attack separate from the standing combo chain at first. A jump attack
-should be one simple action, not `ATTACK_1`, `ATTACK_2`, `ATTACK_3`.
+should be one simple action, not `ATTACK`, `ATTACK2`, `ATTACK3`.
 
 ## Core Jump Fields
 

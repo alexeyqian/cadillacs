@@ -8,9 +8,9 @@ class PlayerState(CharacterState):
     JUMP_ATTACK = "JUMP_ATTACK"
     LANDING = "LANDING"
 
-    ATTACK_1 = "ATTACK_1"
-    ATTACK_2 = "ATTACK_2"
-    ATTACK_3 = "ATTACK_3"
+    ATTACK = "ATTACK"
+    ATTACK2 = "ATTACK2"
+    ATTACK3 = "ATTACK3"
 
     GRAB = "GRAB"
     GRAB_KNEE = "GRAB_KNEE"

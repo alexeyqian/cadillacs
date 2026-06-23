@@ -53,9 +53,9 @@ class FakeInput:
 
 class FakeOwner:
     IDLE = "IDLE"
-    ATTACK_1 = "ATTACK_1"
-    ATTACK_2 = "ATTACK_2"
-    ATTACK_3 = "ATTACK_3"
+    ATTACK = "ATTACK"
+    ATTACK2 = "ATTACK2"
+    ATTACK3 = "ATTACK3"
     RUN_ATTACK = "RUN_ATTACK"
     JUMP_ATTACK = "JUMP_ATTACK"
     GRAB_KNEE = "GRAB_KNEE"
@@ -131,7 +131,7 @@ class PlayerActionControllerTests(unittest.TestCase):
 
         actions.update(owner, FakeInput(attack=True))
         Player._try_start_requested_attack(owner)
-        self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK_1)
+        self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK)
 
         actions.update(owner, FakeInput(attack=False))
         actions.update(owner, FakeInput(attack=True))
@@ -139,13 +139,13 @@ class PlayerActionControllerTests(unittest.TestCase):
         self.assertTrue(owner.input_buffer.has("attack"))
 
         owner.combat_controller.attack_manager.mark_connected()
-        while owner.combat_controller.current_attack_name == owner.ATTACK_1:
+        while owner.combat_controller.current_attack_name == owner.ATTACK:
             owner.combat_controller.advance_timers(owner)
             owner.combat_controller.update_attack(owner)
             actions.update(owner, FakeInput(attack=False))
             Player._try_start_requested_attack(owner)
 
-        self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK_2)
+        self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK2)
         self.assertFalse(owner.input_buffer.has("attack"))
 
 

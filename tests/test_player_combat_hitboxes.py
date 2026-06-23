@@ -32,9 +32,9 @@ class FakeAnimationController:
 
 class FakeOwner:
     IDLE = "IDLE"
-    ATTACK_1 = "ATTACK_1"
-    ATTACK_2 = "ATTACK_2"
-    ATTACK_3 = "ATTACK_3"
+    ATTACK = "ATTACK"
+    ATTACK2 = "ATTACK2"
+    ATTACK3 = "ATTACK3"
     RUN_ATTACK = "RUN_ATTACK"
     JUMP_ATTACK = "JUMP_ATTACK"
     DEAD = "DEAD"
@@ -79,7 +79,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
     def test_attack_rect_comes_from_attack_data_during_active_window(self):
         owner = FakeOwner()
         hitboxes = CharacterGeometry()
-        attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
+        attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK"]
 
         owner.combat_controller.start_attack(owner)
         for _ in range(attack_data.windup):
@@ -96,7 +96,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         owner = FakeOwner()
         owner.facing_right = False
         hitboxes = CharacterGeometry()
-        attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
+        attack_data = DEFAULT_PLAYER_ATTACKS["ATTACK"]
 
         owner.combat_controller.start_attack(owner)
         for _ in range(attack_data.windup):

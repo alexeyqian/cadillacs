@@ -40,9 +40,9 @@ class FakeWeapon:
 
 
 class FakePlayer:
-    ATTACK_1 = "ATTACK_1"
-    ATTACK_2 = "ATTACK_2"
-    ATTACK_3 = "ATTACK_3"
+    ATTACK = "ATTACK"
+    ATTACK2 = "ATTACK2"
+    ATTACK3 = "ATTACK3"
     RUN_ATTACK = "RUN_ATTACK"
     JUMP_ATTACK = "JUMP_ATTACK"
     GRAB_KNEE = "GRAB_KNEE"
@@ -51,7 +51,7 @@ class FakePlayer:
     def __init__(self, weapon=None):
         self.x = 100
         self.y = 100
-        self.state = self.ATTACK_1
+        self.state = self.ATTACK
         self.facing_right = True
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
@@ -202,7 +202,7 @@ class PlayerAttackCollisionTests(unittest.TestCase):
 
     def test_run_attack_uses_stronger_enemy_knockback(self):
         game_state = FakeGameState()
-        normal_knockback = DEFAULT_PLAYER_ATTACKS["ATTACK_1"].knockback_velocity
+        normal_knockback = DEFAULT_PLAYER_ATTACKS["ATTACK"].knockback_velocity
         game_state.player.start_running_attack()
 
         handle_player_attack_collision(game_state)
@@ -214,7 +214,7 @@ class PlayerAttackCollisionTests(unittest.TestCase):
 
     def test_run_attack_uses_longer_enemy_hit_stun(self):
         game_state = FakeGameState()
-        normal_hit_stun = DEFAULT_PLAYER_ATTACKS["ATTACK_1"].hit_stun_duration
+        normal_hit_stun = DEFAULT_PLAYER_ATTACKS["ATTACK"].hit_stun_duration
         game_state.player.start_running_attack()
 
         handle_player_attack_collision(game_state)

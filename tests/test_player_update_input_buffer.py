@@ -142,17 +142,17 @@ def test_player_update_uses_buffered_attack_after_recovery():
     player = make_player_like()
 
     update_player_frame(player, FakeInput(attack=True))
-    assert player.combat_controller.current_attack_name == player.ATTACK_1
+    assert player.combat_controller.current_attack_name == player.ATTACK
 
     update_player_frame(player, FakeInput())
     update_player_frame(player, FakeInput(attack=True))
     assert player.input_buffer.has("attack") is True
 
     player.combat_controller.attack_manager.mark_connected()
-    while player.combat_controller.current_attack_name == player.ATTACK_1:
+    while player.combat_controller.current_attack_name == player.ATTACK:
         update_player_frame(player, FakeInput())
 
-    assert player.combat_controller.current_attack_name == player.ATTACK_2
+    assert player.combat_controller.current_attack_name == player.ATTACK2
     assert player.input_buffer.has("attack") is False
 
 
@@ -163,4 +163,4 @@ def test_player_update_jump_buffer_does_not_bypass_attack_lock():
     update_player_frame(player, FakeInput(jump=True))
 
     assert player.input_buffer.has("jump") is True
-    assert player.state == player.ATTACK_1
+    assert player.state == player.ATTACK

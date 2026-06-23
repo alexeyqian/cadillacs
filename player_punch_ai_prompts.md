@@ -1,7 +1,7 @@
 # AI Prompts For Mustapha Combo Punch Sprite Sheets
 
 Use these prompts in another game AI art platform to generate improved
-`attack_2` and `attack_3` sprite sheets.
+`attack2` and `attack3` sprite sheets.
 
 ## Shared Requirements
 

@@ -23,26 +23,10 @@ MUSTAPHA_ANIMATIONS = {
         "frame_height": 384,
     },
     "jump": {
-        "file": "assets/player/mustapha_jump.png",
+        "file": "assets/player/mustapha_jump_3x.png",
         "frames_count": 4,
-        "frames": [
-            {#77,93,96,77
-                "frame_rect": (0, 0, 77, 211),
-                "offset": (-40, -211),
-            },
-            {
-                "frame_rect": (77, 0, 93, 211),
-                "offset": (-40, -211),
-            },
-            {
-                "frame_rect": (170, 0, 96, 211),
-                "offset": (-40, -211),
-            },
-            {
-                "frame_rect": (266, 0, 77, 211),
-                "offset": (-40, -211),
-            }
-        ]
+        "frame_width": 384,
+        "frame_height": 384,
     },
     "hit": {
         "file": "assets/player/mustapha_hit_3x.png",
@@ -63,11 +47,16 @@ MUSTAPHA_ANIMATIONS = {
         "frame_height": 384,
     },
     "attack2": {
-        "file": "assets/player/mustapha_attack.png",
+        "file": "assets/player/mustapha_attack_3x.png",
         "frames_count": 3,
-        "frame_width": 152,
-        "frame_height": 168,
-        "scale": 1
+        "frame_width": 384,
+        "frame_height": 384,
+    },
+    "attack3": {
+        "file": "assets/player/mustapha_attack_3x.png",
+        "frames_count": 3,
+        "frame_width": 384,
+        "frame_height": 384,
     },
     "run_attack": {
         "file": "assets/player/mustapha_run_attack_3x.png",
@@ -76,7 +65,6 @@ MUSTAPHA_ANIMATIONS = {
         "frame_height":384,
         "scale": 1
     },
-    
     "jump_attack": {
         "file": "assets/player/mustapha_run_attack_3x.png",
         "frames_count": 2,
@@ -127,14 +115,6 @@ MUSTAPHA_ANIMATIONS = {
     },
 }
 
-MUSTAPHA_ANIMATIONS["attack_1"] = MUSTAPHA_ANIMATIONS["attack"]
-MUSTAPHA_ANIMATIONS["attack_2"] = MUSTAPHA_ANIMATIONS["attack2"]
-MUSTAPHA_ANIMATIONS["attack_3"] = {
-    **MUSTAPHA_ANIMATIONS["attack"],
-    "file": "assets/player/mustapha_attack_3x.png",
-    "frame_width": 162,
-}
-
 for config in MUSTAPHA_ANIMATIONS.values():
     if "scale" not in config:
         config["scale"] = 1
@@ -150,13 +130,12 @@ for config in MUSTAPHA_ANIMATIONS.values():
 
 MUSTAPHA_ANIM_FPS = {
     "idle": 6,
-    "walk": 6,
+    "walk": 10,
     "run": 6,
-    "jump": 6,
+    "jump": 10,
     "attack": 12,
-    "attack_1": 12,
-    "attack_2": 12,
-    "attack_3": 12,
+    "attack2": 12,
+    "attack3": 12,
     "run_attack": 6,
     "jump_attack": 6,
     "grab": 6,

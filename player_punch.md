@@ -37,9 +37,9 @@ Current fist combo timing:
 
 | Attack | Windup | Active | Recovery | Role |
 | --- | ---: | ---: | ---: | --- |
-| ATTACK_1 | 8 | 4 | 3 | quick opener |
-| ATTACK_2 | 8 | 4 | 5 | middle combo hit |
-| ATTACK_3 | 8 | 4 | 6 | heavier finisher |
+| ATTACK | 8 | 4 | 3 | quick opener |
+| ATTACK2 | 8 | 4 | 5 | middle combo hit |
+| ATTACK3 | 8 | 4 | 6 | heavier finisher |
 
 The code timing is the source of truth. Animation should communicate the timing
 visually, but collision should continue to use attack data.
@@ -73,17 +73,17 @@ This keeps the punch snappy while still showing the recovery posture.
 The player animation controller supports separate combo animation states:
 
 ```text
-ATTACK_1 -> attack_1
-ATTACK_2 -> attack_2
-ATTACK_3 -> attack_3
+ATTACK -> attack
+ATTACK2 -> attack2
+ATTACK3 -> attack3
 ```
 
 Mustapha now has separate three-phase sheets for each combo punch:
 
 ```text
-attack_1 -> assets/player/mustapha_attack_1.png
-attack_2 -> assets/player/mustapha_attack_2.png
-attack_3 -> assets/player/mustapha_attack_3.png
+attack -> assets/player/mustapha_attack.png
+attack2 -> assets/player/mustapha_attack2.png
+attack3 -> assets/player/mustapha_attack3.png
 ```
 
 The current art is still conservative and derived from the same base punch, but
@@ -95,9 +95,9 @@ pose refinement much easier.
 Current fist attacks use a light progression:
 
 ```python
-ATTACK_1: AttackHitboxData(x=92, y=-300, width=135, height=38)
-ATTACK_2: AttackHitboxData(x=94, y=-300, width=160, height=40)
-ATTACK_3: AttackHitboxData(x=98, y=-304, width=176, height=46)
+ATTACK: AttackHitboxData(x=92, y=-300, width=135, height=38)
+ATTACK2: AttackHitboxData(x=94, y=-300, width=160, height=40)
+ATTACK3: AttackHitboxData(x=98, y=-304, width=176, height=46)
 ```
 
 This keeps the opener quick and focused, preserves the second hit as the medium
@@ -108,9 +108,9 @@ Applied hitbox direction:
 
 | Attack | Suggested Hitbox Feel |
 | --- | --- |
-| ATTACK_1 | shorter, quick jab |
-| ATTACK_2 | medium straight punch |
-| ATTACK_3 | wider/taller finisher |
+| ATTACK | shorter, quick jab |
+| ATTACK2 | medium straight punch |
+| ATTACK3 | wider/taller finisher |
 
 ## Counter-Hurtbox Design
 
@@ -133,9 +133,9 @@ This fits the current counter-hit direction for the project.
 
 The fist combo should eventually feel like:
 
-1. ATTACK_1: fast opener, low commitment
-2. ATTACK_2: stronger follow-up, slightly more recovery
-3. ATTACK_3: finisher, more impact and more commitment
+1. ATTACK: fast opener, low commitment
+2. ATTACK2: stronger follow-up, slightly more recovery
+3. ATTACK3: finisher, more impact and more commitment
 
 Important: do not make every punch equally large or equally safe. The finisher
 should feel better, but it should also be easier to punish if whiffed.
@@ -144,11 +144,11 @@ should feel better, but it should also be easier to punish if whiffed.
 
 1. Watch the 3-frame punch in game and confirm the recovery posture reads well.
 2. If the punch feels too twitchy, reduce only Mustapha's `attack` FPS to 10.
-3. Improve the actual silhouettes for `attack_2` and `attack_3` with more
+3. Improve the actual silhouettes for `attack2` and `attack3` with more
    hand-drawn body twist and weight.
 4. Retune hitboxes after the distinct combo silhouettes are final.
-5. `ATTACK_3` has a tiny forward nudge to make the finisher feel like the body
-   drives into the punch without affecting ATTACK_1 or ATTACK_2.
+5. `ATTACK3` has a tiny forward nudge to make the finisher feel like the body
+   drives into the punch without affecting ATTACK or ATTACK2.
 
 ## Visual Preview Notes
 
@@ -163,8 +163,8 @@ Current visual finding:
 
 - The combo is technically separated into three sheets.
 - The 3-phase structure reads clearly.
-- `attack_2` has a stronger shoulder/guard variation than the opener.
-- `attack_3` has a heavier body lean and more committed recovery.
+- `attack2` has a stronger shoulder/guard variation than the opener.
+- `attack3` has a heavier body lean and more committed recovery.
 - These sheets are still derived from the same base punch, so the next art pass
   can improve them further with true hand-drawn body twist and weight.
 

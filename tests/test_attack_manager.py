@@ -16,7 +16,7 @@ class AttackManagerTests(unittest.TestCase):
         )
         controller = AttackManager()
 
-        controller.start("ATTACK_1", attack)
+        controller.start("ATTACK", attack)
 
         self.assertTrue(controller.is_attacking)
         self.assertEqual(controller.elapsed_frames, 0)
@@ -88,13 +88,13 @@ class AttackManagerTests(unittest.TestCase):
         target = object()
         controller = AttackManager()
 
-        controller.start("ATTACK_1", attack)
+        controller.start("ATTACK", attack)
         controller.mark_target_hit(target)
 
         self.assertTrue(controller.has_connected)
         self.assertTrue(controller.has_hit_target(target))
 
-        controller.start("ATTACK_2", attack)
+        controller.start("ATTACK2", attack)
 
         self.assertFalse(controller.has_connected)
         self.assertFalse(controller.has_hit_target(target))

@@ -44,7 +44,7 @@ from game.settings import (
 
 DEFAULT_PLAYER_ATTACKS = {
     # shorter quick jab hitbox
-    "ATTACK_1": replace(
+    "ATTACK": replace(
         DEFAULT_PLAYER_ATTACK_DATA,
         damage=ATTACK_1_DAMAGE,
         windup=ATTACK_1_WINDUP_DURATION,
@@ -65,7 +65,7 @@ DEFAULT_PLAYER_ATTACKS = {
         combo_window=23,
     ),
     # medium baseline hitbox
-    "ATTACK_2": replace(
+    "ATTACK2": replace(
         DEFAULT_PLAYER_ATTACK_DATA,
         damage=ATTACK_2_DAMAGE,
         windup=ATTACK_2_WINDUP_DURATION,
@@ -77,9 +77,9 @@ DEFAULT_PLAYER_ATTACKS = {
         hitbox_h=PLAYER_HITBOX_H,
         combo_window=20,
     ),
-    # wider/taller finisher hitbox. Keep it larger than ATTACK_2, but avoid
-    # overextending it because ATTACK_3 also gets a small forward nudge.
-    "ATTACK_3": replace(
+    # wider/taller finisher hitbox. Keep it larger than ATTACK2, but avoid
+    # overextending it because ATTACK3 also gets a small forward nudge.
+    "ATTACK3": replace(
         DEFAULT_PLAYER_ATTACK_DATA,
         damage=ATTACK_3_DAMAGE,
         windup=ATTACK_3_WINDUP_DURATION,
@@ -149,36 +149,36 @@ DEFAULT_PLAYER_ATTACKS = {
 }
 
 DEFAULT_WEAPON_PLAYER_ATTACKS = {
-    ("knife", "ATTACK_1"): replace(
-        DEFAULT_PLAYER_ATTACKS["ATTACK_1"],
-        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_1"].damage + KNIFE_DAMAGE,
+    ("knife", "ATTACK"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK"].damage + KNIFE_DAMAGE,
         lane_reach=1,
     ),
-    ("knife", "ATTACK_2"): replace(
-        DEFAULT_PLAYER_ATTACKS["ATTACK_2"],
-        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_2"].damage + KNIFE_DAMAGE,
+    ("knife", "ATTACK2"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK2"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK2"].damage + KNIFE_DAMAGE,
         lane_reach=1,
     ),
-    ("knife", "ATTACK_3"): replace(
-        DEFAULT_PLAYER_ATTACKS["ATTACK_3"],
-        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_3"].damage + KNIFE_DAMAGE,
+    ("knife", "ATTACK3"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK3"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK3"].damage + KNIFE_DAMAGE,
         lane_reach=1,
     ),
-    ("bat", "ATTACK_1"): replace(
-        DEFAULT_PLAYER_ATTACKS["ATTACK_1"],
-        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_1"].damage + BAT_DAMAGE,
+    ("bat", "ATTACK"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK"].damage + BAT_DAMAGE,
         max_targets=2,
         lane_reach=1,
     ),
-    ("bat", "ATTACK_2"): replace(
-        DEFAULT_PLAYER_ATTACKS["ATTACK_2"],
-        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_2"].damage + BAT_DAMAGE,
+    ("bat", "ATTACK2"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK2"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK2"].damage + BAT_DAMAGE,
         max_targets=2,
         lane_reach=1,
     ),
-    ("bat", "ATTACK_3"): replace(
-        DEFAULT_PLAYER_ATTACKS["ATTACK_3"],
-        damage=DEFAULT_PLAYER_ATTACKS["ATTACK_3"].damage + BAT_DAMAGE,
+    ("bat", "ATTACK3"): replace(
+        DEFAULT_PLAYER_ATTACKS["ATTACK3"],
+        damage=DEFAULT_PLAYER_ATTACKS["ATTACK3"].damage + BAT_DAMAGE,
         max_targets=2,
         lane_reach=1,
     ),
@@ -208,7 +208,7 @@ class PlayerConfig:
 
     attacks: dict = None
     weapon_attacks: dict = None
-    attack: AttackData = DEFAULT_PLAYER_ATTACKS["ATTACK_1"]
+    attack: AttackData = DEFAULT_PLAYER_ATTACKS["ATTACK"]
     jump_power: float = 12
     jump_gravity: float = 0.7
     air_move_speed: float = 3.0
