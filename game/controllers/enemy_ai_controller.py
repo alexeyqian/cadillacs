@@ -1,4 +1,4 @@
-from game.settings import ENEMY_FLANK_Y_TOLERANCE, MAX_MELEE_ATTACKERS
+from game.settings import ENEMY_FLANK_Y_TOLERANCE, ENEMY_RUN_CHASE_THRESHOLD, MAX_MELEE_ATTACKERS
 
 # Frames the enemy pauses before turning when the player crosses to the other side.
 DIRECTION_CHANGE_DELAY = 60
@@ -67,11 +67,15 @@ class EnemyAIController:
         if self._should_flank(owner, distance_x, distance_y, context.enemies):
             owner.flanking.set_target(owner, context.player, context.enemies)
             owner.intent.flank_to(owner.flanking.get_target_position(context.player))
+            owner.state = owner.CHASE
+        elif owner.movement.can_run and distance_x > ENEMY_RUN_CHASE_THRESHOLD:
+            owner.flanking.clear_target()
+            owner.intent.run_toward_player()
+            owner.state = owner.RUN
         else:
             owner.flanking.clear_target()
             owner.intent.move_toward_player()
-
-        owner.state = owner.CHASE
+            owner.state = owner.CHASE
 
     def _request_patrol_intent(self, owner):
         self.reset_decision_timer()

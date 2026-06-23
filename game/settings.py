@@ -1,7 +1,7 @@
 ######## system and sizes ########
 
 FPS=60
-DEFAULT_ANIM_DURATION = 20  # ticks per frame when no per-frame or total_duration is set
+DEFAULT_ANIM_DURATION = 5  # ticks per frame when no per-frame or total_duration is set
 # external window width: for real monitor/display
 EXTERNAL_WIDTH=1920
 EXTERNAL_HEIGHT=1080
@@ -92,7 +92,9 @@ PLAYER_SPEED = 10
 PLAYER_RUN_SPEED= PLAYER_SPEED * 2
 PLAYER_AIR_MOVE_SPEED=PLAYER_SPEED*1.5
 ENEMY_SPEED=int(PLAYER_SPEED*0.5)
+ENEMY_RUN_SPEED=int(PLAYER_SPEED*0.9)
 ENEMY_Y_SPEED=int(ENEMY_SPEED*0.5)
+ENEMY_RUN_CHASE_THRESHOLD=400  # pixels; enemy switches to run when farther than this
 PROJECTILE_SPEED=PLAYER_SPEED*3
 
 ######## player attack ########

@@ -23,6 +23,7 @@ from game.settings import (
     ENEMY_HURTBOX_OFFSET_Y,
     ENEMY_HURTBOX_W,
     ENEMY_MAX_HP,
+    ENEMY_RUN_SPEED,
     ENEMY_SCORE_POINTS,
     ENEMY_SPEED,
     FIST_DAMAGE,
@@ -49,6 +50,8 @@ class EnemyConfig:
 
     max_hp: int = ENEMY_MAX_HP
     speed: float = ENEMY_SPEED
+    can_run: bool = False
+    run_speed: float = ENEMY_RUN_SPEED
 
     attack: AttackData = DEFAULT_ENEMY_ATTACK_DATA
     score_points: int = ENEMY_SCORE_POINTS
@@ -140,6 +143,8 @@ ENEMY_CONFIGS = {
 
         max_hp=ENEMY_MAX_HP * 2,
         speed=int(ENEMY_SPEED * 0.7),
+        can_run=True,
+        run_speed=int(ENEMY_RUN_SPEED * 0.9),
 
         attack_range=int(ENEMY_ATTACK_RANGE * BLACK_ELMER_SCALER),
         attack_lane_range=int(ENEMY_ATTACK_LANE_RANGE * BLACK_ELMER_SCALER),

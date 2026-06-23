@@ -14,13 +14,16 @@ class EnemyAnimationController(FrameAnimationController):
             self.add_frame_animation(state, animation_name, loop=loop)
 
     def get_animation_specs(self, owner):
-        return [
+        specs = [
             (owner.IDLE, "idle", True),
             (owner.WALK, "walk", True),
             (owner.ATTACK, "attack", False),
             (owner.HIT, "hit", True),
             (owner.DEAD, "dead", True),
         ]
+        if owner.movement.can_run and "run" in self.animation_data:
+            specs.append((owner.RUN, "run", True))
+        return specs
 
     def get_animation_state(self, owner):
         state_map = {
@@ -28,6 +31,7 @@ class EnemyAnimationController(FrameAnimationController):
             owner.WALK: owner.WALK,
             owner.PATROL: owner.IDLE,
             owner.CHASE: owner.WALK,
+            owner.RUN: owner.RUN if owner.movement.can_run else owner.WALK,
             owner.ATTACK: owner.ATTACK,
             owner.HIT: owner.HIT,
             owner.RECOIL: owner.HIT,

@@ -86,6 +86,8 @@ class Enemy(Character, EnemyState):
             speed=config.speed,
             patrol_distance=config.patrol_distance,
             detect_range=config.detect_range,
+            can_run=config.can_run,
+            run_speed=config.run_speed,
         )
 
     def apply_combat_config(self, config):
@@ -124,6 +126,9 @@ class Enemy(Character, EnemyState):
 
         if self.intent.wants_patrol():
             self.movement.patrol(self, self.lifecycle_controller.spawn_x)
+        elif self.intent.wants_run_toward_player():
+            self.movement.run_toward_player(self, context.player)
+            self.movement.separate_from_enemies(self, context.enemies)
         elif self.intent.wants_move_toward_player():
             self.movement.move_toward_player(self, context.player)
             self.movement.separate_from_enemies(self, context.enemies)

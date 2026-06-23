@@ -2,6 +2,7 @@ class EnemyIntent:
     NONE = "none"
     PATROL = "patrol"
     MOVE_TOWARD_PLAYER = "move_toward_player"
+    RUN_TOWARD_PLAYER = "run_toward_player"
     ATTACK_PLAYER = "attack_player"
     FLANK = "flank"
 
@@ -20,6 +21,10 @@ class EnemyIntent:
         self.clear()
         self.action = self.MOVE_TOWARD_PLAYER
 
+    def run_toward_player(self):
+        self.clear()
+        self.action = self.RUN_TOWARD_PLAYER
+
     def attack_player(self):
         self.clear()
         self.action = self.ATTACK_PLAYER
@@ -34,6 +39,9 @@ class EnemyIntent:
 
     def wants_move_toward_player(self):
         return self.action == self.MOVE_TOWARD_PLAYER
+
+    def wants_run_toward_player(self):
+        return self.action == self.RUN_TOWARD_PLAYER
 
     def wants_attack_player(self):
         return self.action == self.ATTACK_PLAYER

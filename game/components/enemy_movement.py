@@ -23,13 +23,17 @@ class EnemyMovement:
         y_speed=None,
     ):
         self.speed = speed
+        self.run_speed = speed
+        self.can_run = False
         self.y_speed = y_speed if y_speed is not None else ENEMY_Y_SPEED
         self.patrol_distance = patrol_distance
         self.detect_range = detect_range
         self.patrol_direction = patrol_direction
 
-    def configure(self, speed, patrol_distance, detect_range):
+    def configure(self, speed, patrol_distance, detect_range, can_run=False, run_speed=None):
         self.speed = speed
+        self.run_speed = run_speed if run_speed is not None else speed
+        self.can_run = can_run
         self.patrol_distance = patrol_distance
         self.detect_range = detect_range
 
@@ -68,14 +72,19 @@ class EnemyMovement:
     # Flanking movement code is easier to read
     def move_toward_player(self, owner, player):
         dx, dy, distance_x, distance_y = self.get_player_distance(owner, player)
-        self._move_horizontally(owner, dx)
+        self._move_horizontally(owner, dx, self.speed)
         self._move_vertically(owner, dy)
 
-    def _move_horizontally(self, owner, dx):
+    def run_toward_player(self, owner, player):
+        dx, dy, distance_x, distance_y = self.get_player_distance(owner, player)
+        self._move_horizontally(owner, dx, self.run_speed)
+        self._move_vertically(owner, dy)
+
+    def _move_horizontally(self, owner, dx, speed):
         if dx > 0:
-            move_x(owner, 1, self.speed)
+            move_x(owner, 1, speed)
         elif dx < 0:
-            move_x(owner, -1, self.speed)
+            move_x(owner, -1, speed)
 
     def _move_vertically(self, owner, dy):
         if abs(dy) > CHASE_VERTICAL_DEAD_ZONE:
