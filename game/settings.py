@@ -1,7 +1,7 @@
 ######## system and sizes ########
 
 FPS=60
-DEFAULT_ANIM_DURATION = 10  # ticks per frame when no per-frame or total_duration is set
+DEFAULT_ANIM_DURATION = 20  # ticks per frame when no per-frame or total_duration is set
 # external window width: for real monitor/display
 EXTERNAL_WIDTH=1920
 EXTERNAL_HEIGHT=1080

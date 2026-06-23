@@ -32,11 +32,3 @@ FERRIS_ANIMATIONS = {
         "frame_height": 384,
     },
 }
-
-FERRIS_ANIM_FPS = {
-    "idle": 6,
-    "walk": 6,
-    "attack": 6,
-    "hit": 10,
-    "dead": 12,
-}

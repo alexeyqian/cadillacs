@@ -17,8 +17,8 @@ from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.damage_request import DamageRequest
 
 class Enemy(Character, EnemyState):
-    def __init__(self, x, y, enemy_type, 
-                animation_data, anim_fps, sprite_scale=1):
+    def __init__(self, x, y, enemy_type,
+                animation_data, anim_fps=None, sprite_scale=1):
         super().__init__(
             x=x,
             y=y,
@@ -59,7 +59,7 @@ class Enemy(Character, EnemyState):
         self.apply_combat_config(config)
         self.apply_reward_config(config)
 
-    def build_presentation_components(self, animation_data, anim_fps):
+    def build_presentation_components(self, animation_data, anim_fps=None):
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
 

@@ -1,4 +1,4 @@
-from game.animation.blade_data import BLADE_ANIMATIONS, BLADE_ANIM_FPS
+from game.animation.blade_data import BLADE_ANIMATIONS
 from game.entities.enemy import Enemy
 
 # Ferris animation data owns the sprite frame slices and per-frame boxes.
@@ -7,5 +7,4 @@ class BladeEnemy(Enemy):
     def __init__(self, x, y):
         super().__init__(x, y, enemy_type="blade",
                 animation_data=BLADE_ANIMATIONS,
-                anim_fps=BLADE_ANIM_FPS,
                 sprite_scale=4)

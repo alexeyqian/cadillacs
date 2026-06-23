@@ -2,7 +2,7 @@ from game.controllers.frame_animation_controller import FrameAnimationController
 
 
 class EnemyAnimationController(FrameAnimationController):
-    def __init__(self, owner, animation_data, anim_fps):
+    def __init__(self, owner, animation_data, anim_fps=None):
         super().__init__(animation_data, anim_fps)
         self.init_frame_animations(owner)
 

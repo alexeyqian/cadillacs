@@ -80,11 +80,3 @@ WALTHER_ANIMATIONS = {
         ]
     },
 }
-
-WALTHER_ANIM_FPS = {
-    "idle": 6,
-    "walk": 6,
-    "attack": 6,
-    "hit": 6,
-    "dead": 6,
-}

@@ -34,11 +34,3 @@ GNEISS_ANIMATIONS = {
         "frame_height": 384,
     },
 }
-
-GNEISS_ANIM_FPS = {
-    "idle": 6,
-    "walk": 6,
-    "attack": 7,
-    "hit": 12,
-    "dead": 12,
-}

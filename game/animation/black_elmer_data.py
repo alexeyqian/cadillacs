@@ -85,16 +85,3 @@ BLACK_ELMER_ANIMATIONS = {
         ]
     },
 }
-
-BLACK_ELMER_ANIM_FPS = {
-    "idle": 6,
-    "walk": 6,
-    "run": 10,
-    "attack": 6,
-    "leg_attack": 6,
-    "jump": 8,
-    "hit": 12,
-    "dead": 10,
-    "dizzy": 8,
-}
-

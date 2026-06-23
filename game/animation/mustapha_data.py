@@ -9,28 +9,24 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 1,
         "frame_width": 256,
         "frame_height": 256,
-        "total_duration": 60,
     },
     "walk": {
         "file": "assets/player/mustapha_walk_3x.png",
         "frames_count": 4,
         "frame_width": 256,
         "frame_height": 256,
-        "total_duration": 24,
     },
     "run": {
         "file": "assets/player/mustapha_run_3x.png",
         "frames_count": 9,
         "frame_width": 384,
         "frame_height": 384,
-        "total_duration": 27,
     },
     "jump": {
         "file": "assets/player/mustapha_jump_3x.png",
         "frames_count": 4,
         "frame_width": 384,
         "frame_height": 384,
-        "total_duration": 24,
     },
     "attack": {
         "file": "assets/player/mustapha_attack_3x.png",
@@ -84,7 +80,6 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 1,
         "frame_width":256,
         "frame_height":256,
-        "total_duration": 10,
     },
     "grab_knee": {
         "file": "assets/player/mustapha_grab_knee_3x.png",
@@ -99,21 +94,18 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 2,
         "frame_width":256,
         "frame_height":256,
-        "total_duration": 20,
     },
     "hit": {
         "file": "assets/player/mustapha_hit_3x.png",
         "frames_count": 1,
         "frame_width": 256,
         "frame_height": 256,
-        "total_duration": 10,
     },
     "dead": {
         "file": "assets/player/mustapha_dead_3x.png",
         "frames_count": 1,
         "frame_width": 384,
         "frame_height": 384,
-        "total_duration": 60,
     },
 }
 
