@@ -4,6 +4,7 @@ from game.components.movement_math import (
     get_distance_to,
     move_x,
 )
+from game.settings import ENEMY_Y_SPEED
 
 
 CHASE_VERTICAL_DEAD_ZONE = 10
@@ -19,8 +20,10 @@ class EnemyMovement:
         patrol_distance=0,
         detect_range=0,
         patrol_direction=1,
+        y_speed=None,
     ):
         self.speed = speed
+        self.y_speed = y_speed if y_speed is not None else ENEMY_Y_SPEED
         self.patrol_distance = patrol_distance
         self.detect_range = detect_range
         self.patrol_direction = patrol_direction
@@ -77,9 +80,9 @@ class EnemyMovement:
     def _move_vertically(self, owner, dy):
         if abs(dy) > CHASE_VERTICAL_DEAD_ZONE:
             if dy > 0:
-                owner.y += self.speed
+                owner.y += self.y_speed
             else:
-                owner.y -= self.speed
+                owner.y -= self.y_speed
 
     def separate_from_enemies(self, owner, enemies):
         for other in enemies:
@@ -116,11 +119,11 @@ class EnemyMovement:
         # Flanking has smoother vertical drift instead of sharp diagonal snapping
         # Slightly slower vertical correction makes enemy movement 
         # look more organic while still understandable.
-        if abs(owner.y - target_y) > self.speed:
+        if abs(owner.y - target_y) > self.y_speed:
             if owner.y < target_y:
-                owner.y += self.speed * FLANK_VERTICAL_SPEED_SCALE
+                owner.y += self.y_speed * FLANK_VERTICAL_SPEED_SCALE
             else:
-                owner.y -= self.speed * FLANK_VERTICAL_SPEED_SCALE
+                owner.y -= self.y_speed * FLANK_VERTICAL_SPEED_SCALE
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
         clamp_to_world_and_lane(

@@ -1,12 +1,19 @@
 from game.settings import ENEMY_FLANK_Y_TOLERANCE, MAX_MELEE_ATTACKERS
 
+# Frames the enemy pauses before turning when the player crosses to the other side.
+DIRECTION_CHANGE_DELAY = 60
+
 
 class EnemyAIController:
     def __init__(self):
         self.decision_timer = 0
+        self._direction_change_timer = 0
+        self._last_player_side = None
 
     def reset_decision_timer(self):
         self.decision_timer = 0
+        self._direction_change_timer = 0
+        self._last_player_side = None
 
     def update(self, owner, context):
         owner.intent.clear()
@@ -18,6 +25,19 @@ class EnemyAIController:
             owner,
             context.player,
         )
+
+        # Detect player crossing to the other side while enemy is chasing.
+        if distance_x <= owner.movement.detect_range:
+            current_side = self._get_side_of_player(owner, context.player)
+            if self._last_player_side is not None and current_side != self._last_player_side:
+                self._direction_change_timer = DIRECTION_CHANGE_DELAY
+            self._last_player_side = current_side
+
+        # While the hesitation timer is active: stay idle, don't turn yet.
+        if self._direction_change_timer > 0:
+            self._direction_change_timer -= 1
+            owner.state = owner.IDLE
+            return
 
         if distance_x <= owner.movement.detect_range:
             owner.movement.face_player(owner, context.player)
