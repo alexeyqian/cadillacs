@@ -8,7 +8,7 @@ from game.animation.frame_animation import (
 
 
 class FrameAnimationController:
-    def __init__(self, animation_data, anim_fps):
+    def __init__(self, animation_data, anim_fps=None):
         self.animation_data = animation_data
         self.anim_fps = anim_fps
         self.animation_manager = AnimationManager()
@@ -41,14 +41,10 @@ class FrameAnimationController:
         return frames, duration
 
     def configured_frame_duration(self, animation_name, frame_count):
-        duration = get_frame_durations(
+        return get_frame_durations(
             self.animation_data[animation_name],
             frame_count,
         )
-        if duration is not None:
-            return duration
-
-        return self.frame_duration(animation_name, frame_count)
 
     def frame_duration(self, animation_name, frame_count=None):
         timing = self.anim_fps[animation_name]

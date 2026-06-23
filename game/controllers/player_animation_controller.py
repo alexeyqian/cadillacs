@@ -3,8 +3,8 @@ from game.tuning import scale_animation_fps_map
 
 
 class PlayerAnimationController(FrameAnimationController):
-    def __init__(self, owner, animation_data, anim_fps):
-        super().__init__(animation_data, scale_animation_fps_map(anim_fps))
+    def __init__(self, owner, animation_data, anim_fps=None):
+        super().__init__(animation_data, scale_animation_fps_map(anim_fps) if anim_fps else None)
         self.init_animations(owner)
 
     def init_animations(self, owner):

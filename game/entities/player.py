@@ -23,7 +23,7 @@ from game.input.player_input_state import PlayerInputState
 from game.components.player_air_state import PlayerAirState
 
 class Player(Character, PlayerState):
-    def __init__(self, player_type, animation_data, anim_fps):
+    def __init__(self, player_type, animation_data, anim_fps=None):
         super().__init__(x=300, y=500, state=self.IDLE, facing_right=True)
         self.player_type = player_type
 
@@ -32,7 +32,7 @@ class Player(Character, PlayerState):
             animation_data, anim_fps)
 
     ##### begin of init #####
-    def _configure_from_player_config(self, config, animation_data, anim_fps):
+    def _configure_from_player_config(self, config, animation_data, anim_fps=None):
         self.apply_identity_config(config)
         self.apply_body_config(config)
         self.apply_movement_config(config)
@@ -104,7 +104,7 @@ class Player(Character, PlayerState):
         self.lifecycle_controller = PlayerLifecycleController(self.x, self.y, config.lives)
         self.reaction_controller = PlayerReactionController()
 
-    def build_presentation_components(self, animation_data, anim_fps):
+    def build_presentation_components(self, animation_data, anim_fps=None):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 

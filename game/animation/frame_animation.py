@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 import pygame
 
+from game.settings import DEFAULT_ANIM_DURATION
+
 @dataclass
 class FrameData:
     image: pygame.Surface
@@ -59,17 +61,24 @@ def get_frame_configs(config):
 
 
 def get_frame_durations(config, frame_count):
+    # Priority 1: explicit per-frame durations
     frame_durations = config.get("frame_durations")
-    if frame_durations is None:
-        return None
+    if frame_durations is not None:
+        if len(frame_durations) != frame_count:
+            raise ValueError(
+                f"Animation has {frame_count} frames but "
+                f"{len(frame_durations)} frame durations"
+            )
+        return [max(1, int(d)) for d in frame_durations]
 
-    if len(frame_durations) != frame_count:
-        raise ValueError(
-            f"Animation has {frame_count} frames but "
-            f"{len(frame_durations)} frame durations"
-        )
+    # Priority 2: total_duration spread equally across frames
+    total = config.get("total_duration")
+    if total is not None:
+        ticks = max(1, total // frame_count)
+        return [ticks] * frame_count
 
-    return [max(1, int(duration)) for duration in frame_durations]
+    # Priority 3: global default
+    return [DEFAULT_ANIM_DURATION] * frame_count
 
 
 class FrameAnimation:

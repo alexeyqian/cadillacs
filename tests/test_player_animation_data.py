@@ -3,7 +3,7 @@ import unittest
 from PIL import Image
 
 from game.animation.frame_animation import get_frame_configs
-from game.animation.mustapha_data import MUSTAPHA_ANIMATIONS, MUSTAPHA_ANIM_FPS
+from game.animation.mustapha_data import MUSTAPHA_ANIMATIONS
 
 
 class PlayerAnimationDataTests(unittest.TestCase):
@@ -11,7 +11,6 @@ class PlayerAnimationDataTests(unittest.TestCase):
         for animation_key in ["attack", "attack2", "attack3"]:
             with self.subTest(animation_key=animation_key):
                 self.assertIn(animation_key, MUSTAPHA_ANIMATIONS)
-                self.assertIn(animation_key, MUSTAPHA_ANIM_FPS)
 
     def test_mustapha_combo_punches_use_distinct_three_phase_sheets(self):
         expected_files = {
@@ -23,7 +22,7 @@ class PlayerAnimationDataTests(unittest.TestCase):
             with self.subTest(animation_key=animation_key):
                 self.assertEqual(MUSTAPHA_ANIMATIONS[animation_key]["file"], expected_files[animation_key])
                 self.assertEqual(MUSTAPHA_ANIMATIONS[animation_key]["frames_count"], 3)
-                self.assertEqual(MUSTAPHA_ANIM_FPS[animation_key], 12)
+                self.assertEqual(len(MUSTAPHA_ANIMATIONS[animation_key]["frame_durations"]), 3)
 
     def test_mustapha_attack_can_define_animation_hitbox(self):
         self.assertEqual(MUSTAPHA_ANIMATIONS["attack"]["hitbox"], (64, -256, 128, 100))

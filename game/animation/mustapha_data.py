@@ -9,24 +9,28 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 1,
         "frame_width": 256,
         "frame_height": 256,
+        "total_duration": 60,
     },
     "walk": {
         "file": "assets/player/mustapha_walk_3x.png",
         "frames_count": 4,
         "frame_width": 256,
         "frame_height": 256,
+        "total_duration": 24,
     },
     "run": {
         "file": "assets/player/mustapha_run_3x.png",
         "frames_count": 9,
         "frame_width": 384,
         "frame_height": 384,
+        "total_duration": 27,
     },
     "jump": {
         "file": "assets/player/mustapha_jump_3x.png",
         "frames_count": 4,
         "frame_width": 384,
         "frame_height": 384,
+        "total_duration": 24,
     },
     "attack": {
         "file": "assets/player/mustapha_attack_3x.png",
@@ -80,6 +84,7 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 1,
         "frame_width":256,
         "frame_height":256,
+        "total_duration": 10,
     },
     "grab_knee": {
         "file": "assets/player/mustapha_grab_knee_3x.png",
@@ -94,18 +99,21 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 2,
         "frame_width":256,
         "frame_height":256,
+        "total_duration": 20,
     },
     "hit": {
         "file": "assets/player/mustapha_hit_3x.png",
         "frames_count": 1,
         "frame_width": 256,
         "frame_height": 256,
+        "total_duration": 10,
     },
     "dead": {
         "file": "assets/player/mustapha_dead_3x.png",
         "frames_count": 1,
         "frame_width": 384,
         "frame_height": 384,
+        "total_duration": 60,
     },
 }
 
@@ -122,19 +130,3 @@ for config in MUSTAPHA_ANIMATIONS.values():
         frame_width, frame_height = config["default_frame_size"]
         config["default_offset"] = (-frame_width / 2, -frame_height)
 
-MUSTAPHA_ANIM_FPS = {
-    "idle": 6,
-    "walk": 10,
-    "run": 6,
-    "jump": 10,
-    "attack": 12,
-    "attack2": 12,
-    "attack3": 12,
-    "run_attack": 6,
-    "jump_attack": 6,
-    "grab": 6,
-    "throw": 6,
-    "grab_knee": 6,
-    "hit": 6,
-    "dead": 1,
-}
