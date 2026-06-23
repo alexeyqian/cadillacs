@@ -17,7 +17,6 @@ EPISODE_1_STAGES = [
                         "enemy_type": "ferris",
                         "count": 2
                     },
-                    
                 ],
             },
             {

@@ -151,6 +151,10 @@ class EnemyCombatController:
     def reserve_attack_slot(self, owner):
         self.owns_attack_slot = True
 
+    @property
+    def current_attack_name(self):
+        return self.attack_manager.current_attack_name
+
     def get_attack_data(self, owner):
         if self.attack_data:
             return self.attack_data
