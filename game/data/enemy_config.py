@@ -76,6 +76,7 @@ ENEMY_CONFIGS = {
     "ferris": EnemyConfig(
         enemy_id="ferris",
         display_name="Ferris",
+        sprite_scale=1
     ),
 
     "gneiss": EnemyConfig(

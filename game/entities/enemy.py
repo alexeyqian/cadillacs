@@ -18,7 +18,7 @@ from game.combat.damage_request import DamageRequest
 
 class Enemy(Character, EnemyState):
     def __init__(self, x, y, enemy_type, 
-                animation_data, anim_fps, sprite_scale=4):
+                animation_data, anim_fps, sprite_scale=1):
         super().__init__(
             x=x,
             y=y,
