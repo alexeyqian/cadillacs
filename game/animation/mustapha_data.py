@@ -17,53 +17,10 @@ MUSTAPHA_ANIMATIONS = {
         "frame_height": 256,
     },
     "run": {
-        "file": "assets/player/mustapha_run.png",
-        "frames_count": 8,
-        "scale": 1.3
-    },
-    "hit": {
-        "file": "assets/player/mustapha_hit.png",
-        "frames_count": 1,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 126, 160),
-                "offset": (-60, -160),
-            }
-        ]
-    },
-    "dead": {
-        "file": "assets/player/mustapha_dead.png",
-        "frames_count": 2,
-        "frames": [
-            {
-                "frame_rect": (0, 0, 210, 87),
-                "offset": (-100, -87),
-            },
-            {
-                "frame_rect": (210, 0, 220, 87),
-                "offset": (-100, -87),
-            }
-        ]
-    },
-    "attack": {
-        "file": "assets/player/mustapha_attack_3x.png",
-        "frames_count": 3,
+        "file": "assets/player/mustapha_run_3x.png",
+        "frames_count": 9,
         "frame_width": 384,
         "frame_height": 384,
-    },
-    "attack2": {
-        "file": "assets/player/mustapha_attack.png",
-        "frames_count": 3,
-        "frame_width": 152,
-        "frame_height": 168,
-        "scale": 1
-    },
-    "run_attack": {
-        "file": "assets/player/mustapha_run_attack_3x.png",
-        "frames_count": 3,
-        "frame_width":384,
-        "frame_height":384,
-        "scale": 1
     },
     "jump": {
         "file": "assets/player/mustapha_jump.png",
@@ -87,6 +44,39 @@ MUSTAPHA_ANIMATIONS = {
             }
         ]
     },
+    "hit": {
+        "file": "assets/player/mustapha_hit_3x.png",
+        "frames_count": 1,
+        "frame_width": 256,
+        "frame_height": 256,
+    },
+    "dead": {
+        "file": "assets/player/mustapha_dead_3x.png",
+        "frames_count": 1,
+        "frame_width": 384,
+        "frame_height": 384,
+    },
+    "attack": {
+        "file": "assets/player/mustapha_attack_3x.png",
+        "frames_count": 3,
+        "frame_width": 384,
+        "frame_height": 384,
+    },
+    "attack2": {
+        "file": "assets/player/mustapha_attack.png",
+        "frames_count": 3,
+        "frame_width": 152,
+        "frame_height": 168,
+        "scale": 1
+    },
+    "run_attack": {
+        "file": "assets/player/mustapha_run_attack_3x.png",
+        "frames_count": 3,
+        "frame_width":384,
+        "frame_height":384,
+        "scale": 1
+    },
+    
     "jump_attack": {
         "file": "assets/player/mustapha_run_attack_3x.png",
         "frames_count": 2,
