@@ -6,6 +6,10 @@ from game.controllers.player_combat_controller import PlayerCombatController
 from game.input.player_input_state import PlayerInputState
 from game.managers.score_manager import ScoreManager
 from game.settings import (
+    PLAYER_GRAB_KNEE_ACTIVE_DURATION,
+    PLAYER_GRAB_KNEE_DURATION,
+    PLAYER_GRAB_KNEE_RECOVERY_DURATION,
+    PLAYER_GRAB_KNEE_WINDUP_DURATION,
     RUN_ATTACK_FULL_POWER_DISTANCE,
     RUN_ATTACK_FULL_POWER_KNOCKBACK_BONUS,
     RUN_ATTACK_LANDING_RECOVERY,
@@ -263,6 +267,14 @@ class AttackDataTests(unittest.TestCase):
         self.assertEqual(attack.active, 8)
         self.assertEqual(attack.recovery, 6)
 
+    def test_grab_knee_timing_comes_from_settings(self):
+        attack = DEFAULT_PLAYER_ATTACKS["GRAB_KNEE"]
+
+        self.assertEqual(attack.windup, PLAYER_GRAB_KNEE_WINDUP_DURATION)
+        self.assertEqual(attack.active, PLAYER_GRAB_KNEE_ACTIVE_DURATION)
+        self.assertEqual(attack.recovery, PLAYER_GRAB_KNEE_RECOVERY_DURATION)
+        self.assertEqual(attack.total_duration, PLAYER_GRAB_KNEE_DURATION)
+
     def test_attack_timer_counts_up_until_attack_finishes(self):
         owner = FakeOwner()
         combat = PlayerCombatController()
@@ -289,8 +301,8 @@ class AttackDataTests(unittest.TestCase):
         self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK3"].recovery, 6)
 
     def test_standing_combo_windows_are_defined_on_attack_data(self):
-        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK"].combo_window, 30)
-        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK2"].combo_window, 60)
+        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK"].combo_window, 13)
+        self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK2"].combo_window, 15)
         self.assertEqual(DEFAULT_PLAYER_ATTACKS["ATTACK3"].combo_window, 0)
 
     def test_standing_combo_hitboxes_progress_from_jab_to_finisher(self):
@@ -375,7 +387,7 @@ class AttackDataTests(unittest.TestCase):
 
         combat.start_attack(owner)
         self.finish_connected_attack(combat, owner)
-        for _ in range(13):
+        for _ in range(self.remaining_followup_window_after_attack(DEFAULT_PLAYER_ATTACKS["ATTACK"]) - 1):
             combat.advance_timers(owner)
         combat.start_attack(owner)
 

@@ -52,7 +52,7 @@ class EnemyConfig:
 
     attack: AttackData = DEFAULT_ENEMY_ATTACK_DATA
     score_points: int = ENEMY_SCORE_POINTS
-    sprite_scale: int  = 4
+    sprite_scale: int  = 3
 
     # enemy specific
     patrol_distance:int = ENEMY_DETECT_RANGE

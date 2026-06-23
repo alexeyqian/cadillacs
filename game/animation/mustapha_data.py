@@ -28,21 +28,20 @@ MUSTAPHA_ANIMATIONS = {
         "frame_width": 384,
         "frame_height": 384,
     },
-
     "attack": {
         "file": "assets/player/mustapha_attack_3x.png",
         "frames_count": 3,
         "frame_width": 384,
         "frame_height": 384,
         "hitbox": (64, -256, 128, 100),
-        "frame_durations": (3,3,5)
+        "frame_durations": (3,10,5)
     },
     "attack2": {
         "file": "assets/player/mustapha_attack2_3x.png",
         "frames_count": 3,
         "frame_width": 384,
         "frame_height": 384,
-        "frame_durations": (4,4,6),
+        "frame_durations": (4,10,6),
         "hitbox": (64, -192, 128, 100),
     },
     "attack3": {
@@ -50,7 +49,7 @@ MUSTAPHA_ANIMATIONS = {
         "frames_count": 3,
         "frame_width": 384,
         "frame_height": 384,
-        "frame_durations": (5,4,8),
+        "frame_durations": (5,10,8),
         "hitbox": (64, -192, 128, 100),
     },
     "run_attack": {
@@ -59,7 +58,7 @@ MUSTAPHA_ANIMATIONS = {
         "frame_width":384,
         "frame_height":384,
         "hitbox": (50, -230, 128, 100),
-        "frame_durations": (4,16,6)
+        "frame_durations": (4,15,6)
     },
     "jump_attack": {
         "not_used": True,
@@ -88,7 +87,7 @@ MUSTAPHA_ANIMATIONS = {
         "frame_width":256,
         "frame_height":256,
         "hitbox": (64, -180, 64, 100),
-        "frame_durations": (4,16,6)
+        "frame_durations": (6,4,4)
     },
     "throw": {
         "file": "assets/player/mustapha_throw_3x.png",
