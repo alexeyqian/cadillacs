@@ -8,7 +8,7 @@ from game.settings import (
 )
 from game.managers.asset_manager import AssetManager
 
-KNIFE_IMAGE_FILE = "game/assets/weapon/knife.png"
+KNIFE_IMAGE_FILE = "assets/weapons/knife_3x.png"
 
 # Fist: short range, low damage
 # Knife: medium range, fast damage
@@ -35,7 +35,8 @@ class Weapon:
 
         self.is_ranged = False
         if weapon_type == "knife":
-            self.width = PLAYER_W*0.5
+            self.width = 90
+            self.height = 40
             self.damage = KNIFE_DAMAGE
         elif weapon_type == "bat":
             self.width = PLAYER_W
@@ -50,6 +51,18 @@ class Weapon:
 
     def _load_knife_image(self):
         return AssetManager.load_image(KNIFE_IMAGE_FILE, alpha=True)
+
+    def get_overlay_image(self, scale=1.0):
+        """Return a scaled pygame Surface for the held-weapon overlay, or None."""
+        if self.weapon_type == "knife":
+            if self._knife_image is None:
+                self._knife_image = self._load_knife_image()
+            if self._knife_image is None:
+                return None
+            w = int(self._knife_image.get_width() * scale)
+            h = int(self._knife_image.get_height() * scale)
+            return pygame.transform.scale(self._knife_image, (w, h))
+        return None
 
     def draw(self, screen, camera_x):
         if self.picked_up:
@@ -71,7 +84,7 @@ class Weapon:
                 if self._icon_knife is None:
                     raise ValueError(" Cannot find icon")
                 icon = pygame.transform.scale(self._icon_knife,
-                    (self.width * 2, self.height * 2))
+                    (self.width, self.height))
                 icon_x = self.x - camera_x - icon.get_width() // 2
                 icon_y = self.y - icon.get_height()
             screen.blit(icon, (icon_x, icon_y))
