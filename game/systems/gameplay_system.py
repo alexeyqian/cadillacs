@@ -27,6 +27,7 @@ from game.systems.projectile_system import (
     collect_player_projectiles,
     update_projectiles,
 )
+from game.systems.lifecycle_system import advance_enemy_lifecycle, advance_managers, advance_player_lifecycle
 from game.systems.wave_system import update_wave_completion, update_wave_system
 
 # Frame order: timers -> intentions -> movement -> collision -> combat -> reactions -> lifecycle.
@@ -36,7 +37,9 @@ def update_gameplay(game_state, keys):
     player_input = PlayerInput(keys)
     player_context = PlayerActionContext(player_input)
     # 2-3. Lifecycle Guards, then Timer / Cooldown Advance
-    player_can_act, active_enemies = _advance_lifecycle_and_timers(game_state)
+    player_can_act = advance_player_lifecycle(game_state)
+    active_enemies = advance_enemy_lifecycle(game_state)
+    advance_managers(game_state)
     enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
 
     # 4-5. Enemy Decisions, then Player Action Requests
@@ -66,30 +69,6 @@ def update_gameplay(game_state, keys):
     _update_lifecycle(game_state)
     _update_presentation(game_state)
 
-
-def _advance_lifecycle_and_timers(game_state):
-    player_lifecycle_blocked = game_state.player.state == game_state.player.DEAD
-    game_state.player.update_lifecycle_state()
-    player_is_blocked = player_lifecycle_blocked or game_state.player.update_reactions()
-    player_can_act = not player_is_blocked
-    if player_can_act:
-        game_state.player.advance_timers()
-
-    active_enemies = []
-    for enemy in game_state.enemies:
-        if enemy.update_lifecycle_state():
-            continue
-        if enemy.update_reactions():
-            continue
-        enemy.advance_timers()
-        active_enemies.append(enemy)
-
-    # TODO: move to other places?
-    game_state.score_manager.update()
-    game_state.announcement_manager.update()
-    game_state.stage_clear_manager.update()
-
-    return player_can_act, active_enemies
 
 
 def _update_enemy_decisions(enemy_context, active_enemies):
