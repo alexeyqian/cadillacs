@@ -1,9 +1,9 @@
 def advance_player_lifecycle(game_state):
-    """Guard dead state, run reactions, advance timers. Returns (player_can_act)."""
+    """Guard dead state, advance timers. Returns player_can_act."""
     player = game_state.player
     lifecycle_blocked = player.state == player.DEAD
     player.update_lifecycle_state()
-    player_is_blocked = lifecycle_blocked or player.update_reactions()
+    player_is_blocked = lifecycle_blocked or player.hit_reaction_controller.is_in_hit_stun()
     player_can_act = not player_is_blocked
     if player_can_act:
         player.advance_timers()
@@ -11,12 +11,12 @@ def advance_player_lifecycle(game_state):
 
 
 def advance_enemy_lifecycle(game_state):
-    """Run lifecycle/reactions/timers for each enemy. Returns active_enemies list."""
+    """Run lifecycle/timers for each enemy. Returns active_enemies list."""
     active_enemies = []
     for enemy in game_state.enemies:
         if enemy.update_lifecycle_state():
             continue
-        if enemy.update_reactions():
+        if enemy.reaction_controller.is_reaction_blocked(enemy):
             continue
         enemy.advance_timers()
         active_enemies.append(enemy)

@@ -36,39 +36,37 @@ def update_gameplay(game_state, keys):
     # 1. Convert Player Keys Input to game logic input
     player_input = PlayerInput(keys)
     player_context = PlayerActionContext(player_input)
-    # 2-3. Lifecycle Guards, then Timer / Cooldown Advance
+    # 2. Lifecycle Guards
+    # lifecycle guards and reactions first because:
+    # Reactions consume state written by the previous frame's combat. 
+    # If an enemy hit the player last frame, the hit-stun or knockdown was recorded then. 
+    # Lifecycle/reactions need to process that before any new decisions 
+    # or inputs are accepted this frame — otherwise you'd let the player act 
+    # during a frame they should be stunned.
+    # Timers advance before decisions. 
     player_can_act = advance_player_lifecycle(game_state)
     active_enemies = advance_enemy_lifecycle(game_state)
     advance_managers(game_state)
-    enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
 
-    # 4-5. Enemy Decisions, then Player Action Requests
+    # 3. Enemy Decisions and Player Action Requests
+    enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
     _update_enemy_decisions(enemy_context, active_enemies)
     _request_player_actions(game_state, keys, player_context, player_can_act)
 
-    # 6-9. Movement -> Collision -> Combat -> Reactions
-    # Characters move voluntarily (running, jumping, chasing)
-    # Characters are clamped to level/arena bounds
-    # Projectiles move
-    # Projectile collisions are checked
-    # Hitbox/hurtbox overlap detected, damage and knockback velocity set
-    # Knockback velocity applied as position change (consequence of this frame's hits)
-    old_player_position = _update_character_movement(
-        game_state,
-        enemy_context,
-        player_context,
-        player_can_act,
-        active_enemies,
-    )
+    # 4. movement
+    old_player_position = _update_character_movement(game_state,
+                        enemy_context, player_context, player_can_act, active_enemies)
     _update_projectile_movement(game_state)
+
+    # 5. after above movement, all positions are finalized.
     _resolve_collisions(game_state, old_player_position)
     _update_combat(game_state, player_context, enemy_context, active_enemies, player_can_act)
     _update_reactions(game_state, active_enemies, player_can_act)
 
-    # 10. Spawn / Cleanup, then presentation state before camera/render
+    # 6. Spawn / Cleanup
     _update_lifecycle(game_state)
+    # 7. then presentation state before camera/render
     _update_presentation(game_state)
-
 
 
 def _update_enemy_decisions(enemy_context, active_enemies):
@@ -129,7 +127,7 @@ def _update_reactions(game_state, active_enemies, player_can_act):
     if player_can_act:
         game_state.player.update_reactions()
 
-    for enemy in active_enemies:
+    for enemy in game_state.enemies:
         enemy.update_reactions()
 
 

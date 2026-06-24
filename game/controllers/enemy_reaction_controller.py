@@ -50,6 +50,10 @@ class EnemyReactionController:
         if damage >= self.get_flinch_threshold(owner):
             self.apply_flinch(owner, attacker_x, reaction)
 
+    def is_reaction_blocked(self, owner):
+        """Pure read — returns True if the enemy is currently locked in a reaction."""
+        return owner.condition.has_hit_stun()
+
     def update_reactions(self, owner):
         if self._update_hit_state(owner):
             return True
