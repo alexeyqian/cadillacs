@@ -16,6 +16,14 @@ MUSTAPHA_ANIMATIONS = {
         "frame_width": 256,
         "frame_height": 256,
     },
+    # Armed walk — same sheet as unarmed until dedicated art is added.
+    # Replace "file" with a weapon-carrying walk sheet when available.
+    "walk_armed": {
+        "file": "assets/player/mustapha_walk_3x.png",
+        "frames_count": 4,
+        "frame_width": 256,
+        "frame_height": 256,
+    },
     "run": {
         "file": "assets/player/mustapha_run_3x.png",
         "frames_count": 9,
@@ -51,6 +59,23 @@ MUSTAPHA_ANIMATIONS = {
         "frame_height": 384,
         "frame_durations": (5,10,8),
         "hitbox": (64, -192, 128, 100),
+    },
+    # Weapon attacks — replace files with dedicated sheets when art is ready.
+    "ATTACK_KNIFE": {
+        "file": "assets/player/mustapha_attack_3x.png",
+        "frames_count": 3,
+        "frame_width": 384,
+        "frame_height": 384,
+        "hitbox": (64, -256, 160, 100),
+        "frame_durations": (2, 10, 4),
+    },
+    "ATTACK_PISTOL": {
+        "file": "assets/player/mustapha_attack_3x.png",
+        "frames_count": 3,
+        "frame_width": 384,
+        "frame_height": 384,
+        "hitbox": (64, -256, 128, 100),
+        "frame_durations": (3, 8, 5),
     },
     "run_attack": {
         "file": "assets/player/mustapha_run_attack_3x.png",

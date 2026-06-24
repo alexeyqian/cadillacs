@@ -75,7 +75,7 @@ class Weapon:
             if self._knife_image:
                 icon = pygame.transform.scale(
                     self._knife_image,
-                    (self.width * 2, self.height * 2)
+                    (self.width, self.height)
                 )
                 icon_x = self.x - camera_x - icon.get_width() // 2
                 icon_y = self.y - icon.get_height()

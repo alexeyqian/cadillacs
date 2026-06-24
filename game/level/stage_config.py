@@ -51,7 +51,7 @@ EPISODE_1_STAGES = [
             },
         ],
         "weapons": [
-            {"type": "knife", "x": 850, "y": 500},
+            #{"type": "knife", "x": 850, "y": 500},
             #{"type": "bat", "x": 1750, "y": 500},
             #{"type": "pistol", "x": 2260, "y": 500},
         ],

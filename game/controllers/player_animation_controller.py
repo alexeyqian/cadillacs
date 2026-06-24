@@ -8,8 +8,8 @@ class PlayerAnimationController(FrameAnimationController):
         self.init_animations(owner)
 
     def init_animations(self, owner):
-        for state, animation_name in self.get_animation_specs(owner):
-            frames, duration = self.add_frame_animation(state, animation_name)
+        for state, animation_name, loop in self.get_animation_specs(owner):
+            frames, duration = self.add_frame_animation(state, animation_name, loop=loop)
             total_duration = self.animation_total_duration(len(frames), duration)
 
             if state == owner.THROW:
@@ -17,31 +17,46 @@ class PlayerAnimationController(FrameAnimationController):
             elif state == owner.GRAB_KNEE:
                 owner.grab_controller.grab_knee_duration = total_duration
 
+    # Keys that represent "carrying a weapon but not attacking" states.
+    ARMED_LOCOMOTION_STATES = {"idle", "walk", "run"}
+
     def get_animation_specs(self, owner):
-        return [
-            (owner.IDLE, "idle"),
-            (owner.WALK, "walk"),
-            (owner.RUN, "run"),
-            (owner.JUMP, "jump"),
-            (owner.ATTACK, "attack"),
-            (owner.ATTACK2, "attack2"),
-            (owner.ATTACK3, "attack3"),
-            (owner.RUN_ATTACK, "run_attack"),
-            (owner.JUMP_ATTACK, "jump_attack"),
-            (owner.GRAB, "grab"),
-            (owner.THROW, "throw"),
-            (owner.GRAB_KNEE, "grab_knee"),
-            (owner.HIT, "hit"),
-            (owner.DEAD, "dead"),
+        # (state_key, animation_name, loop)
+        specs = [
+            (owner.IDLE,       "idle",       True),
+            (owner.WALK,       "walk",       True),
+            (owner.RUN,        "run",        True),
+            (owner.JUMP,       "jump",       False),
+            (owner.ATTACK,     "attack",     False),
+            (owner.ATTACK2,    "attack2",    False),
+            (owner.ATTACK3,    "attack3",    False),
+            (owner.RUN_ATTACK, "run_attack", False),
+            (owner.JUMP_ATTACK,"jump_attack",False),
+            (owner.GRAB,       "grab",       True),
+            (owner.THROW,      "throw",      False),
+            (owner.GRAB_KNEE,  "grab_knee",  False),
+            (owner.HIT,        "hit",        True),
+            (owner.DEAD,       "dead",       False),
         ]
+        # Register optional armed/weapon-attack animations when present in data.
+        for key, loop in (("walk_armed", True), ("ATTACK_KNIFE", False), ("ATTACK_PISTOL", False)):
+            if key in self.animation_data and not self.animation_data[key].get("not_used"):
+                specs.append((key, key, loop))
+        return specs
 
     def get_animation_state(self, owner):
+        weapon = owner.weapon_slot.weapon
+        weapon_type = weapon.weapon_type if weapon else None
+
+        walk_state = self._armed_walk_state(owner, weapon_type)
+        attack_state = self._weapon_attack_state(owner, weapon_type)
+
         state_map = {
             owner.IDLE: owner.IDLE,
-            owner.WALK: owner.WALK,
+            owner.WALK: walk_state,
             owner.RUN: owner.RUN,
             owner.JUMP: owner.JUMP,
-            owner.ATTACK: owner.ATTACK,
+            owner.ATTACK: attack_state,
             owner.ATTACK2: owner.ATTACK2,
             owner.ATTACK3: owner.ATTACK3,
             owner.RUN_ATTACK: owner.RUN_ATTACK,
@@ -54,3 +69,18 @@ class PlayerAnimationController(FrameAnimationController):
             owner.DEAD: owner.DEAD,
         }
         return state_map.get(owner.state, owner.IDLE)
+
+    def _armed_walk_state(self, owner, weapon_type):
+        if weapon_type and "walk_armed" in self.animation_data:
+            if not self.animation_data["walk_armed"].get("not_used"):
+                return "walk_armed"
+        return owner.WALK
+
+    def _weapon_attack_state(self, owner, weapon_type):
+        if weapon_type == "knife" and "ATTACK_KNIFE" in self.animation_data:
+            if not self.animation_data["ATTACK_KNIFE"].get("not_used"):
+                return "ATTACK_KNIFE"
+        if weapon_type == "pistol" and "ATTACK_PISTOL" in self.animation_data:
+            if not self.animation_data["ATTACK_PISTOL"].get("not_used"):
+                return "ATTACK_PISTOL"
+        return owner.ATTACK

@@ -55,14 +55,12 @@ def main():
                 game_state.running = advance_to_next_stage(game_state)
                 continue
 
-        # 2. update/advance timers
-        # info: advance timers happens at each component's beginning
-        
-        # 3. gameplay and camera update
+        # 2. gameplay and camera update
+        # info: advance timers happens at each component's beginning of update function
         update_gameplay(game_state, keys)
         game_state.camera.update(game_state.player, game_state.level)
         
-        # 4. render and clock tick
+        # 3. render and clock tick
         main_draw(game_state)
         present_screen(screen, window)
         clock.tick(FPS)

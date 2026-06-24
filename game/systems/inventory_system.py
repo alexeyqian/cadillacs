@@ -12,7 +12,7 @@ def update_player_weapon_interaction(game_state, keys):
     if player.air and not player.air.is_grounded:
         return
 
-    player_rect = pygame.Rect(player.x, player.y, player.width, player.height)
+    player_rect = player.get_collision_rect()
     for weapon in weapons:
         if weapon.picked_up:
             continue

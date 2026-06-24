@@ -7,8 +7,6 @@ from game.settings import (
     SCREEN_WIDTH,
 )
 
-
-
 def get_window_size():
     # Use configured external dimensions directly.
     # pygame.display.Info() returns the usable desktop area on macOS,
