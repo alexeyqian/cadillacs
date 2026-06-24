@@ -1,5 +1,3 @@
-# frame_rect format: (x, y, width, height) -  x, y is the left top location in the png file
-# offset format: (x, y) - x, y  = (0,0) - (feet_center_x, feet_center_y)
 GNEISS_ANIMATIONS = {
     "idle": {
         "file": "assets/enemies/gneiss_walk_3x.png",

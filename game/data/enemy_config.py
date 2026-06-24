@@ -14,10 +14,6 @@ from game.settings import (
     ENEMY_COLLISION_H,
     ENEMY_COLLISION_W,
     ENEMY_DETECT_RANGE,
-    ENEMY_HITBOX_H,
-    ENEMY_HITBOX_OFFSET_X,
-    ENEMY_HITBOX_OFFSET_Y,
-    ENEMY_HITBOX_W,
     ENEMY_HURTBOX_H,
     ENEMY_HURTBOX_OFFSET_X,
     ENEMY_HURTBOX_OFFSET_Y,
@@ -60,7 +56,7 @@ class EnemyConfig:
 
     attack: AttackData = DEFAULT_ENEMY_ATTACK_DATA
     score_points: int = ENEMY_SCORE_POINTS
-    sprite_scale: int  = 3
+    sprite_scale: int  = 1
 
     # enemy specific
     patrol_distance:int = ENEMY_DETECT_RANGE
@@ -84,7 +80,6 @@ ENEMY_CONFIGS = {
     "ferris": EnemyConfig(
         enemy_id="ferris",
         display_name="Ferris",
-        sprite_scale=1
     ),
 
     "gneiss": EnemyConfig(
@@ -102,10 +97,6 @@ ENEMY_CONFIGS = {
             windup=ENEMY_ATTACK_WINDUP,
             active=ENEMY_ATTACK_ACTIVE,
             recovery=ENEMY_ATTACK_RECOVERY,
-            hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
-            hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
-            hitbox_w=ENEMY_HITBOX_W,
-            hitbox_h=ENEMY_HITBOX_H,
         ),
         score_points=int(ENEMY_SCORE_POINTS*GNEISS_SCALER),
     ),
@@ -113,7 +104,6 @@ ENEMY_CONFIGS = {
     "blade": EnemyConfig(
         enemy_id="blade",
         display_name="Blade",
-        sprite_scale=1,
         max_hp=int(ENEMY_MAX_HP * 1.5),
         speed=int(ENEMY_SPEED),
 
@@ -125,10 +115,6 @@ ENEMY_CONFIGS = {
             windup=ENEMY_ATTACK_WINDUP,
             active=ENEMY_ATTACK_ACTIVE,
             recovery=ENEMY_ATTACK_RECOVERY,
-            hitbox_offset_x=ENEMY_HITBOX_OFFSET_X,
-            hitbox_offset_y=ENEMY_HITBOX_OFFSET_Y,
-            hitbox_w=ENEMY_HITBOX_W,
-            hitbox_h=ENEMY_HITBOX_H,
         ),
         score_points=int(ENEMY_SCORE_POINTS*1.5),
     ),
@@ -137,7 +123,6 @@ ENEMY_CONFIGS = {
         enemy_id="black_elmer",
         display_name="Black Elmer",
         archetype="heavy",
-        sprite_scale=1,
 
         max_hp=ENEMY_MAX_HP * 2,
         speed=int(ENEMY_SPEED * 0.7),
@@ -173,14 +158,6 @@ ENEMY_CONFIGS = {
         display_name="Walther",
         archetype="heavy",
 
-        collision_box_w=250,
-        collision_box_h=ENEMY_COLLISION_H,
-
-        hurt_box_w=250,
-        hurt_box_h=400,
-        hurt_box_offset_x=-125,
-        hurt_box_offset_y=-400,
-
         max_hp=ENEMY_MAX_HP * 4,
         speed=int(ENEMY_SPEED * 0.7),
         attack_range=int(ENEMY_ATTACK_RANGE * WALTHER_SCALER),
@@ -193,10 +170,6 @@ ENEMY_CONFIGS = {
             windup=int(ENEMY_ATTACK_WINDUP*WALTHER_SCALER),
             active=int(ENEMY_ATTACK_ACTIVE*WALTHER_SCALER),
             recovery=int(ENEMY_ATTACK_RECOVERY*WALTHER_SCALER),
-            hitbox_offset_x=125,
-            hitbox_offset_y=-350,
-            hitbox_w=180,
-            hitbox_h=200,
             lane_reach=1,
         ),
         # So Black Elmer only flinches from the heavy punch
