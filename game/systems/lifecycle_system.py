@@ -1,4 +1,4 @@
-def advance_player_lifecycle(game_state):
+def advance_player_frame_state(game_state):
     """Guard dead state, advance timers. Returns player_can_act."""
     player = game_state.player
     lifecycle_blocked = player.state == player.DEAD
@@ -10,7 +10,7 @@ def advance_player_lifecycle(game_state):
     return player_can_act
 
 
-def advance_enemy_lifecycle(game_state):
+def advance_enemy_frame_state(game_state):
     """Run lifecycle/timers for each enemy. Returns active_enemies list."""
     active_enemies = []
     for enemy in game_state.enemies:

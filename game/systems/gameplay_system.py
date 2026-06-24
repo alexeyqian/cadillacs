@@ -27,7 +27,7 @@ from game.systems.projectile_system import (
     collect_player_projectiles,
     update_projectiles,
 )
-from game.systems.lifecycle_system import advance_enemy_lifecycle, advance_managers, advance_player_lifecycle
+from game.systems.lifecycle_system import advance_enemy_frame_state, advance_managers, advance_player_frame_state
 from game.systems.wave_system import update_wave_completion, update_wave_system
 
 # Frame order: timers -> intentions -> movement -> collision -> combat -> reactions -> lifecycle.
@@ -44,9 +44,8 @@ def update_gameplay(game_state, keys):
     # or inputs are accepted this frame — otherwise you'd let the player act 
     # during a frame they should be stunned.
     # Timers advance before decisions. 
-    player_can_act = advance_player_lifecycle(game_state)
-    active_enemies = advance_enemy_lifecycle(game_state)
-    advance_managers(game_state)
+    player_can_act = advance_player_frame_state(game_state)
+    active_enemies = advance_enemy_frame_state(game_state)
 
     # 3. Enemy Decisions and Player Action Requests
     enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
@@ -64,7 +63,7 @@ def update_gameplay(game_state, keys):
     _update_reactions(game_state, active_enemies, player_can_act)
 
     # 6. Spawn / Cleanup
-    _update_lifecycle(game_state)
+    _update_spawn_and_cleanup(game_state)
     # 7. then presentation state before camera/render
     _update_presentation(game_state)
 
@@ -131,7 +130,7 @@ def _update_reactions(game_state, active_enemies, player_can_act):
         enemy.update_reactions()
 
 
-def _update_lifecycle(game_state):
+def _update_spawn_and_cleanup(game_state):
     # collected projectiles in this frame, 
     # then hurt players/enemies in future frames
     collect_player_projectiles(game_state)
@@ -156,6 +155,7 @@ def _update_lifecycle(game_state):
 
 
 def _update_presentation(game_state):
+    advance_managers(game_state)
     game_state.player.update_animation()
 
     for enemy in game_state.enemies:
