@@ -83,7 +83,7 @@ class EnemyAIController:
         self.reset_decision_timer()
 
     def _try_run_attack(self, owner, context):
-        if not owner.combat_controller.can_run_attack:
+        if not owner.movement.can_run_attack:
             return
         if self._get_attack_cooldown(owner) > 0:
             return
@@ -93,7 +93,7 @@ class EnemyAIController:
             owner.combat_controller.reserve_attack_slot(owner)
 
     def _try_jump_attack(self, owner, context):
-        if not owner.combat_controller.can_jump_attack:
+        if not owner.movement.can_jump_attack:
             return
         if self._get_attack_cooldown(owner) > 0:
             return

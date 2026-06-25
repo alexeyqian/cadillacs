@@ -1,29 +1,7 @@
 from dataclasses import dataclass, replace
 from typing import Optional
 from game.combat.attack_data import AttackData, DEFAULT_ENEMY_ATTACK_DATA
-from game.settings import (
-    BAT_DAMAGE,
-    ENEMY_ATTACK_ACTIVE,
-    ENEMY_ATTACK_COOLDOWN,
-    ENEMY_ATTACK_DAMAGE,
-    ENEMY_ATTACK_DELAY,
-    ENEMY_ATTACK_LANE_RANGE,
-    ENEMY_ATTACK_RANGE,
-    ENEMY_ATTACK_RECOVERY,
-    ENEMY_ATTACK_WINDUP,
-    ENEMY_COLLISION_H,
-    ENEMY_COLLISION_W,
-    ENEMY_DETECT_RANGE,
-    ENEMY_HURTBOX_H,
-    ENEMY_HURTBOX_OFFSET_X,
-    ENEMY_HURTBOX_OFFSET_Y,
-    ENEMY_HURTBOX_W,
-    ENEMY_MAX_HP,
-    ENEMY_RUN_SPEED,
-    ENEMY_SCORE_POINTS,
-    ENEMY_SPEED,
-    FIST_DAMAGE,
-)
+from game.settings import *
 
 GNEISS_SCALER=1.2
 BLACK_ELMER_SCALER=1.5

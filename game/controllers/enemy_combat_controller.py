@@ -10,9 +10,7 @@ class EnemyCombatController:
         self.attack_manager = AttackManager()
         self.attack_data = attack_data
         self.run_attack_data = None
-        self.can_run_attack = False
         self.jump_attack_data = None
-        self.can_jump_attack = False
         self.cooldown_remaining = 0
         self.owns_attack_slot = False
         self.attack_range = ENEMY_ATTACK_RANGE

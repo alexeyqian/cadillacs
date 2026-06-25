@@ -1,0 +1,59 @@
+Component & System Design — Best Practice
+The industry standard is ECS (Entity Component System) — but pure ECS is overkill for a beat-em-up. 
+The hybrid you have is the right choice: component-on-entity with pure-function systems.
+Components own state, not logic. They are dumb data bags with at most trivial accessors:
+
+Health          hp, max_hp, is_dead()
+CharacterGeometry   collision rect, hurtbox, hitbox anchor
+EnemyMovement   speed, position delta, air state
+EnemyCondition  hit_stun counter, action lock
+EnemyIntent     current desire (move/attack/jump)
+PlayerWeaponSlot    held weapon reference
+
+Rule: if a component calls another component, it's doing too much. Keep them independent.
+
+Controllers — per-entity coordinators
+Controllers own logic that belongs to one entity — they read components and write back to them:
+
+EnemyAIController       reads world context, writes EnemyIntent
+EnemyCombatController   owns AttackManager, advances attack state
+PlayerAnimationController   maps state → animation name
+EnemyReactionController     processes damage, sets hit-stun
+
+Rule: controllers take owner as a parameter — they don't store a back-reference. 
+This is already what you do and it's correct.
+
+Systems — global coordinators
+Systems are pure functions that operate across multiple entities or the whole game state. 
+They have no state of their own:
+collision_system    resolves overlaps between entity pairs
+combat_system       checks hitbox vs hurtbox across all entities
+wave_system         manages spawn timing
+loot_system         pickup detection
+
+Rule: systems read game_state, write game_state. 
+No entity logic leaks into systems — systems call entity methods, not entity internals.
+
+Attack / Combat specifically
+The cleanest model (which you mostly have):
+AttackData          pure data: hitbox, damage, timing windows (frozen dataclass)
+AttackManager       tracks elapsed frames within one active attack
+DamageRequest       data transfer: damage + reaction + attacker position
+CombatController    owns AttackManager, decides when hitbox is active
+combat_system       checks hitbox vs hurtbox, creates DamageRequests
+reaction_controller applies DamageRequests to targets
+The key invariant: AttackData never changes at runtime. Controllers read it, never write it.
+
+Animation
+FrameData           one frame: image, offset, hitbox hint (pure data)
+FrameAnimation      sequence of FrameData + timing + loop flag
+AnimationManager    owns all animations, tracks current, handles transitions
+AnimationController maps entity state → animation name, calls manager
+The entity state machine drives animation — animation never drives state. 
+If the animation ending should cause a state change (attack recovery), 
+the combat controller detects that, not the animation.
+
+
+
+
+

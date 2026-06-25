@@ -19,24 +19,18 @@ from game.combat.damage_request import DamageRequest
 class Enemy(Character, EnemyState):
     def __init__(self, x, y, enemy_type,
                 animation_data, anim_fps=None, sprite_scale=1):
-        super().__init__(
-            x=x,
-            y=y,
-            state=self.IDLE,
-            facing_right=False,
-            sprite_scale=sprite_scale,
-        )
+        super().__init__(x=x, y=y, state=self.IDLE,
+                        facing_right=False, sprite_scale=sprite_scale)
 
-        self.configure_spawn_state(x, enemy_type)
+        self.enemy_type = enemy_type
+        self.pending_projectile = None
+
         self.build_components()
         self.build_controllers()
         self.configure_from_enemy_config(get_enemy_config(self.enemy_type))
         self.build_presentation_components(animation_data, anim_fps)
 
     ##### begin of init #####
-    def configure_spawn_state(self, x, enemy_type):
-        self.enemy_type = enemy_type
-        self.pending_projectile = None
 
     def build_components(self):
         self.condition = EnemyCondition()
@@ -90,6 +84,8 @@ class Enemy(Character, EnemyState):
             can_run=config.can_run,
             run_speed=config.run_speed,
             can_jump=config.can_jump,
+            can_run_attack=config.can_run_attack,
+            can_jump_attack=config.can_jump_attack,
         )
         if config.can_jump:
             self.air = self.movement.air_state
@@ -98,9 +94,7 @@ class Enemy(Character, EnemyState):
         self.combat_controller.attack_data = config.attack
         self.combat_controller.attack_range = config.attack_range
         self.combat_controller.attack_lane_range = config.attack_lane_range
-        self.combat_controller.can_run_attack = config.can_run_attack
         self.combat_controller.run_attack_data = config.run_attack
-        self.combat_controller.can_jump_attack = config.can_jump_attack
         self.combat_controller.jump_attack_data = config.jump_attack
         self.combat_controller.melee_attack_slot_limit = config.melee_attack_slot_limit
 
@@ -123,9 +117,9 @@ class Enemy(Character, EnemyState):
             if overrides["can_jump"]:
                 self.air = self.movement.air_state
         if "can_run_attack" in overrides:
-            self.combat_controller.can_run_attack = overrides["can_run_attack"]
+            self.movement.can_run_attack = overrides["can_run_attack"]
         if "can_jump_attack" in overrides:
-            self.combat_controller.can_jump_attack = overrides["can_jump_attack"]
+            self.movement.can_jump_attack = overrides["can_jump_attack"]
 
     ##### end of init #####
 

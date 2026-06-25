@@ -27,6 +27,8 @@ class EnemyMovement:
         self.run_speed = speed
         self.can_run = False
         self.can_jump = False
+        self.can_run_attack = False
+        self.can_jump_attack = False
         self.air_state = EnemyAirState()
         self.y_speed = y_speed if y_speed is not None else ENEMY_Y_SPEED
         self.patrol_distance = patrol_distance
@@ -37,11 +39,14 @@ class EnemyMovement:
     def is_jumping(self):
         return self.air_state.is_jumping
 
-    def configure(self, speed, patrol_distance, detect_range, can_run=False, run_speed=None, can_jump=False):
+    def configure(self, speed, patrol_distance, detect_range, can_run=False, run_speed=None, can_jump=False,
+                  can_run_attack=False, can_jump_attack=False):
         self.speed = speed
         self.run_speed = run_speed if run_speed is not None else speed
         self.can_run = can_run
         self.can_jump = can_jump
+        self.can_run_attack = can_run_attack
+        self.can_jump_attack = can_jump_attack
         self.patrol_distance = patrol_distance
         self.detect_range = detect_range
 

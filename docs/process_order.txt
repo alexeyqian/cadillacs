@@ -1,0 +1,40 @@
+1. INPUT COLLECTION
+   Read raw hardware state → translate to game actions (PlayerInput)
+
+2. FRAME-STATE ADVANCE
+   Tick timers, cooldowns, stun counters
+   Determine who can act this frame (player_can_act, active_enemies)
+
+3. INTENTIONS / DECISIONS
+   AI writes intent (what enemy wants to do)
+   Player input mapped to intent (attack, move, jump)
+   — nothing moves yet, just declares desire
+
+4. MOVEMENT
+   Execute intents as position changes
+   Apply physics (gravity, velocity decay)
+   Clamp to level/arena bounds
+
+5. COLLISION DETECTION & RESOLUTION
+   Entity vs entity (push apart)
+   Entity vs level bounds (re-clamp after push)
+   Projectile vs entity (flag hits)
+
+6. COMBAT
+   Advance attack timers (windup → active → recovery)
+   Hitbox vs hurtbox overlap → queue damage
+   Apply damage requests
+
+7. REACTIONS
+   Process damage: apply hit-stun, knockback velocity
+   Apply knockback as position delta
+   Transition state (HIT, KNOCKDOWN, DEAD)
+
+8. SPAWN & CLEANUP
+   Remove dead entities
+   Spawn new entities (projectiles, loot, wave enemies)
+   Wave state machine advance
+
+9. PRESENTATION
+   Advance animation frames
+   Tick UI timers (score combo, announcements)
