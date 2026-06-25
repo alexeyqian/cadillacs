@@ -153,6 +153,9 @@ class EnemyMovement:
     def update_jump(self):
         self.air_state.update()
 
+    def tick_air_cooldown(self):
+        self.air_state.tick_cooldown()
+
     def get_jump_visual_y_offset(self):
         return self.air_state.get_visual_y_offset()
 

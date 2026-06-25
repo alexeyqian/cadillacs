@@ -7,112 +7,40 @@ class EnemyReactionController:
         self.attack_flinch_damage_threshold = 0
         self.knockdown_damage_threshold = 40
 
-    def die(self, owner):
-        self._clear_combat_commitment(owner)
-        owner.health.hp = 0
-        owner.state = owner.DEAD
-        owner.condition.start_death_countdown(30)
-
-    def take_damage(
-        self,
-        owner,
-        damage,
-        attacker_x,
-        reaction=None,
-    ):
-        if reaction is None:
-            reaction = HitReaction()
-        self.apply_hit(owner, damage, attacker_x, reaction)
-
-    def apply_hit(
-        self,
-        owner,
-        damage,
-        attacker_x,
-        reaction=None,
-    ):
-        if reaction is None:
-            reaction = HitReaction()
-
-        if owner.state == owner.DEAD:
-            return
-
-        owner.health.take_damage(damage)
-
-        if owner.health.hp > 0 and self.should_knockdown_from_damage(damage):
-            self.knockdown(owner)
-            return
-
-        if owner.health.is_dead():
-            self.die(owner)
-            return
-
-        if damage >= self.get_flinch_threshold(owner):
-            self.apply_flinch(owner, attacker_x, reaction)
+    # --- Public API ---
 
     def is_reaction_blocked(self, owner):
         """Pure read — returns True if the enemy is currently locked in a reaction."""
         return owner.condition.has_hit_stun()
 
     def update_reactions(self, owner):
-        if self._update_hit_state(owner):
+        if self._tick_hit_stun(owner):
             return True
-
-        self.apply_knockback(owner)
+        self._apply_knockback(owner)
         return False
 
-    def _update_hit_state(self, owner):
-        if not owner.condition.has_hit_stun():
-            return False
-
-        owner.condition.tick_hit_stun()
-        self.apply_knockback(owner)
-
-        if owner.condition.has_hit_stun():
-            owner.state = owner.HIT
-        else:
-            owner.state = owner.IDLE
-
-        return True
-
-    def apply_flinch(self, owner, attacker_x, reaction):
-        stun_frames = reaction.stun_frames
-        if stun_frames is None:
-            stun_frames = owner.combat_controller.get_attack_data(owner).hit_stun_duration
-        owner.condition.set_hit_stun(stun_frames)
-        owner.state = owner.HIT
-        # So if an enemy is interrupted, it releases the slot.
-        self._clear_combat_commitment(owner)
-
-        if attacker_x < owner.x:
-            owner.condition.set_knockback(reaction.knockback_velocity)
-        else:
-            owner.condition.set_knockback(-reaction.knockback_velocity)
-
-    def apply_knockback(self, owner):
-        owner.condition.apply_knockback(owner)
-
-    def should_knockdown_from_damage(self, damage):
-        return damage >= self.knockdown_damage_threshold
-
-    def get_flinch_threshold(self, owner):
-        if owner.state == owner.ATTACK:
-            return self.attack_flinch_damage_threshold
-        return self.flinch_damage_threshold
-
-    def knockdown(self, owner):
+    def take_damage(self, owner, damage, attacker_x, reaction=None):
         if owner.state == owner.DEAD:
             return
+        if reaction is None:
+            reaction = HitReaction()
 
-        self._clear_combat_commitment(owner)
-        owner.state = owner.KNOCKDOWN
-        owner.condition.start_knockdown(60)
-        owner.condition.clear_knockback()
+        owner.health.take_damage(damage)
+
+        if owner.health.hp > 0 and damage >= self.knockdown_damage_threshold:
+            self._knockdown(owner)
+            return
+
+        if owner.health.is_dead():
+            self._die(owner)
+            return
+
+        if damage >= self._flinch_threshold(owner):
+            self._apply_flinch(owner, attacker_x, reaction)
 
     def grabbed_by_player(self, owner):
         if owner.state == owner.DEAD:
             return
-
         self._clear_combat_commitment(owner)
         owner.state = owner.GRABBED
         owner.condition.clear_knockback()
@@ -121,46 +49,66 @@ class EnemyReactionController:
     def thrown_by_player(self, owner, direction, damage):
         if owner.state == owner.DEAD:
             return
-
         self._clear_combat_commitment(owner)
         owner.state = owner.THROWN
         owner.facing_right = direction > 0
         owner.condition.start_thrown(direction, damage)
-        self.take_throw_damage(owner, damage)
+        owner.health.take_damage(damage)
+        if owner.health.is_dead():
+            self._die(owner)
 
     def take_grab_knee_damage(self, owner, damage):
         if owner.state == owner.DEAD:
             return
-
         self._clear_combat_commitment(owner)
         owner.health.take_damage(damage)
-
         if owner.health.is_dead():
-            self.die(owner)
+            self._die(owner)
             return
-
         owner.state = owner.GRABBED
 
-    def take_throw_damage(self, owner, damage):
-        if owner.state == owner.DEAD:
-            return
+    # --- Private helpers ---
+
+    def _die(self, owner):
+        self._clear_combat_commitment(owner)
+        owner.health.hp = 0
+        owner.state = owner.DEAD
+        owner.condition.start_death_countdown(30)
+
+    def _knockdown(self, owner):
+        self._clear_combat_commitment(owner)
+        owner.state = owner.KNOCKDOWN
+        owner.condition.start_knockdown(60)
+        owner.condition.clear_knockback()
+
+    def _apply_flinch(self, owner, attacker_x, reaction):
+        stun_frames = reaction.stun_frames
+        if stun_frames is None:
+            stun_frames = owner.combat_controller.get_attack_data(owner).hit_stun_duration
+        owner.condition.set_hit_stun(stun_frames)
+        owner.state = owner.HIT
         self._clear_combat_commitment(owner)
 
-        owner.health.take_damage(damage)
+        knockback = reaction.knockback_velocity
+        owner.condition.set_knockback(knockback if attacker_x < owner.x else -knockback)
 
-        if owner.health.is_dead():
-            self.die(owner)
+    def _tick_hit_stun(self, owner):
+        if not owner.condition.has_hit_stun():
+            return False
+        owner.condition.tick_hit_stun()
+        self._apply_knockback(owner)
+        owner.state = owner.HIT if owner.condition.has_hit_stun() else owner.IDLE
+        return True
+
+    def _apply_knockback(self, owner):
+        owner.condition.apply_knockback(owner)
+
+    def _flinch_threshold(self, owner):
+        if owner.state == owner.ATTACK:
+            return self.attack_flinch_damage_threshold
+        return self.flinch_damage_threshold
 
     def _clear_combat_commitment(self, owner):
-        self._cancel_attack(owner)
-        self._reset_attack_decision(owner)
-        self._release_attack_slot(owner)
-
-    def _cancel_attack(self, owner):
         owner.combat_controller.cancel_attack_timing(owner)
-
-    def _reset_attack_decision(self, owner):
         owner.ai_controller.reset_decision_timer()
-
-    def _release_attack_slot(self, owner):
         owner.combat_controller.release_attack_slot(owner)

@@ -53,7 +53,7 @@ The entity state machine drives animation — animation never drives state.
 If the animation ending should cause a state change (attack recovery), 
 the combat controller detects that, not the animation.
 
-
+Components earn their place when they have behavior or mutable state that changes at runtime.
 
 
 

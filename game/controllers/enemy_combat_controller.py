@@ -2,9 +2,6 @@ from game.combat.attack_manager import AttackManager
 
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.combat.damage_request import DamageRequest
-from game.settings import ENEMY_ATTACK_LANE_RANGE, ENEMY_ATTACK_RANGE
-
-
 class EnemyCombatController:
     def __init__(self, attack_data=None):
         self.attack_manager = AttackManager()
@@ -13,9 +10,6 @@ class EnemyCombatController:
         self.jump_attack_data = None
         self.cooldown_remaining = 0
         self.owns_attack_slot = False
-        self.attack_range = ENEMY_ATTACK_RANGE
-        self.attack_lane_range = ENEMY_ATTACK_LANE_RANGE
-        self.melee_attack_slot_limit = None
 
     @property
     def has_attack_slot(self):

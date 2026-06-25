@@ -12,7 +12,7 @@ from game.components.enemy_intent import EnemyIntent
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
-from game.controllers.enemy_ai_controller import EnemyAIController
+from game.controllers.enemy_ai_controller import EnemyAIController, EnemyAIConfig
 from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.damage_request import DamageRequest
 
@@ -52,6 +52,7 @@ class Enemy(Character, EnemyState):
         self.apply_body_config(config)
         self.apply_movement_config(config)
         self.apply_combat_config(config)
+        self.apply_ai_config(config)
         self.apply_reward_config(config)
 
     def build_presentation_components(self, animation_data, anim_fps=None):
@@ -92,11 +93,8 @@ class Enemy(Character, EnemyState):
 
     def apply_combat_config(self, config):
         self.combat_controller.attack_data = config.attack
-        self.combat_controller.attack_range = config.attack_range
-        self.combat_controller.attack_lane_range = config.attack_lane_range
         self.combat_controller.run_attack_data = config.run_attack
         self.combat_controller.jump_attack_data = config.jump_attack
-        self.combat_controller.melee_attack_slot_limit = config.melee_attack_slot_limit
 
         self.reaction_controller.flinch_damage_threshold = config.flinch_damage_threshold
         self.reaction_controller.attack_flinch_damage_threshold = (
@@ -105,6 +103,13 @@ class Enemy(Character, EnemyState):
             else config.flinch_damage_threshold
         )
         self.reaction_controller.knockdown_damage_threshold = config.knockdown_damage_threshold
+
+    def apply_ai_config(self, config):
+        self.ai_controller.config = EnemyAIConfig(
+            attack_range=config.attack_range,
+            attack_lane_range=config.attack_lane_range,
+            melee_attack_slot_limit=config.melee_attack_slot_limit,
+        )
 
     def apply_reward_config(self, config):
         self.score_points = config.score_points
@@ -139,6 +144,8 @@ class Enemy(Character, EnemyState):
             return
         if self.intent.wants_attack_player() or self.intent.wants_run_attack() or self.intent.wants_jump_attack():
             return
+
+        self.movement.tick_air_cooldown()
 
         if self.intent.wants_jump():
             self.movement.start_jump()
