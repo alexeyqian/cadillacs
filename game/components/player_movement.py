@@ -7,28 +7,28 @@ from game.settings import RUN_ATTACK_REQUIRED_DISTANCE
 
 class PlayerMovement:
     def __init__(self, air_state=None, run_attack_min_distance=RUN_ATTACK_REQUIRED_DISTANCE):
-        self.run = PlayerRunMovement(run_attack_min_distance)
-        self.jump = PlayerJumpMovement(air_state)
+        self.run_movement = PlayerRunMovement(run_attack_min_distance)
+        self.jump_movement = PlayerJumpMovement(air_state)
         self.attack_movement = PlayerAttackMovement()
 
-        # It means "the player moved at least one pixel this frame" 
+        # It means "the player moved at least one pixel this frame"
         self.moving = False
 
     @property
     def is_jumping(self):
-        return self.jump.is_jumping
+        return self.jump_movement.is_jumping
 
     @is_jumping.setter
     def is_jumping(self, value):
-        self.jump.is_jumping = value
+        self.jump_movement.is_jumping = value
 
     @property
     def is_running(self):
-        return self.run.is_running
+        return self.run_movement.is_running
 
     @is_running.setter
     def is_running(self, value):
-        self.run.is_running = value
+        self.run_movement.is_running = value
 
     @property
     def last_run_attack_distance(self):
@@ -39,7 +39,7 @@ class PlayerMovement:
         self.attack_movement.last_run_attack_distance = value
 
     def advance_timers(self):
-        self.run.advance_timers()
+        self.run_movement.advance_timers()
 
     # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):
@@ -50,21 +50,21 @@ class PlayerMovement:
             self.moving = self.attack_movement.update_attack_movement(owner)
             return
 
-        self.moving = self.run.update_ground_movement(owner, player_input)
+        self.moving = self.run_movement.update_ground_movement(owner, player_input)
 
     def can_start_run_attack(self):
-        return self.run.can_start_run_attack()
+        return self.run_movement.can_start_run_attack()
 
     def start_run_attack_cooldown(self, frames=None):
-        self.run.start_run_attack_cooldown(frames)
+        self.run_movement.start_run_attack_cooldown(frames)
 
     def start_run_attack_momentum(self, owner):
         self.attack_movement.start_run_attack_momentum(
             owner,
-            self.run.run_direction,
-            self.run.run_distance,
+            self.run_movement.run_direction,
+            self.run_movement.run_distance,
         )
-        self.run.run_distance = 0
+        self.run_movement.run_distance = 0
 
     def cancel_run_attack_momentum(self):
         self.attack_movement.cancel_run_attack_momentum()
@@ -76,10 +76,10 @@ class PlayerMovement:
         self.attack_movement.cancel_combo_finisher_nudge()
 
     def update_jump_physics(self, owner, player_input):
-        self.jump.update_jump_physics(owner, player_input)
+        self.jump_movement.update_jump_physics(owner, player_input)
 
     def start_jump(self, owner, player_input):
-        self.jump.start_jump(owner, player_input)
+        self.jump_movement.start_jump(owner, player_input)
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
         clamp_to_world_and_lane(
