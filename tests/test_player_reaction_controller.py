@@ -53,14 +53,6 @@ class FakeLifecycle:
         owner.state = owner.DEAD
 
 
-class FakeHitReactions:
-    def __init__(self):
-        self.reaction = None
-
-    def start_hit_stun(self, reaction):
-        self.reaction = reaction
-
-
 class FakeStateMachine:
     def change_to(self, owner, state):
         owner.state = state
@@ -78,19 +70,20 @@ class FakeOwner:
         self.movement = FakeMovement()
         self.grab_controller = FakeGrab()
         self.lifecycle_controller = FakeLifecycle()
-        self.hit_stun_controller = FakeHitReactions()
         self.state_machine = FakeStateMachine()
 
 
 def test_player_reaction_controller_applies_damage_and_hit_stun():
     owner = FakeOwner(hp=100)
     reaction = HitReaction(stun_frames=8)
+    controller = PlayerReactionController(default_stun_frames=10)
 
-    PlayerReactionController().take_damage(owner, 12, reaction)
+    controller.take_damage(owner, 12, reaction)
 
     assert owner.health.damage_taken == 12
     assert owner.state == owner.HIT
-    assert owner.hit_stun_controller.reaction is reaction
+    assert controller.is_in_hit_stun()
+    assert controller._hit_stun_remaining == 8
     assert owner.combat_controller.cancelled is True
     assert owner.movement.cancelled_run_attack is True
     assert owner.movement.cancelled_combo_nudge is True
@@ -99,10 +92,11 @@ def test_player_reaction_controller_applies_damage_and_hit_stun():
 
 def test_player_reaction_controller_enters_dead_state_on_depleted_health():
     owner = FakeOwner(hp=10)
+    controller = PlayerReactionController(default_stun_frames=10)
 
-    PlayerReactionController().take_damage(owner, 12)
+    controller.take_damage(owner, 12)
 
     assert owner.lifecycle_controller.lost_life is True
     assert owner.lifecycle_controller.entered_dead_state is True
     assert owner.state == owner.DEAD
-    assert owner.hit_stun_controller.reaction is None
+    assert not controller.is_in_hit_stun()

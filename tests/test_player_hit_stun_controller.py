@@ -1,5 +1,5 @@
 from game.combat.hit_reaction import HitReaction
-from game.controllers.player_hit_stun_controller import PlayerHitStunController
+from game.controllers.player_reaction_controller import PlayerReactionController
 
 
 class FakeOwner:
@@ -14,58 +14,58 @@ class FakeOwner:
         owner.state = state
 
 
-def test_hit_stun_controller_uses_custom_stun_frames():
-    controller = PlayerHitStunController(default_stun_frames=8)
+def test_hit_stun_uses_custom_stun_frames():
+    controller = PlayerReactionController(default_stun_frames=8)
 
-    controller.start_hit_stun(HitReaction(stun_frames=14))
+    controller._start_hit_stun(HitReaction(stun_frames=14))
 
-    assert controller.hit_stun_remaining == 14
+    assert controller._hit_stun_remaining == 14
     assert controller.is_in_hit_stun() is True
 
 
-def test_hit_stun_controller_uses_default_stun_frames():
-    controller = PlayerHitStunController(default_stun_frames=8)
+def test_hit_stun_uses_default_stun_frames():
+    controller = PlayerReactionController(default_stun_frames=8)
 
-    controller.start_hit_stun()
+    controller._start_hit_stun()
 
-    assert controller.hit_stun_remaining == 8
+    assert controller._hit_stun_remaining == 8
 
 
-def test_hit_stun_controller_advance_timers_updates_hit_stun():
-    controller = PlayerHitStunController(default_stun_frames=8)
-    controller.hit_stun_remaining = 2
+def test_hit_stun_ticks_down():
+    controller = PlayerReactionController(default_stun_frames=8)
+    controller._hit_stun_remaining = 2
 
-    controller.advance_timers()
+    controller._tick()
 
-    assert controller.hit_stun_remaining == 1
+    assert controller._hit_stun_remaining == 1
     assert controller.is_in_hit_stun() is True
 
-    controller.advance_timers()
+    controller._tick()
 
-    assert controller.hit_stun_remaining == 0
+    assert controller._hit_stun_remaining == 0
     assert controller.is_in_hit_stun() is False
 
 
-def test_hit_stun_controller_updates_owner_hit_state():
-    controller = PlayerHitStunController(default_stun_frames=8)
+def test_update_hit_state_transitions_owner():
+    controller = PlayerReactionController(default_stun_frames=8)
     owner = FakeOwner()
-    controller.hit_stun_remaining = 2
+    controller._hit_stun_remaining = 2
 
-    assert controller.update_hit_state(owner) is None
-    assert controller.hit_stun_remaining == 1
+    controller.update_hit_state(owner)
+    assert controller._hit_stun_remaining == 1
     assert owner.state == owner.HIT
 
-    assert controller.update_hit_state(owner) is None
-    assert controller.hit_stun_remaining == 0
+    controller.update_hit_state(owner)
+    assert controller._hit_stun_remaining == 0
     assert owner.state == owner.IDLE
 
-    assert controller.update_hit_state(owner) is None
+    controller.update_hit_state(owner)  # no-op when not in stun
 
 
-def test_hit_stun_controller_can_reset():
-    controller = PlayerHitStunController(default_stun_frames=8)
-    controller.hit_stun_remaining = 2
+def test_reset_clears_hit_stun():
+    controller = PlayerReactionController(default_stun_frames=8)
+    controller._hit_stun_remaining = 2
 
     controller.reset()
 
-    assert controller.hit_stun_remaining == 0
+    assert controller._hit_stun_remaining == 0

@@ -80,7 +80,7 @@ class FakeLifecycle:
         pass
 
 
-class FakePlayerHitStunController:
+class FakeReactionController:
     def is_in_hit_stun(self):
         return False
 
@@ -117,7 +117,7 @@ def make_player_like():
     player.grab_controller = FakeGrab()
     player.weapon_slot = FakeWeaponSlot()
     player.lifecycle_controller = FakeLifecycle()
-    player.hit_stun_controller = FakePlayerHitStunController()
+    player.reaction_controller = FakeReactionController()
     player.state_controller = FakeStateController()
     player.animation_controller = FakeAnimationController()
     return player
