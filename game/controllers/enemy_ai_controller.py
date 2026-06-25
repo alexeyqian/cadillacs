@@ -182,7 +182,7 @@ class EnemyAIController:
         return closest_enemy is owner
 
     def _is_eligible_melee_attacker(self, enemy, player):
-        if self._get_attack_cooldown(enemy) > 0:
+        if enemy.combat_controller.cooldown_remaining > 0:
             return False
         # That means an enemy that already owns a slot remains counted as eligible
         # for priority until it releases the slot.

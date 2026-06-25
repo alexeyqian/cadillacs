@@ -76,7 +76,7 @@ class FakeWeaponSlot:
 
 
 class FakeLifecycle:
-    def update_dead_state(self, owner):
+    def update_respawn(self, owner):
         pass
 
 

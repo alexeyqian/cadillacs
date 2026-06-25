@@ -17,12 +17,6 @@ class PlayerLifecycleController:
         owner.state_machine.change_to(owner, owner.IDLE)
         owner.facing_right = True
 
-    def update_dead_state(self, owner):
-        self.update_respawn(owner)
-
-    def enter_dead_state(self, owner):
-        owner.state_machine.change_to(owner, owner.DEAD)
-
     def update_respawn(self, owner):
         if owner.state != owner.DEAD:
             return
@@ -38,7 +32,7 @@ class PlayerLifecycleController:
         owner.reaction_controller.reset()
         self.reset_position_and_movement(owner, self.respawn_x, self.respawn_y)
         owner.state_machine.change_to(owner, owner.IDLE)
-        owner.combat_controller.is_attacking = False
+        owner.combat_controller.cancel_attack()
         owner.grab_controller.grabbed_enemy = None
 
     def gain_life(self):

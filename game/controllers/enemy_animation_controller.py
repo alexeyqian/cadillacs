@@ -6,9 +6,6 @@ class EnemyAnimationController(FrameAnimationController):
         super().__init__(animation_data, anim_fps)
         self.init_frame_animations(owner)
 
-    def get_current_frame_data(self):
-        return self.get_current_frame()
-
     def init_frame_animations(self, owner):
         for state, animation_name, loop in self.get_animation_specs(owner):
             self.add_frame_animation(state, animation_name, loop=loop)

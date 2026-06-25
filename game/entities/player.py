@@ -137,7 +137,7 @@ class Player(Character, PlayerState):
         self.animation_controller.update(self)
 
     def update_lifecycle_state(self):
-        self.lifecycle_controller.update_dead_state(self)
+        self.lifecycle_controller.update_respawn(self)
 
     # --- Public API ---
 

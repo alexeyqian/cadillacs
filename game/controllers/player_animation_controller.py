@@ -17,9 +17,6 @@ class PlayerAnimationController(FrameAnimationController):
             elif state == owner.GRAB_KNEE:
                 owner.grab_controller.grab_knee_duration = total_duration
 
-    # Keys that represent "carrying a weapon but not attacking" states.
-    ARMED_LOCOMOTION_STATES = {"idle", "walk", "run"}
-
     def get_animation_specs(self, owner):
         # (state_key, animation_name, loop)
         specs = [

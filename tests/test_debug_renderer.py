@@ -38,7 +38,7 @@ class FakeFrame:
 
 
 class FakeAnimationController:
-    def get_current_frame_data(self):
+    def get_current_frame(self):
         return FakeFrame()
 
     def get_image(self):

@@ -5,7 +5,7 @@ from game.components.debug_renderer import CharacterDebugRenderer
 
 class EnemyRenderer:
     def draw(self, owner, screen, camera_x):
-        frame = owner.animation_controller.get_current_frame_data()
+        frame = owner.animation_controller.get_current_frame()
         if not frame:
             raise ValueError(f"Missing frame data for enemy state: {owner.state}")
 
@@ -26,7 +26,7 @@ class EnemyRenderer:
         self.draw_health_bar(owner, screen, camera_x, frame_rect)
 
         if settings.SHOW_COMBAT_BOXES:
-            self.draw_debug_boxes(owner, screen, camera_x)
+            CharacterDebugRenderer().draw_combat_boxes(owner, screen, camera_x)
             self.draw_debug_other(owner, screen, camera_x)
 
     def draw_health_bar(self, owner, screen, camera_x, frame_rect):
@@ -41,16 +41,13 @@ class EnemyRenderer:
         pygame.draw.rect(screen,(255, 0, 0),
             (bar_x, frame_rect.y - hp_height, hp_width, 6))
 
-    def draw_debug_boxes(self, owner, screen, camera_x):
-        CharacterDebugRenderer().draw_combat_boxes(owner, screen, camera_x)
-
     def draw_debug_other(self, owner, screen, camera_x):
         timing_label = owner.combat_controller.get_attack_timing_label(owner)
         if timing_label:
             font = pygame.font.SysFont(None, 20)
             label = font.render(timing_label, True, YELLOW_COLOR)
             screen.blit(label, (int(owner.x - camera_x - 28), int(owner.y - 180)))
-            
+
         if owner.flanking.has_target():
             font = pygame.font.SysFont(None, 20)
             label = font.render(f"FLANK {owner.flanking.target_side.upper()}", True, WHITE_COLOR)

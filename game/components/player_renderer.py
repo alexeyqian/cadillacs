@@ -15,22 +15,7 @@ _ATTACK_STATES = {"ATTACK", "ATTACK2", "ATTACK3", "RUN_ATTACK", "JUMP_ATTACK",
                   "ATTACK_KNIFE", "ATTACK_PISTOL"}
 
 class PlayerRenderer:
-    #World:   [--------------------PLAYER----]
-    #                          x=800
-    #Screen window starts at camera_x=600:
-    #	      [    window    ]
-    #	       600          1200
-    #Player appears at pixel 200 inside the window → screen_x = 200
     def draw(self, owner, screen, camera_x):
-        # camera_x is how far the camera has scrolled.
-        # Subtracting it converts the player's world position->screen position
-        # player's screen x position after camera offset
-        # bottom-center screen x:
-        # add depth
-        # Now moving up/down looks more like a beat'em-up character walking in depth.
-        # shadow_rect = pygame.Rect(screen_x,self.y + self.height - 10,self.width,12)
-        #pygame.draw.ellipse(screen,(50, 50, 50),shadow_rect)
-        # end of depth
         frame = owner.animation_controller.get_current_frame()
         image = owner.animation_controller.get_image()
         scale = frame.get_scale(owner.sprite_scale)
