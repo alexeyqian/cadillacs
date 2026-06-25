@@ -10,7 +10,7 @@ class AssetManager:
     _missing_assets = set()
     
     @classmethod
-    def file_exists(cls, path):
+    def _file_exists(cls, path):
         return path and os.path.exists(path)
 
     @classmethod
@@ -28,7 +28,7 @@ class AssetManager:
         if key in cls._image_cache:
             return cls._image_cache[key]
 
-        if not cls.file_exists(path):
+        if not cls._file_exists(path):
             image = cls._missing_asset(path, fallback_factory)
             cls._image_cache[key] = image
             return image
@@ -75,7 +75,7 @@ class AssetManager:
         if key in cls._animation_cache:
             return cls._animation_cache[key]
 
-        if path and  cls.file_exists(path):
+        if path and cls._file_exists(path):
             try:
                 # frames are list of pygame.Surface
                 frames = AssetLoader.load_animation(
@@ -100,7 +100,7 @@ class AssetManager:
         if path in cls._sound_cache:
             return cls._sound_cache[path]
 
-        if not cls.file_exists(path):
+        if not cls._file_exists(path):
             sound = cls._missing_asset(path)
             cls._sound_cache[path] = sound
             return sound

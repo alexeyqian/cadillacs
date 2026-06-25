@@ -11,6 +11,7 @@ from game.systems.collision_system import (
 from game.systems.combat_system import (
     handle_enemy_projectile_collision,
     handle_player_attack_collision,
+    handle_player_grab_or_throw,
     handle_player_projectile_collision,
 )
 from game.systems.effect_system import update_effect_system
@@ -21,7 +22,7 @@ from game.systems.loot_system import (
     create_object_loot,
     update_loot_pickup,
 )
-from game.systems.player_input_system import update_player_input_system
+from game.systems.inventory_system import update_player_weapon_interaction
 from game.systems.projectile_system import (
     collect_enemy_projectile,
     collect_player_projectiles,
@@ -54,7 +55,8 @@ def _update_decisions(game_state, keys, player_context, player_can_act, active_e
         enemy.update_ai(enemy_context)
 
     if player_can_act:
-        update_player_input_system(game_state, keys)
+        update_player_weapon_interaction(game_state, keys)
+        handle_player_grab_or_throw(game_state, keys)
         game_state.player.request_actions(player_context)
 
 

@@ -485,8 +485,8 @@ class AttackDataTests(unittest.TestCase):
         for _ in range(6):
             score_manager.register_hit()
 
-        self.assertEqual(score_manager.combo_count, 3)
-        self.assertEqual(score_manager.get_multiplier(), 3)
+        self.assertEqual(score_manager._combo_count, 3)
+        self.assertEqual(score_manager._multiplier(), 3)
 
 
 if __name__ == "__main__":
