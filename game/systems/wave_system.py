@@ -53,7 +53,7 @@ def update_wave_system(game_state):
 
     if wave and not wave.started and player_trigger_x >= wave.trigger_x:
             # start the wave and initialize pending enemies
-            wave.spawn(camera.x, level.lane_top, level.lane_bottom, player.x)
+            wave.start(camera.x, level.lane_top, level.lane_bottom, player.x)
             # lock camera only when wave actually starts
             # set lock_x to current camera.x so the viewport does not jump
             # it only freeze camera, not stop player by itself
@@ -61,7 +61,7 @@ def update_wave_system(game_state):
             level.lock_x = _get_camera_lock_x(camera.x, level)
 
     if wave and wave.started:
-        new_enemies = wave.update_spawn(len(enemies))
+        new_enemies = wave.tick(len(enemies))
         if new_enemies:
             enemies.extend(new_enemies)
 
@@ -72,7 +72,7 @@ def update_wave_completion(game_state):
     wave = level.get_current_wave()
     if wave and wave.started:
         wave_finished = False
-        wave_finished = wave.finished_spawning() and len(enemies) == 0
+        wave_finished = wave.is_spawning_done() and len(enemies) == 0
 
         if wave_finished:
             wave.completed = True

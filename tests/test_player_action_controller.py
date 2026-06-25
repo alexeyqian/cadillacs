@@ -91,7 +91,7 @@ class PlayerActionControllerTests(unittest.TestCase):
         actions = PlayerActionController()
 
         actions.update(owner, FakeInput(attack=True))
-        Player._try_start_requested_attack(owner)
+        Player._try_start_attack(owner)
 
         self.assertEqual(owner.combat_controller.current_attack_name, owner.RUN_ATTACK)
         self.assertTrue(owner.input_state.run_attack_requires_attack_release)
@@ -100,14 +100,14 @@ class PlayerActionControllerTests(unittest.TestCase):
         owner.input_state.attack_pressed = False
         owner.input_buffer.press("attack")
         actions.update(owner, FakeInput(attack=True))
-        Player._try_start_requested_attack(owner)
+        Player._try_start_attack(owner)
 
         self.assertIsNone(owner.combat_controller.current_attack_name)
         self.assertFalse(owner.input_buffer.has("attack"))
 
         actions.update(owner, FakeInput(attack=False))
         actions.update(owner, FakeInput(attack=True))
-        Player._try_start_requested_attack(owner)
+        Player._try_start_attack(owner)
 
         self.assertEqual(owner.combat_controller.current_attack_name, owner.RUN_ATTACK)
 
@@ -130,12 +130,12 @@ class PlayerActionControllerTests(unittest.TestCase):
         actions = PlayerActionController()
 
         actions.update(owner, FakeInput(attack=True))
-        Player._try_start_requested_attack(owner)
+        Player._try_start_attack(owner)
         self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK)
 
         actions.update(owner, FakeInput(attack=False))
         actions.update(owner, FakeInput(attack=True))
-        Player._try_start_requested_attack(owner)
+        Player._try_start_attack(owner)
         self.assertTrue(owner.input_buffer.has("attack"))
 
         owner.combat_controller.attack_manager.has_connected = True
@@ -143,7 +143,7 @@ class PlayerActionControllerTests(unittest.TestCase):
             owner.combat_controller.advance_timers(owner)
             owner.combat_controller.update_attack(owner)
             actions.update(owner, FakeInput(attack=False))
-            Player._try_start_requested_attack(owner)
+            Player._try_start_attack(owner)
 
         self.assertEqual(owner.combat_controller.current_attack_name, owner.ATTACK2)
         self.assertFalse(owner.input_buffer.has("attack"))

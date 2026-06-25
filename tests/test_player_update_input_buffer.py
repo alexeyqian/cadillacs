@@ -89,7 +89,7 @@ class FakeReactionController:
 
 
 class FakeStateController:
-    def update_after_movement(self, owner, moving):
+    def resolve(self, owner, moving):
         if not owner.combat_controller.is_attacking and owner.state not in [owner.JUMP_TAKEOFF, owner.JUMP]:
             owner.state_machine.change_to(owner, owner.IDLE)
 
@@ -127,7 +127,8 @@ def update_player_frame(player, player_input):
     context = PlayerActionContext(player_input)
     lifecycle_blocked = player.state == player.DEAD
     player.update_lifecycle_state()
-    if lifecycle_blocked or player.update_reactions():
+    player.update_reactions()
+    if lifecycle_blocked or player.reaction_controller.is_in_hit_stun():
         player.update_animation()
         return
 

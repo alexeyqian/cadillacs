@@ -4,41 +4,6 @@ from game.entities.weapon import Weapon
 from game.level.level import Level
 
 
-def create_stage_weapons(stage_data):
-    weapons = []
-
-    for weapon_config in stage_data["weapons"]:
-        weapons.append(Weapon(
-            weapon_config["x"],
-            weapon_config["y"],
-            weapon_config["type"],
-        ))
-
-    return weapons
-
-
-def create_stage_objects(stage_data):
-    objects = []
-
-    for object_config in stage_data["objects"]:
-        kind = object_config["kind"]
-        loot_type = object_config.get("loot_type", None)
-        if kind == "breakable":
-            objects.append(BreakableObject(
-                object_config["x"],
-                object_config["y"],
-                loot_type=loot_type,
-            ))
-
-        elif kind == "barrel":
-            objects.append(ExplosiveBarrel(
-                object_config["x"],
-                object_config["y"],
-            ))
-
-    return objects
-
-
 def load_stage(game_state, stage_data):
     game_state.level = Level(stage_data)
 
@@ -59,8 +24,8 @@ def load_stage(game_state, stage_data):
     game_state.floating_texts.clear()
     game_state.explosions.clear()
 
-    game_state.weapons.extend(create_stage_weapons(stage_data))
-    game_state.objects.extend(create_stage_objects(stage_data))
+    game_state.weapons.extend(_create_weapons(stage_data))
+    game_state.objects.extend(_create_objects(stage_data))
 
     game_state.stage_clear_manager.active = False
     game_state.stage_clear_manager.timer = 0
@@ -78,5 +43,22 @@ def advance_to_next_stage(game_state):
     if next_stage_data:
         load_stage(game_state, next_stage_data)
         return True
-
     return False
+
+
+def _create_weapons(stage_data):
+    return [
+        Weapon(wc["x"], wc["y"], wc["type"])
+        for wc in stage_data["weapons"]
+    ]
+
+
+def _create_objects(stage_data):
+    objects = []
+    for oc in stage_data["objects"]:
+        kind = oc["kind"]
+        if kind == "breakable":
+            objects.append(BreakableObject(oc["x"], oc["y"], loot_type=oc.get("loot_type")))
+        elif kind == "barrel":
+            objects.append(ExplosiveBarrel(oc["x"], oc["y"]))
+    return objects

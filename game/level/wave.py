@@ -5,6 +5,7 @@ from typing import Optional
 from game.factories.enemy_factory import EnemyFactory
 from game.settings import LANE_BOTTOM, LANE_TOP, SCREEN_WIDTH
 
+
 @dataclass
 class SpawnInstruction:
     enemy_type: str
@@ -13,9 +14,10 @@ class SpawnInstruction:
     delay_max: int = 120
     y_min: int = 700
     y_max: int = 800
-    enter_offset: int = -50 # how far offscreen the enemy starts.
+    enter_offset: int = -50  # how far offscreen the enemy starts
     min_player_distance: int = 100
     capability_overrides: Optional[dict] = None
+
 
 @dataclass
 class PendingSpawn:
@@ -24,6 +26,7 @@ class PendingSpawn:
     y: int
     delay: int
     capability_overrides: Optional[dict] = None
+
 
 class Wave:
     def __init__(self, trigger_x, spawn_instructions, max_active=4):
@@ -35,8 +38,7 @@ class Wave:
         self.pending_spawns = []
         self.spawn_timer = 0
 
-    def spawn(self, camera_x=0, 
-            lane_top=LANE_TOP, lane_bottom=LANE_BOTTOM, player_x=None):
+    def start(self, camera_x=0, lane_top=LANE_TOP, lane_bottom=LANE_BOTTOM, player_x=None):
         self.started = True
         self.spawn_timer = 0
         self.pending_spawns = []
@@ -54,76 +56,60 @@ class Wave:
                 if player_x is not None:
                     spawn_x = max(spawn_x, player_x + instruction.min_player_distance)
 
-            y_min = instruction.y_min
-            y_max = instruction.y_max
-
-            if y_min is None:
-                y_min = lane_top + 40
-            if y_max is None:
-                y_max = lane_bottom - 40
-
+            y_min = instruction.y_min if instruction.y_min is not None else lane_top + 40
+            y_max = instruction.y_max if instruction.y_max is not None else lane_bottom - 40
             y_min = max(lane_top, y_min)
             y_max = min(lane_bottom, y_max)
-
             if y_min > y_max:
                 y_min = y_max
-
-            spawn_y = random.randint(y_min, y_max)
-            delay = random.randint(instruction.delay_min, instruction.delay_max)
 
             self.pending_spawns.append(PendingSpawn(
                 enemy_type=instruction.enemy_type,
                 x=spawn_x,
-                y=spawn_y,
-                delay=delay,
+                y=random.randint(y_min, y_max),
+                delay=random.randint(instruction.delay_min, instruction.delay_max),
                 capability_overrides=instruction.capability_overrides,
             ))
 
         if self.pending_spawns:
             self.spawn_timer = self.pending_spawns[0].delay
 
-        return []
-
-    def update_spawn(self, active_enemy_count=0):
-        if len(self.pending_spawns) == 0:
+    def tick(self, active_enemy_count=0):
+        """Tick one frame. Returns a list of newly spawned enemies (0 or 1)."""
+        if not self.pending_spawns:
             return []
         if active_enemy_count >= self.max_active:
             return []
-
         if self.spawn_timer > 0:
             self.spawn_timer -= 1
             return []
 
-        pending_spawn = self.pending_spawns.pop(0)
+        pending = self.pending_spawns.pop(0)
         enemy = EnemyFactory.create_enemy(
-            pending_spawn.enemy_type,
-            pending_spawn.x,
-            pending_spawn.y,
-            capability_overrides=pending_spawn.capability_overrides,
+            pending.enemy_type,
+            pending.x,
+            pending.y,
+            capability_overrides=pending.capability_overrides,
         )
-
-        if self.pending_spawns:
-            self.spawn_timer = self.pending_spawns[0].delay
-        else:
-            self.spawn_timer = 0
+        self.spawn_timer = self.pending_spawns[0].delay if self.pending_spawns else 0
         return [enemy]
 
-    def finished_spawning(self):
-        return len(self.pending_spawns) == 0
+    def is_spawning_done(self):
+        return not self.pending_spawns
+
 
 class BossWave(Wave):
     def __init__(self, trigger_x):
-        spawn_instructions = [
-            SpawnInstruction(
-                enemy_type="boss",
-                side="right",
-                delay_min=120,
-                delay_max=180,
-                enter_offset=-100,
-            )
-        ]
         super().__init__(
             trigger_x=trigger_x,
-            spawn_instructions=spawn_instructions,
+            spawn_instructions=[
+                SpawnInstruction(
+                    enemy_type="boss",
+                    side="right",
+                    delay_min=120,
+                    delay_max=180,
+                    enter_offset=-100,
+                )
+            ],
             max_active=1,
         )
