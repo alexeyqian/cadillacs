@@ -1,5 +1,6 @@
 # is ephemeral — cleared every frame
 # so it can't hold the persistent commitment timers.
+# setters read as commands, checkers read as questions
 class EnemyIntent:
     NONE = "none"
     PATROL = "patrol"

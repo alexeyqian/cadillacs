@@ -40,7 +40,7 @@ class FakeMovement:
     def start_jump(self, owner, player_input):
         if owner.combat_controller.is_attacking:
             return
-        owner.state_machine.change_to(owner, owner.JUMP_TAKEOFF)
+        owner.state_machine.change_to(owner, owner.JUMP)
 
     def can_start_run_attack(self):
         return False
@@ -90,7 +90,7 @@ class FakeReactionController:
 
 class FakeStateController:
     def resolve(self, owner, moving):
-        if not owner.combat_controller.is_attacking and owner.state not in [owner.JUMP_TAKEOFF, owner.JUMP]:
+        if not owner.combat_controller.is_attacking and owner.state not in [owner.JUMP]:
             owner.state_machine.change_to(owner, owner.IDLE)
 
 

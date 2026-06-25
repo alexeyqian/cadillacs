@@ -8,7 +8,7 @@ class PlayerStateResolver:
             return
 
         if owner.movement.is_jumping:
-            if owner.state not in [owner.JUMP_TAKEOFF, owner.JUMP_ATTACK]:
+            if owner.state != owner.JUMP_ATTACK:
                 owner.state_machine.change_to(owner, owner.JUMP)
             return
 

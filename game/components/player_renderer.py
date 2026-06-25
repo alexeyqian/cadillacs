@@ -14,6 +14,8 @@ _WEAPON_OVERLAY_SCALE = 1.0
 _ATTACK_STATES = {"ATTACK", "ATTACK2", "ATTACK3", "RUN_ATTACK", "JUMP_ATTACK",
                   "ATTACK_KNIFE", "ATTACK_PISTOL"}
 
+# A renderer is stateless presentation code, not a state driver. so not rename it to RenderController
+# "controller" in this codebase means something specific: it holds behavior logic that drives state transitions (AI, lifecycle, combat). 
 class PlayerRenderer:
     def draw(self, owner, screen, camera_x):
         frame = owner.animation_controller.get_current_frame()
@@ -41,11 +43,11 @@ class PlayerRenderer:
         screen.blit(image, (sprite_world_x - camera_x, sprite_y))
 
         self._draw_weapon_overlay(owner, screen, camera_x,
-                                   sprite_world_x, sprite_y, image.get_width(), image.get_height(), scale)
+                                sprite_world_x, sprite_y, image.get_width(), image.get_height(), scale)
         self.draw_player_debug_boxes(screen, camera_x, owner)
 
     def _draw_weapon_overlay(self, owner, screen, camera_x,
-                              sprite_world_x, sprite_y, sprite_w, sprite_h, scale):
+                            sprite_world_x, sprite_y, sprite_w, sprite_h, scale):
         anim_state = owner.animation_controller.get_animation_state(owner)
         if anim_state in _ATTACK_STATES:
             return
@@ -67,7 +69,7 @@ class PlayerRenderer:
         screen.blit(overlay, (hand_x - camera_x, hand_y - overlay.get_height() // 2))
 
     def _get_hand_position(self, owner, sprite_world_x, sprite_y,
-                           sprite_w, sprite_h, scale, anim_state):
+                        sprite_w, sprite_h, scale, anim_state):
         frame_index = owner.animation_controller.get_current_frame_index()
         anim_config = owner.animation_controller.animation_data.get(anim_state, {})
         hand_anchors = anim_config.get("hand_anchors")

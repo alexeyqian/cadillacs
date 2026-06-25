@@ -3,7 +3,6 @@ from game.components.character_state import CharacterState
 
 class PlayerState(CharacterState):
     RUN_ATTACK = "RUN_ATTACK"
-    JUMP_TAKEOFF = "JUMP_TAKEOFF"
     JUMP = "JUMP"
     JUMP_ATTACK = "JUMP_ATTACK"
     LANDING = "LANDING"

@@ -66,7 +66,6 @@ class Player(Character, PlayerState):
             config.jump_power,
             config.jump_gravity,
             config.air_move_speed,
-            config.jump_takeoff_frames,
             config.landing_recovery_frames,
         )
         self.state_machine = PlayerStateMachine(self)

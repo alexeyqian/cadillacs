@@ -17,7 +17,6 @@ class FakeCombat:
 
 class FakeOwner:
     IDLE = "IDLE"
-    JUMP_TAKEOFF = "JUMP_TAKEOFF"
     JUMP = "JUMP"
     JUMP_ATTACK = "JUMP_ATTACK"
     LANDING = "LANDING"
@@ -169,23 +168,22 @@ class PlayerMovementTests(unittest.TestCase):
         self.assertEqual(movement.last_run_attack_distance, 180)
         self.assertEqual(movement.run.run_distance, 0)
 
-    def test_jump_starts_with_takeoff_state_and_preserves_ground_y(self):
+    def test_jump_starts_immediately_and_preserves_ground_y(self):
         owner = FakeOwner()
         air = PlayerAirState(
             jump_power=12,
             gravity=0.7,
             air_move_speed=3,
-            takeoff_frames=2,
             landing_recovery_frames=6,
         )
         movement = PlayerMovement(air)
 
         movement.start_jump(owner, FakeInput(right=True))
 
-        self.assertEqual(owner.state, owner.JUMP_TAKEOFF)
+        self.assertEqual(owner.state, owner.JUMP)
         self.assertTrue(movement.is_jumping)
         self.assertEqual(owner.y, 500)
-        self.assertEqual(air.z, 0)
+        self.assertGreater(air.z, 0)
         self.assertEqual(air.direction_x, 1)
 
     def test_jump_uses_z_height_without_changing_ground_y(self):
@@ -194,7 +192,7 @@ class PlayerMovementTests(unittest.TestCase):
             jump_power=4,
             gravity=1,
             air_move_speed=3,
-            takeoff_frames=1,
+
             landing_recovery_frames=6,
         )
         movement = PlayerMovement(air)
@@ -215,7 +213,7 @@ class PlayerMovementTests(unittest.TestCase):
             jump_power=3,
             gravity=2,
             air_move_speed=3,
-            takeoff_frames=1,
+
             landing_recovery_frames=6,
         )
         movement = PlayerMovement(air)
@@ -236,7 +234,7 @@ class PlayerMovementTests(unittest.TestCase):
             jump_power=4,
             gravity=1,
             air_move_speed=3,
-            takeoff_frames=1,
+
             landing_recovery_frames=6,
         )
         movement = PlayerMovement(air)
@@ -246,7 +244,7 @@ class PlayerMovementTests(unittest.TestCase):
         movement.update_jump_physics(owner, FakeInput())
 
         self.assertEqual(owner.x, 300)
-        self.assertAlmostEqual(owner.y, 500 - 1.8)
+        self.assertAlmostEqual(owner.y, 500 - 3.6)
 
         movement.update_jump_physics(owner, FakeInput(left=True))
 
@@ -264,7 +262,7 @@ class PlayerMovementTests(unittest.TestCase):
             jump_power=3,
             gravity=2,
             air_move_speed=3,
-            takeoff_frames=1,
+
             landing_recovery_frames=3,
         )
         movement = PlayerMovement(air)
@@ -287,13 +285,12 @@ class PlayerMovementTests(unittest.TestCase):
             jump_power=3,
             gravity=2,
             air_move_speed=3,
-            takeoff_frames=1,
+
             landing_recovery_frames=3,
         )
         movement = PlayerMovement(air)
 
         movement.start_jump(owner, FakeInput())
-        air.begin_jump()
         owner.state = owner.JUMP_ATTACK
         owner.combat_controller.is_attacking = True
         owner.combat_controller.current_attack_name = owner.JUMP_ATTACK

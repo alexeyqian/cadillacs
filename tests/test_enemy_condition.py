@@ -38,6 +38,7 @@ def test_reaction_controller_applies_knockback():
 
 def test_lifecycle_controller_applies_thrown_motion():
     class ThrownOwner:
+        KNOCKDOWN = EnemyState.KNOCKDOWN
         state = EnemyState.THROWN
         x = 100
         facing_right = False

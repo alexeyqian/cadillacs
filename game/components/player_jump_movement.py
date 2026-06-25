@@ -28,10 +28,6 @@ class PlayerJumpMovement:
             self.update_landing(owner)
             return
 
-        if owner.state == owner.JUMP_TAKEOFF:
-            self.update_takeoff(owner)
-            return
-
         if self.air_state.is_grounded:
             return
 
@@ -41,11 +37,6 @@ class PlayerJumpMovement:
     def update_landing(self, owner):
         if self.air_state.update_landing():
             owner.state_machine.change_to(owner, owner.IDLE)
-
-    def update_takeoff(self, owner):
-        if self.air_state.update_takeoff():
-            self.air_state.begin_jump()
-            owner.state_machine.change_to(owner, owner.JUMP)
 
     def update_jump_arc(self, owner):
         landed = self.air_state.update_jump_arc()
@@ -87,8 +78,8 @@ class PlayerJumpMovement:
         elif direction_x > 0:
             owner.facing_right = True
 
-        self.air_state.start_takeoff(direction_x, direction_y)
-        owner.state_machine.change_to(owner, owner.JUMP_TAKEOFF)
+        self.air_state.start_jump(direction_x, direction_y)
+        owner.state_machine.change_to(owner, owner.JUMP)
 
     def is_landing(self):
         return bool(self.air_state and self.air_state.is_landing)

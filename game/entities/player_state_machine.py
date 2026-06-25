@@ -23,10 +23,6 @@ class RunState(PlayerState):
     name = "RUN"
 
 
-class JumpTakeoffState(PlayerState):
-    name = "JUMP_TAKEOFF"
-
-
 class JumpState(PlayerState):
     name = "JUMP"
 
@@ -100,7 +96,6 @@ class PlayerStateMachine:
             owner.IDLE: IdleState(),
             owner.WALK: WalkState(),
             owner.RUN: RunState(),
-            owner.JUMP_TAKEOFF: JumpTakeoffState(),
             owner.JUMP: JumpState(),
             owner.ATTACK: AttackState(),
             owner.ATTACK: Attack1State(),

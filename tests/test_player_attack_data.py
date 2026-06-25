@@ -57,7 +57,7 @@ class FakeWeaponSlot:
 
 class FakeOwner:
     IDLE = "IDLE"
-    JUMP_TAKEOFF = "JUMP_TAKEOFF"
+    JUMP = "JUMP"
     ATTACK = "ATTACK"
     ATTACK2 = "ATTACK2"
     ATTACK3 = "ATTACK3"
@@ -220,20 +220,20 @@ class AttackDataTests(unittest.TestCase):
             DEFAULT_PLAYER_ATTACKS["JUMP_ATTACK"].total_duration,
         )
 
-    def test_jump_attack_cannot_start_during_takeoff(self):
+    def test_jump_attack_blocked_when_air_state_disallows_it(self):
         class FakeAir:
             def can_start_jump_attack(self):
                 return False
 
         owner = FakeOwner()
-        owner.state = owner.JUMP_TAKEOFF
+        owner.state = owner.JUMP
         owner.movement.is_jumping = True
         owner.air = FakeAir()
         combat = PlayerCombatController()
 
         combat.start_jump_attack(owner)
 
-        self.assertEqual(owner.state, owner.JUMP_TAKEOFF)
+        self.assertEqual(owner.state, owner.JUMP)
         self.assertIsNone(combat.current_attack_name)
 
     def test_jump_attack_can_only_start_once_per_jump(self):
