@@ -1,3 +1,5 @@
+# is ephemeral — cleared every frame
+# so it can't hold the persistent commitment timers.
 class EnemyIntent:
     NONE = "none"
     PATROL = "patrol"

@@ -37,9 +37,7 @@ class FakeMovement:
     def face_player(self, owner, player):
         pass
 
-
-class FakeFlanking:
-    def clear_target(self):
+    def clear_flank_target(self):
         pass
 
 
@@ -88,8 +86,6 @@ class FakeEnemy:
         self.reaction_controller = EnemyReactionController()
         self.ai_controller = EnemyAIController()
         self.intent = EnemyIntent()
-        self.flanking = FakeFlanking()
-
     def face_player(self, player):
         self.facing_right = player.x > self.x
 
@@ -244,7 +240,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         controller.start_clash_recovery(enemy)
 
         self.assertEqual(enemy.state, enemy.RECOIL)
-        self.assertEqual(enemy.condition.action_lock_remaining, enemy.attack_data.cooldown)
+        self.assertEqual(enemy.condition._action_lock_remaining, enemy.attack_data.cooldown)
         self.assertEqual(enemy.combat_controller.attack_manager.elapsed_frames, 0)
         self.assertEqual(enemy.ai_controller._decision_timer, 0)
         self.assertFalse(enemy.combat_controller.attack_manager.has_connected)
@@ -291,7 +287,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
-        self.assertEqual(enemy.condition.knockback_velocity, 18)
+        self.assertEqual(enemy.condition._knockback_velocity, 18)
 
     def test_enemy_reaction_uses_custom_hit_stun_duration(self):
         enemy = FakeEnemy()
@@ -304,7 +300,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
-        self.assertEqual(enemy.condition.hit_stun_remaining, 24)
+        self.assertEqual(enemy.condition._hit_stun_remaining, 24)
 
     def test_enemy_uses_shorter_attack_delay_during_player_recovery(self):
         enemy = FakeEnemy()

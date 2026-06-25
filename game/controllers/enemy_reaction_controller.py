@@ -101,7 +101,12 @@ class EnemyReactionController:
         return True
 
     def _apply_knockback(self, owner):
-        owner.condition.apply_knockback(owner)
+        v = owner.condition._knockback_velocity
+        if v == 0:
+            return
+        owner.x += v
+        v *= 0.8
+        owner.condition._knockback_velocity = v if abs(v) >= 0.5 else 0
 
     def _flinch_threshold(self, owner):
         if owner.state == owner.ATTACK:

@@ -50,8 +50,8 @@ class FakeCombatController:
         return ""
 
 
-class FakeFlanking:
-    def has_target(self):
+class FakeMovement:
+    def has_flank_target(self):
         return False
 
 
@@ -64,7 +64,7 @@ class EnemyDebugOwner:
     animation_controller = FakeAnimationController()
     combat_controller = FakeCombatController()
     health = type("Health", (), {"hp": 1, "max_hp": 1})()
-    flanking = FakeFlanking()
+    movement = FakeMovement()
 
     def get_frame_rect(self):
         return pygame.Rect(20, 30, 2, 2)

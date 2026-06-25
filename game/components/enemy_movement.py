@@ -5,7 +5,12 @@ from game.components.movement_math import (
     move_x,
 )
 from game.components.enemy_air_state import EnemyAirState
-from game.settings import ENEMY_Y_SPEED
+from game.settings import (
+    ENEMY_FLANK_DECISION_DURATION,
+    ENEMY_FLANK_OFFSET_X,
+    ENEMY_FLANK_OFFSET_Y,
+    ENEMY_Y_SPEED,
+)
 
 
 CHASE_VERTICAL_DEAD_ZONE = 10
@@ -35,6 +40,14 @@ class EnemyMovement:
         self.detect_range = detect_range
         self.patrol_direction = patrol_direction
 
+        # Flank state — which side the enemy is committed to when slots are full
+        self.flank_target_side = None
+        self._flank_target_y_offset = 0
+        self._flank_offset_x = ENEMY_FLANK_OFFSET_X
+        self._flank_offset_y = ENEMY_FLANK_OFFSET_Y
+        self._flank_decision_remaining = 0
+        self._flank_decision_duration = ENEMY_FLANK_DECISION_DURATION
+
     @property
     def is_jumping(self):
         return self.air_state.is_jumping
@@ -49,6 +62,12 @@ class EnemyMovement:
         self.can_jump_attack = can_jump_attack
         self.patrol_distance = patrol_distance
         self.detect_range = detect_range
+
+    def advance_timers(self):
+        if self._flank_decision_remaining > 0:
+            self._flank_decision_remaining -= 1
+
+    # --- Chase / patrol ---
 
     def get_player_distance(self, owner, player):
         return get_distance_to(owner, player)
@@ -70,19 +89,9 @@ class EnemyMovement:
     def _turn_at_patrol_bounds(self, owner, patrol_center_x):
         if owner.x > patrol_center_x + self.patrol_distance:
             self.patrol_direction = -1
-
         if owner.x < patrol_center_x - self.patrol_distance:
             self.patrol_direction = 1
 
-    # Enemy has attack slot -> attacks
-    # Enemy is in range but slot is full -> moves toward a side position
-    # Enemy groups spread around player instead of stacking directly
-    # pick less crowded side and drift there
-
-    # With 1 slot: closest eligible enemy on its side attacks
-    # With future 2 slots: one enemy per side can attack
-    # Enemies without slots flank toward less crowded side
-    # Flanking movement code is easier to read
     def move_toward_player(self, owner, player):
         dx, dy, distance_x, distance_y = self.get_player_distance(owner, player)
         self._move_horizontally(owner, dx, self.speed)
@@ -110,23 +119,57 @@ class EnemyMovement:
         for other in enemies:
             if other is owner:
                 continue
-
             if other.state == owner.DEAD:
                 continue
-
             self._separate_from_enemy(owner, other)
 
     def _separate_from_enemy(self, owner, other):
         dx = other.x - owner.x
-
         if abs(dx) >= SEPARATION_DISTANCE:
             return
-
         if dx > 0:
             owner.x -= SEPARATION_PUSH
         else:
             owner.x += SEPARATION_PUSH
-                    
+
+    # --- Flank navigation ---
+
+    def has_flank_target(self):
+        return self.flank_target_side is not None
+
+    def update_flank_target(self, owner, player, enemies):
+        if self._flank_decision_remaining > 0 and self.flank_target_side:
+            return
+
+        left_count = sum(
+            1 for e in enemies
+            if e is not owner
+            and e.state not in [e.DEAD, e.GRABBED, e.THROWN, e.KNOCKDOWN]
+            and e.x < player.x
+        )
+        right_count = sum(
+            1 for e in enemies
+            if e is not owner
+            and e.state not in [e.DEAD, e.GRABBED, e.THROWN, e.KNOCKDOWN]
+            and e.x >= player.x
+        )
+
+        self.flank_target_side = "left" if left_count <= right_count else "right"
+        same_side_count = left_count if self.flank_target_side == "left" else right_count
+        self._flank_target_y_offset = -self._flank_offset_y if same_side_count % 2 == 0 else self._flank_offset_y
+        self._flank_decision_remaining = self._flank_decision_duration
+
+    def get_flank_position(self, player):
+        target_y = player.y + self._flank_target_y_offset
+        if self.flank_target_side == "left":
+            return player.x - self._flank_offset_x, target_y
+        return player.x + self._flank_offset_x, target_y
+
+    def clear_flank_target(self):
+        self.flank_target_side = None
+        self._flank_target_y_offset = 0
+        self._flank_decision_remaining = 0
+
     def move_toward_position(self, owner, position):
         target_x, target_y = position
         self._move_toward_point(owner, target_x, target_y)
@@ -138,14 +181,14 @@ class EnemyMovement:
             else:
                 move_x(owner, -1, self.speed)
 
-        # Flanking has smoother vertical drift instead of sharp diagonal snapping
-        # Slightly slower vertical correction makes enemy movement 
-        # look more organic while still understandable.
+        # Slightly slower vertical correction makes flanking look more organic.
         if abs(owner.y - target_y) > self.y_speed:
             if owner.y < target_y:
                 owner.y += self.y_speed * FLANK_VERTICAL_SPEED_SCALE
             else:
                 owner.y -= self.y_speed * FLANK_VERTICAL_SPEED_SCALE
+
+    # --- Air ---
 
     def start_jump(self):
         self.air_state.start_jump()

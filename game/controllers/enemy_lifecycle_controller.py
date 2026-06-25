@@ -12,7 +12,7 @@ class EnemyLifecycleController:
             owner.condition.tick_action_lock()
             owner.state = owner.RECOIL
             return True
-        
+
         if owner.state == owner.GRABBED:
             return True
 
@@ -30,11 +30,19 @@ class EnemyLifecycleController:
 
         return False
 
-    def _update_thrown_state(self, owner):
-        if owner.condition.tick_thrown(owner):
+    def _update_thrown_state(self, owner, friction=0.9, stop_threshold=1):
+        c = owner.condition
+        if c._thrown_velocity_x > 0:
+            owner.facing_right = True
+        elif c._thrown_velocity_x < 0:
+            owner.facing_right = False
+        owner.x += c._thrown_velocity_x
+        c._thrown_velocity_x *= friction
+        c._thrown_remaining -= 1
+        if c._thrown_remaining <= 0 or abs(c._thrown_velocity_x) < stop_threshold:
+            c._thrown_velocity_x = 0
             owner.state = owner.KNOCKDOWN
             owner.condition.start_knockdown(60)
-            owner.condition.stop_thrown_motion()
 
     def _update_knockdown_state(self, owner):
         if owner.condition.tick_knockdown():
@@ -46,9 +54,6 @@ class EnemyLifecycleController:
             owner.state = owner.IDLE
 
     def _update_dead_state(self, owner):
-        if not owner.condition.death_countdown_started:
-            owner.condition.begin_death_countdown()
-
         owner.condition.tick_death()
 
     def is_ready_to_remove(self, owner):

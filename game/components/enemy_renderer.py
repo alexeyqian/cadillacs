@@ -48,7 +48,7 @@ class EnemyRenderer:
             label = font.render(timing_label, True, YELLOW_COLOR)
             screen.blit(label, (int(owner.x - camera_x - 28), int(owner.y - 180)))
 
-        if owner.flanking.has_target():
+        if owner.movement.has_flank_target():
             font = pygame.font.SysFont(None, 20)
-            label = font.render(f"FLANK {owner.flanking.target_side.upper()}", True, WHITE_COLOR)
+            label = font.render(f"FLANK {owner.movement.flank_target_side.upper()}", True, WHITE_COLOR)
             screen.blit(label, (int(owner.x - camera_x - 42), int(owner.y - 225)))

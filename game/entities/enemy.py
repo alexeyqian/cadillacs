@@ -6,7 +6,6 @@ from game.components.character_geometry import CharacterGeometry
 from game.controllers.enemy_animation_controller import EnemyAnimationController
 from game.components.enemy_renderer import EnemyRenderer
 from game.components.enemy_movement import EnemyMovement
-from game.components.enemy_flanking import EnemyFlanking
 from game.components.enemy_condition import EnemyCondition
 from game.components.enemy_intent import EnemyIntent
 from game.controllers.enemy_combat_controller import EnemyCombatController
@@ -37,7 +36,6 @@ class Enemy(Character, EnemyState):
         self.condition = EnemyCondition()
         self.intent = EnemyIntent()
         self.movement = EnemyMovement()
-        self.flanking = EnemyFlanking()
         self.air = None  # set to EnemyAirState when can_jump=True
 
     def _build_controllers(self):
@@ -129,7 +127,7 @@ class Enemy(Character, EnemyState):
 
     def advance_timers(self):
         self.combat_controller.advance_timers()
-        self.flanking.advance_timers()
+        self.movement.advance_timers()
 
     def update_ai(self, context):
         self.ai_controller.update(self, context)

@@ -74,7 +74,7 @@ class EnemyAIController:
             self._request_patrol_intent(owner)
 
     def _prepare_attack_intent(self, owner, player):
-        owner.flanking.clear_target()
+        owner.movement.clear_flank_target()
         self._decision_timer += 1
 
         if self._decision_timer < owner.combat_controller.get_attack_data().delay:
@@ -121,21 +121,21 @@ class EnemyAIController:
         self.reset_decision_timer()
 
         if self._should_flank(owner, distance_x, distance_y, context.enemies):
-            owner.flanking.set_target(owner, context.player, context.enemies)
-            owner.intent.flank_to(owner.flanking.get_target_position(context.player))
+            owner.movement.update_flank_target(owner, context.player, context.enemies)
+            owner.intent.flank_to(owner.movement.get_flank_position(context.player))
             owner.state = owner.CHASE
         elif owner.movement.can_run and distance_x > ENEMY_RUN_CHASE_THRESHOLD:
-            owner.flanking.clear_target()
+            owner.movement.clear_flank_target()
             owner.intent.run_toward_player()
             owner.state = owner.RUN
         else:
-            owner.flanking.clear_target()
+            owner.movement.clear_flank_target()
             owner.intent.move_toward_player()
             owner.state = owner.CHASE
 
     def _request_patrol_intent(self, owner):
         self.reset_decision_timer()
-        owner.flanking.clear_target()
+        owner.movement.clear_flank_target()
         owner.intent.patrol()
         owner.state = owner.PATROL
 
