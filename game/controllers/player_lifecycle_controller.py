@@ -13,7 +13,7 @@ class PlayerLifecycleController:
         self.respawn_x = x
         self.respawn_y = y
         self.reset_position_and_movement(owner, x, y)
-        owner.hit_reaction_controller.reset()
+        owner.reaction_controller.reset()
         owner.state_machine.change_to(owner, owner.IDLE)
         owner.facing_right = True
 
@@ -35,7 +35,7 @@ class PlayerLifecycleController:
     def respawn(self, owner):
         owner.health.hp = owner.health.max_hp
         self.respawn_remaining = 0
-        owner.hit_reaction_controller.reset()
+        owner.reaction_controller.reset()
         self.reset_position_and_movement(owner, self.respawn_x, self.respawn_y)
         owner.state_machine.change_to(owner, owner.IDLE)
         owner.combat_controller.is_attacking = False

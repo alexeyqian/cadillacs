@@ -115,11 +115,11 @@ def _player_attack_clashes_with_enemy(
     lane_distance = game_state.level.get_lane_distance(player.y, enemy.y)
     clash_lane_reach = max(
         player_lane_reach,
-        enemy.combat_controller.get_attack_data(enemy).lane_reach,
+        enemy.combat_controller.get_attack_data().lane_reach,
     )
     return (
         lane_distance <= clash_lane_reach
-        and enemy.combat_controller.is_attack_active(enemy)
+        and enemy.combat_controller.is_attack_active()
         and attack_rect.colliderect(enemy_attack_rect)
     )
 

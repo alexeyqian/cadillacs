@@ -1,5 +1,5 @@
 from game.combat.hit_reaction import HitReaction
-from game.controllers.hit_reaction_controller import HitReactionController
+from game.controllers.player_hit_stun_controller import PlayerHitStunController
 
 
 class FakeOwner:
@@ -14,8 +14,8 @@ class FakeOwner:
         owner.state = state
 
 
-def test_hit_reaction_controller_uses_custom_stun_frames():
-    controller = HitReactionController(default_stun_frames=8)
+def test_hit_stun_controller_uses_custom_stun_frames():
+    controller = PlayerHitStunController(default_stun_frames=8)
 
     controller.start_hit_stun(HitReaction(stun_frames=14))
 
@@ -23,16 +23,16 @@ def test_hit_reaction_controller_uses_custom_stun_frames():
     assert controller.is_in_hit_stun() is True
 
 
-def test_hit_reaction_controller_uses_default_stun_frames():
-    controller = HitReactionController(default_stun_frames=8)
+def test_hit_stun_controller_uses_default_stun_frames():
+    controller = PlayerHitStunController(default_stun_frames=8)
 
     controller.start_hit_stun()
 
     assert controller.hit_stun_remaining == 8
 
 
-def test_hit_reaction_controller_advance_timers_updates_hit_stun():
-    controller = HitReactionController(default_stun_frames=8)
+def test_hit_stun_controller_advance_timers_updates_hit_stun():
+    controller = PlayerHitStunController(default_stun_frames=8)
     controller.hit_stun_remaining = 2
 
     controller.advance_timers()
@@ -46,8 +46,8 @@ def test_hit_reaction_controller_advance_timers_updates_hit_stun():
     assert controller.is_in_hit_stun() is False
 
 
-def test_hit_reaction_controller_updates_owner_hit_state():
-    controller = HitReactionController(default_stun_frames=8)
+def test_hit_stun_controller_updates_owner_hit_state():
+    controller = PlayerHitStunController(default_stun_frames=8)
     owner = FakeOwner()
     controller.hit_stun_remaining = 2
 
@@ -62,8 +62,8 @@ def test_hit_reaction_controller_updates_owner_hit_state():
     assert controller.update_hit_state(owner) is None
 
 
-def test_hit_reaction_controller_can_reset():
-    controller = HitReactionController(default_stun_frames=8)
+def test_hit_stun_controller_can_reset():
+    controller = PlayerHitStunController(default_stun_frames=8)
     controller.hit_stun_remaining = 2
 
     controller.reset()

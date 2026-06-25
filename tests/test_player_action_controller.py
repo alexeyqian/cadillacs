@@ -138,7 +138,7 @@ class PlayerActionControllerTests(unittest.TestCase):
         Player._try_start_requested_attack(owner)
         self.assertTrue(owner.input_buffer.has("attack"))
 
-        owner.combat_controller.attack_manager.mark_connected()
+        owner.combat_controller.attack_manager.has_connected = True
         while owner.combat_controller.current_attack_name == owner.ATTACK:
             owner.combat_controller.advance_timers(owner)
             owner.combat_controller.update_attack(owner)

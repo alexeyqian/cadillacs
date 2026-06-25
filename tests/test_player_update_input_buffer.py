@@ -80,7 +80,7 @@ class FakeLifecycle:
         pass
 
 
-class FakeHitReactionController:
+class FakePlayerHitStunController:
     def is_in_hit_stun(self):
         return False
 
@@ -117,7 +117,7 @@ def make_player_like():
     player.grab_controller = FakeGrab()
     player.weapon_slot = FakeWeaponSlot()
     player.lifecycle_controller = FakeLifecycle()
-    player.hit_reaction_controller = FakeHitReactionController()
+    player.hit_stun_controller = FakePlayerHitStunController()
     player.state_controller = FakeStateController()
     player.animation_controller = FakeAnimationController()
     return player
@@ -148,7 +148,7 @@ def test_player_update_uses_buffered_attack_after_recovery():
     update_player_frame(player, FakeInput(attack=True))
     assert player.input_buffer.has("attack") is True
 
-    player.combat_controller.attack_manager.mark_connected()
+    player.combat_controller.attack_manager.has_connected = True
     while player.combat_controller.current_attack_name == player.ATTACK:
         update_player_frame(player, FakeInput())
 

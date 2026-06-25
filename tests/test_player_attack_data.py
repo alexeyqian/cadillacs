@@ -88,7 +88,7 @@ class FakeOwner:
 
 class AttackDataTests(unittest.TestCase):
     def finish_connected_attack(self, combat, owner):
-        combat.attack_manager.mark_connected()
+        combat.attack_manager.has_connected = True
         for _ in range(combat.attack_manager.remaining_frames):
             combat.advance_timers(owner)
             combat.update_attack(owner)

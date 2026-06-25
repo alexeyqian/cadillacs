@@ -13,7 +13,6 @@ from game.components.player_renderer import PlayerRenderer
 from game.controllers.player_action_controller import PlayerActionController
 from game.controllers.player_state_controller import PlayerStateController
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
-from game.controllers.hit_reaction_controller import HitReactionController
 from game.controllers.player_reaction_controller import PlayerReactionController
 from game.combat.damage_request import DamageRequest
 from game.core.events import GameEventQueue
@@ -60,7 +59,6 @@ class Player(Character, PlayerState):
             config.hurt_box_offset_y,
         )
         self.health = CharacterHealth(config.max_hp)
-        self.hit_reaction_controller = HitReactionController(config.hit_stun_duration)
         self.sprite_scale = config.sprite_scale
 
     def apply_movement_config(self, config):
@@ -102,7 +100,7 @@ class Player(Character, PlayerState):
         self.grab_controller = PlayerGrabController()
         self.state_controller = PlayerStateController()
         self.lifecycle_controller = PlayerLifecycleController(self.x, self.y, config.lives)
-        self.reaction_controller = PlayerReactionController()
+        self.reaction_controller = PlayerReactionController(config.hit_stun_duration)
 
     def build_presentation_components(self, animation_data, anim_fps=None):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
@@ -117,8 +115,8 @@ class Player(Character, PlayerState):
             self.lifecycle_controller.update_dead_state(self)
 
     def update_reactions(self):
-        was_in_hit_stun = self.hit_reaction_controller.is_in_hit_stun()
-        self.hit_reaction_controller.update_hit_state(self)
+        was_in_hit_stun = self.reaction_controller.is_in_hit_stun()
+        self.reaction_controller.update_hit_state(self)
         return was_in_hit_stun
 
     def advance_timers(self):

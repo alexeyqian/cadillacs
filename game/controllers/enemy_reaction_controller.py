@@ -84,7 +84,7 @@ class EnemyReactionController:
     def _apply_flinch(self, owner, attacker_x, reaction):
         stun_frames = reaction.stun_frames
         if stun_frames is None:
-            stun_frames = owner.combat_controller.get_attack_data(owner).hit_stun_duration
+            stun_frames = owner.combat_controller.get_attack_data().hit_stun_duration
         owner.condition.set_hit_stun(stun_frames)
         owner.state = owner.HIT
         self._clear_combat_commitment(owner)
@@ -109,6 +109,6 @@ class EnemyReactionController:
         return self.flinch_damage_threshold
 
     def _clear_combat_commitment(self, owner):
-        owner.combat_controller.cancel_attack_timing(owner)
+        owner.combat_controller.cancel_attack()
         owner.ai_controller.reset_decision_timer()
-        owner.combat_controller.release_attack_slot(owner)
+        owner.combat_controller.release_attack_slot()

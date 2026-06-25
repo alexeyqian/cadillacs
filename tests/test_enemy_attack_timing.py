@@ -97,7 +97,7 @@ class FakeEnemy:
         return AlwaysCollidingRect()
 
     def is_attack_active(self):
-        attack_timer = self.combat_controller.get_attack_timer(self)
+        attack_timer = self.combat_controller.attack_manager.elapsed_frames
         return self.attack_data.windup <= attack_timer < self.attack_data.windup + self.attack_data.active
 
     def get_attack_total_duration(self):
@@ -221,16 +221,16 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
         enemy.combat_controller = EnemyCombatController(attack_data)
 
-        self.assertEqual(enemy.combat_controller.get_attack_data(enemy).total_duration, 6)
+        self.assertEqual(enemy.combat_controller.get_attack_data().total_duration, 6)
 
-    def test_has_attack_slot_matches_owned_attack_slot_for_debug_ui(self):
+    def test_owns_attack_slot_tracks_combat_commitment(self):
         controller = EnemyCombatController()
 
-        self.assertFalse(controller.has_attack_slot)
+        self.assertFalse(controller.owns_attack_slot)
 
         controller.owns_attack_slot = True
 
-        self.assertTrue(controller.has_attack_slot)
+        self.assertTrue(controller.owns_attack_slot)
 
     def test_clash_recovery_cancels_enemy_attack(self):
         enemy = FakeEnemy()
@@ -245,7 +245,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
         self.assertEqual(enemy.state, enemy.RECOIL)
         self.assertEqual(enemy.condition.action_lock_remaining, enemy.attack_data.cooldown)
-        self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
+        self.assertEqual(enemy.combat_controller.attack_manager.elapsed_frames, 0)
         self.assertEqual(enemy.ai_controller._decision_timer, 0)
         self.assertFalse(enemy.combat_controller.attack_manager.has_connected)
         self.assertFalse(enemy.combat_controller.owns_attack_slot)
@@ -259,7 +259,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         EnemyReactionController()._knockdown(enemy)
 
         self.assertEqual(enemy.state, enemy.KNOCKDOWN)
-        self.assertEqual(enemy.combat_controller.get_attack_timer(enemy), 0)
+        self.assertEqual(enemy.combat_controller.attack_manager.elapsed_frames, 0)
         self.assertFalse(enemy.combat_controller.attack_manager.is_attacking)
         self.assertFalse(enemy.combat_controller.owns_attack_slot)
 
@@ -308,11 +308,11 @@ class EnemyAttackTimingTests(unittest.TestCase):
 
     def test_enemy_uses_shorter_attack_delay_during_player_recovery(self):
         enemy = FakeEnemy()
-        self.assertEqual(enemy.combat_controller.get_attack_data(enemy).delay, enemy.attack_data.delay)
+        self.assertEqual(enemy.combat_controller.get_attack_data().delay, enemy.attack_data.delay)
 
     def test_enemy_attack_delay_stays_normal_outside_player_recovery(self):
         enemy = FakeEnemy()
-        self.assertEqual(enemy.combat_controller.get_attack_data(enemy).delay, enemy.attack_data.delay)
+        self.assertEqual(enemy.combat_controller.get_attack_data().delay, enemy.attack_data.delay)
 
     def test_enemy_configs_raise_pressure_without_removing_archetype_identity(self):
         ferris = get_enemy_config("ferris")

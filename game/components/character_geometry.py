@@ -1,6 +1,5 @@
 import pygame
 
-from game.combat.combat_geometry import combat_box_to_world_rect
 from game.settings import (
     PLAYER_COLLISION_H,
     PLAYER_COLLISION_W,
@@ -104,7 +103,7 @@ class CharacterGeometry:
                 hitbox.hitbox_h,
             )
 
-        return combat_box_to_world_rect(
+        return _combat_box_to_world_rect(
             owner.x,
             self._get_attack_anchor_y(owner),
             owner.facing_right,
@@ -126,7 +125,7 @@ class CharacterGeometry:
         return pygame.Rect(animation_hitbox)
 
     def _rect_to_world(self, owner, box):
-        return combat_box_to_world_rect(
+        return _combat_box_to_world_rect(
             owner.x,
             self._get_body_box_anchor_y(owner),
             owner.facing_right,
@@ -154,3 +153,18 @@ class CharacterGeometry:
         if not owner.air:
             return owner.y
         return owner.air.get_visual_y(owner.y)
+    
+# combat hitboxes are already in world/game pixels, not sprite-frame pixels. 
+# The code does not apply owner.sprite_scale to combat box values.
+def _combat_box_to_world_rect(anchor_x, anchor_y, facing_right, box):
+    if facing_right:
+        world_x = anchor_x + box.x
+    else:
+        world_x = anchor_x - box.x - box.width
+
+    return pygame.Rect(
+        int(world_x),
+        int(anchor_y + box.y),
+        int(box.width),
+        int(box.height)
+    )

@@ -92,9 +92,7 @@ class Enemy(Character, EnemyState):
             self.air = self.movement.air_state
 
     def apply_combat_config(self, config):
-        self.combat_controller.attack_data = config.attack
-        self.combat_controller.run_attack_data = config.run_attack
-        self.combat_controller.jump_attack_data = config.jump_attack
+        self.combat_controller.configure_attacks(config.attack, config.run_attack, config.jump_attack)
 
         self.reaction_controller.flinch_damage_threshold = config.flinch_damage_threshold
         self.reaction_controller.attack_flinch_damage_threshold = (

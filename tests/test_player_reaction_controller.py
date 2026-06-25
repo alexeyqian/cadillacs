@@ -78,7 +78,7 @@ class FakeOwner:
         self.movement = FakeMovement()
         self.grab_controller = FakeGrab()
         self.lifecycle_controller = FakeLifecycle()
-        self.hit_reaction_controller = FakeHitReactions()
+        self.hit_stun_controller = FakeHitReactions()
         self.state_machine = FakeStateMachine()
 
 
@@ -90,7 +90,7 @@ def test_player_reaction_controller_applies_damage_and_hit_stun():
 
     assert owner.health.damage_taken == 12
     assert owner.state == owner.HIT
-    assert owner.hit_reaction_controller.reaction is reaction
+    assert owner.hit_stun_controller.reaction is reaction
     assert owner.combat_controller.cancelled is True
     assert owner.movement.cancelled_run_attack is True
     assert owner.movement.cancelled_combo_nudge is True
@@ -105,4 +105,4 @@ def test_player_reaction_controller_enters_dead_state_on_depleted_health():
     assert owner.lifecycle_controller.lost_life is True
     assert owner.lifecycle_controller.entered_dead_state is True
     assert owner.state == owner.DEAD
-    assert owner.hit_reaction_controller.reaction is None
+    assert owner.hit_stun_controller.reaction is None

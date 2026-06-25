@@ -1,7 +1,7 @@
 from game.combat.hit_reaction import HitReaction
 
 
-class HitReactionController:
+class PlayerHitStunController:
     def __init__(self, default_stun_frames):
         self.default_stun_frames = default_stun_frames
         self.hit_stun_remaining = 0

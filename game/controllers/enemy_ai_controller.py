@@ -76,12 +76,12 @@ class EnemyAIController:
         owner.flanking.clear_target()
         self._decision_timer += 1
 
-        if self._decision_timer < owner.combat_controller.get_attack_data(owner).delay:
+        if self._decision_timer < owner.combat_controller.get_attack_data().delay:
             owner.state = owner.IDLE
             return
 
         owner.intent.attack_player()
-        owner.combat_controller.reserve_attack_slot(owner)
+        owner.combat_controller.reserve_attack_slot()
         self.reset_decision_timer()
 
     def _try_run_attack(self, owner, context):
@@ -92,7 +92,7 @@ class EnemyAIController:
         dx, dy, distance_x, distance_y = owner.movement.get_player_distance(owner, context.player)
         if distance_x <= self.config.attack_range * 1.5:
             owner.intent.run_attack()
-            owner.combat_controller.reserve_attack_slot(owner)
+            owner.combat_controller.reserve_attack_slot()
 
     def _try_jump_attack(self, owner, context):
         if not owner.movement.can_jump_attack:
@@ -153,7 +153,7 @@ class EnemyAIController:
             return False
 
         lane_distance = context.level.get_lane_distance(owner.y, context.player.y)
-        return lane_distance <= owner.combat_controller.get_attack_data(owner).lane_reach
+        return lane_distance <= owner.combat_controller.get_attack_data().lane_reach
 
     def _has_available_attack_slot(self, owner, player, enemies):
         # only the closest eligible melee enemy should take the slot.
