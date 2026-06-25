@@ -8,8 +8,10 @@ from game.settings import RUN_ATTACK_REQUIRED_DISTANCE
 class PlayerMovement:
     def __init__(self, air_state=None, run_attack_min_distance=RUN_ATTACK_REQUIRED_DISTANCE):
         self.run = PlayerRunMovement(run_attack_min_distance)
-        self.attack_motion = PlayerAttackMovement()
         self.jump = PlayerJumpMovement(air_state)
+        self.attack_movement = PlayerAttackMovement()
+
+        # It means "the player moved at least one pixel this frame" 
         self.moving = False
 
     @property
@@ -30,11 +32,11 @@ class PlayerMovement:
 
     @property
     def last_run_attack_distance(self):
-        return self.attack_motion.last_run_attack_distance
+        return self.attack_movement.last_run_attack_distance
 
     @last_run_attack_distance.setter
     def last_run_attack_distance(self, value):
-        self.attack_motion.last_run_attack_distance = value
+        self.attack_movement.last_run_attack_distance = value
 
     def advance_timers(self):
         self.run.advance_timers()
@@ -45,7 +47,7 @@ class PlayerMovement:
             self.moving = False
             return
         if owner.combat_controller.is_attacking:
-            self.moving = self.attack_motion.update_attack_movement(owner)
+            self.moving = self.attack_movement.update_attack_movement(owner)
             return
 
         self.moving = self.run.update_ground_movement(owner, player_input)
@@ -57,7 +59,7 @@ class PlayerMovement:
         self.run.start_run_attack_cooldown(frames)
 
     def start_run_attack_momentum(self, owner):
-        self.attack_motion.start_run_attack_momentum(
+        self.attack_movement.start_run_attack_momentum(
             owner,
             self.run.run_direction,
             self.run.run_distance,
@@ -65,13 +67,13 @@ class PlayerMovement:
         self.run.run_distance = 0
 
     def cancel_run_attack_momentum(self):
-        self.attack_motion.cancel_run_attack_momentum()
+        self.attack_movement.cancel_run_attack_momentum()
 
     def start_combo_finisher_nudge(self, owner):
-        self.attack_motion.start_combo_finisher_nudge(owner)
+        self.attack_movement.start_combo_finisher_nudge(owner)
 
     def cancel_combo_finisher_nudge(self):
-        self.attack_motion.cancel_combo_finisher_nudge()
+        self.attack_movement.cancel_combo_finisher_nudge()
 
     def update_jump_physics(self, owner, player_input):
         self.jump.update_jump_physics(owner, player_input)
