@@ -22,7 +22,7 @@ class ScoreManager:
         self._combo_timer = self._COMBO_TIMEOUT
 
     def get_combo_score(self, base_points):
-        return base_points * self._multiplier()
+        return base_points * self.get_multiplier()
 
     def add_score(self, points):
         self.score += points
@@ -41,9 +41,12 @@ class ScoreManager:
         else:
             self._combo_count = 0
 
-    # --- Private ---
+    @property
+    def combo_count(self):
+        return self._combo_count
 
-    def _multiplier(self):
+
+    def get_multiplier(self):
         if self._combo_count >= 3:
             return 3
         if self._combo_count >= 2:

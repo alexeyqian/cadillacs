@@ -45,7 +45,7 @@ def update_gameplay(game_state, keys):
     old_player_position = _update_movement(game_state, player_context, player_can_act, active_enemies, enemy_context)
     _update_collisions(game_state, old_player_position)
     _update_combat(game_state, player_context, active_enemies, player_can_act, enemy_context)
-    _update_reactions(game_state, player_can_act)
+    _update_reactions(game_state)
     _update_spawn_and_cleanup(game_state)
     _update_presentation(game_state)
 
@@ -98,9 +98,8 @@ def _update_combat(game_state, player_context, active_enemies, player_can_act, e
         enemy.update_attack(enemy_context)
 
 
-def _update_reactions(game_state, player_can_act):
-    if player_can_act:
-        game_state.player.update_reactions()
+def _update_reactions(game_state):
+    game_state.player.update_reactions()
 
     for enemy in game_state.enemies:
         enemy.update_reactions()

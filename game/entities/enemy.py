@@ -25,46 +25,46 @@ class Enemy(Character, EnemyState):
         self.enemy_type = enemy_type
         self.pending_projectile = None
 
-        self.build_components()
-        self.build_controllers()
-        self.configure_from_enemy_config(get_enemy_config(self.enemy_type))
-        self.build_presentation_components(animation_data, anim_fps)
+        self._build_components()
+        self._build_controllers()
+        self._apply_config(get_enemy_config(self.enemy_type))
+        self._build_presentation_components(animation_data, anim_fps)
 
-    ##### begin of init #####
+    # --- Init helpers ---
 
-    def build_components(self):
+    def _build_components(self):
+        self.geometry = CharacterGeometry()
         self.condition = EnemyCondition()
         self.intent = EnemyIntent()
-        self.geometry = CharacterGeometry()
         self.movement = EnemyMovement()
         self.flanking = EnemyFlanking()
         self.air = None  # set to EnemyAirState when can_jump=True
 
-    def build_controllers(self):
+    def _build_controllers(self):
         self.combat_controller = EnemyCombatController()
         self.reaction_controller = EnemyReactionController()
         self.lifecycle_controller = EnemyLifecycleController(spawn_x=self.x)
         self.ai_controller = EnemyAIController()
         self.loot_controller = EnemyLootController()
 
-    def configure_from_enemy_config(self, config):
-        self.apply_identity_config(config)
-        self.apply_body_config(config)
-        self.apply_movement_config(config)
-        self.apply_combat_config(config)
-        self.apply_ai_config(config)
-        self.apply_reward_config(config)
+    def _apply_config(self, config):
+        self._apply_identity_config(config)
+        self._apply_body_config(config)
+        self._apply_movement_config(config)
+        self._apply_combat_config(config)
+        self._apply_ai_config(config)
+        self._apply_reward_config(config)
 
-    def build_presentation_components(self, animation_data, anim_fps=None):
+    def _build_presentation_components(self, animation_data, anim_fps=None):
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
 
-    def apply_identity_config(self, config):
+    def _apply_identity_config(self, config):
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
         self.archetype = config.archetype
 
-    def apply_body_config(self, config):
+    def _apply_body_config(self, config):
         self.geometry.configure(
             config.collision_box_w,
             config.collision_box_h,
@@ -73,11 +73,10 @@ class Enemy(Character, EnemyState):
             config.hurt_box_offset_x,
             config.hurt_box_offset_y,
         )
-
         self.health = CharacterHealth(config.max_hp)
         self.sprite_scale = config.sprite_scale
 
-    def apply_movement_config(self, config):
+    def _apply_movement_config(self, config):
         self.movement.configure(
             speed=config.speed,
             patrol_distance=config.patrol_distance,
@@ -91,9 +90,8 @@ class Enemy(Character, EnemyState):
         if config.can_jump:
             self.air = self.movement.air_state
 
-    def apply_combat_config(self, config):
+    def _apply_combat_config(self, config):
         self.combat_controller.configure_attacks(config.attack, config.run_attack, config.jump_attack)
-
         self.reaction_controller.flinch_damage_threshold = config.flinch_damage_threshold
         self.reaction_controller.attack_flinch_damage_threshold = (
             config.attack_flinch_damage_threshold
@@ -102,14 +100,14 @@ class Enemy(Character, EnemyState):
         )
         self.reaction_controller.knockdown_damage_threshold = config.knockdown_damage_threshold
 
-    def apply_ai_config(self, config):
+    def _apply_ai_config(self, config):
         self.ai_controller.config = EnemyAIConfig(
             attack_range=config.attack_range,
             attack_lane_range=config.attack_lane_range,
             melee_attack_slot_limit=config.melee_attack_slot_limit,
         )
 
-    def apply_reward_config(self, config):
+    def _apply_reward_config(self, config):
         self.score_points = config.score_points
 
     def apply_capability_overrides(self, overrides):
@@ -124,9 +122,8 @@ class Enemy(Character, EnemyState):
         if "can_jump_attack" in overrides:
             self.movement.can_jump_attack = overrides["can_jump_attack"]
 
-    ##### end of init #####
+    # --- Per-frame update ---
 
-    ##### begin of main loop update #####
     def update_lifecycle_state(self):
         return self.lifecycle_controller.update_lifecycle_state(self)
 
@@ -171,7 +168,7 @@ class Enemy(Character, EnemyState):
             self.combat_controller.start_jump_attack(self)
             self.intent.clear()
         elif self.intent.wants_attack_player() and self.state != self.ATTACK:
-            self.start_attack()
+            self.combat_controller.start_attack(self)
             self.intent.clear()
 
         if self.state == self.RUN_ATTACK:
@@ -187,17 +184,12 @@ class Enemy(Character, EnemyState):
     def update_animation(self):
         self.animation_controller.update(self)
 
-    ##### end of main loop update #####
+    # --- Public API ---
 
     def is_ready_to_remove(self):
         return self.lifecycle_controller.is_ready_to_remove(self)
 
-    def take_damage(
-        self,
-        damage,
-        attacker_x=None,
-        reaction=None,
-    ):
+    def take_damage(self, damage, attacker_x=None, reaction=None):
         if isinstance(damage, DamageRequest):
             request = damage
             damage = request.damage
@@ -205,13 +197,7 @@ class Enemy(Character, EnemyState):
             reaction = request.reaction
         if attacker_x is None:
             attacker_x = self.x
-
-        self.reaction_controller.take_damage(
-            self,
-            damage,
-            attacker_x,
-            reaction=reaction,
-        )
+        self.reaction_controller.take_damage(self, damage, attacker_x, reaction=reaction)
 
     def grabbed_by_player(self):
         self.reaction_controller.grabbed_by_player(self)
@@ -222,10 +208,5 @@ class Enemy(Character, EnemyState):
     def take_grab_knee_damage(self, damage):
         self.reaction_controller.take_grab_knee_damage(self, damage)
 
-    # Combat
-    def start_attack(self):
-        self.combat_controller.start_attack(self)
-
-    # Loot
     def create_loot(self):
         return self.loot_controller.create_loot(self)

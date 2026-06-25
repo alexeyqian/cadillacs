@@ -50,8 +50,9 @@ class EnemyAIController:
         # Detect player crossing to the other side while enemy is chasing.
         if distance_x <= owner.movement.detect_range:
             player_is_right = context.player.x > owner.x
-            if player_is_right != owner.facing_right:
+            if player_is_right != owner.facing_right and self._direction_change_timer <= 0:
                 self._direction_change_timer = DIRECTION_CHANGE_DELAY
+                owner.facing_right = player_is_right  # commit now so this doesn't retrigger
 
         # While the hesitation timer is active: stay idle, don't turn yet.
         if self._direction_change_timer > 0:
