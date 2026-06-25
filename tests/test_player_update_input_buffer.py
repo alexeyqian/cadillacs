@@ -118,7 +118,7 @@ def make_player_like():
     player.weapon_slot = FakeWeaponSlot()
     player.lifecycle_controller = FakeLifecycle()
     player.reaction_controller = FakeReactionController()
-    player.state_controller = FakeStateController()
+    player.state_resolver = FakeStateController()
     player.animation_controller = FakeAnimationController()
     return player
 

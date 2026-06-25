@@ -11,7 +11,7 @@ from game.controllers.player_grab_controller import PlayerGrabController
 from game.controllers.player_animation_controller import PlayerAnimationController
 from game.components.player_renderer import PlayerRenderer
 from game.controllers.player_action_controller import PlayerActionController
-from game.controllers.player_state_controller import PlayerStateController
+from game.controllers.player_state_resolver import PlayerStateResolver
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
 from game.controllers.player_reaction_controller import PlayerReactionController
 from game.combat.damage_request import DamageRequest
@@ -98,7 +98,7 @@ class Player(Character, PlayerState):
         self.combat_controller = PlayerCombatController()
         self.action_controller = PlayerActionController()
         self.grab_controller = PlayerGrabController()
-        self.state_controller = PlayerStateController()
+        self.state_resolver = PlayerStateResolver()
         self.lifecycle_controller = PlayerLifecycleController(self.x, self.y, config.lives)
         self.reaction_controller = PlayerReactionController(config.hit_stun_duration)
 
@@ -132,7 +132,7 @@ class Player(Character, PlayerState):
         self._try_start_requested_jump()
         self.movement.update_movement(self, context.player_input)
         self.movement.update_jump_physics(self, context.player_input)
-        self.state_controller.update_after_movement(self, self.movement.moving)
+        self.state_resolver.resolve(self, self.movement.moving)
         self.grab_controller.update_grabbed_enemy_position(self)
 
     def update_attack(self, context=None):

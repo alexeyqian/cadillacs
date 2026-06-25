@@ -1,3 +1,4 @@
+#  it translates inputs into intent
 class PlayerActionController:
     ATTACK_ACTION = "attack"
     JUMP_ACTION = "jump"

@@ -82,7 +82,7 @@ def test_player_factory_builds_default_player_runtime_groups(monkeypatch):
     assert player.combat_controller is not None
     assert player.action_controller is not None
     assert player.grab_controller is not None
-    assert player.state_controller is not None
+    assert player.state_resolver is not None
     assert player.lifecycle_controller is not None
 
     # Presentation

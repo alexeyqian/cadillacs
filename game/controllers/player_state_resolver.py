@@ -1,5 +1,5 @@
-class PlayerStateController:
-    def update_after_movement(self, owner, moving):
+class PlayerStateResolver:
+    def resolve(self, owner, moving):
         if owner.combat_controller.is_attacking:
             return
 
