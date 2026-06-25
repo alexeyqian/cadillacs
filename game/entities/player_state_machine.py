@@ -51,10 +51,6 @@ class JumpAttackState(PlayerState):
     name = "JUMP_ATTACK"
 
 
-class LandingState(PlayerState):
-    name = "LANDING"
-
-
 class HitState(PlayerState):
     name = "HIT"
 
@@ -103,7 +99,6 @@ class PlayerStateMachine:
             owner.ATTACK3: Attack3State(),
             owner.RUN_ATTACK: RunAttackState(),
             owner.JUMP_ATTACK: JumpAttackState(),
-            owner.LANDING: LandingState(),
             owner.HIT: HitState(),
             owner.RECOIL: RecoilState(),
             owner.DEAD: DeadState(),

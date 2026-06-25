@@ -5,7 +5,6 @@ class PlayerState(CharacterState):
     RUN_ATTACK = "RUN_ATTACK"
     JUMP = "JUMP"
     JUMP_ATTACK = "JUMP_ATTACK"
-    LANDING = "LANDING"
 
     ATTACK = "ATTACK"
     ATTACK2 = "ATTACK2"

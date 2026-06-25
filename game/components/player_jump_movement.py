@@ -24,23 +24,14 @@ class PlayerJumpMovement:
         if not self.air_state:
             return
 
-        if self.air_state.is_landing:
-            self.update_landing(owner)
-            return
-
         if self.air_state.is_grounded:
             return
 
         self.update_air_movement(owner, player_input)
         self.update_jump_arc(owner)
 
-    def update_landing(self, owner):
-        if self.air_state.update_landing():
-            owner.state_machine.change_to(owner, owner.IDLE)
-
     def update_jump_arc(self, owner):
-        landed = self.air_state.update_jump_arc()
-        if not landed:
+        if not self.air_state.update_jump_arc():
             return
 
         owner.input_state.jump_attack_pressed = False
@@ -48,7 +39,7 @@ class PlayerJumpMovement:
             owner.combat_controller.cancel_attack()
 
         if owner.state in [owner.JUMP, owner.JUMP_ATTACK]:
-            owner.state_machine.change_to(owner, owner.LANDING)
+            owner.state_machine.change_to(owner, owner.IDLE)
 
     def update_air_movement(self, owner, player_input):
         horizontal_direction, _vertical_direction = get_input_direction(player_input)
@@ -65,8 +56,6 @@ class PlayerJumpMovement:
             return
         if self.is_jumping:
             return
-        if self.is_landing():
-            return
         if owner.combat_controller.is_attacking:
             return
         if owner.grab_controller.grabbed_enemy:
@@ -80,6 +69,3 @@ class PlayerJumpMovement:
 
         self.air_state.start_jump(direction_x, direction_y)
         owner.state_machine.change_to(owner, owner.JUMP)
-
-    def is_landing(self):
-        return bool(self.air_state and self.air_state.is_landing)

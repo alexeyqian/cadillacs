@@ -173,7 +173,6 @@ class PlayerConfig:
     jump_power: float = 12
     jump_gravity: float = 0.7
     air_move_speed: float = PLAYER_AIR_MOVE_SPEED
-    landing_recovery_frames: int = 6
     grab_range: int = PLAYER_GRAB_RANGE
     hit_stun_duration: int = ATTACK_1_HIT_STUN_DURATION
     sprite_scale: int = 2

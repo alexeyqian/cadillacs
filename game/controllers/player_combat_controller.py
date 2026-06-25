@@ -89,9 +89,6 @@ class PlayerCombatController:
             return
         if self._action_lock_remaining > 0:
             return
-        if owner.air and owner.air.is_landing:
-            return
-
         if self._can_start_run_attack(owner):
             self._start_run_attack(owner)
             return
@@ -195,10 +192,7 @@ class PlayerCombatController:
     def _return_to_ready_state(self, owner):
         if owner.state == owner.DEAD:
             return
-        if owner.air and owner.air.is_landing:
-            owner.state_machine.change_to(owner, owner.LANDING)
-        else:
-            owner.state_machine.change_to(owner, owner.IDLE)
+        owner.state_machine.change_to(owner, owner.IDLE)
 
     def _can_start_run_attack(self, owner):
         return (

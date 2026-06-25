@@ -3,10 +3,6 @@ class PlayerStateResolver:
         if owner.combat_controller.is_attacking:
             return
 
-        if owner.air and owner.air.is_landing:
-            owner.state_machine.change_to(owner, owner.LANDING)
-            return
-
         if owner.movement.is_jumping:
             if owner.state != owner.JUMP_ATTACK:
                 owner.state_machine.change_to(owner, owner.JUMP)

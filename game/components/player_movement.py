@@ -41,7 +41,7 @@ class PlayerMovement:
 
     # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):
-        if self.is_jumping or self._is_landing():
+        if self.is_jumping:
             self.moving = False
             return
         if owner.combat_controller.is_attacking:
@@ -78,9 +78,6 @@ class PlayerMovement:
 
     def start_jump(self, owner, player_input):
         self.jump.start_jump(owner, player_input)
-
-    def _is_landing(self):
-        return self.jump.is_landing()
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
         clamp_to_world_and_lane(
