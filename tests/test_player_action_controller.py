@@ -9,6 +9,19 @@ from game.input.input_buffer import InputBuffer
 from game.input.player_input_state import PlayerInputState
 
 
+class FakeRunMovement:
+    def __init__(self, can_run_attack):
+        self._can_run_attack = can_run_attack
+
+    def can_start_run_attack(self):
+        return self._can_run_attack
+
+
+class FakeJumpMovement:
+    def start_jump(self, owner, player_input):
+        pass
+
+
 class FakeMovement:
     def __init__(self):
         self.is_running = True
@@ -16,12 +29,8 @@ class FakeMovement:
         self.run_attack_momentum_started = False
         self.can_run_attack = True
         self.last_run_attack_distance = 0
-
-    def start_jump(self, owner, player_input):
-        pass
-
-    def can_start_run_attack(self):
-        return self.can_run_attack
+        self.run_movement = FakeRunMovement(can_run_attack=True)
+        self.jump_movement = FakeJumpMovement()
 
     def start_run_attack_momentum(self, owner):
         self.run_attack_momentum_started = True
@@ -126,7 +135,7 @@ class PlayerActionControllerTests(unittest.TestCase):
     def test_attack_input_buffers_during_active_attack_and_starts_after_recovery(self):
         owner = FakeOwner()
         owner.movement.is_running = False
-        owner.movement.can_run_attack = False
+        owner.movement.run_movement._can_run_attack = False
         actions = PlayerActionController()
 
         actions.update(owner, FakeInput(attack=True))

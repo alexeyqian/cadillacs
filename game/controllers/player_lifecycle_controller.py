@@ -51,5 +51,5 @@ class PlayerLifecycleController:
         owner.movement.is_jumping = False
         if owner.air:
             owner.air.reset()
-        owner.movement.cancel_run_attack_momentum()
-        owner.movement.cancel_combo_finisher_nudge()
+        owner.movement.attack_movement.cancel_run_attack_momentum()
+        owner.movement.attack_movement.cancel_combo_finisher_nudge()

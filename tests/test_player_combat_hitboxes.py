@@ -15,13 +15,16 @@ from game.components.character_geometry import CharacterGeometry
 from game.input.player_input_state import PlayerInputState
 
 
+class FakeRunMovement:
+    def can_start_run_attack(self):
+        return False
+
+
 class FakeMovement:
     is_running = False
     is_jumping = False
     last_run_attack_distance = 0
-
-    def can_start_run_attack(self):
-        return False
+    run_movement = FakeRunMovement()
 
 
 class FakeEnemyMovement:

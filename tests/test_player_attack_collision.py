@@ -10,14 +10,19 @@ from game.input.player_input_state import PlayerInputState
 from game.systems.combat_system import damage_enemy, handle_player_attack_collision
 
 
-class FakeMovement:
+class FakeRunMovement:
     def __init__(self):
-        self.is_running = False
         self.can_run_attack = False
-        self.last_run_attack_distance = 0
 
     def can_start_run_attack(self):
         return self.can_run_attack
+
+
+class FakeMovement:
+    def __init__(self):
+        self.is_running = False
+        self.last_run_attack_distance = 0
+        self.run_movement = FakeRunMovement()
 
     def start_run_attack_momentum(self, owner):
         pass
@@ -69,7 +74,7 @@ class FakePlayer:
     def start_running_attack(self):
         self.combat_controller.cancel_attack()
         self.movement.is_running = True
-        self.movement.can_run_attack = True
+        self.movement.run_movement.can_run_attack = True
         self.combat_controller.start_attack(self)
         while not self.combat_controller.attack_manager.is_active():
             self.combat_controller.update_attack(self)

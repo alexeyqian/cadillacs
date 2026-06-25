@@ -110,7 +110,7 @@ class Player(Character, PlayerState):
         self.action_controller.advance_timers(self)
         self.combat_controller.advance_timers(self)
         self.grab_controller.advance_timers(self)
-        self.movement.advance_timers()
+        self.movement.run_movement.advance_timers()
 
     def request_actions(self, context):
         self.action_controller.update(self, context.player_input)
@@ -118,7 +118,7 @@ class Player(Character, PlayerState):
     def update_movement(self, context):
         self._try_start_jump()
         self.movement.update_movement(self, context.player_input)
-        self.movement.update_jump_physics(self, context.player_input)
+        self.movement.jump_movement.update_jump_physics(self, context.player_input)
         self.state_resolver.resolve(self, self.movement.moving)
         self.grab_controller.update_grabbed_enemy_position(self)
 
@@ -167,7 +167,7 @@ class Player(Character, PlayerState):
         if not self.intent.wants_jump():
             return
         previous_state = self.state
-        self.movement.start_jump(self, self.intent.jump_input)
+        self.movement.jump_movement.start_jump(self, self.intent.jump_input)
         if self.state != previous_state:
             self.input_buffer.consume(PlayerActionController.JUMP_ACTION)
         self.intent.clear_jump()

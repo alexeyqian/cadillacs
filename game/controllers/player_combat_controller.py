@@ -168,7 +168,7 @@ class PlayerCombatController:
 
         self._update_combo_after_attack(owner, finished_attack_name, finished_move, attack_connected)
         if finished_attack_name == owner.RUN_ATTACK:
-            owner.movement.start_run_attack_cooldown()
+            owner.movement.run_movement.start_run_attack_cooldown()
 
         self._return_to_ready_state(owner)
 
@@ -196,7 +196,7 @@ class PlayerCombatController:
 
     def _can_start_run_attack(self, owner):
         return (
-            owner.movement.can_start_run_attack()
+            owner.movement.run_movement.can_start_run_attack()
             and not owner.input_state.run_attack_requires_attack_release
         )
 
@@ -228,7 +228,7 @@ class PlayerCombatController:
 
         owner.state_machine.change_to(owner, attack_name)
         if attack_name == owner.ATTACK3:
-            owner.movement.start_combo_finisher_nudge(owner)
+            owner.movement.attack_movement.start_combo_finisher_nudge(owner)
 
         self.attack_manager.start(attack_name, move_data)
         self._combo_window_remaining = move_data.combo_window

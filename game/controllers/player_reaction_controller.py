@@ -53,6 +53,6 @@ class PlayerReactionController:
         # Enemy lands hit -> grabbed enemy is released
         # Player must restart pressure after recovering
         owner.combat_controller.cancel_attack()
-        owner.movement.cancel_run_attack_momentum()
-        owner.movement.cancel_combo_finisher_nudge()
+        owner.movement.attack_movement.cancel_run_attack_momentum()
+        owner.movement.attack_movement.cancel_combo_finisher_nudge()
         owner.grab_controller.grabbed_enemy = None

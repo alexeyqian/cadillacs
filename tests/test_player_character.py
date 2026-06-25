@@ -3,9 +3,8 @@ from game.entities.player import Player
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
 
 
-class FakeMovement:
+class FakeAttackMovement:
     def __init__(self):
-        self.is_jumping = True
         self.cancelled_run_attack_momentum = False
         self.cancelled_combo_finisher_nudge = False
 
@@ -14,6 +13,12 @@ class FakeMovement:
 
     def cancel_combo_finisher_nudge(self):
         self.cancelled_combo_finisher_nudge = True
+
+
+class FakeMovement:
+    def __init__(self):
+        self.is_jumping = True
+        self.attack_movement = FakeAttackMovement()
 
 
 class FakeAir:
@@ -68,8 +73,8 @@ def test_player_reset_for_stage_start_resets_runtime_position_state():
     assert player.lifecycle_controller.respawn_x == 120
     assert player.lifecycle_controller.respawn_y == 340
     assert player.movement.is_jumping is False
-    assert player.movement.cancelled_run_attack_momentum is True
-    assert player.movement.cancelled_combo_finisher_nudge is True
+    assert player.movement.attack_movement.cancelled_run_attack_momentum is True
+    assert player.movement.attack_movement.cancelled_combo_finisher_nudge is True
     assert player.air.reset_called is True
     assert player.reaction_controller.reset_called is True
     assert player.state == player.IDLE

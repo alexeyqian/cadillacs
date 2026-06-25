@@ -21,19 +21,15 @@ class FakeInput:
         self.fire = False
 
 
-class FakeMovement:
-    def __init__(self):
-        self.is_running = False
-        self.is_jumping = False
-        self.moving = False
-        self.last_run_attack_distance = 0
-
+class FakeRunMovement:
     def advance_timers(self):
         pass
 
-    def update_movement(self, owner, player_input):
-        self.moving = False
+    def can_start_run_attack(self):
+        return False
 
+
+class FakeJumpMovement:
     def update_jump_physics(self, owner, player_input):
         pass
 
@@ -42,12 +38,8 @@ class FakeMovement:
             return
         owner.state_machine.change_to(owner, owner.JUMP)
 
-    def can_start_run_attack(self):
-        return False
 
-    def start_run_attack_momentum(self, owner):
-        pass
-
+class FakeAttackMovement:
     def start_combo_finisher_nudge(self, owner):
         pass
 
@@ -55,6 +47,23 @@ class FakeMovement:
         pass
 
     def cancel_combo_finisher_nudge(self):
+        pass
+
+
+class FakeMovement:
+    def __init__(self):
+        self.is_running = False
+        self.is_jumping = False
+        self.moving = False
+        self.last_run_attack_distance = 0
+        self.run_movement = FakeRunMovement()
+        self.jump_movement = FakeJumpMovement()
+        self.attack_movement = FakeAttackMovement()
+
+    def update_movement(self, owner, player_input):
+        self.moving = False
+
+    def start_run_attack_momentum(self, owner):
         pass
 
 

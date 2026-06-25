@@ -23,7 +23,7 @@ class FakeCombat:
         self.cancelled = True
 
 
-class FakeMovement:
+class FakeAttackMovement:
     def __init__(self):
         self.cancelled_run_attack = False
         self.cancelled_combo_nudge = False
@@ -33,6 +33,11 @@ class FakeMovement:
 
     def cancel_combo_finisher_nudge(self):
         self.cancelled_combo_nudge = True
+
+
+class FakeMovement:
+    def __init__(self):
+        self.attack_movement = FakeAttackMovement()
 
 
 class FakeGrab:
@@ -85,8 +90,8 @@ def test_player_reaction_controller_applies_damage_and_hit_stun():
     assert controller.is_in_hit_stun()
     assert controller._hit_stun_remaining == 8
     assert owner.combat_controller.cancelled is True
-    assert owner.movement.cancelled_run_attack is True
-    assert owner.movement.cancelled_combo_nudge is True
+    assert owner.movement.attack_movement.cancelled_run_attack is True
+    assert owner.movement.attack_movement.cancelled_combo_nudge is True
     assert owner.grab_controller.grabbed_enemy is None
 
 

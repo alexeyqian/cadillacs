@@ -16,27 +16,37 @@ from game.settings import (
 )
 
 
-class FakeMovement:
+class FakeRunMovement:
     def __init__(self):
-        self.is_running = False
-        self.is_jumping = False
-        self.run_attack_momentum_started = False
         self.can_run_attack = False
-        self.last_run_attack_distance = 0
-        self.combo_finisher_nudge_started = False
         self.run_attack_cooldown_started = False
 
     def can_start_run_attack(self):
         return self.can_run_attack
 
-    def start_run_attack_momentum(self, owner):
-        self.run_attack_momentum_started = True
-
     def start_run_attack_cooldown(self):
         self.run_attack_cooldown_started = True
 
+
+class FakeAttackMovement:
+    def __init__(self):
+        self.combo_finisher_nudge_started = False
+
     def start_combo_finisher_nudge(self, owner):
         self.combo_finisher_nudge_started = True
+
+
+class FakeMovement:
+    def __init__(self):
+        self.is_running = False
+        self.is_jumping = False
+        self.run_attack_momentum_started = False
+        self.last_run_attack_distance = 0
+        self.run_movement = FakeRunMovement()
+        self.attack_movement = FakeAttackMovement()
+
+    def start_run_attack_momentum(self, owner):
+        self.run_attack_momentum_started = True
 
 
 class FakeStateMachine:
@@ -136,7 +146,7 @@ class AttackDataTests(unittest.TestCase):
     def test_running_attack_duration_comes_from_attack_data(self):
         owner = FakeOwner()
         owner.movement.is_running = True
-        owner.movement.can_run_attack = True
+        owner.movement.run_movement.can_run_attack = True
         combat = PlayerCombatController()
 
         combat.start_attack(owner)
@@ -151,7 +161,7 @@ class AttackDataTests(unittest.TestCase):
 
         self.finish_connected_attack(combat, owner)
 
-        self.assertTrue(owner.movement.run_attack_cooldown_started)
+        self.assertTrue(owner.movement.run_movement.run_attack_cooldown_started)
 
     def test_running_attack_has_arcade_style_timing_and_landing_recovery(self):
         attack = DEFAULT_PLAYER_ATTACKS["RUN_ATTACK"]
@@ -164,7 +174,7 @@ class AttackDataTests(unittest.TestCase):
     def test_running_attack_requires_enough_run_distance(self):
         owner = FakeOwner()
         owner.movement.is_running = True
-        owner.movement.can_run_attack = False
+        owner.movement.run_movement.can_run_attack = False
         combat = PlayerCombatController()
 
         combat.start_attack(owner)
@@ -175,7 +185,7 @@ class AttackDataTests(unittest.TestCase):
 
     def test_running_attack_knockback_scales_with_run_distance(self):
         owner = FakeOwner()
-        owner.movement.can_run_attack = True
+        owner.movement.run_movement.can_run_attack = True
         owner.movement.last_run_attack_distance = RUN_ATTACK_FULL_POWER_DISTANCE
         combat = PlayerCombatController()
 
@@ -442,7 +452,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK3)
-        self.assertTrue(owner.movement.combo_finisher_nudge_started)
+        self.assertTrue(owner.movement.attack_movement.combo_finisher_nudge_started)
 
     def test_third_combo_hit_resets_when_followup_is_too_late(self):
         owner = FakeOwner()

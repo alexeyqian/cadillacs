@@ -11,7 +11,7 @@ class PlayerMovement:
         self.jump_movement = PlayerJumpMovement(air_state)
         self.attack_movement = PlayerAttackMovement()
 
-        # It means "the player moved at least one pixel this frame"
+        # True when the player moved at least one pixel this frame
         self.moving = False
 
     @property
@@ -38,9 +38,6 @@ class PlayerMovement:
     def last_run_attack_distance(self, value):
         self.attack_movement.last_run_attack_distance = value
 
-    def advance_timers(self):
-        self.run_movement.advance_timers()
-
     # stop the player from walking while grounded attacks are active.
     def update_movement(self, owner, player_input):
         if self.is_jumping:
@@ -52,12 +49,6 @@ class PlayerMovement:
 
         self.moving = self.run_movement.update_ground_movement(owner, player_input)
 
-    def can_start_run_attack(self):
-        return self.run_movement.can_start_run_attack()
-
-    def start_run_attack_cooldown(self, frames=None):
-        self.run_movement.start_run_attack_cooldown(frames)
-
     def start_run_attack_momentum(self, owner):
         self.attack_movement.start_run_attack_momentum(
             owner,
@@ -65,21 +56,6 @@ class PlayerMovement:
             self.run_movement.run_distance,
         )
         self.run_movement.run_distance = 0
-
-    def cancel_run_attack_momentum(self):
-        self.attack_movement.cancel_run_attack_momentum()
-
-    def start_combo_finisher_nudge(self, owner):
-        self.attack_movement.start_combo_finisher_nudge(owner)
-
-    def cancel_combo_finisher_nudge(self):
-        self.attack_movement.cancel_combo_finisher_nudge()
-
-    def update_jump_physics(self, owner, player_input):
-        self.jump_movement.update_jump_physics(owner, player_input)
-
-    def start_jump(self, owner, player_input):
-        self.jump_movement.start_jump(owner, player_input)
 
     def apply_world_bounds(self, owner, world_width=None, lane_top=None, lane_bottom=None):
         clamp_to_world_and_lane(
