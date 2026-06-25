@@ -1,3 +1,4 @@
+# don't put owner-mutation in the state component 
 class PlayerAirState:
     def __init__(self, jump_power, gravity, air_move_speed):
         self.jump_power = jump_power

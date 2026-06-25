@@ -64,7 +64,6 @@ class FakeOwner:
     RUN_ATTACK = "RUN_ATTACK"
     JUMP_ATTACK = "JUMP_ATTACK"
     RECOIL = "RECOIL"
-    LANDING = "LANDING"
     DEAD = "DEAD"
 
     def __init__(self):
