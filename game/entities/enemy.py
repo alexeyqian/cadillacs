@@ -116,6 +116,20 @@ class Enemy(Character, EnemyState):
         if "can_jump_attack" in overrides:
             self.movement.can_jump_attack = overrides["can_jump_attack"]
 
+    # --- Cross-controller coordination ---
+
+    def _clear_combat_commitment(self):
+        self.combat_controller.cancel_attack()
+        self.ai_controller.reset_decision_timer()
+        self.combat_controller.release_attack_slot()
+
+    def _begin_attack(self, state, attack_name, attack_data):
+        self.state = state
+        self.ai_controller.reset_decision_timer()
+        self.combat_controller.attack_manager.start(attack_name, attack_data)
+        self.animation_controller.play(state)
+        self.animation_controller.reset_current_animation()
+
     # --- Per-frame update ---
 
     def update_state(self):

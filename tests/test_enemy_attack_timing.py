@@ -86,6 +86,18 @@ class FakeEnemy:
         self.reaction_controller = EnemyReactionController()
         self.ai_controller = EnemyAIController()
         self.intent = EnemyIntent()
+    def _begin_attack(self, state, attack_name, attack_data):
+        self.state = state
+        self.ai_controller.reset_decision_timer()
+        self.combat_controller.attack_manager.start(attack_name, attack_data)
+        self.animation_controller.play(state)
+        self.animation_controller.reset_current_animation()
+
+    def _clear_combat_commitment(self):
+        self.combat_controller.cancel_attack()
+        self.ai_controller.reset_decision_timer()
+        self.combat_controller.release_attack_slot()
+
     def face_player(self, player):
         self.facing_right = player.x > self.x
 

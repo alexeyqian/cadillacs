@@ -160,6 +160,4 @@ class EnemyReactionController:
         rs._knockback_velocity = v if abs(v) >= 0.5 else 0
 
     def _clear_combat_commitment(self, owner):
-        owner.combat_controller.cancel_attack()
-        owner.ai_controller.reset_decision_timer()
-        owner.combat_controller.release_attack_slot()
+        owner._clear_combat_commitment()

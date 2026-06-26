@@ -55,12 +55,8 @@ class EnemyCombatController:
     # --- Attack lifecycle (called from enemy.py) ---
 
     def start_attack(self, owner):
-        owner.state = owner.ATTACK
         self.owns_attack_slot = True
-        owner.ai_controller.reset_decision_timer()
-        self.attack_manager.start(owner.ATTACK, self.get_attack_data())
-        owner.animation_controller.play(owner.ATTACK)
-        owner.animation_controller.reset_current_animation()
+        owner._begin_attack(owner.ATTACK, owner.ATTACK, self.get_attack_data())
 
     def update_attack(self, owner, level, player):
         owner.movement.face_player(owner, player)
@@ -70,11 +66,7 @@ class EnemyCombatController:
             self._finish_attack(owner)
 
     def start_run_attack(self, owner):
-        owner.state = owner.RUN_ATTACK
-        owner.ai_controller.reset_decision_timer()
-        self.attack_manager.start(owner.RUN_ATTACK, self._get_run_attack_data())
-        owner.animation_controller.play(owner.RUN_ATTACK)
-        owner.animation_controller.reset_current_animation()
+        owner._begin_attack(owner.RUN_ATTACK, owner.RUN_ATTACK, self._get_run_attack_data())
 
     def update_run_attack(self, owner, level, player):
         attack_finished = self.attack_manager.advance()
@@ -83,11 +75,7 @@ class EnemyCombatController:
             self._finish_run_attack(owner)
 
     def start_jump_attack(self, owner):
-        owner.state = owner.JUMP_ATTACK
-        owner.ai_controller.reset_decision_timer()
-        self.attack_manager.start(owner.JUMP_ATTACK, self._get_jump_attack_data())
-        owner.animation_controller.play(owner.JUMP_ATTACK)
-        owner.animation_controller.reset_current_animation()
+        owner._begin_attack(owner.JUMP_ATTACK, owner.JUMP_ATTACK, self._get_jump_attack_data())
 
     def update_jump_attack(self, owner, level, player):
         attack_finished = self.attack_manager.advance()
@@ -100,11 +88,9 @@ class EnemyCombatController:
 
     def start_clash_recovery(self, owner):
         attack_data = self.get_attack_data()
-        self.attack_manager.cancel()
         owner.state = owner.RECOIL
         owner.reaction_controller.set_action_lock(owner, attack_data.cooldown)
-        owner.ai_controller.reset_decision_timer()
-        self.owns_attack_slot = False
+        owner._clear_combat_commitment()
         self.cooldown_remaining = max(self.cooldown_remaining, attack_data.cooldown)
 
     # --- Private helpers ---
