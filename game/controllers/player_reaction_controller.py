@@ -18,8 +18,7 @@ class PlayerReactionController:
         owner.health.take_damage(damage)
         owner.state_machine.change_to(owner, owner.HIT)
         if owner.health.is_dead():
-            owner.lifecycle_controller.lose_life()
-            owner.lifecycle_controller.enter_dead_state(owner)
+            owner._on_death()
             return
         self._start_hit_stun(reaction)
 
@@ -48,11 +47,4 @@ class PlayerReactionController:
             self._hit_stun_remaining -= 1
 
     def _cancel_combat_commitment(self, owner):
-        # Enemy lands hit -> player attack is canceled
-        # Enemy lands hit -> combo step resets
-        # Enemy lands hit -> grabbed enemy is released
-        # Player must restart pressure after recovering
-        owner.combat_controller.cancel_attack()
-        owner.movement.attack_movement.cancel_run_attack_momentum()
-        owner.movement.attack_movement.cancel_combo_finisher_nudge()
-        owner.grab_controller.grabbed_enemy = None
+        owner._cancel_combat_commitment()

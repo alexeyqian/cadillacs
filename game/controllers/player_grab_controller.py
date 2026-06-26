@@ -24,12 +24,7 @@ class PlayerGrabController:
         if self.grab_knee_remaining > 0:
             self.grab_knee_remaining -= 1
             if self.grab_knee_remaining <= 0:
-                owner.combat_controller.attack_manager.cancel()
-                # expected behavior
-                # Grab knee damage: 12 -> 10
-                # Repeated knees have a tiny 6-frame rhythm pause
-                # Grab still feels valuable, just less free
-                owner.combat_controller.set_action_lock(owner.combat_controller.grab_knee_recovery_duration)
+                owner._end_grab_knee()
 
                 if self.grabbed_enemy:
                     owner.state_machine.change_to(owner, owner.GRAB)
@@ -70,7 +65,7 @@ class PlayerGrabController:
 
     def fail_heavy_grab(self, owner):
         # punish for 8 game frames if grab fails on heavy enemy in front
-        owner.combat_controller.set_action_lock(self.failed_grab_recovery_duration)
+        owner._set_action_lock(self.failed_grab_recovery_duration)
         # failed grab read as a small bounce-off.
         owner.state_machine.change_to(owner, owner.RECOIL)
         # Small edge case: after a failed heavy grab,

@@ -77,6 +77,16 @@ class FakeOwner:
         self.lifecycle_controller = FakeLifecycle()
         self.state_machine = FakeStateMachine()
 
+    def _cancel_combat_commitment(self):
+        self.combat_controller.cancel_attack()
+        self.movement.attack_movement.cancel_run_attack_momentum()
+        self.movement.attack_movement.cancel_combo_finisher_nudge()
+        self.grab_controller.grabbed_enemy = None
+
+    def _on_death(self):
+        self.lifecycle_controller.lose_life()
+        self.lifecycle_controller.enter_dead_state(self)
+
 
 def test_player_reaction_controller_applies_damage_and_hit_stun():
     owner = FakeOwner(hp=100)

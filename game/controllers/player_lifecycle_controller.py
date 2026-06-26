@@ -32,8 +32,7 @@ class PlayerLifecycleController:
         owner.reaction_controller.reset()
         self.reset_position_and_movement(owner, self.respawn_x, self.respawn_y)
         owner.state_machine.change_to(owner, owner.IDLE)
-        owner.combat_controller.cancel_attack()
-        owner.grab_controller.grabbed_enemy = None
+        owner._cancel_combat_commitment()
 
     def gain_life(self):
         self.lives += 1

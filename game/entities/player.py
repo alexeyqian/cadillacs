@@ -101,6 +101,25 @@ class Player(Character, PlayerState):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
 
+    # --- Cross-controller coordination ---
+
+    def _cancel_combat_commitment(self):
+        self.combat_controller.cancel_attack()
+        self.movement.attack_movement.cancel_run_attack_momentum()
+        self.movement.attack_movement.cancel_combo_finisher_nudge()
+        self.grab_controller.grabbed_enemy = None
+
+    def _on_death(self):
+        self.lifecycle_controller.lose_life()
+        self.lifecycle_controller.enter_dead_state(self)
+
+    def _end_grab_knee(self):
+        self.combat_controller.attack_manager.cancel()
+        self.combat_controller.set_action_lock(self.combat_controller.grab_knee_recovery_duration)
+
+    def _set_action_lock(self, duration):
+        self.combat_controller.set_action_lock(duration)
+
     # --- Per-frame update (called by systems) ---
 
     def update_reactions(self):
