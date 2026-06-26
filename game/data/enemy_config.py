@@ -45,7 +45,6 @@ class EnemyConfig:
     # give heavy enemies poise, so weak punches still deal damage
     # but do not always interrupt them.
     flinch_damage_threshold: int = 0
-    attack_flinch_damage_threshold: Optional[int] = None
     knockdown_damage_threshold: int = 40
 
     max_melee_attackers:int = 2 # move to stage config?
@@ -126,7 +125,6 @@ ENEMY_CONFIGS = {
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 4,
-        attack_flinch_damage_threshold=BAT_DAMAGE,
 
         score_points=int(ENEMY_SCORE_POINTS * BLACK_ELMER_SCALER),
     ),
@@ -153,7 +151,6 @@ ENEMY_CONFIGS = {
         # So Black Elmer only flinches from the heavy punch
         # light punch hits still reduce HP, but he can keep acting.
         flinch_damage_threshold=FIST_DAMAGE + 100, # means no flinch
-        attack_flinch_damage_threshold=BAT_DAMAGE,
 
         score_points=int(ENEMY_SCORE_POINTS * WALTHER_SCALER),
     ),

@@ -6,11 +6,11 @@ from game.components.character_geometry import CharacterGeometry
 from game.controllers.enemy_animation_controller import EnemyAnimationController
 from game.components.enemy_renderer import EnemyRenderer
 from game.components.enemy_movement import EnemyMovement
-from game.components.enemy_condition import EnemyCondition
+from game.components.enemy_reaction_state import EnemyReactionState
 from game.components.enemy_intent import EnemyIntent
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
-from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
+from game.controllers.enemy_state_controller import EnemyStateController
 from game.controllers.enemy_ai_controller import EnemyAIController, EnemyAIConfig
 from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.damage_request import DamageRequest
@@ -33,7 +33,7 @@ class Enemy(Character, EnemyState):
 
     def _build_components(self):
         self.geometry = CharacterGeometry()
-        self.condition = EnemyCondition()
+        self.reaction_state = EnemyReactionState()
         self.intent = EnemyIntent()
         self.movement = EnemyMovement()
         self.air = None  # set to EnemyAirState when can_jump=True
@@ -41,7 +41,7 @@ class Enemy(Character, EnemyState):
     def _build_controllers(self):
         self.combat_controller = EnemyCombatController()
         self.reaction_controller = EnemyReactionController()
-        self.lifecycle_controller = EnemyLifecycleController(spawn_x=self.x)
+        self.state_controller = EnemyStateController()
         self.ai_controller = EnemyAIController()
         self.loot_controller = EnemyLootController()
 
@@ -85,17 +85,13 @@ class Enemy(Character, EnemyState):
             can_run_attack=config.can_run_attack,
             can_jump_attack=config.can_jump_attack,
         )
+        self.movement.patrol_center_x = self.x
         if config.can_jump:
             self.air = self.movement.air_state
 
     def _apply_combat_config(self, config):
         self.combat_controller.configure_attacks(config.attack, config.run_attack, config.jump_attack)
         self.reaction_controller.flinch_damage_threshold = config.flinch_damage_threshold
-        self.reaction_controller.attack_flinch_damage_threshold = (
-            config.attack_flinch_damage_threshold
-            if config.attack_flinch_damage_threshold is not None
-            else config.flinch_damage_threshold
-        )
         self.reaction_controller.knockdown_damage_threshold = config.knockdown_damage_threshold
 
     def _apply_ai_config(self, config):
@@ -122,8 +118,8 @@ class Enemy(Character, EnemyState):
 
     # --- Per-frame update ---
 
-    def update_lifecycle_state(self):
-        return self.lifecycle_controller.update_lifecycle_state(self)
+    def update_state(self):
+        self.state_controller.update(self)
 
     def advance_timers(self):
         self.combat_controller.advance_timers()
@@ -147,7 +143,7 @@ class Enemy(Character, EnemyState):
             if not self.movement.is_jumping:
                 self.state = self.IDLE
         elif self.intent.wants_patrol():
-            self.movement.patrol(self, self.lifecycle_controller.spawn_x)
+            self.movement.patrol(self)
         elif self.intent.wants_run_toward_player():
             self.movement.run_toward_player(self, context.player)
             self.movement.separate_from_enemies(self, context.enemies)
@@ -177,7 +173,7 @@ class Enemy(Character, EnemyState):
             self.combat_controller.update_attack(self, context.level, context.player)
 
     def update_reactions(self):
-        return self.reaction_controller.update_reactions(self)
+        self.reaction_controller.update_reactions(self)
 
     def update_animation(self):
         self.animation_controller.update(self)
@@ -185,7 +181,7 @@ class Enemy(Character, EnemyState):
     # --- Public API ---
 
     def is_ready_to_remove(self):
-        return self.lifecycle_controller.is_ready_to_remove(self)
+        return self.state_controller.is_ready_to_remove(self)
 
     def take_damage(self, damage, attacker_x=None, reaction=None):
         if isinstance(damage, DamageRequest):

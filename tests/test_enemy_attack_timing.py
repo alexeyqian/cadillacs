@@ -10,7 +10,7 @@ from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.entities.enemy_state import EnemyState
 from game.controllers.enemy_ai_controller import EnemyAIController
-from game.components.enemy_condition import EnemyCondition
+from game.components.enemy_reaction_state import EnemyReactionState
 from game.components.enemy_intent import EnemyIntent
 from game.settings import BAT_DAMAGE
 
@@ -70,7 +70,7 @@ class FakeEnemy:
         self.x = 0
         self.y = 0
         self.health = FakeHealth()
-        self.condition = EnemyCondition()
+        self.reaction_state = EnemyReactionState()
         self.animation_controller = FakeAnimationController()
         self.attack_data = replace(
             DEFAULT_ENEMY_ATTACK_DATA,
@@ -240,7 +240,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         controller.start_clash_recovery(enemy)
 
         self.assertEqual(enemy.state, enemy.RECOIL)
-        self.assertEqual(enemy.condition._action_lock_remaining, enemy.attack_data.cooldown)
+        self.assertEqual(enemy.reaction_state._action_lock_remaining, enemy.attack_data.cooldown)
         self.assertEqual(enemy.combat_controller.attack_manager.elapsed_frames, 0)
         self.assertEqual(enemy.ai_controller._decision_timer, 0)
         self.assertFalse(enemy.combat_controller.attack_manager.has_connected)
@@ -259,10 +259,9 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertFalse(enemy.combat_controller.attack_manager.is_attacking)
         self.assertFalse(enemy.combat_controller.owns_attack_slot)
 
-    def test_heavy_attack_poise_ignores_light_flinch_during_attack(self):
+    def test_attack_poise_ignores_light_flinch_during_attack(self):
         enemy = FakeEnemy()
-        enemy.reaction_controller.flinch_damage_threshold = 10
-        enemy.reaction_controller.attack_flinch_damage_threshold = BAT_DAMAGE
+        enemy.reaction_controller.flinch_damage_threshold = BAT_DAMAGE
         enemy.start_attack()
 
         enemy.reaction_controller.take_damage(enemy, BAT_DAMAGE - 1, attacker_x=-100)
@@ -287,7 +286,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
-        self.assertEqual(enemy.condition._knockback_velocity, 18)
+        self.assertEqual(enemy.reaction_state._knockback_velocity, 18)
 
     def test_enemy_reaction_uses_custom_hit_stun_duration(self):
         enemy = FakeEnemy()
@@ -300,7 +299,7 @@ class EnemyAttackTimingTests(unittest.TestCase):
         )
 
         self.assertEqual(enemy.state, enemy.HIT)
-        self.assertEqual(enemy.condition._hit_stun_remaining, 24)
+        self.assertEqual(enemy.reaction_state._hit_stun_remaining, 24)
 
     def test_enemy_uses_shorter_attack_delay_during_player_recovery(self):
         enemy = FakeEnemy()
@@ -320,7 +319,6 @@ class EnemyAttackTimingTests(unittest.TestCase):
         self.assertLess(gneiss.attack.delay, ferris.attack.delay)
         self.assertLess(gneiss.attack.cooldown, ferris.attack.cooldown)
         self.assertGreater(black_elmer.attack_range, ferris.attack_range)
-        self.assertEqual(black_elmer.attack_flinch_damage_threshold, BAT_DAMAGE)
 
 if __name__ == "__main__":
     unittest.main()

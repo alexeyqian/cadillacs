@@ -1,39 +1,44 @@
-from game.components.enemy_condition import EnemyCondition
+from game.components.enemy_reaction_state import EnemyReactionState
 from game.controllers.enemy_reaction_controller import EnemyReactionController
-from game.controllers.enemy_lifecycle_controller import EnemyLifecycleController
+from game.controllers.enemy_state_controller import EnemyStateController
 from game.entities.enemy_state import EnemyState
 
 
-class FakeOwner:
-    def __init__(self):
-        self.x = 100
-        self.facing_right = False
+def _make_owner(x=100, facing_right=False):
+    class Owner:
+        pass
+    owner = Owner()
+    owner.x = x
+    owner.facing_right = facing_right
+    owner.reaction_state = EnemyReactionState()
+    owner.reaction_controller = EnemyReactionController()
+    return owner
 
 
-def test_enemy_condition_ticks_action_lock_and_hit_stun():
-    condition = EnemyCondition()
+def test_enemy_reaction_state_ticks_action_lock_and_hit_stun():
+    owner = _make_owner()
+    rc = owner.reaction_controller
 
-    condition.set_action_lock(2)
-    condition.set_hit_stun(2)
+    rc.set_action_lock(owner, 2)
+    owner.reaction_state._hit_stun_remaining = 2
 
-    condition.tick_action_lock()
-    condition.tick_hit_stun()
+    rc.tick_action_lock(owner)
+    rc._tick_hit_stun(owner)
 
-    assert condition._action_lock_remaining == 1
-    assert condition._hit_stun_remaining == 1
-    assert condition.has_action_lock() is True
-    assert condition.has_hit_stun() is True
+    assert owner.reaction_state._action_lock_remaining == 1
+    assert owner.reaction_state._hit_stun_remaining == 1
+    assert rc.has_action_lock(owner) is True
+    assert owner.reaction_state._hit_stun_remaining > 0
 
 
 def test_reaction_controller_applies_knockback():
-    owner = FakeOwner()
-    owner.condition = EnemyCondition()
-    owner.condition.set_knockback(0.4)
+    owner = _make_owner()
+    owner.reaction_state._knockback_velocity = 0.4
 
     EnemyReactionController()._apply_knockback(owner)
 
     assert owner.x == 100.4
-    assert owner.condition._knockback_velocity == 0
+    assert owner.reaction_state._knockback_velocity == 0
 
 
 def test_lifecycle_controller_applies_thrown_motion():
@@ -42,39 +47,43 @@ def test_lifecycle_controller_applies_thrown_motion():
         state = EnemyState.THROWN
         x = 100
         facing_right = False
-        condition = EnemyCondition()
+        reaction_state = EnemyReactionState()
+        reaction_controller = EnemyReactionController()
 
     owner = ThrownOwner()
-    owner.condition.start_thrown(direction=1, damage=12, velocity=2, duration=1)
+    owner.reaction_controller.start_thrown(owner, direction=1, damage=12, velocity=2, duration=1)
 
-    EnemyLifecycleController()._update_thrown_state(owner)
+    EnemyStateController()._update_thrown_state(owner)
 
     assert owner.x == 102
     assert owner.facing_right is True
     assert owner.state == EnemyState.KNOCKDOWN
-    assert owner.condition.throw_damage == 12
+    assert owner.reaction_state.throw_damage == 12
 
 
-def test_enemy_condition_manages_thrown_hit_targets():
+def test_enemy_reaction_controller_manages_thrown_hit_targets():
     target = object()
-    condition = EnemyCondition()
-    condition.start_thrown(direction=1, damage=12)
+    owner = _make_owner()
+    rc = owner.reaction_controller
+    rc.start_thrown(owner, direction=1, damage=12)
 
-    condition.mark_thrown_hit(target)
+    rc.mark_thrown_hit(owner, target)
 
-    assert condition.has_thrown_hit(target) is True
+    assert rc.has_thrown_hit(owner, target) is True
 
 
-def test_enemy_condition_manages_knockdown_getup_and_death():
-    condition = EnemyCondition()
+def test_enemy_reaction_controller_manages_knockdown_getup_and_death():
+    owner = _make_owner()
+    rc = owner.reaction_controller
 
-    condition.start_knockdown(duration=1)
-    condition.start_getup(duration=1)
-    condition.start_death_countdown(duration=1)
-    knockdown_finished = condition.tick_knockdown()
-    getup_finished = condition.tick_getup()
-    condition.tick_death()
+    rc.start_knockdown(owner, duration=1)
+    rc.start_getup(owner, duration=1)
+    owner.reaction_state._death_remaining = 1
+
+    knockdown_finished = rc.tick_knockdown(owner)
+    getup_finished = rc.tick_getup(owner)
+    rc.tick_death(owner)
 
     assert knockdown_finished is True
     assert getup_finished is True
-    assert condition.is_death_finished() is True
+    assert rc.is_death_finished(owner) is True

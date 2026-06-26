@@ -35,6 +35,7 @@ class EnemyMovement:
         self.detect_range = detect_range
         self.patrol_distance = patrol_distance
         self.patrol_direction = patrol_direction
+        self.patrol_center_x = 0  # set to enemy's spawn x when the enemy is placed
 
         self.air_state = EnemyAirState()
         self.flank_state = EnemyFlankState()
@@ -66,12 +67,12 @@ class EnemyMovement:
     def face_player(self, owner, player):
         face_toward_x(owner, player.x)
 
-    def patrol(self, owner, patrol_center_x):
+    def patrol(self, owner):
         owner.x += self.patrol_direction
         owner.facing_right = self.patrol_direction > 0
-        if owner.x > patrol_center_x + self.patrol_distance:
+        if owner.x > self.patrol_center_x + self.patrol_distance:
             self.patrol_direction = -1
-        if owner.x < patrol_center_x - self.patrol_distance:
+        if owner.x < self.patrol_center_x - self.patrol_distance:
             self.patrol_direction = 1
 
     def move_toward_player(self, owner, player):

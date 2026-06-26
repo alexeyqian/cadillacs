@@ -31,7 +31,8 @@ def test_enemy_movement_owns_patrol_runtime_state():
         patrol_direction=1,
     )
 
-    movement.patrol(owner, patrol_center_x=100)
+    movement.patrol_center_x = 100
+    movement.patrol(owner)
 
     assert movement.patrol_direction == -1
     assert owner.facing_right is True

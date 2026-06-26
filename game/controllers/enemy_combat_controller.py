@@ -65,7 +65,7 @@ class EnemyCombatController:
     def update_attack(self, owner, level, player):
         owner.movement.face_player(owner, player)
         attack_finished = self.attack_manager.advance()
-        self._check_player_hit(owner, level, player, self.get_attack_data())
+        self._try_hit_player(owner, level, player, self.get_attack_data())
         if attack_finished:
             self._finish_attack(owner)
 
@@ -78,7 +78,7 @@ class EnemyCombatController:
 
     def update_run_attack(self, owner, level, player):
         attack_finished = self.attack_manager.advance()
-        self._check_player_hit(owner, level, player, self._get_run_attack_data())
+        self._try_hit_player(owner, level, player, self._get_run_attack_data())
         if attack_finished:
             self._finish_run_attack(owner)
 
@@ -91,7 +91,7 @@ class EnemyCombatController:
 
     def update_jump_attack(self, owner, level, player):
         attack_finished = self.attack_manager.advance()
-        self._check_player_hit(owner, level, player, self._get_jump_attack_data())
+        self._try_hit_player(owner, level, player, self._get_jump_attack_data())
         if attack_finished:
             self._finish_jump_attack(owner)
 
@@ -102,7 +102,7 @@ class EnemyCombatController:
         attack_data = self.get_attack_data()
         self.attack_manager.cancel()
         owner.state = owner.RECOIL
-        owner.condition.set_action_lock(attack_data.cooldown)
+        owner.reaction_controller.set_action_lock(owner, attack_data.cooldown)
         owner.ai_controller.reset_decision_timer()
         self.owns_attack_slot = False
         self.cooldown_remaining = max(self.cooldown_remaining, attack_data.cooldown)
@@ -115,7 +115,7 @@ class EnemyCombatController:
     def _get_jump_attack_data(self):
         return self._jump_attack_data or self.get_attack_data()
 
-    def _check_player_hit(self, owner, level, player, attack_data):
+    def _try_hit_player(self, owner, level, player, attack_data):
         if not self.attack_manager.is_active():
             return
         if self.attack_manager.has_connected:
