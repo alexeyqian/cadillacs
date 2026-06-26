@@ -3,6 +3,7 @@ import unittest
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
 import game.settings as settings
 from game.controllers.player_combat_controller import PlayerCombatController
+from game.components.player_combat_state import PlayerCombatState
 from game.input.player_input_state import PlayerInputState
 from game.managers.score_manager import ScoreManager
 from game.settings import (
@@ -81,29 +82,30 @@ class FakeOwner:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot()
-        self.attacks = DEFAULT_PLAYER_ATTACKS
-        self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.input_state = PlayerInputState()
         self.air = None
+        self.combat_state = PlayerCombatState()
+        self.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
+        self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
 
     def get_attack_data(self, attack_name):
         weapon = getattr(self.weapon_slot, "weapon", None)
         weapon_type = getattr(weapon, "weapon_type", weapon)
-        weapon_attack = self.weapon_attacks.get((weapon_type, attack_name))
+        weapon_attack = self.combat_state.weapon_attacks.get((weapon_type, attack_name))
         if weapon_attack and not getattr(weapon, "is_ranged", False):
             return weapon_attack
-        return self.attacks.get(attack_name)
+        return self.combat_state.attacks.get(attack_name)
 
 
 class AttackDataTests(unittest.TestCase):
     def finish_connected_attack(self, combat, owner):
-        combat.attack_manager.has_connected = True
-        for _ in range(combat.attack_manager.remaining_frames):
+        owner.combat_state.attack_manager.has_connected = True
+        for _ in range(owner.combat_state.attack_manager.remaining_frames):
             combat.advance_timers(owner)
             combat.update_attack(owner)
 
     def finish_missed_attack(self, combat, owner):
-        for _ in range(combat.attack_manager.remaining_frames):
+        for _ in range(owner.combat_state.attack_manager.remaining_frames):
             combat.advance_timers(owner)
             combat.update_attack(owner)
 
@@ -117,10 +119,10 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK)
-        self.assertEqual(combat.current_attack_name, owner.ATTACK)
-        self.assertEqual(combat.attack_manager.elapsed_frames, 0)
+        self.assertEqual(owner.combat_state.current_attack_name, owner.ATTACK)
+        self.assertEqual(owner.combat_state.attack_manager.elapsed_frames, 0)
         self.assertEqual(
-            combat.attack_manager.remaining_frames,
+            owner.combat_state.attack_manager.remaining_frames,
             DEFAULT_PLAYER_ATTACKS["ATTACK"].total_duration,
         )
 
@@ -152,9 +154,9 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.RUN_ATTACK)
-        self.assertEqual(combat.current_attack_name, owner.RUN_ATTACK)
+        self.assertEqual(owner.combat_state.current_attack_name, owner.RUN_ATTACK)
         self.assertEqual(
-            combat.attack_manager.remaining_frames,
+            owner.combat_state.attack_manager.remaining_frames,
             DEFAULT_PLAYER_ATTACKS["RUN_ATTACK"].total_duration,
         )
         self.assertTrue(owner.movement.run_attack_momentum_started)
@@ -180,7 +182,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(owner.state, owner.ATTACK)
-        self.assertEqual(combat.current_attack_name, owner.ATTACK)
+        self.assertEqual(owner.combat_state.current_attack_name, owner.ATTACK)
         self.assertFalse(owner.movement.run_attack_momentum_started)
 
     def test_running_attack_knockback_scales_with_run_distance(self):
@@ -223,9 +225,9 @@ class AttackDataTests(unittest.TestCase):
         combat.start_jump_attack(owner)
 
         self.assertEqual(owner.state, owner.JUMP_ATTACK)
-        self.assertEqual(combat.current_attack_name, owner.JUMP_ATTACK)
+        self.assertEqual(owner.combat_state.current_attack_name, owner.JUMP_ATTACK)
         self.assertEqual(
-            combat.attack_manager.remaining_frames,
+            owner.combat_state.attack_manager.remaining_frames,
             DEFAULT_PLAYER_ATTACKS["JUMP_ATTACK"].total_duration,
         )
 
@@ -243,7 +245,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_jump_attack(owner)
 
         self.assertEqual(owner.state, owner.JUMP)
-        self.assertIsNone(combat.current_attack_name)
+        self.assertIsNone(owner.combat_state.current_attack_name)
 
     def test_jump_attack_can_only_start_once_per_jump(self):
         class FakeAir:
@@ -262,11 +264,11 @@ class AttackDataTests(unittest.TestCase):
         combat = PlayerCombatController()
 
         combat.start_jump_attack(owner)
-        combat.cancel_attack()
+        combat.cancel_attack(owner)
         combat.start_jump_attack(owner)
 
         self.assertEqual(owner.state, owner.JUMP_ATTACK)
-        self.assertIsNone(combat.current_attack_name)
+        self.assertIsNone(owner.combat_state.current_attack_name)
         self.assertTrue(owner.air.has_used_jump_attack)
 
     def test_jump_attack_uses_flying_kick_timing(self):
@@ -291,17 +293,17 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
         combat.update_attack(owner)
 
-        self.assertEqual(combat.attack_manager.elapsed_frames, 1)
+        self.assertEqual(owner.combat_state.attack_manager.elapsed_frames, 1)
         self.assertEqual(
-            combat.attack_manager.remaining_frames,
+            owner.combat_state.attack_manager.remaining_frames,
             DEFAULT_PLAYER_ATTACKS["ATTACK"].total_duration - 1,
         )
 
         for _ in range(DEFAULT_PLAYER_ATTACKS["ATTACK"].total_duration - 1):
             combat.update_attack(owner)
 
-        self.assertFalse(combat.is_attacking)
-        self.assertEqual(combat.attack_manager.elapsed_frames, 0)
+        self.assertFalse(owner.combat_state.is_attacking)
+        self.assertEqual(owner.combat_state.attack_manager.elapsed_frames, 0)
         self.assertEqual(owner.state, owner.IDLE)
 
     def test_standing_combo_attacks_have_recovery_frames(self):
@@ -333,9 +335,9 @@ class AttackDataTests(unittest.TestCase):
         for _ in range(attack.windup + attack.active):
             combat.update_attack(owner)
 
-        self.assertTrue(combat.is_attacking)
-        self.assertFalse(combat.attack_manager.is_active())
-        self.assertEqual(combat.attack_manager.get_phase_name(), "RECOVERY")
+        self.assertTrue(owner.combat_state.is_attacking)
+        self.assertFalse(owner.combat_state.attack_manager.is_active())
+        self.assertEqual(owner.combat_state.attack_manager.get_phase_name(), "RECOVERY")
 
     def test_player_combat_controller_uses_per_target_hit_tracking(self):
         first_target = object()
@@ -345,11 +347,11 @@ class AttackDataTests(unittest.TestCase):
 
         combat.start_attack(owner)
 
-        self.assertTrue(combat.can_hit_target(first_target))
-        combat.mark_attack_hit(first_target)
+        self.assertTrue(combat.can_hit_target(owner, first_target))
+        combat.mark_attack_hit(owner, first_target)
 
-        self.assertFalse(combat.can_hit_target(first_target))
-        self.assertFalse(combat.can_hit_target(second_target))
+        self.assertFalse(combat.can_hit_target(owner, first_target))
+        self.assertFalse(combat.can_hit_target(owner, second_target))
 
     def test_knife_attack_uses_weapon_attack_data(self):
         owner = FakeOwner()
@@ -359,7 +361,7 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(
-            combat.attack_manager.current_attack,
+            owner.combat_state.attack_manager.current_attack,
             DEFAULT_WEAPON_PLAYER_ATTACKS[("knife", owner.ATTACK)],
         )
         self.assertEqual(
@@ -376,10 +378,10 @@ class AttackDataTests(unittest.TestCase):
         combat.start_attack(owner)
 
         self.assertEqual(
-            combat.attack_manager.current_attack,
+            owner.combat_state.attack_manager.current_attack,
             DEFAULT_WEAPON_PLAYER_ATTACKS[("bat", owner.ATTACK)],
         )
-        self.assertEqual(combat.attack_manager.current_attack.max_targets, 2)
+        self.assertEqual(owner.combat_state.attack_manager.current_attack.max_targets, 2)
 
     def test_ranged_weapon_does_not_change_melee_attack_data(self):
         owner = FakeOwner()
@@ -388,7 +390,7 @@ class AttackDataTests(unittest.TestCase):
 
         combat.start_attack(owner)
 
-        self.assertEqual(combat.attack_manager.current_attack, DEFAULT_PLAYER_ATTACKS["ATTACK"])
+        self.assertEqual(owner.combat_state.attack_manager.current_attack, DEFAULT_PLAYER_ATTACKS["ATTACK"])
 
     def test_second_combo_hit_allows_moderate_followup_delay(self):
         owner = FakeOwner()

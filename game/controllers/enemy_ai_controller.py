@@ -6,7 +6,7 @@ from game.settings import ENEMY_ATTACK_LANE_RANGE, ENEMY_ATTACK_RANGE, ENEMY_FLA
 DIRECTION_CHANGE_DELAY = 60
 
 
-# pure read-only data 
+# pure read-only data
 @dataclass(frozen=True)
 class EnemyAIConfig:
     attack_range: int = ENEMY_ATTACK_RANGE
@@ -16,13 +16,11 @@ class EnemyAIConfig:
 
 class EnemyAIController:
     def __init__(self):
-        self._decision_timer = 0
-        self._direction_change_timer = 0
         self.config = EnemyAIConfig()
 
-    def reset_decision_timer(self):
-        self._decision_timer = 0
-        self._direction_change_timer = 0
+    def reset_decision_timer(self, owner):
+        owner.ai_state._decision_timer = 0
+        owner.ai_state._direction_change_timer = 0
 
     def update(self, owner, context):
         owner.intent.clear()
@@ -47,16 +45,18 @@ class EnemyAIController:
             context.player,
         )
 
+        ai_state = owner.ai_state
+
         # Detect player crossing to the other side while enemy is chasing.
         if distance_x <= owner.movement.detect_range:
             player_is_right = context.player.x > owner.x
-            if player_is_right != owner.facing_right and self._direction_change_timer <= 0:
-                self._direction_change_timer = DIRECTION_CHANGE_DELAY
+            if player_is_right != owner.facing_right and ai_state._direction_change_timer <= 0:
+                ai_state._direction_change_timer = DIRECTION_CHANGE_DELAY
                 owner.facing_right = player_is_right  # commit now so this doesn't retrigger
 
         # While the hesitation timer is active: stay idle, don't turn yet.
-        if self._direction_change_timer > 0:
-            self._direction_change_timer -= 1
+        if ai_state._direction_change_timer > 0:
+            ai_state._direction_change_timer -= 1
             owner.state = owner.IDLE
             return
 
@@ -75,30 +75,33 @@ class EnemyAIController:
 
     def _prepare_attack_intent(self, owner, player):
         owner.movement.clear_flank_target()
-        self._decision_timer += 1
+        owner.ai_state._decision_timer += 1
 
-        if self._decision_timer < owner.combat_controller.get_attack_data().delay:
+        if owner.ai_state._decision_timer < self.get_attack_data(owner).delay:
             owner.state = owner.IDLE
             return
 
         owner.intent.attack_player()
-        owner.combat_controller.reserve_attack_slot()
-        self.reset_decision_timer()
+        owner.combat_controller.reserve_attack_slot(owner)
+        self.reset_decision_timer(owner)
+
+    def get_attack_data(self, owner):
+        return owner.combat_controller.get_attack_data(owner)
 
     def _try_run_attack(self, owner, context):
         if not owner.movement.can_run_attack:
             return
-        if owner.combat_controller.cooldown_remaining > 0:
+        if owner.combat_state.cooldown_remaining > 0:
             return
         dx, dy, distance_x, distance_y = owner.movement.get_player_distance(owner, context.player)
         if distance_x <= self.config.attack_range * 1.5:
             owner.intent.run_attack()
-            owner.combat_controller.reserve_attack_slot()
+            owner.combat_controller.reserve_attack_slot(owner)
 
     def _try_jump_attack(self, owner, context):
         if not owner.movement.can_jump_attack:
             return
-        if owner.combat_controller.cooldown_remaining > 0:
+        if owner.combat_state.cooldown_remaining > 0:
             return
         dx, dy, distance_x, distance_y = owner.movement.get_player_distance(owner, context.player)
         if distance_x <= self.config.attack_range * 2:
@@ -118,7 +121,7 @@ class EnemyAIController:
         owner.state = owner.JUMP
 
     def _request_chase_intent(self, owner, context, distance_x, distance_y):
-        self.reset_decision_timer()
+        self.reset_decision_timer(owner)
 
         if self._should_flank(owner, distance_x, distance_y, context.enemies):
             owner.movement.update_flank_target(owner, context.player, context.enemies)
@@ -134,13 +137,13 @@ class EnemyAIController:
             owner.state = owner.CHASE
 
     def _request_patrol_intent(self, owner):
-        self.reset_decision_timer()
+        self.reset_decision_timer(owner)
         owner.movement.clear_flank_target()
         owner.intent.patrol()
         owner.state = owner.PATROL
 
     def _can_attack_player(self, owner, context, distance_x):
-        if owner.combat_controller.cooldown_remaining > 0:
+        if owner.combat_state.cooldown_remaining > 0:
             return False
         if not self._is_in_attack_range(owner, context, distance_x):
             return False
@@ -154,11 +157,10 @@ class EnemyAIController:
             return False
 
         lane_distance = context.level.get_lane_distance(owner.y, context.player.y)
-        return lane_distance <= owner.combat_controller.get_attack_data().lane_reach
+        return lane_distance <= self.get_attack_data(owner).lane_reach
 
     def _has_available_attack_slot(self, owner, player, enemies):
         # only the closest eligible melee enemy should take the slot.
-        # This makes group behavior feel more intentional.
         if self._count_active_melee_attackers(enemies) >= self._get_melee_attack_slot_limit(owner):
             return False
         if self._side_already_has_attacker(owner, player, enemies):
@@ -183,12 +185,9 @@ class EnemyAIController:
         return closest_enemy is owner
 
     def _is_eligible_melee_attacker(self, enemy, player):
-        if enemy.combat_controller.cooldown_remaining > 0:
+        if enemy.combat_state.cooldown_remaining > 0:
             return False
-        # That means an enemy that already owns a slot remains counted as eligible
-        # for priority until it releases the slot.
-        # This makes the coordination stable during the attack.
-        if enemy.combat_controller.owns_attack_slot:
+        if enemy.combat_state.owns_attack_slot:
             return True
         if enemy.state in [enemy.DEAD, enemy.HIT, enemy.GRABBED, enemy.THROWN, enemy.KNOCKDOWN, enemy.GETUP]:
             return False
@@ -199,14 +198,13 @@ class EnemyAIController:
         return dx <= enemy.ai_controller.config.attack_range and dy <= enemy.ai_controller.config.attack_lane_range
 
     # enemies prefer opposite sides
-    # This prevents same-side dogpiles
     def _side_already_has_attacker(self, owner, player, enemies):
         owner_side = self._get_side_of_player(owner, player)
 
         for enemy in enemies:
             if enemy is owner:
                 continue
-            if not enemy.combat_controller.owns_attack_slot:
+            if not enemy.combat_state.owns_attack_slot:
                 continue
             if self._get_side_of_player(enemy, player) == owner_side:
                 return True
@@ -219,15 +217,13 @@ class EnemyAIController:
     def _count_active_melee_attackers(self, enemies):
         count = 0
         for enemy in enemies:
-            if enemy.combat_controller.owns_attack_slot:
+            if enemy.combat_state.owns_attack_slot:
                 count += 1
         return count
 
     def _should_flank(self, owner, distance_x, distance_y, enemies):
         if distance_x > self.config.attack_range:
             return False
-        # Why: enemies slightly above/below the attack lane should still
-        # try to flank into position instead of giving up immediately.
         if distance_y > self.config.attack_lane_range + ENEMY_FLANK_Y_TOLERANCE:
             return False
         if self._count_active_melee_attackers(enemies) < self._get_melee_attack_slot_limit(owner):

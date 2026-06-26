@@ -137,7 +137,7 @@ class EnemyReactionController:
     def _apply_flinch(self, owner, attacker_x, reaction):
         stun_frames = reaction.stun_frames
         if stun_frames is None:
-            stun_frames = owner.combat_controller.get_attack_data().hit_stun_duration
+            stun_frames = owner.combat_controller.get_attack_data(owner).hit_stun_duration
         owner.reaction_state._hit_stun_remaining = stun_frames
         owner.state = owner.HIT
         self._clear_combat_commitment(owner)

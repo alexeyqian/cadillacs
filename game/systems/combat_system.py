@@ -31,7 +31,7 @@ def handle_player_attack_collision(game_state):
     attack_rect = player.get_attack_rect()
     if not attack_rect:
         return
-    if not player.combat_controller.can_hit_more_targets():
+    if not player.combat_controller.can_hit_more_targets(player):
         return
 
     if player.state == player.GRAB_KNEE:
@@ -44,10 +44,10 @@ def handle_player_attack_collision(game_state):
 
 def _handle_grab_knee_collision(game_state):
     player = game_state.player
-    enemy = player.grab_controller.grabbed_enemy
+    enemy = player.grab_state.grabbed_enemy
     if not enemy or enemy.state == enemy.DEAD:
         return
-    if not player.combat_controller.can_hit_target(enemy):
+    if not player.combat_controller.can_hit_target(player, enemy):
         return
 
     damage = player.combat_controller.attack_result.get_damage(player)
@@ -57,9 +57,9 @@ def _handle_grab_knee_collision(game_state):
         FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), YELLOW_COLOR)
     )
     game_state.score_manager.register_hit()
-    player.combat_controller.mark_attack_hit(enemy)
+    player.combat_controller.mark_attack_hit(player, enemy)
     if enemy.state == enemy.DEAD:
-        player.grab_controller.grabbed_enemy = None
+        player.grab_state.grabbed_enemy = None
 
 
 def _handle_player_melee_enemy_collision(game_state, attack_rect):
@@ -67,7 +67,7 @@ def _handle_player_melee_enemy_collision(game_state, attack_rect):
     lane_reach = player.combat_controller.attack_result.get_lane_reach(player)
 
     for enemy in game_state.enemies:
-        if not player.combat_controller.can_hit_target(enemy):
+        if not player.combat_controller.can_hit_target(player, enemy):
             continue
 
         # CLASH BLOCK
@@ -100,7 +100,7 @@ def _handle_player_melee_enemy_collision(game_state, attack_rect):
 
         # NORMAL DAMAGE BLOCK
         if _damage_enemy_with_player_attack(game_state, enemy, attack_rect, lane_reach):
-            if not player.combat_controller.can_hit_more_targets():
+            if not player.combat_controller.can_hit_more_targets(player):
                 break
 
 
@@ -115,11 +115,11 @@ def _player_attack_clashes_with_enemy(
     lane_distance = game_state.level.get_lane_distance(player.y, enemy.y)
     clash_lane_reach = max(
         player_lane_reach,
-        enemy.combat_controller.get_attack_data().lane_reach,
+        enemy.combat_controller.get_attack_data(enemy).lane_reach,
     )
     return (
         lane_distance <= clash_lane_reach
-        and enemy.combat_controller.is_attack_active()
+        and enemy.combat_controller.is_attack_active(enemy)
         and attack_rect.colliderect(enemy_attack_rect)
     )
 
@@ -142,7 +142,7 @@ def _damage_enemy_with_player_attack(game_state, enemy, attack_rect, lane_reach)
         FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), (255, 80, 80))
     )
     game_state.score_manager.register_hit() # for combo score
-    player.combat_controller.mark_attack_hit(enemy)
+    player.combat_controller.mark_attack_hit(player, enemy)
     if enemy.health.hp > 0 and enemy.health.max_hp >= 200:
         heavy_hit_shake(game_state)
     enemy_rect = enemy.get_hurt_rect()
@@ -154,14 +154,14 @@ def _handle_player_breakable_collision(game_state, attack_rect):
     player = game_state.player
 
     for obj in game_state.objects:
-        if not player.combat_controller.can_hit_target(obj):
+        if not player.combat_controller.can_hit_target(player, obj):
             continue
         if obj.destroyed:
             continue
         if attack_rect.colliderect(obj.get_rect()):
             obj.take_damage(player.combat_controller.attack_result.get_damage(player))
-            player.combat_controller.mark_attack_hit(obj)
-            if not player.combat_controller.can_hit_more_targets():
+            player.combat_controller.mark_attack_hit(player, obj)
+            if not player.combat_controller.can_hit_more_targets(player):
                 break
 
 def handle_player_projectile_collision(game_state):
@@ -222,11 +222,11 @@ def handle_player_grab_or_throw(game_state, keys):
     player = game_state.player
 
     if keys[pygame.K_l]:
-        if player.grab_controller.grab_pressed:
+        if player.grab_state.grab_pressed:
             return
-        player.grab_controller.grab_pressed = True
+        player.grab_state.grab_pressed = True
 
-        if player.grab_controller.grabbed_enemy:
+        if player.grab_state.grabbed_enemy:
             player.grab_controller.throw_grabbed_enemy(player)
             return
         
@@ -235,14 +235,14 @@ def handle_player_grab_or_throw(game_state, keys):
                 player.grab_controller.grab_enemy(player, enemy)
                 break
     else:
-        player.grab_controller.grab_pressed = False
+        player.grab_state.grab_pressed = False
     
     # add visual feedback for failed grab
-    if player.grab_controller.failed_grab_feedback:
+    if player.grab_state.failed_grab_feedback:
         game_state.floating_texts.append(
             FloatingText(player.x, player.y - 160,
                 "NO GRAB", ORANGE_COLOR))
-        player.grab_controller.failed_grab_feedback = False
+        player.grab_state.failed_grab_feedback = False
 
 def handle_player_thrown_enemy_collision(game_state):
     for thrown_enemy in game_state.enemies:

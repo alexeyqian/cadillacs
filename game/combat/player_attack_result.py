@@ -9,8 +9,8 @@ from game.settings import (
 
 
 class PlayerAttackResult:
-    def __init__(self, combat_controller):
-        self.combat_controller = combat_controller
+    def __init__(self):
+        pass
 
     def get_damage(self, owner):
         attack_data = self._get_current_or_state_attack_data(owner)
@@ -54,7 +54,7 @@ class PlayerAttackResult:
         )
 
     def _get_run_attack_power_bonus(self, owner, full_power_bonus):
-        if self.combat_controller.current_attack_name != owner.RUN_ATTACK:
+        if owner.combat_state.current_attack_name != owner.RUN_ATTACK:
             return 0
 
         run_distance = owner.movement.last_run_attack_distance
@@ -67,6 +67,6 @@ class PlayerAttackResult:
         return full_power_bonus * bonus_ratio
 
     def _get_current_or_state_attack_data(self, owner):
-        if self.combat_controller.attack_manager.current_attack:
-            return self.combat_controller.attack_manager.current_attack
+        if owner.combat_state.attack_manager.current_attack:
+            return owner.combat_state.attack_manager.current_attack
         return owner.get_attack_data(owner.state)

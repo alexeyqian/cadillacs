@@ -43,7 +43,7 @@ class PlayerMovement:
         if self.is_jumping:
             self.moving = False
             return
-        if owner.combat_controller.is_attacking:
+        if owner.combat_state.is_attacking:
             self.moving = self.attack_movement.update_attack_movement(owner)
             return
 

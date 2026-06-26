@@ -11,6 +11,7 @@ from game.settings import (
     PLAYER_JUMP_BOX_Y_OFFSET,
 )
 from game.controllers.player_combat_controller import PlayerCombatController
+from game.components.player_combat_state import PlayerCombatState
 from game.components.character_geometry import CharacterGeometry
 from game.input.player_input_state import PlayerInputState
 
@@ -66,13 +67,14 @@ class FakeOwner:
         self.state_machine = FakeStateMachine()
         self.animation_controller = FakeAnimationController()
         self.combat_controller = PlayerCombatController()
+        self.combat_state = PlayerCombatState()
+        self.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
+        self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.input_state = PlayerInputState()
-        self.attacks = DEFAULT_PLAYER_ATTACKS
-        self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.air = None
 
     def get_attack_data(self, attack_name):
-        return self.attacks.get(attack_name)
+        return self.combat_state.attacks.get(attack_name)
 
 
 class FakeHurtboxOwner:
@@ -175,7 +177,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
         hitboxes = CharacterGeometry()
         attack_data = DEFAULT_PLAYER_ATTACKS["JUMP_ATTACK"]
 
-        owner.combat_controller.attack_manager.start(owner.JUMP_ATTACK, attack_data)
+        owner.combat_state.attack_manager.start(owner.JUMP_ATTACK, attack_data)
         for _ in range(attack_data.windup):
             owner.combat_controller.update_attack(owner)
 

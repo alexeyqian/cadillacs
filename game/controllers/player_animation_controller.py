@@ -13,9 +13,9 @@ class PlayerAnimationController(FrameAnimationController):
             total_duration = self.animation_total_duration(len(frames), duration)
 
             if state == owner.THROW:
-                owner.grab_controller.throw_duration = total_duration
+                owner.grab_state.throw_duration = total_duration
             elif state == owner.GRAB_KNEE:
-                owner.grab_controller.grab_knee_duration = total_duration
+                owner.grab_state.grab_knee_duration = total_duration
 
     def get_animation_specs(self, owner):
         # (state_key, animation_name, loop)

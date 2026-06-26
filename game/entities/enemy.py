@@ -8,6 +8,8 @@ from game.components.enemy_renderer import EnemyRenderer
 from game.components.enemy_movement import EnemyMovement
 from game.components.enemy_reaction_state import EnemyReactionState
 from game.components.enemy_intent import EnemyIntent
+from game.components.enemy_combat_state import EnemyCombatState
+from game.components.enemy_ai_state import EnemyAIState
 from game.controllers.enemy_combat_controller import EnemyCombatController
 from game.controllers.enemy_reaction_controller import EnemyReactionController
 from game.controllers.enemy_state_controller import EnemyStateController
@@ -34,6 +36,8 @@ class Enemy(Character, EnemyState):
     def _build_components(self):
         self.geometry = CharacterGeometry()
         self.reaction_state = EnemyReactionState()
+        self.combat_state = EnemyCombatState()
+        self.ai_state = EnemyAIState()
         self.intent = EnemyIntent()
         self.movement = EnemyMovement()
         self.air = None  # set to EnemyAirState when can_jump=True
@@ -90,7 +94,7 @@ class Enemy(Character, EnemyState):
             self.air = self.movement.air_state
 
     def _apply_combat_config(self, config):
-        self.combat_controller.configure_attacks(config.attack, config.run_attack, config.jump_attack)
+        self.combat_state.configure(config.attack, config.run_attack, config.jump_attack)
         self.reaction_controller.flinch_damage_threshold = config.flinch_damage_threshold
         self.reaction_controller.knockdown_damage_threshold = config.knockdown_damage_threshold
 
@@ -119,14 +123,14 @@ class Enemy(Character, EnemyState):
     # --- Cross-controller coordination ---
 
     def _clear_combat_commitment(self):
-        self.combat_controller.cancel_attack()
-        self.ai_controller.reset_decision_timer()
-        self.combat_controller.release_attack_slot()
+        self.combat_controller.cancel_attack(self)
+        self.ai_controller.reset_decision_timer(self)
+        self.combat_state.owns_attack_slot = False
 
     def _begin_attack(self, state, attack_name, attack_data):
         self.state = state
-        self.ai_controller.reset_decision_timer()
-        self.combat_controller.attack_manager.start(attack_name, attack_data)
+        self.ai_controller.reset_decision_timer(self)
+        self.combat_state.attack_manager.start(attack_name, attack_data)
         self.animation_controller.play(state)
         self.animation_controller.reset_current_animation()
 
@@ -136,7 +140,7 @@ class Enemy(Character, EnemyState):
         self.state_controller.update(self)
 
     def advance_timers(self):
-        self.combat_controller.advance_timers()
+        self.combat_controller.advance_timers(self)
         self.movement.advance_timers()
 
     def update_ai(self, context):

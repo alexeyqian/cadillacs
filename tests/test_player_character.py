@@ -1,6 +1,8 @@
 from game.entities.character import Character
 from game.entities.player import Player
 from game.controllers.player_lifecycle_controller import PlayerLifecycleController
+from game.components.player_lifecycle_state import PlayerLifecycleState
+from game.components.player_reaction_state import PlayerReactionState
 
 
 class FakeAttackMovement:
@@ -38,7 +40,7 @@ class FakeReactionController:
     def __init__(self):
         self.reset_called = False
 
-    def reset(self):
+    def reset(self, owner):
         self.reset_called = True
 
 
@@ -60,18 +62,20 @@ def test_player_reset_for_stage_start_resets_runtime_position_state():
     player.IDLE = "IDLE"
     player.state = "JUMP"
     player.facing_right = False
-    player.lifecycle_controller = PlayerLifecycleController(0, 0, lives=2)
+    player.lifecycle_controller = PlayerLifecycleController()
+    player.lifecycle_state = PlayerLifecycleState(0, 0, lives=2)
     player.movement = FakeMovement()
     player.air = FakeAir()
     player.state_machine = FakeStateMachine()
     player.reaction_controller = FakeReactionController()
+    player.reaction_state = PlayerReactionState(8)
 
     player.reset_for_stage_start(120, 340)
 
     assert player.x == 120
     assert player.y == 340
-    assert player.lifecycle_controller.respawn_x == 120
-    assert player.lifecycle_controller.respawn_y == 340
+    assert player.lifecycle_state.respawn_x == 120
+    assert player.lifecycle_state.respawn_y == 340
     assert player.movement.is_jumping is False
     assert player.movement.attack_movement.cancelled_run_attack_momentum is True
     assert player.movement.attack_movement.cancelled_combo_finisher_nudge is True
@@ -82,28 +86,36 @@ def test_player_reset_for_stage_start_resets_runtime_position_state():
 
 
 def test_player_lifecycle_tracks_lives_and_respawn_timer():
-    lifecycle = PlayerLifecycleController(0, 0, lives=2)
+    controller = PlayerLifecycleController()
 
-    lifecycle.lose_life()
+    class FakeOwner:
+        lifecycle_state = PlayerLifecycleState(0, 0, lives=2)
 
-    assert lifecycle.lives == 1
-    assert lifecycle.respawn_remaining == 90
+    owner = FakeOwner()
+    controller.lose_life(owner)
 
-    lifecycle.respawn_remaining = 2
-    lifecycle.advance_timers()
+    assert owner.lifecycle_state.lives == 1
+    assert owner.lifecycle_state.respawn_remaining == 90
 
-    assert lifecycle.respawn_remaining == 1
-    assert lifecycle.is_respawn_ready() is False
+    owner.lifecycle_state.respawn_remaining = 2
+    controller.advance_timers(owner)
 
-    lifecycle.advance_timers()
+    assert owner.lifecycle_state.respawn_remaining == 1
+    assert controller.is_respawn_ready(owner) is False
 
-    assert lifecycle.respawn_remaining == 0
-    assert lifecycle.is_respawn_ready() is True
+    controller.advance_timers(owner)
+
+    assert owner.lifecycle_state.respawn_remaining == 0
+    assert controller.is_respawn_ready(owner) is True
 
 
 def test_player_lifecycle_can_gain_life():
-    lifecycle = PlayerLifecycleController(0, 0, lives=2)
+    controller = PlayerLifecycleController()
 
-    lifecycle.gain_life()
+    class FakeOwner:
+        lifecycle_state = PlayerLifecycleState(0, 0, lives=2)
 
-    assert lifecycle.lives == 3
+    owner = FakeOwner()
+    controller.gain_life(owner)
+
+    assert owner.lifecycle_state.lives == 3

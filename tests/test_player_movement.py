@@ -5,14 +5,16 @@ from game.components.player_air_state import PlayerAirState
 from game.components.player_movement import PlayerMovement
 
 
-class FakeCombat:
+class FakeCombatState:
     def __init__(self):
         self.is_attacking = False
         self.current_attack_name = None
 
-    def cancel_attack(self):
-        self.is_attacking = False
-        self.current_attack_name = None
+
+class FakeCombatController:
+    def cancel_attack(self, owner):
+        owner.combat_state.is_attacking = False
+        owner.combat_state.current_attack_name = None
 
 
 class FakeOwner:
@@ -29,8 +31,9 @@ class FakeOwner:
         self.speed = 5
         self.run_speed = 9
         self.facing_right = True
-        self.combat_controller = FakeCombat()
-        self.grab_controller = FakeGrab()
+        self.combat_state = FakeCombatState()
+        self.combat_controller = FakeCombatController()
+        self.grab_state = FakeGrab()
         self.input_state = FakeInputState()
         self.state_machine = FakeStateMachine()
 
@@ -68,8 +71,8 @@ class PlayerMovementTests(unittest.TestCase):
         owner = FakeOwner()
         movement = PlayerMovement()
         movement.run_movement.run_direction = 1
-        owner.combat_controller.is_attacking = True
-        owner.combat_controller.current_attack_name = owner.RUN_ATTACK
+        owner.combat_state.is_attacking = True
+        owner.combat_state.current_attack_name = owner.RUN_ATTACK
 
         movement.start_run_attack_momentum(owner)
         starting_momentum = movement.attack_movement._run_attack_momentum_remaining
@@ -90,8 +93,8 @@ class PlayerMovementTests(unittest.TestCase):
     def test_non_run_attack_clears_run_attack_momentum(self):
         owner = FakeOwner()
         movement = PlayerMovement()
-        owner.combat_controller.is_attacking = True
-        owner.combat_controller.current_attack_name = "ATTACK"
+        owner.combat_state.is_attacking = True
+        owner.combat_state.current_attack_name = "ATTACK"
 
         movement.start_run_attack_momentum(owner)
         movement.update_movement(owner, FakeInput())
@@ -262,19 +265,19 @@ class PlayerMovementTests(unittest.TestCase):
 
         movement.jump_movement.start_jump(owner, FakeInput())
         owner.state = owner.JUMP_ATTACK
-        owner.combat_controller.is_attacking = True
-        owner.combat_controller.current_attack_name = owner.JUMP_ATTACK
+        owner.combat_state.is_attacking = True
+        owner.combat_state.current_attack_name = owner.JUMP_ATTACK
         for _ in range(20):
             movement.jump_movement.update_jump_physics(owner, FakeInput())
 
         self.assertEqual(owner.state, owner.IDLE)
-        self.assertIsNone(owner.combat_controller.current_attack_name)
+        self.assertIsNone(owner.combat_state.current_attack_name)
 
     def test_combo_finisher_nudge_moves_forward_briefly(self):
         owner = FakeOwner()
         movement = PlayerMovement()
-        owner.combat_controller.is_attacking = True
-        owner.combat_controller.current_attack_name = owner.ATTACK3
+        owner.combat_state.is_attacking = True
+        owner.combat_state.current_attack_name = owner.ATTACK3
 
         movement.attack_movement.start_combo_finisher_nudge(owner)
         starting_nudge = movement.attack_movement._combo_finisher_nudge_remaining

@@ -114,7 +114,7 @@ class CharacterGeometry:
         return owner.animation_controller.get_current_frame()
 
     def _get_active_hitbox_data(self, owner):
-        return owner.combat_controller.get_active_hitbox_data()
+        return owner.combat_controller.get_active_hitbox_data(owner)
 
     def _get_animation_attack_box(self, owner):
         frame = self._get_current_frame(owner)
@@ -147,7 +147,7 @@ class CharacterGeometry:
         return owner.y
 
     def _uses_visual_y_for_attack(self, owner):
-        return owner.air and owner.combat_controller.current_attack_name == owner.JUMP_ATTACK
+        return owner.air and owner.combat_state.current_attack_name == owner.JUMP_ATTACK
 
     def _get_visual_y(self, owner):
         if not owner.air:

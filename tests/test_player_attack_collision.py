@@ -3,6 +3,8 @@ import unittest
 import pygame
 
 from game.controllers.player_combat_controller import PlayerCombatController
+from game.components.player_combat_state import PlayerCombatState
+from game.components.player_grab_state import PlayerGrabState
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
 from game.combat.damage_request import DamageRequest
 from game.combat.hit_reaction import HitReaction
@@ -61,22 +63,23 @@ class FakePlayer:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot(weapon)
-        self.attacks = DEFAULT_PLAYER_ATTACKS
-        self.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.combat_controller = PlayerCombatController()
+        self.combat_state = PlayerCombatState()
+        self.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
+        self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
+        self.grab_state = PlayerGrabState()
         self.input_state = PlayerInputState()
         self.air = None
         self.combat_controller.start_attack(self)
-        while not self.combat_controller.attack_manager.is_active():
+        while not self.combat_state.attack_manager.is_active():
             self.combat_controller.update_attack(self)
-        self.grab_controller = type("FakeGrab", (), {"grabbed_enemy": None})()
 
     def start_running_attack(self):
-        self.combat_controller.cancel_attack()
+        self.combat_controller.cancel_attack(self)
         self.movement.is_running = True
         self.movement.run_movement.can_run_attack = True
         self.combat_controller.start_attack(self)
-        while not self.combat_controller.attack_manager.is_active():
+        while not self.combat_state.attack_manager.is_active():
             self.combat_controller.update_attack(self)
 
     def get_attack_rect(self):
@@ -85,10 +88,10 @@ class FakePlayer:
     def get_attack_data(self, attack_name):
         weapon = getattr(self.weapon_slot, "weapon", None)
         weapon_type = getattr(weapon, "weapon_type", weapon)
-        weapon_attack = self.weapon_attacks.get((weapon_type, attack_name))
+        weapon_attack = self.combat_state.weapon_attacks.get((weapon_type, attack_name))
         if weapon_attack and not getattr(weapon, "is_ranged", False):
             return weapon_attack
-        return self.attacks.get(attack_name)
+        return self.combat_state.attacks.get(attack_name)
 
 class FakeHealth:
     hp = 100

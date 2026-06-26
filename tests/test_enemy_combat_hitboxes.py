@@ -3,6 +3,7 @@ from dataclasses import replace
 
 from game.combat.attack_data import DEFAULT_ENEMY_ATTACK_DATA
 from game.controllers.enemy_combat_controller import EnemyCombatController
+from game.components.enemy_combat_state import EnemyCombatState
 from game.components.character_geometry import CharacterGeometry
 from game.entities.enemy_state import EnemyState
 
@@ -30,7 +31,8 @@ class FakeEnemy:
             hitbox_w=50,
             hitbox_h=20,
         )
-        self.combat_controller = EnemyCombatController(self.attack_data)
+        self.combat_controller = EnemyCombatController()
+        self.combat_state = EnemyCombatState(self.attack_data)
         self.animation_controller = self
         self.air = None
 
@@ -41,18 +43,18 @@ class FakeEnemy:
 class EnemyCombatHitboxTests(unittest.TestCase):
     def test_attack_rect_is_empty_during_enemy_windup(self):
         enemy = FakeEnemy()
-        enemy.combat_controller.attack_manager.start(enemy.ATTACK, enemy.attack_data)
+        enemy.combat_state.attack_manager.start(enemy.ATTACK, enemy.attack_data)
         hitboxes = CharacterGeometry()
 
         self.assertIsNone(hitboxes.get_attack_rect(enemy))
 
     def test_enemy_attack_rect_comes_from_attack_data_during_active_window(self):
         enemy = FakeEnemy()
-        enemy.combat_controller.attack_manager.start(enemy.ATTACK, enemy.attack_data)
+        enemy.combat_state.attack_manager.start(enemy.ATTACK, enemy.attack_data)
         hitboxes = CharacterGeometry()
 
         for _ in range(enemy.attack_data.windup):
-            enemy.combat_controller.attack_manager.advance()
+            enemy.combat_state.attack_manager.advance()
 
         attack_rect = hitboxes.get_attack_rect(enemy)
 
@@ -62,11 +64,11 @@ class EnemyCombatHitboxTests(unittest.TestCase):
     def test_enemy_attack_rect_mirrors_left_from_anchor(self):
         enemy = FakeEnemy()
         enemy.facing_right = False
-        enemy.combat_controller.attack_manager.start(enemy.ATTACK, enemy.attack_data)
+        enemy.combat_state.attack_manager.start(enemy.ATTACK, enemy.attack_data)
         hitboxes = CharacterGeometry()
 
         for _ in range(enemy.attack_data.windup):
-            enemy.combat_controller.attack_manager.advance()
+            enemy.combat_state.attack_manager.advance()
 
         attack_rect = hitboxes.get_attack_rect(enemy)
 

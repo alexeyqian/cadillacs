@@ -1,6 +1,9 @@
 from game.controllers.player_action_controller import PlayerActionController
 from game.controllers.player_action_context import PlayerActionContext
 from game.controllers.player_combat_controller import PlayerCombatController
+from game.components.player_combat_state import PlayerCombatState
+from game.components.player_grab_state import PlayerGrabState
+from game.controllers.player_grab_controller import PlayerGrabController
 from game.components.player_intent import PlayerIntent
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS
 from game.entities.player import Player
@@ -34,7 +37,7 @@ class FakeJumpMovement:
         pass
 
     def start_jump(self, owner, player_input):
-        if owner.combat_controller.is_attacking:
+        if owner.combat_state.is_attacking:
             return
         owner.state_machine.change_to(owner, owner.JUMP)
 
@@ -90,7 +93,7 @@ class FakeLifecycle:
 
 
 class FakeReactionController:
-    def is_in_hit_stun(self):
+    def is_in_hit_stun(self, owner=None):
         return False
 
     def update_hit_state(self, owner):
@@ -99,7 +102,7 @@ class FakeReactionController:
 
 class FakeStateController:
     def resolve(self, owner, moving):
-        if not owner.combat_controller.is_attacking and owner.state not in [owner.JUMP]:
+        if not owner.combat_state.is_attacking and owner.state not in [owner.JUMP]:
             owner.state_machine.change_to(owner, owner.IDLE)
 
 
@@ -120,10 +123,12 @@ def make_player_like():
     player.movement = FakeMovement()
     player.air = None
     player.combat_controller = PlayerCombatController()
-    player.combat_controller.attacks = DEFAULT_PLAYER_ATTACKS
-    player.combat_controller.weapon_attacks = {}
+    player.combat_state = PlayerCombatState()
+    player.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
+    player.combat_state.weapon_attacks = {}
     player.action_controller = PlayerActionController()
-    player.grab_controller = FakeGrab()
+    player.grab_state = PlayerGrabState()
+    player.grab_controller = PlayerGrabController()
     player.weapon_slot = FakeWeaponSlot()
     player.lifecycle_controller = FakeLifecycle()
     player.reaction_controller = FakeReactionController()
@@ -137,7 +142,7 @@ def update_player_frame(player, player_input):
     lifecycle_blocked = player.state == player.DEAD
     player.update_lifecycle_state()
     player.update_reactions()
-    if lifecycle_blocked or player.reaction_controller.is_in_hit_stun():
+    if lifecycle_blocked or player.reaction_controller.is_in_hit_stun(player):
         player.update_animation()
         return
 
@@ -152,17 +157,17 @@ def test_player_update_uses_buffered_attack_after_recovery():
     player = make_player_like()
 
     update_player_frame(player, FakeInput(attack=True))
-    assert player.combat_controller.current_attack_name == player.ATTACK
+    assert player.combat_state.current_attack_name == player.ATTACK
 
     update_player_frame(player, FakeInput())
     update_player_frame(player, FakeInput(attack=True))
     assert player.input_buffer.has("attack") is True
 
-    player.combat_controller.attack_manager.has_connected = True
-    while player.combat_controller.current_attack_name == player.ATTACK:
+    player.combat_state.attack_manager.has_connected = True
+    while player.combat_state.current_attack_name == player.ATTACK:
         update_player_frame(player, FakeInput())
 
-    assert player.combat_controller.current_attack_name == player.ATTACK2
+    assert player.combat_state.current_attack_name == player.ATTACK2
     assert player.input_buffer.has("attack") is False
 
 

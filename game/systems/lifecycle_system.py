@@ -1,6 +1,6 @@
 def is_player_blocked(player):
     """True if the player cannot act this frame (dead or in hit-stun)."""
-    return player.state == player.DEAD or player.reaction_controller.is_in_hit_stun()
+    return player.state == player.DEAD or player.reaction_controller.is_in_hit_stun(player)
 
 
 def get_active_enemies(game_state):

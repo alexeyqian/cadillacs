@@ -6,6 +6,10 @@ from game.components.character_geometry import CharacterGeometry
 from game.components.player_intent import PlayerIntent
 from game.components.player_weapon_slot import PlayerWeaponSlot
 from game.components.player_movement import PlayerMovement
+from game.components.player_combat_state import PlayerCombatState
+from game.components.player_grab_state import PlayerGrabState
+from game.components.player_lifecycle_state import PlayerLifecycleState
+from game.components.player_reaction_state import PlayerReactionState
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.controllers.player_grab_controller import PlayerGrabController
 from game.controllers.player_animation_controller import PlayerAnimationController
@@ -68,6 +72,10 @@ class Player(Character, PlayerState):
             config.air_move_speed,
         )
         self.state_machine = PlayerStateMachine(self)
+        self.combat_state = PlayerCombatState()
+        self.grab_state = PlayerGrabState()
+        self.lifecycle_state = PlayerLifecycleState(self.x, self.y, config.lives)
+        self.reaction_state = PlayerReactionState(config.hit_stun_duration)
 
     def _build_input_components(self):
         self.intent = PlayerIntent()
@@ -89,13 +97,13 @@ class Player(Character, PlayerState):
         self.action_controller = PlayerActionController()
         self.grab_controller = PlayerGrabController()
         self.state_resolver = PlayerStateResolver()
-        self.lifecycle_controller = PlayerLifecycleController(self.x, self.y, config.lives)
-        self.reaction_controller = PlayerReactionController(config.hit_stun_duration)
+        self.lifecycle_controller = PlayerLifecycleController()
+        self.reaction_controller = PlayerReactionController()
 
     def _apply_combat_config(self, config):
-        self.combat_controller.attacks = config.attacks or {}
-        self.combat_controller.weapon_attacks = config.weapon_attacks or {}
-        self.grab_controller.grab_range = config.grab_range
+        self.combat_state.attacks = config.attacks or {}
+        self.combat_state.weapon_attacks = config.weapon_attacks or {}
+        self.grab_state.grab_range = config.grab_range
 
     def _build_presentation_components(self, animation_data, anim_fps=None):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
@@ -104,21 +112,21 @@ class Player(Character, PlayerState):
     # --- Cross-controller coordination ---
 
     def _cancel_combat_commitment(self):
-        self.combat_controller.cancel_attack()
+        self.combat_controller.cancel_attack(self)
         self.movement.attack_movement.cancel_run_attack_momentum()
         self.movement.attack_movement.cancel_combo_finisher_nudge()
-        self.grab_controller.grabbed_enemy = None
+        self.grab_state.grabbed_enemy = None
 
     def _on_death(self):
-        self.lifecycle_controller.lose_life()
+        self.lifecycle_controller.lose_life(self)
         self.lifecycle_controller.enter_dead_state(self)
 
     def _end_grab_knee(self):
-        self.combat_controller.attack_manager.cancel()
-        self.combat_controller.set_action_lock(self.combat_controller.grab_knee_recovery_duration)
+        self.combat_state.attack_manager.cancel()
+        self.combat_controller.set_action_lock(self, self.combat_state.grab_knee_recovery_duration)
 
     def _set_action_lock(self, duration):
-        self.combat_controller.set_action_lock(duration)
+        self.combat_controller.set_action_lock(self, duration)
 
     # --- Per-frame update (called by systems) ---
 
@@ -171,10 +179,10 @@ class Player(Character, PlayerState):
     def get_attack_data(self, attack_name):
         weapon = self.weapon_slot.weapon
         weapon_type = weapon.weapon_type if weapon else None
-        weapon_attack = self.combat_controller.weapon_attacks.get((weapon_type, attack_name))
+        weapon_attack = self.combat_state.weapon_attacks.get((weapon_type, attack_name))
         if weapon_attack and not weapon.is_ranged:
             return weapon_attack
-        return self.combat_controller.attacks.get(attack_name)
+        return self.combat_state.attacks.get(attack_name)
 
     # todo: should return hurtbox top?
     def get_top(self):
@@ -200,14 +208,14 @@ class Player(Character, PlayerState):
     def _try_start_attack(self, clear_if_failed=True):
         if not self.intent.wants_attack():
             return False
-        previous_attack_name = self.combat_controller.current_attack_name
+        previous_attack_name = self.combat_state.current_attack_name
         if self.movement.is_jumping:
             self.combat_controller.start_jump_attack(self)
-        elif self.grab_controller.grabbed_enemy:
+        elif self.grab_state.grabbed_enemy:
             self.combat_controller.start_grab_knee_attack(self)
         else:
             self.combat_controller.start_attack(self)
-        if self.combat_controller.current_attack_name != previous_attack_name:
+        if self.combat_state.current_attack_name != previous_attack_name:
             self.input_buffer.consume(PlayerActionController.ATTACK_ACTION)
             self.intent.clear_attack()
             return True

@@ -24,7 +24,7 @@ class PlayerAttackMovement:
         self._combo_finisher_nudge_speed = 0
 
     def update_attack_movement(self, owner):
-        if owner.combat_controller.current_attack_name == owner.RUN_ATTACK:
+        if owner.combat_state.current_attack_name == owner.RUN_ATTACK:
             return self._update_run_attack_momentum(owner)
         self.cancel_run_attack_momentum()
         return self._update_combo_finisher_nudge(owner)
