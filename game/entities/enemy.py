@@ -29,43 +29,35 @@ class Enemy(Character, EnemyState):
         self._build_components()
         self._build_controllers()
         self._apply_config(get_enemy_config(self.enemy_type))
-        self._build_presentation_components(animation_data, anim_fps)
 
     # --- Init helpers ---
 
     def _build_components(self):
         self.geometry = CharacterGeometry()
-        self.reaction_state = EnemyReactionState()
-        self.combat_state = EnemyCombatState()
         self.ai_state = EnemyAIState()
         self.intent = EnemyIntent()
         self.movement = EnemyMovement()
+        self.combat_state = EnemyCombatState()
+        self.reaction_state = EnemyReactionState()
 
-    def _build_controllers(self):
+    def _build_controllers(self, animation_data, anim_fps=None):
+        self.ai_controller = EnemyAIController()
+        self.state_controller = EnemyStateController()
         self.combat_controller = EnemyCombatController()
         self.reaction_controller = EnemyReactionController()
-        self.state_controller = EnemyStateController()
-        self.ai_controller = EnemyAIController()
         self.loot_controller = EnemyLootController()
-
-    def _apply_config(self, config):
-        self._apply_identity_config(config)
-        self._apply_body_config(config)
-        self._apply_movement_config(config)
-        self._apply_combat_config(config)
-        self._apply_ai_config(config)
-        self._apply_reward_config(config)
-
-    def _build_presentation_components(self, animation_data, anim_fps=None):
         self.animation_controller = EnemyAnimationController(self, animation_data, anim_fps)
         self.renderer = EnemyRenderer()
 
-    def _apply_identity_config(self, config):
+    def _apply_config(self, config):
         self.enemy_id = config.enemy_id
         self.display_name = config.display_name
         self.archetype = config.archetype
+        self.sprite_scale = config.sprite_scale
+        self.score_points = config.score_points
 
-    def _apply_body_config(self, config):
+        self.health = CharacterHealth(config.max_hp)
+
         self.geometry.configure(
             config.collision_box_w,
             config.collision_box_h,
@@ -74,10 +66,7 @@ class Enemy(Character, EnemyState):
             config.hurt_box_offset_x,
             config.hurt_box_offset_y,
         )
-        self.health = CharacterHealth(config.max_hp)
-        self.sprite_scale = config.sprite_scale
 
-    def _apply_movement_config(self, config):
         self.movement.configure(
             speed=config.speed,
             patrol_distance=config.patrol_distance,
@@ -90,28 +79,22 @@ class Enemy(Character, EnemyState):
         )
         self.movement.patrol_center_x = self.x
 
-    def _apply_combat_config(self, config):
-        self.combat_state.configure(config.attack, config.run_attack, config.jump_attack)
-        self.reaction_controller.flinch_damage_threshold = config.flinch_damage_threshold
-        self.reaction_controller.knockdown_damage_threshold = config.knockdown_damage_threshold
-
-    def _apply_ai_config(self, config):
         self.ai_controller.config = EnemyAIConfig(
             attack_range=config.attack_range,
             attack_lane_range=config.attack_lane_range,
             melee_attack_slot_limit=config.melee_attack_slot_limit,
         )
 
-    def _apply_reward_config(self, config):
-        self.score_points = config.score_points
+        self.combat_state.configure(config.attack, config.run_attack, config.jump_attack)
+        self.reaction_controller.flinch_damage_threshold = config.flinch_damage_threshold
+        self.reaction_controller.knockdown_damage_threshold = config.knockdown_damage_threshold
 
     def apply_capability_overrides(self, overrides):
         if "can_run" in overrides:
             self.movement.can_run = overrides["can_run"]
         if "can_jump" in overrides:
             self.movement.can_jump = overrides["can_jump"]
-            if overrides["can_jump"]:
-                self.air = self.movement.air_state
+            self.air = self.movement.air_state
         if "can_run_attack" in overrides:
             self.movement.can_run_attack = overrides["can_run_attack"]
         if "can_jump_attack" in overrides:
