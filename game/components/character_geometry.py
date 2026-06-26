@@ -28,6 +28,7 @@ class CharacterGeometry:
         self.hurt_box_offset_x = int(hurt_box_offset_x)
         self.hurt_box_offset_y = int(hurt_box_offset_y)
 
+    # todo: remove if not used
     def configure(
         self,
         collision_box_w,
@@ -147,12 +148,12 @@ class CharacterGeometry:
         return owner.y
 
     def _uses_visual_y_for_attack(self, owner):
-        return owner.air and owner.combat_state.current_attack_name == owner.JUMP_ATTACK
+        return owner.movement.air and owner.combat_state.current_attack_name == owner.JUMP_ATTACK
 
     def _get_visual_y(self, owner):
-        if not owner.air:
+        if not owner.movement.air:
             return owner.y
-        return owner.air.get_visual_y(owner.y)
+        return owner.movement.air.get_visual_y(owner.y)
     
 # combat hitboxes are already in world/game pixels, not sprite-frame pixels. 
 # The code does not apply owner.sprite_scale to combat box values.

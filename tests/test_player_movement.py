@@ -172,32 +172,23 @@ class PlayerMovementTests(unittest.TestCase):
 
     def test_jump_starts_immediately_and_preserves_ground_y(self):
         owner = FakeOwner()
-        air = PlayerAirState(
-            jump_power=12,
+        movement = PlayerMovement(jump_power=12,
             gravity=0.7,
-            air_move_speed=3,
-
-        )
-        movement = PlayerMovement(air)
+            air_move_speed=3,)
 
         movement.jump_movement.start_jump(owner, FakeInput(right=True))
 
         self.assertEqual(owner.state, owner.JUMP)
         self.assertTrue(movement.is_jumping)
         self.assertEqual(owner.y, 500)
-        self.assertGreater(air.z, 0)
-        self.assertEqual(air.direction_x, 1)
+        self.assertGreater(movement.air.z, 0)
+        self.assertEqual(movement.air.direction_x, 1)
 
     def test_jump_uses_z_height_without_changing_ground_y(self):
         owner = FakeOwner()
-        air = PlayerAirState(
-            jump_power=4,
+        movement = PlayerMovement(jump_power=4,
             gravity=1,
-            air_move_speed=3,
-
-
-        )
-        movement = PlayerMovement(air)
+            air_move_speed=3,)
 
         movement.jump_movement.start_jump(owner, FakeInput())
         movement.jump_movement.update_jump_physics(owner, FakeInput())
@@ -206,40 +197,30 @@ class PlayerMovementTests(unittest.TestCase):
         movement.jump_movement.update_jump_physics(owner, FakeInput())
 
         self.assertEqual(owner.y, 500)
-        self.assertGreater(air.z, 0)
-        self.assertFalse(air.is_grounded)
+        self.assertGreater(movement.air.z, 0)
+        self.assertFalse(movement.air.is_grounded)
 
     def test_jump_lands_back_on_same_ground_anchor(self):
         owner = FakeOwner()
-        air = PlayerAirState(
-            jump_power=3,
+        movement = PlayerMovement(jump_power=3,
             gravity=2,
-            air_move_speed=3,
-
-
-        )
-        movement = PlayerMovement(air)
+            air_move_speed=3,)
 
         movement.jump_movement.start_jump(owner, FakeInput())
         for _ in range(20):
             movement.jump_movement.update_jump_physics(owner, FakeInput())
 
         self.assertEqual(owner.y, 500)
-        self.assertEqual(air.z, 0)
-        self.assertTrue(air.is_grounded)
+        self.assertEqual(movement.air.z, 0)
+        self.assertTrue(movement.air.is_grounded)
         self.assertFalse(movement.is_jumping)
         self.assertEqual(owner.state, owner.IDLE)
 
     def test_air_movement_uses_current_horizontal_input(self):
         owner = FakeOwner()
-        air = PlayerAirState(
-            jump_power=4,
+        movement = PlayerMovement(jump_power=4,
             gravity=1,
-            air_move_speed=3,
-
-
-        )
-        movement = PlayerMovement(air)
+            air_move_speed=3,)
 
         movement.jump_movement.start_jump(owner, FakeInput(right=True, up=True))
         movement.jump_movement.update_jump_physics(owner, FakeInput())
@@ -260,8 +241,7 @@ class PlayerMovementTests(unittest.TestCase):
 
     def test_landing_cancels_unfinished_jump_attack(self):
         owner = FakeOwner()
-        air = PlayerAirState(jump_power=3, gravity=2, air_move_speed=3)
-        movement = PlayerMovement(air)
+        movement = PlayerMovement(jump_power=3, gravity=2, air_move_speed=3)
 
         movement.jump_movement.start_jump(owner, FakeInput())
         owner.state = owner.JUMP_ATTACK

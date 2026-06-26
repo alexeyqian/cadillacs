@@ -33,8 +33,8 @@ class FakeEnemy:
         )
         self.combat_controller = EnemyCombatController()
         self.combat_state = EnemyCombatState(self.attack_data)
+        self.movement = type('M', (), {'air': None})()
         self.animation_controller = self
-        self.air = None
 
     def get_current_frame(self):
         return FakeFrame()

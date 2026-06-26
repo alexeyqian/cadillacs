@@ -41,6 +41,10 @@ class EnemyMovement:
         self.flank_state = EnemyFlankState()
 
     @property
+    def air(self):
+        return self.air_state
+
+    @property
     def is_jumping(self):
         return self.air_state.is_jumping
 

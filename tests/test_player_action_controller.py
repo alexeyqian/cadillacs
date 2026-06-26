@@ -79,7 +79,6 @@ class FakeOwner:
         self.intent = PlayerIntent()
         self.input_state = PlayerInputState()
         self.input_buffer = InputBuffer(default_frames=6)
-        self.air = None
         from game.components.player_combat_state import PlayerCombatState
         from game.components.player_grab_state import PlayerGrabState
         self.combat_controller = PlayerCombatController()

@@ -41,6 +41,7 @@ class FakeMovement:
     def __init__(self):
         self.is_running = False
         self.is_jumping = False
+        self.air = None
         self.run_attack_momentum_started = False
         self.last_run_attack_distance = 0
         self.run_movement = FakeRunMovement()
@@ -83,7 +84,6 @@ class FakeOwner:
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot()
         self.input_state = PlayerInputState()
-        self.air = None
         self.combat_state = PlayerCombatState()
         self.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
         self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
@@ -239,7 +239,7 @@ class AttackDataTests(unittest.TestCase):
         owner = FakeOwner()
         owner.state = owner.JUMP
         owner.movement.is_jumping = True
-        owner.air = FakeAir()
+        owner.movement.air = FakeAir()
         combat = PlayerCombatController()
 
         combat.start_jump_attack(owner)
@@ -260,7 +260,7 @@ class AttackDataTests(unittest.TestCase):
 
         owner = FakeOwner()
         owner.movement.is_jumping = True
-        owner.air = FakeAir()
+        owner.movement.air = FakeAir()
         combat = PlayerCombatController()
 
         combat.start_jump_attack(owner)
@@ -269,7 +269,7 @@ class AttackDataTests(unittest.TestCase):
 
         self.assertEqual(owner.state, owner.JUMP_ATTACK)
         self.assertIsNone(owner.combat_state.current_attack_name)
-        self.assertTrue(owner.air.has_used_jump_attack)
+        self.assertTrue(owner.movement.air.has_used_jump_attack)
 
     def test_jump_attack_uses_flying_kick_timing(self):
         attack = DEFAULT_PLAYER_ATTACKS["JUMP_ATTACK"]

@@ -40,7 +40,6 @@ class Enemy(Character, EnemyState):
         self.ai_state = EnemyAIState()
         self.intent = EnemyIntent()
         self.movement = EnemyMovement()
-        self.air = None  # set to EnemyAirState when can_jump=True
 
     def _build_controllers(self):
         self.combat_controller = EnemyCombatController()
@@ -90,8 +89,6 @@ class Enemy(Character, EnemyState):
             can_jump_attack=config.can_jump_attack,
         )
         self.movement.patrol_center_x = self.x
-        if config.can_jump:
-            self.air = self.movement.air_state
 
     def _apply_combat_config(self, config):
         self.combat_state.configure(config.attack, config.run_attack, config.jump_attack)

@@ -69,7 +69,6 @@ class FakePlayer:
         self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.grab_state = PlayerGrabState()
         self.input_state = PlayerInputState()
-        self.air = None
         self.combat_controller.start_attack(self)
         while not self.combat_state.attack_manager.is_active():
             self.combat_controller.update_attack(self)

@@ -9,7 +9,7 @@ def _weapon_power(weapon):
 def update_player_weapon_interaction(game_state, keys):
     player = game_state.player
     weapons = game_state.weapons
-    if player.air and not player.air.is_grounded:
+    if player.movement.air and not player.movement.air.is_grounded:
         return
 
     player_rect = player.get_collision_rect()

@@ -23,7 +23,6 @@ from game.core.events import GameEventQueue
 from game.entities.player_state_machine import PlayerStateMachine
 from game.input.input_buffer import InputBuffer
 from game.input.player_input_state import PlayerInputState
-from game.components.player_air_state import PlayerAirState
 
 
 class Player(Character, PlayerState):
@@ -37,24 +36,19 @@ class Player(Character, PlayerState):
     # --- Init ---
 
     def _configure_from_player_config(self, config, animation_data, anim_fps=None):
-        self._apply_identity_config(config)
-        self._apply_body_config(config)
-        self._build_state_components(config)
-        self._build_input_components()
-        self._build_capability_components(config)
-        self._build_controllers(config)
-        self._apply_combat_config(config)
-        self._build_presentation_components(animation_data, anim_fps)
-
-    def _apply_identity_config(self, config):
         self.player_id = config.player_id
         self.display_name = config.display_name
-
-    def _apply_body_config(self, config):
         self.width = int(config.width)
         self.height = int(config.height)
-        self.geometry = CharacterGeometry()
-        self.geometry.configure(
+        self.sprite_scale = config.sprite_scale
+        self.speed = config.speed
+        self.run_speed = config.run_speed
+
+        self._build_components(config)
+        self._build_controllers(config, animation_data, anim_fps)
+
+    def _build_components(self, config):
+        self.geometry = CharacterGeometry(
             config.collision_box_w,
             config.collision_box_h,
             config.hurt_box_w,
@@ -63,51 +57,39 @@ class Player(Character, PlayerState):
             config.hurt_box_offset_y,
         )
         self.health = CharacterHealth(config.max_hp)
-        self.sprite_scale = config.sprite_scale
-
-    def _build_state_components(self, config):
-        self.air = PlayerAirState(
-            config.jump_power,
-            config.jump_gravity,
-            config.air_move_speed,
-        )
         self.state_machine = PlayerStateMachine(self)
-        self.combat_state = PlayerCombatState()
-        self.grab_state = PlayerGrabState()
-        self.lifecycle_state = PlayerLifecycleState(self.x, self.y, config.lives)
-        self.reaction_state = PlayerReactionState(config.hit_stun_duration)
 
-    def _build_input_components(self):
-        self.intent = PlayerIntent()
         self.input_buffer = InputBuffer()
         self.input_state = PlayerInputState()
+        self.intent = PlayerIntent()
 
-    def _build_capability_components(self, config):
+        self.combat_state = PlayerCombatState()
+        self.grab_state = PlayerGrabState()
+        self.combat_state.attacks = config.attacks or {}
+        self.combat_state.weapon_attacks = config.weapon_attacks or {}
+        self.grab_state.grab_range = config.grab_range
+        self.reaction_state = PlayerReactionState(config.hit_stun_duration)
+        self.lifecycle_state = PlayerLifecycleState(self.x, self.y, config.lives)
         self.movement = PlayerMovement(
-            self.air,
+            jump_power=config.jump_power,
+            gravity=config.jump_gravity,
+            air_move_speed=config.air_move_speed,
             run_attack_min_distance=config.run_attack_min_distance,
         )
-        self.speed = config.speed
-        self.run_speed = config.run_speed
         self.weapon_slot = PlayerWeaponSlot()
         self.events = GameEventQueue()
 
-    def _build_controllers(self, config):
+
+    def _build_controllers(self, config, animation_data, anim_fps):
         self.combat_controller = PlayerCombatController()
         self.action_controller = PlayerActionController()
         self.grab_controller = PlayerGrabController()
         self.state_resolver = PlayerStateResolver()
         self.lifecycle_controller = PlayerLifecycleController()
         self.reaction_controller = PlayerReactionController()
-
-    def _apply_combat_config(self, config):
-        self.combat_state.attacks = config.attacks or {}
-        self.combat_state.weapon_attacks = config.weapon_attacks or {}
-        self.grab_state.grab_range = config.grab_range
-
-    def _build_presentation_components(self, animation_data, anim_fps=None):
         self.animation_controller = PlayerAnimationController(self, animation_data, anim_fps)
         self.renderer = PlayerRenderer()
+
 
     # --- Cross-controller coordination ---
 

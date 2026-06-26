@@ -38,7 +38,7 @@ class PlayerRenderer:
         else:
             sprite_world_x = owner.x - image.get_width() - offset_x
 
-        visual_y = owner.air.get_visual_y(owner.y) if owner.air else owner.y
+        visual_y = owner.movement.air.get_visual_y(owner.y) if owner.movement.air else owner.y
         sprite_y = visual_y + offset_y
         screen.blit(image, (sprite_world_x - camera_x, sprite_y))
 
@@ -77,7 +77,7 @@ class PlayerRenderer:
         if hand_anchors and frame_index < len(hand_anchors):
             # hand_anchors are in facing-right space, relative to bottom-center (owner.x, owner.y).
             anchor_x, anchor_y = hand_anchors[frame_index]
-            visual_y = owner.air.get_visual_y(owner.y) if owner.air else owner.y
+            visual_y = owner.movement.air.get_visual_y(owner.y) if owner.movement.air else owner.y
             if owner.facing_right:
                 hand_x = owner.x + anchor_x * scale
             else:

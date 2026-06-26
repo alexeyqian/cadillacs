@@ -25,6 +25,7 @@ class FakeMovement:
     is_running = False
     is_jumping = False
     last_run_attack_distance = 0
+    air = None
     run_movement = FakeRunMovement()
 
 
@@ -71,7 +72,7 @@ class FakeOwner:
         self.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
         self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.input_state = PlayerInputState()
-        self.air = None
+        self.movement = FakeMovement()
 
     def get_attack_data(self, attack_name):
         return self.combat_state.attacks.get(attack_name)
@@ -173,7 +174,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
                 return ground_y - self.z
 
         owner = FakeOwner()
-        owner.air = FakeAir()
+        owner.movement.air = FakeAir()
         hitboxes = CharacterGeometry()
         attack_data = DEFAULT_PLAYER_ATTACKS["JUMP_ATTACK"]
 
@@ -183,7 +184,7 @@ class PlayerCombatControllerHitboxTests(unittest.TestCase):
 
         attack_rect = hitboxes.get_attack_rect(owner)
 
-        self.assertEqual(attack_rect.y, owner.y - owner.air.z + attack_data.hitbox_offset_y)
+        self.assertEqual(attack_rect.y, owner.y - owner.movement.air.z + attack_data.hitbox_offset_y)
 
     def test_player_hurt_rect_comes_from_owner_config(self):
         owner = FakeHurtboxOwner()

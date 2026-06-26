@@ -1,4 +1,5 @@
 from game.components.movement_math import clamp_to_world_and_lane
+from game.components.player_air_state import PlayerAirState
 from game.components.player_attack_movement import PlayerAttackMovement
 from game.components.player_jump_movement import PlayerJumpMovement
 from game.components.player_run_movement import PlayerRunMovement
@@ -6,9 +7,11 @@ from game.settings import RUN_ATTACK_REQUIRED_DISTANCE
 
 
 class PlayerMovement:
-    def __init__(self, air_state=None, run_attack_min_distance=RUN_ATTACK_REQUIRED_DISTANCE):
+    def __init__(self, jump_power=None, gravity=None, air_move_speed=None,
+                 run_attack_min_distance=RUN_ATTACK_REQUIRED_DISTANCE):
+        self.air = PlayerAirState(jump_power, gravity, air_move_speed)
         self.run_movement = PlayerRunMovement(run_attack_min_distance)
-        self.jump_movement = PlayerJumpMovement(air_state)
+        self.jump_movement = PlayerJumpMovement(self.air)
         self.attack_movement = PlayerAttackMovement()
 
         # True when the player moved at least one pixel this frame

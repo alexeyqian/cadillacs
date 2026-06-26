@@ -121,7 +121,7 @@ def make_player_like():
     player.input_buffer = InputBuffer()
     player.input_state = PlayerInputState()
     player.movement = FakeMovement()
-    player.air = None
+    player.movement.air = None
     player.combat_controller = PlayerCombatController()
     player.combat_state = PlayerCombatState()
     player.combat_state.attacks = DEFAULT_PLAYER_ATTACKS

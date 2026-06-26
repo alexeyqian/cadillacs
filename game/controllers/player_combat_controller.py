@@ -71,15 +71,15 @@ class PlayerCombatController:
         cs = owner.combat_state
         if not owner.movement.is_jumping:
             return
-        if owner.air and not owner.air.can_start_jump_attack():
+        if owner.movement.air and not owner.movement.air.can_start_jump_attack():
             return
         if cs.is_attacking:
             return
 
         move_data = owner.get_attack_data(owner.JUMP_ATTACK)
         cs.attack_manager.start(owner.JUMP_ATTACK, move_data)
-        if owner.air:
-            owner.air.mark_jump_attack_used()
+        if owner.movement.air:
+            owner.movement.air.mark_jump_attack_used()
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
 
     def start_grab_knee_attack(self, owner):

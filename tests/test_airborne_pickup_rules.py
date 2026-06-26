@@ -30,7 +30,7 @@ class FakePlayer:
         self.y = 100
         self.width = 40
         self.height = 80
-        self.air = FakeAir(is_grounded)
+        self.movement = type("M", (), {"air": FakeAir(is_grounded)})()
         self.weapon_slot = FakeWeaponSlot()
         self.health = type("FakeHealth", (), {"hp": 50, "max_hp": 100})()
 

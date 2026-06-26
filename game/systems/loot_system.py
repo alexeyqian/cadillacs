@@ -40,7 +40,7 @@ def create_object_loot(game_state):
 def update_loot_pickup(game_state):
     player = game_state.player
     loot_items = game_state.loot_items
-    if player.air and not player.air.is_grounded:
+    if player.movement.air and not player.movement.air.is_grounded:
         return
 
     # inflate for easy to pickup
