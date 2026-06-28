@@ -15,6 +15,8 @@ class EnemyReactionController:
         return owner.reaction_state._hit_stun_remaining > 0
 
     def update_reactions(self, owner):
+        if owner.state == owner.DEAD:
+            return
         was_in_hit_stun = owner.reaction_state._hit_stun_remaining > 0
         self._tick_hit_stun(owner)
         self._apply_knockback(owner)

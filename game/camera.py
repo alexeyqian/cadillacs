@@ -2,7 +2,17 @@ import random
 
 from game.settings import PLAYER_SCREEN_EDGE_MARGIN, SCREEN_WIDTH
 
+# It captures the camera's current x at the exact moment the wave fires, 
+# clamped so it doesn't scroll past the world boundary. 
+# There is no direct arithmetic from trigger_x — the lock position is 
+# wherever the camera happens to be when the player crosses the trigger.
 
+# Camera locks on each update, if level.camera_locked is True, 
+# the camera calls _move_to_lock(level.lock_x) which sets self.x = lock_x 
+# and stops following the player.
+
+# Arena bounds uses level.lock_x directly as arena_left, 
+# and lock_x + SCREEN_WIDTH as arena_right.
 class Camera:
     def __init__(self):
         self.x = 0

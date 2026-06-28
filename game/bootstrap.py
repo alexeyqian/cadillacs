@@ -6,7 +6,7 @@ from game.display import get_window_size
 from game.factories.player_factory import PlayerFactory
 from game.game_state import GameState
 from game.level.level import Level
-from game.level.stage_config import EPISODE_1_STAGES
+from game.level.stage_config import STAGES
 from game.level.stage_loader import load_current_stage
 from game.level.stage_manager import StageManager
 from game.managers.score_manager import ScoreManager
@@ -25,7 +25,7 @@ def create_display():
 
 
 def create_game_state(screen, clock):
-    stage_manager = StageManager(EPISODE_1_STAGES, settings.START_STAGE)
+    stage_manager = StageManager(STAGES, settings.START_STAGE)
 
     game_state = GameState(
         screen=screen,

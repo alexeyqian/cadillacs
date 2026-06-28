@@ -4,10 +4,11 @@ def is_player_blocked(player):
 
 
 def get_active_enemies(game_state):
-    """Return enemies that are not reaction-locked this frame."""
+    """Return enemies that are alive and not reaction-locked this frame."""
     return [
         enemy for enemy in game_state.enemies
-        if not enemy.reaction_controller.is_reaction_blocked(enemy)
+        if enemy.state != enemy.DEAD
+        and not enemy.reaction_controller.is_reaction_blocked(enemy)
     ]
 
 

@@ -35,7 +35,7 @@ def main():
         # including lifecycle guard, decide if player/entity can participate this frame.
         # 0.1 player death check
         if (game_state.player.state == game_state.player.DEAD
-            and game_state.player.lifecycle_controller.lives <= 0
+            and game_state.player.lifecycle_state.lives <= 0
             and game_state.credits > 0):
             game_state.continue_active = True
 
@@ -78,7 +78,7 @@ def update_continue(game_state, keys):
             return
         game_state.credits -= 1
         player = game_state.player
-        player.lifecycle_controller.lives = 3
+        player.lifecycle_state.lives = 3
         player.health.hp = player.health.max_hp
         player.state_machine.change_to(player, player.IDLE)
         player.x = 960

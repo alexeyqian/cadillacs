@@ -1,4 +1,85 @@
-EPISODE_1_STAGES = [
+STAGES = [
+        {
+        "id": "episode_2_stage_1_woods",
+        "name": "Rooftop Approach",
+        "background": "assets/backgrounds/episode_2/2_1.png",
+        "world_width": 3546,
+        "world_height": 1080,
+        "player_start": (160, 620),
+        "lane_top": 520,
+        "lane_bottom": 900,
+        "waves": [
+            {
+                "trigger_x": 2600,
+                "max_active": 3,
+                "spawns": [
+                    {
+                        "enemy_type": "ferris",
+                        "count": 2
+                    },
+                ],
+            },
+            {
+                "trigger_x": 5000,
+                "max_active": 4,
+                "spawns": [
+                    {
+                        "enemy_type": "ferris",
+                        "count": 2
+                    },
+                    {
+                        "enemy_type": "gneiss",
+                        "side": "left",
+                        "count": 2
+                    }
+                ],
+            },
+            {
+                "trigger_x": 7400,
+                "max_active": 4,
+                "spawns": [
+                    {
+                        "enemy_type": "gneiss",
+                        "count": 2
+                    },
+                    {
+                        "enemy_type": "black_elmer",
+                        "side": "left",
+                        "count": 1
+                    },
+                ],
+            },
+            {
+                "trigger_x": 10680,
+                "max_active": 4,
+                "spawns": [
+                    {
+                        "enemy_type": "gneiss",
+                        "count": 2
+                    },
+                    {
+                        "enemy_type": "black_elmer",
+                        "side": "left",
+                        "count": 1
+                    },
+                ],
+            },
+        ],
+        "weapons": [
+            #{"type": "knife", "x": 850, "y": 500},
+            #{"type": "bat", "x": 1750, "y": 500},
+            #{"type": "pistol", "x": 2260, "y": 500},
+        ],
+        "objects": [
+            # for wave 2
+            {"kind": "breakable", "x": 2000, "y": 500, "loot_type":"health"},
+            # for wave 3
+            {"kind": "breakable", "x": 3000, "y": 500, "loot_type":"health"},
+            #{"kind": "barrel", "x": 1740, "y": 760},
+        ],
+        "completion": "clear_waves_then_exit",
+        "exit_rect": (2700, 340, 100, 260),
+    },
     {
         "id": "episode_1_stage_1_rooftop",
         "name": "Rooftop Approach",

@@ -27,7 +27,7 @@ class Enemy(Character, EnemyState):
         self.pending_projectile = None
 
         self._build_components()
-        self._build_controllers()
+        self._build_controllers(animation_data, anim_fps)
         self._apply_config(get_enemy_config(self.enemy_type))
 
     # --- Init helpers ---
