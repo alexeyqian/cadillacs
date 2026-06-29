@@ -14,6 +14,20 @@ def main_draw(game_state):
     main_draw_world(game_state)
     main_draw_ui(game_state)
 
+def _draw_water_splash(screen, camera_x, level, entities):
+    if not level.water_splash or level.water_zone_start_x is None:
+        return
+    tile = level.water_splash
+    tile_w, tile_h = tile.get_width(), tile.get_height()
+    for entity in entities:
+        if entity.x < level.water_zone_start_x:
+            continue
+        if level.water_zone_end_x is not None and entity.x > level.water_zone_end_x:
+            continue
+        screen_x = int(entity.x - camera_x - tile_w // 2)
+        screen_y = int(entity.y - tile_h + 10)
+        screen.blit(tile, (screen_x, screen_y))
+
 def main_draw_world(game_state):
     screen = game_state.screen
     camera = game_state.camera
@@ -71,6 +85,8 @@ def main_draw_world(game_state):
     # draw floating texts
     for floating_text in floating_texts:
         floating_text.draw(screen, camera.x)
+
+    _draw_water_splash(screen, camera.x, level, entities)
 
     #level.draw_props(screen, camera.x, "front")
     level.background.draw_front(screen, camera.x)

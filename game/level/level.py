@@ -1,6 +1,7 @@
 from game.level.lane import LaneSystem
 from game.level.background import Background
 from game.level.wave import BossWave, SpawnInstruction, Wave
+from game.managers.asset_manager import AssetManager
 
 
 class Level:
@@ -20,6 +21,12 @@ class Level:
 
         # Presentation
         self.background = Background(stage_data["background"])
+
+        # Water wading: world-x where water begins, plus the splash tile
+        self.water_zone_start_x = stage_data.get("water_zone_start_x")
+        self.water_zone_end_x = stage_data.get("water_zone_end_x")
+        splash_path = stage_data.get("water_splash")
+        self.water_splash = AssetManager.load_image(splash_path, alpha=True) if splash_path else None
 
         # Wave state
         self.current_wave = 0
