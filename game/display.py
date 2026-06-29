@@ -1,34 +1,22 @@
 import pygame
 
-from game.settings import (
-    EXTERNAL_HEIGHT,
-    EXTERNAL_WIDTH,
-    SCREEN_HEIGHT,
-    SCREEN_WIDTH,
-)
+from game.settings import SCREEN_HEIGHT, SCREEN_WIDTH
+
+ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT
+
 
 def get_window_size():
-    # Use configured external dimensions directly.
-    # pygame.display.Info() returns the usable desktop area on macOS,
-    # which excludes the Dock and menu bar, causing the window to be
-    # shorter than the actual screen. EXTERNAL_WIDTH/HEIGHT are the
-    # true monitor resolution and should be trusted.
-    max_window_w = EXTERNAL_WIDTH
-    max_window_h = EXTERNAL_HEIGHT
-    scale = min(max_window_w / SCREEN_WIDTH, max_window_h / SCREEN_HEIGHT)
-    scale = min(1.0, scale)
-
-    return (
-        max(1, int(SCREEN_WIDTH * scale)),
-        max(1, int(SCREEN_HEIGHT * scale)),
-    )
+    desktop_sizes = pygame.display.get_desktop_sizes()
+    dw, dh = desktop_sizes[0] if desktop_sizes else (SCREEN_WIDTH, SCREEN_HEIGHT)
+    if dw / dh > ASPECT:
+        return (int(dh * ASPECT), dh)
+    else:
+        return (dw, int(dw / ASPECT))
 
 
 def present_screen(screen, window):
-    if screen.get_size() == window.get_size():
-        window.blit(screen, (0, 0))
-    else:
-        scaled = pygame.transform.smoothscale(screen, window.get_size())
-        window.blit(scaled, (0, 0))
-
+    ww, wh = window.get_size()
+    scaled = pygame.transform.smoothscale(screen, (ww, wh))
+    window.fill((0, 0, 0))
+    window.blit(scaled, (0, 0))
     pygame.display.flip()
