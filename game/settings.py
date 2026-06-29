@@ -10,7 +10,7 @@ SCREEN_WIDTH=1920
 SCREEN_HEIGHT=1080
 # total stage width, should around 3 screens
 WORLD_WIDTH=SCREEN_WIDTH*4
-PLAYER_SCREEN_EDGE_MARGIN=80
+PLAYER_SCREEN_EDGE_MARGIN=20
 
 # Classical Proportions (Artistic & Anatomical)
 # Width-to-height ratio: 1:4 ratio

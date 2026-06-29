@@ -8,6 +8,7 @@ from game.system_event_handler import handle_system_events
 
 from game.level.stage_loader import advance_to_next_stage
 from game.systems.gameplay_system import update_gameplay
+from game.systems.bounds_system import apply_player_camera_bounds
 
 from main_draw import main_draw
 
@@ -59,7 +60,8 @@ def main():
         # info: advance timers happens at each component's beginning of update function
         update_gameplay(game_state, keys)
         game_state.camera.update(game_state.player, game_state.level)
-        
+        apply_player_camera_bounds(game_state)
+
         # 3. render and clock tick
         main_draw(game_state)
         present_screen(screen, window)
