@@ -1,6 +1,6 @@
 import random
 
-from game.settings import PLAYER_SCREEN_EDGE_MARGIN, SCREEN_WIDTH
+from game.settings import SCREEN_WIDTH
 
 # It captures the camera's current x at the exact moment the wave fires, 
 # clamped so it doesn't scroll past the world boundary. 
@@ -30,9 +30,6 @@ class Camera:
         self._clamp_to_world(level.world_width)
         self._apply_shake_offset(shake_active)
 
-        if not level.camera_locked:
-            self._keep_player_inside_view(player)
-
     def shake(self, strength, duration):
         self.shake_strength = max(self.shake_strength, strength)
         self.shake_timer = max(self.shake_timer, duration)
@@ -48,27 +45,7 @@ class Camera:
             self.x = lock_x
 
     def _follow_player(self, player):
-        left_limit, right_limit = self._get_player_view_limits(player)
-        half_width = player.width // 2
-
-        if player.x < left_limit:
-            self.x = player.x - half_width - PLAYER_SCREEN_EDGE_MARGIN
-        elif player.x > right_limit:
-            self.x = player.x - SCREEN_WIDTH + half_width + PLAYER_SCREEN_EDGE_MARGIN
-
-    def _keep_player_inside_view(self, player):
-        left_limit, right_limit = self._get_player_view_limits(player)
-
-        if player.x < left_limit:
-            player.x = left_limit
-        if player.x > right_limit:
-            player.x = right_limit
-
-    def _get_player_view_limits(self, player):
-        half_width = player.width // 2
-        left_limit = self.x + half_width + PLAYER_SCREEN_EDGE_MARGIN
-        right_limit = self.x + SCREEN_WIDTH - half_width - PLAYER_SCREEN_EDGE_MARGIN
-        return left_limit, right_limit
+        self.x = player.x - SCREEN_WIDTH // 2
 
     def _clamp_to_world(self, world_width):
         max_scroll = max(0, world_width - SCREEN_WIDTH)

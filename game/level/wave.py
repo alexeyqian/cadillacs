@@ -46,14 +46,14 @@ class Wave:
         viewport_left = camera_x
         viewport_right = camera_x + SCREEN_WIDTH
 
-        max_offscreen = 100
+        max_offscreen = -100
         for instruction in self.spawn_instructions:
             if instruction.side == "left":
-                spawn_x = viewport_left - max_offscreen
+                spawn_x = viewport_left - max_offscreen # instruction.enter_offset
                 if player_x is not None:
                     spawn_x = min(spawn_x, player_x - instruction.min_player_distance)
             else:
-                spawn_x = viewport_right + max_offscreen
+                spawn_x = viewport_right + max_offscreen # instruction.enter_offset
                 if player_x is not None:
                     spawn_x = max(spawn_x, player_x + instruction.min_player_distance)
 
