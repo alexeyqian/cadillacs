@@ -2,7 +2,9 @@ STAGES = [
         {
         "id": "episode_2_stage_1_woods",
         "name": "Rooftop Approach",
+        "background_far": "assets/backgrounds/episode_2/2_1_far_background.png",
         "background": "assets/backgrounds/episode_2/2_1.png",
+        "background_front": "assets/backgrounds/episode_2/2_1_front_decoration.png",
         "water_zone_start_x": 6480,
         "water_zone_end_x": 9384,
         "water_splash": "assets/backgrounds/episode_2/water_splash.png",

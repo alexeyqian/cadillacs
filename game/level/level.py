@@ -19,8 +19,14 @@ class Level:
         self.lane_bottom = stage_data["lane_bottom"]
         self.lane_system = LaneSystem(self.lane_top, self.lane_bottom)
 
-        # Presentation
-        self.background = Background(stage_data["background"])
+        # Presentation — background_far/mid/front are optional; background is fallback far layer
+        far = stage_data.get("background_far", stage_data["background"])
+        mid = stage_data["background"] if "background_far" in stage_data else None
+        self.background = Background(
+            far,
+            mid_file=mid,
+            front_file=stage_data.get("background_front"),
+        )
 
         # Water wading: world-x where water begins, plus the splash tile
         self.water_zone_start_x = stage_data.get("water_zone_start_x")

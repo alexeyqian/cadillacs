@@ -28,4 +28,4 @@ class Background:
 
     def draw_front(self, screen, camera_x):
         if self.front:
-            self.draw_layer(screen, self.front, camera_x, 0.85)
+            screen.blit(self.front, (-camera_x, 0))
