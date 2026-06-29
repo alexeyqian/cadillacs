@@ -20,11 +20,10 @@ class Background:
             screen.blit(image, (x, 0+offset_y))
             x += image_width
 
-    def draw_back(self, screen, camera_x):
-        #self.draw_layer(screen,self.far, camera_x, 0.25)
+    def draw_far_and_mid(self, screen, camera_x):
         screen.blit(self.far, (-camera_x, 0))
         if self.mid:
-            self.draw_layer(screen,self.mid, camera_x, 0.55, 120)
+            screen.blit(self.mid, (-camera_x, 0))
 
     def draw_front(self, screen, camera_x):
         if self.front:

@@ -42,10 +42,7 @@ def main_draw_world(game_state):
     hit_sparks = game_state.hit_sparks
     floating_texts = game_state.floating_texts
 
-    # draw background
-    #screen.fill((120, 190, 255))
-    level.background.draw_back(screen, camera.x)
-    #level.draw_props(screen, camera.x, "back")
+    level.background.draw_far_and_mid(screen, camera.x)
 
     # depth sorting
     # Depth Sorting: Characters need to scale in size and dynamically re-order in front of 
