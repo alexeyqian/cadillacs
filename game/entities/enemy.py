@@ -16,6 +16,7 @@ from game.controllers.enemy_state_controller import EnemyStateController
 from game.controllers.enemy_ai_controller import EnemyAIController, EnemyAIConfig
 from game.controllers.enemy_loot_controller import EnemyLootController
 from game.combat.damage_request import DamageRequest
+from game.core.events import GameEventQueue
 
 class Enemy(Character, EnemyState):
     def __init__(self, x, y, enemy_type,
@@ -39,6 +40,7 @@ class Enemy(Character, EnemyState):
         self.movement = EnemyMovement()
         self.combat_state = EnemyCombatState()
         self.reaction_state = EnemyReactionState()
+        self.events = GameEventQueue()
 
     def _build_controllers(self, animation_data, anim_fps=None):
         self.ai_controller = EnemyAIController()

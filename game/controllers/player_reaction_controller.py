@@ -17,8 +17,10 @@ class PlayerReactionController:
         owner.health.take_damage(damage)
         owner.state_machine.change_to(owner, owner.HIT)
         if owner.health.is_dead():
+            if hasattr(owner, "events"): owner.events.emit("player_dead")
             owner._on_death()
             return
+        if hasattr(owner, "events"): owner.events.emit("player_hit")
         self._start_hit_stun(owner, reaction)
 
     def update_hit_state(self, owner):

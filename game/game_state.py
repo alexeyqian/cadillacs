@@ -1,4 +1,6 @@
 from game.managers.announcement_manager import AnnouncementManager
+from game.core.sound_manager import SoundManager
+
 class GameState:
     def __init__(
         self,
@@ -47,6 +49,7 @@ class GameState:
 
         self.announcement_manager = AnnouncementManager()
         self.explosions = explosions
+        self.sound_manager = SoundManager()
 
         self.running = True
         # Game paused flag. Toggle with P key to pause/resume gameplay.

@@ -81,6 +81,7 @@ class PlayerCombatController:
         if owner.movement.air:
             owner.movement.air.mark_jump_attack_used()
         owner.state_machine.change_to(owner, owner.JUMP_ATTACK)
+        if hasattr(owner, "events"): owner.events.emit("attack")
 
     def start_grab_knee_attack(self, owner):
         cs = owner.combat_state
@@ -178,6 +179,7 @@ class PlayerCombatController:
         self._reset_combo(owner)
         owner.input_state.run_attack_requires_attack_release = True
         owner.state_machine.change_to(owner, owner.RUN_ATTACK)
+        if hasattr(owner, "events"): owner.events.emit("attack")
 
     def _start_combo_attack(self, owner):
         cs = owner.combat_state
@@ -204,6 +206,7 @@ class PlayerCombatController:
 
         cs.attack_manager.start(attack_name, move_data)
         cs._combo_window_remaining = move_data.combo_window
+        if hasattr(owner, "events"): owner.events.emit("attack")
 
     def _reset_combo(self, owner):
         cs = owner.combat_state

@@ -133,12 +133,16 @@ class EnemyReactionController:
         owner.health.hp = 0
         owner.state = owner.DEAD
         owner.reaction_state._death_remaining = 30
+        if hasattr(owner, "events"):
+            owner.events.emit("dead")
 
     def _knockdown(self, owner):
         self._clear_combat_commitment(owner)
         owner.state = owner.KNOCKDOWN
         owner.reaction_state._knockdown_remaining = 60
         owner.reaction_state._knockback_velocity = 0
+        if hasattr(owner, "events"):
+            owner.events.emit("hit")
 
     def _apply_flinch(self, owner, attacker_x, reaction):
         stun_frames = reaction.stun_frames
@@ -147,6 +151,8 @@ class EnemyReactionController:
         owner.reaction_state._hit_stun_remaining = stun_frames
         owner.state = owner.HIT
         self._clear_combat_commitment(owner)
+        if hasattr(owner, "events"):
+            owner.events.emit("hit")
 
         knockback = reaction.knockback_velocity
         owner.reaction_state._knockback_velocity = knockback if attacker_x < owner.x else -knockback

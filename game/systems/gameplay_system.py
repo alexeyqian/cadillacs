@@ -30,6 +30,7 @@ from game.systems.projectile_system import (
 )
 from game.systems.lifecycle_system import advance_enemy_frame_state, advance_player_frame_state
 from game.systems.wave_system import update_wave_completion, update_wave_system
+from game.systems.sound_system import update_sound
 
 # Frame order: frame-state -> decisions -> movement -> collision -> combat -> reactions -> cleanup -> presentation
 # Camera and render happen after gameplay in main.py.
@@ -142,3 +143,5 @@ def _update_presentation(game_state):
 
     for enemy in game_state.enemies:
         enemy.update_animation()
+
+    update_sound(game_state, game_state.sound_manager)

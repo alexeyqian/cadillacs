@@ -16,11 +16,14 @@ os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
 #info = pygame.display.Info()
 
 def main():
+    pygame.mixer.pre_init(44100, -16, 2, 512)
     pygame.init()
+    pygame.mixer.set_num_channels(16)
 
     window, screen = create_display()
     clock = pygame.time.Clock()
     game_state = create_game_state(screen, clock)
+    #game_state.sound_manager.play_bgm("stage1")
 
     while game_state.running:
         # 0. System event check, such as: show menu, pause/resume, debug etc
