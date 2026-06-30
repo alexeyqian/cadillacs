@@ -23,17 +23,8 @@ class EnemyStateController:
         if owner.state == owner.GETUP:
             self._update_getup_state(owner)
 
-    def _update_thrown_state(self, owner, friction=0.9, stop_threshold=1):
-        rs = owner.reaction_state
-        if rs._thrown_velocity_x > 0:
-            owner.facing_right = True
-        elif rs._thrown_velocity_x < 0:
-            owner.facing_right = False
-        owner.x += rs._thrown_velocity_x
-        rs._thrown_velocity_x *= friction
-        rs._thrown_remaining -= 1
-        if rs._thrown_remaining <= 0 or abs(rs._thrown_velocity_x) < stop_threshold:
-            rs._thrown_velocity_x = 0
+    def _update_thrown_state(self, owner):
+        if owner.reaction_controller.tick_thrown(owner):
             owner.state = owner.KNOCKDOWN
             owner.reaction_controller.start_knockdown(owner, 60)
 

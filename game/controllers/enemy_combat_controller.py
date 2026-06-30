@@ -26,6 +26,9 @@ class EnemyCombatController:
     def is_attack_active(self, owner):
         return owner.combat_state.attack_manager.is_active()
 
+    def is_on_cooldown(self, owner):
+        return owner.combat_state.cooldown_remaining > 0
+
     def reserve_attack_slot(self, owner):
         owner.combat_state.owns_attack_slot = True
 

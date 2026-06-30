@@ -8,9 +8,9 @@ class PlayerStateResolver:
                 owner.state_machine.change_to(owner, owner.JUMP)
             return
 
-        if owner.grab_state.throw_remaining > 0:
+        if owner.grab_controller.is_throwing(owner):
             owner.state_machine.change_to(owner, owner.THROW)
-        elif owner.grab_state.grab_knee_remaining > 0:
+        elif owner.grab_controller.is_grab_kneeing(owner):
             owner.state_machine.change_to(owner, owner.GRAB_KNEE)
         elif owner.grab_state.grabbed_enemy:
             owner.state_machine.change_to(owner, owner.GRAB)

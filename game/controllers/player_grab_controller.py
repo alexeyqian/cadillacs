@@ -58,6 +58,12 @@ class PlayerGrabController:
         gs.grab_pressed = True
         gs.failed_grab_feedback = True
 
+    def is_throwing(self, owner):
+        return owner.grab_state.throw_remaining > 0
+
+    def is_grab_kneeing(self, owner):
+        return owner.grab_state.grab_knee_remaining > 0
+
     def grab_enemy(self, owner, enemy):
         owner.grab_state.grabbed_enemy = enemy
         enemy.grabbed_by_player()

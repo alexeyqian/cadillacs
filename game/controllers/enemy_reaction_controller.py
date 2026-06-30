@@ -113,6 +113,21 @@ class EnemyReactionController:
     def is_death_finished(self, owner):
         return owner.reaction_state._death_remaining <= 0
 
+    def tick_thrown(self, owner, friction=0.9, stop_threshold=1):
+        """Advance thrown physics one frame. Returns True when thrown state should end."""
+        rs = owner.reaction_state
+        if rs._thrown_velocity_x > 0:
+            owner.facing_right = True
+        elif rs._thrown_velocity_x < 0:
+            owner.facing_right = False
+        owner.x += rs._thrown_velocity_x
+        rs._thrown_velocity_x *= friction
+        rs._thrown_remaining -= 1
+        if rs._thrown_remaining <= 0 or abs(rs._thrown_velocity_x) < stop_threshold:
+            rs._thrown_velocity_x = 0
+            return True
+        return False
+
     def start_thrown(self, owner, direction, damage, velocity=14, duration=30):
         rs = owner.reaction_state
         rs._thrown_velocity_x = velocity * direction

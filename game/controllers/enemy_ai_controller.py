@@ -91,7 +91,7 @@ class EnemyAIController:
     def _try_run_attack(self, owner, context):
         if not owner.movement.can_run_attack:
             return
-        if owner.combat_state.cooldown_remaining > 0:
+        if owner.combat_controller.is_on_cooldown(owner):
             return
         dx, dy, distance_x, distance_y = owner.movement.get_player_distance(owner, context.player)
         if distance_x <= self.config.attack_range * 1.5:
@@ -101,7 +101,7 @@ class EnemyAIController:
     def _try_jump_attack(self, owner, context):
         if not owner.movement.can_jump_attack:
             return
-        if owner.combat_state.cooldown_remaining > 0:
+        if owner.combat_controller.is_on_cooldown(owner):
             return
         dx, dy, distance_x, distance_y = owner.movement.get_player_distance(owner, context.player)
         if distance_x <= self.config.attack_range * 2:
@@ -143,7 +143,7 @@ class EnemyAIController:
         owner.state = owner.PATROL
 
     def _can_attack_player(self, owner, context, distance_x):
-        if owner.combat_state.cooldown_remaining > 0:
+        if owner.combat_controller.is_on_cooldown(owner):
             return False
         if not self._is_in_attack_range(owner, context, distance_x):
             return False
@@ -185,7 +185,7 @@ class EnemyAIController:
         return closest_enemy is owner
 
     def _is_eligible_melee_attacker(self, enemy, player):
-        if enemy.combat_state.cooldown_remaining > 0:
+        if enemy.combat_controller.is_on_cooldown(enemy):
             return False
         if enemy.combat_state.owns_attack_slot:
             return True
