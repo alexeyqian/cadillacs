@@ -187,7 +187,7 @@ class Enemy(Character, EnemyState):
     # --- Public API ---
 
     def is_ready_to_remove(self):
-        return self.state_controller.is_ready_to_remove(self)
+        return self.state == self.DEAD and self.reaction_controller.is_death_finished(self)
 
     def take_damage(self, damage, attacker_x=None, reaction=None):
         if isinstance(damage, DamageRequest):

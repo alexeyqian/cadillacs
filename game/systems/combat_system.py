@@ -35,14 +35,14 @@ def handle_player_attack_collision(game_state):
         return
 
     if player.state == player.GRAB_KNEE:
-        _handle_grab_knee_collision(game_state)
+        _handle_grab_knee_attack(game_state)
         return
 
     _handle_player_melee_enemy_collision(game_state, attack_rect)
     _handle_player_breakable_collision(game_state, attack_rect)
 
 
-def _handle_grab_knee_collision(game_state):
+def _handle_grab_knee_attack(game_state):
     player = game_state.player
     enemy = player.grab_state.grabbed_enemy
     if not enemy or enemy.state == enemy.DEAD:
@@ -53,9 +53,7 @@ def _handle_grab_knee_collision(game_state):
     damage = player.combat_controller.attack_result.get_damage(player)
     enemy.take_grab_knee_damage(damage)
     enemy_rect = enemy.get_frame_rect()
-    game_state.floating_texts.append(
-        FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), YELLOW_COLOR)
-    )
+    game_state.floating_texts.append(FloatingText(enemy_rect.centerx, enemy_rect.top - 10, str(int(damage)), YELLOW_COLOR))
     game_state.score_manager.register_hit()
     player.combat_controller.mark_attack_hit(player, enemy)
     if enemy.state == enemy.DEAD:

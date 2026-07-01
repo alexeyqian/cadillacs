@@ -39,6 +39,3 @@ class EnemyStateController:
 
     def _update_dead_state(self, owner):
         owner.reaction_controller.tick_death(owner)
-
-    def is_ready_to_remove(self, owner):
-        return owner.state == owner.DEAD and owner.reaction_controller.is_death_finished(owner)

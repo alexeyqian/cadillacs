@@ -37,72 +37,72 @@ from game.systems.sound_system import update_sound
 # -> collision -> combat -> reactions -> cleanup -> presentation
 def update_gameplay(game_state, keys):
     # --- READ: determine who can act this frame ---
-    player_can_act = _get_player_can_act(game_state)
+    player_can_act = game_state.player.can_act()
 
     # --- LOGIC: decisions → movement → combat → reactions ---
     player_input = PlayerInput(keys)
     player_context = PlayerActionContext(player_input)
+    # player action request (done by player)
+    if player_can_act:
+        update_player_weapon_interaction(game_state, keys) # move to other place
+        handle_player_grab_or_throw(game_state, keys) # move to other place
+        game_state.player.request_actions(player_context) # todo: should we return action request here?
+    # enemy action request (done by ai)
     enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
+    for enemy in game_state.enemies:
+        enemy.update_ai(enemy_context) # todo: should we return action request here?
 
-    _update_decisions(game_state, keys, player_context, player_can_act, enemy_context)
-    old_player_position = _update_movement(game_state, player_context, player_can_act, enemy_context)
-    _update_collisions(game_state, old_player_position)
-    _update_combat(game_state, player_context, player_can_act, enemy_context)
+    collect_player_projectiles(game_state)
+    for enemy in game_state.enemies:
+        collect_enemy_projectile(game_state, enemy)
+
+    _update_movement(game_state, player_context, enemy_context)
+    _update_collisions(game_state)
+    _update_combat(game_state, player_context, enemy_context)
     _update_reactions(game_state)
 
-    # --- ADVANCE: state transitions + timers after this frame's reactions are settled ---
-    if player_can_act:
-        game_state.player.advance_timers()
+    # advance timers
+    game_state.player.advance_timers()
     for enemy in game_state.enemies:
         enemy.advance_timers()
 
-    _update_spawn_and_cleanup(game_state)
+    _update_loot_and_effects(game_state)
+    _update_waves(game_state)
     _cleanup_game_state(game_state)
     _update_presentation(game_state)
 
 
-def _update_decisions(game_state, keys, player_context, player_can_act, enemy_context):
-    for enemy in game_state.enemies:
-        enemy.update_ai(enemy_context)
-
-    if player_can_act:
-        update_player_weapon_interaction(game_state, keys)
-        handle_player_grab_or_throw(game_state, keys)
-        game_state.player.request_actions(player_context)
-
-
-def _update_movement(game_state, player_context, player_can_act, enemy_context):
-    old_player_position = (game_state.player.x, game_state.player.y)
-
-    if player_can_act:
-        game_state.player.update_movement(player_context)
+def _update_movement(game_state, player_context, enemy_context):
+    game_state.player.update_movement(player_context)
 
     for enemy in game_state.enemies:
         enemy.update_movement(enemy_context)
 
-    apply_enemy_level_bounds(game_state)
     apply_player_level_bounds(game_state)
+    apply_enemy_level_bounds(game_state)
     apply_arena_bounds(game_state)
 
     update_projectiles(game_state)
 
-    return old_player_position
 
-
-def _update_collisions(game_state, old_player_position):
-    old_x, old_y = old_player_position
+def _update_collisions(game_state):
+    x, y = (game_state.player.x, game_state.player.y)
 
     resolve_enemy_enemy_collisions(game_state)
-    resolve_player_enemy_collisions(game_state, old_x, old_y)
+    resolve_player_enemy_collisions(game_state, x, y)
+
     apply_player_level_bounds(game_state)
+    apply_enemy_level_bounds(game_state)
     apply_arena_bounds(game_state)
+
+    # todo: move to combat system?
     handle_player_projectile_collision(game_state)
     handle_enemy_projectile_collision(game_state)
 
 
-def _update_combat(game_state, player_context, player_can_act, enemy_context):
-    if player_can_act:
-        game_state.player.update_attack(player_context)
+def _update_combat(game_state, player_context, enemy_context):
+    game_state.player.update_attack(player_context)
+    # todo: move to player.update_attack()?
     handle_player_attack_collision(game_state)
 
     for enemy in game_state.enemies:
@@ -114,18 +114,6 @@ def _update_reactions(game_state):
 
     for enemy in game_state.enemies:
         enemy.update_reactions()
-
-def _update_spawn_and_cleanup(game_state):
-    _collect_projectiles(game_state)
-    _update_loot_and_effects(game_state)
-    _update_waves(game_state)
-
-
-def _collect_projectiles(game_state):
-    collect_player_projectiles(game_state)
-    for enemy in game_state.enemies:
-        collect_enemy_projectile(game_state, enemy)
-
 
 def _update_loot_and_effects(game_state):
     create_explosions_from_objects(game_state)
@@ -154,13 +142,6 @@ def _update_presentation(game_state):
         enemy.update_animation()
 
     update_sound(game_state, game_state.sound_manager)
-
-
-def _get_player_can_act(game_state):
-    """Returns player_can_act based on current state. Pure read."""
-    player = game_state.player
-    is_blocked = player.state == player.DEAD or player.reaction_controller.is_in_hit_stun(player)
-    return not is_blocked
 
 def _cleanup_game_state(game_state):
     # remove dead enemies

@@ -125,6 +125,8 @@ class Player(Character, PlayerState):
         self.action_controller.update(self, context.player_input)
 
     def update_movement(self, context):
+        if not self.can_act():
+            return
         self._try_start_jump()
         self.movement.update_movement(self, context.player_input)
         self.movement.jump_movement.update_jump_physics(self, context.player_input)
@@ -132,6 +134,10 @@ class Player(Character, PlayerState):
         self.grab_controller.update_grabbed_enemy_position(self)
 
     def update_attack(self, context=None):
+        if not self.can_act():
+            return
+        # below tries looks like player action requests, but they are not. 
+        # They are just "try" methods that will only do something if the player has requested it via input.
         self._try_start_fire()
         attack_was_requested = self.intent.wants_attack()
         if attack_was_requested:
@@ -147,6 +153,10 @@ class Player(Character, PlayerState):
         self.lifecycle_controller.update_respawn(self)
 
     # --- Public API ---
+    
+    def can_act(self):
+        is_blocked = self.state == self.DEAD or self.reaction_controller.is_in_hit_stun(self)
+        return not is_blocked
 
     def take_damage(self, damage, reaction=None):
         if isinstance(damage, DamageRequest):
