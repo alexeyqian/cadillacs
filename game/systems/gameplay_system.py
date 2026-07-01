@@ -49,7 +49,7 @@ def _update_decisions(game_state, keys, player_can_act):
     game_state._player_context = player_context  # passed to movement/combat
 
     if player_can_act:
-        InventorySystem.update_weapon_interaction(game_state, keys)
+        InventorySystem.update_weapon_interaction(game_state)
         CombatSystem.handle_player_grab_or_throw(game_state, keys)
         game_state.player.request_actions(player_context)
 

@@ -10,6 +10,7 @@ class PlayerActionController:
         self._update_jump_input(owner, player_input)
         self._update_attack_input(owner, player_input)
         self._update_fire_input(owner, player_input)
+        self._update_drop_input(owner, player_input)
 
     def advance_timers(self, owner):
         owner.input_buffer.update()
@@ -57,3 +58,7 @@ class PlayerActionController:
                 owner.input_state.fire_pressed = True
         else:
             owner.input_state.fire_pressed = False
+
+    def _update_drop_input(self, owner, player_input):
+        if player_input.drop:
+            owner.weapon_slot.drop(owner)

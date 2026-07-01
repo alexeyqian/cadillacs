@@ -75,7 +75,7 @@ class AirbornePickupRuleTests(unittest.TestCase):
         player = FakePlayer(is_grounded=False)
         game_state = FakeGameState(player)
 
-        update_player_weapon_interaction(game_state, FakeKeys())
+        update_player_weapon_interaction(game_state)
 
         self.assertIsNone(player.weapon_slot.weapon)
 
@@ -83,7 +83,7 @@ class AirbornePickupRuleTests(unittest.TestCase):
         player = FakePlayer(is_grounded=True)
         game_state = FakeGameState(player)
 
-        update_player_weapon_interaction(game_state, FakeKeys())
+        update_player_weapon_interaction(game_state)
 
         self.assertIs(player.weapon_slot.weapon, game_state.weapons[0])
 
