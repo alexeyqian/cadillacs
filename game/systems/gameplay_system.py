@@ -14,21 +14,31 @@ from game.systems.projectile_system import ProjectileSystem
 from game.systems.sound_system import SoundSystem
 from game.systems.wave_system import WaveSystem
 
-# Frame order: READ → LOGIC (decisions → movement → collisions → combat → reactions → states)
-#              → ADVANCE (timers) → CLEANUP → WAVES → PRESENTATION
 def update_gameplay(game_state, keys):
     player_can_act = game_state.player.can_act()
+    old_player_x, old_player_y = game_state.player.x, game_state.player.y  # capture before movement
 
     _update_decisions(game_state, keys, player_can_act)
     _update_movement(game_state, player_can_act)
-    _update_collisions(game_state)
+    _update_collisions(game_state, old_player_x, old_player_y)
     _update_combat(game_state, player_can_act)
+    ExplosiveSystem.create_explosions(game_state)  # damage enemies before reactions
     _update_reactions(game_state)
     _update_states(game_state)
 
+    # todo: move to end
     _advance_timers(game_state, player_can_act)
 
-    _update_loot_and_effects(game_state)
+    LootSystem.create_enemy_loot(game_state) # adds kill score
+    LootSystem.create_object_loot(game_state) # add loot score
+    # todo: move to next tick
+    LootSystem.update_pickup(game_state)
+    # todo: move to somewhere
+    LifeRewardSystem.update(game_state) # # ← here, sees latest score
+    EffectSystem.update(game_state)
+    # todo: move to somewhere
+    ExplosiveSystem.update(game_state)
+
     _cleanup(game_state)
     _update_waves(game_state)
     _update_presentation(game_state)
@@ -66,18 +76,17 @@ def _update_movement(game_state, player_can_act):
     BoundsSystem.apply_player_level(game_state)
     BoundsSystem.apply_enemy_level(game_state)
     ArenaSystem.apply_bounds(game_state)
+
     ProjectileSystem.update(game_state)
 
 
-def _update_collisions(game_state):
-    old_x, old_y = game_state.player.x, game_state.player.y
+def _update_collisions(game_state, old_player_x, old_player_y):
     CollisionSystem.resolve_enemy_enemy(game_state)
-    CollisionSystem.resolve_player_enemy(game_state, old_x, old_y)
+    CollisionSystem.resolve_player_enemy(game_state, old_player_x, old_player_y)
+
     BoundsSystem.apply_player_level(game_state)
     BoundsSystem.apply_enemy_level(game_state)
     ArenaSystem.apply_bounds(game_state)
-    CombatSystem.handle_player_projectile(game_state)
-    CombatSystem.handle_enemy_projectile(game_state)
 
 
 def _update_combat(game_state, player_can_act):
@@ -86,6 +95,10 @@ def _update_combat(game_state, player_can_act):
     CombatSystem.handle_player_attack(game_state)
     for enemy in game_state.enemies:
         enemy.update_attack(game_state._enemy_context)
+    
+    # todo: move to combat?
+    CombatSystem.handle_player_projectile(game_state)
+    CombatSystem.handle_enemy_projectile(game_state)
 
 
 def _update_reactions(game_state):
@@ -104,15 +117,6 @@ def _advance_timers(game_state, player_can_act):
         game_state.player.advance_timers()
     for enemy in game_state.enemies:
         enemy.advance_timers()
-
-
-def _update_loot_and_effects(game_state):
-    ExplosiveSystem.create_explosions(game_state)
-    LootSystem.create_enemy_loot(game_state)
-    LootSystem.create_object_loot(game_state)
-    LootSystem.update_pickup(game_state)
-    LifeRewardSystem.update(game_state)
-    EffectSystem.update(game_state)
 
 
 def _cleanup(game_state):

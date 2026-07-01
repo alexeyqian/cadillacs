@@ -17,7 +17,7 @@ class ExplosiveSystem:
             _damage_enemies_in_radius(game_state, obj_rect.centerx, obj_rect.centery, 180, 80)
 
     @staticmethod
-    def update_explosions(game_state):
+    def update(game_state):
         for explosion in game_state.explosions:
             explosion.update()
 
