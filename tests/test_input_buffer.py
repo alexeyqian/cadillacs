@@ -1,21 +1,21 @@
-from game.input.input_buffer import InputBuffer
+from game.input.player_input_tracker import PlayerInputTracker
 
 
 def test_input_buffer_keeps_attack_until_duration_expires():
-    buffer = InputBuffer()
+    buffer = PlayerInputTracker()
 
-    buffer.press_attack(2)
+    buffer.press_attack()
+    assert buffer.has_attack() is True
 
-    assert buffer.has_attack() is True
-    buffer.advance_timers()
-    assert buffer.has_attack() is True
-    buffer.advance_timers()
+    for _ in range(PlayerInputTracker.ATTACK_BUFFER_FRAMES):
+        buffer.advance_timers()
+
     assert buffer.has_attack() is False
 
 
 def test_input_buffer_consume_attack_clears_it():
-    buffer = InputBuffer()
-    buffer.press_attack(6)
+    buffer = PlayerInputTracker()
+    buffer.press_attack()
 
     buffer.consume_attack()
 
@@ -23,9 +23,9 @@ def test_input_buffer_consume_attack_clears_it():
 
 
 def test_input_buffer_jump_and_attack_are_independent():
-    buffer = InputBuffer()
-    buffer.press_jump(6)
-    buffer.press_attack(12)
+    buffer = PlayerInputTracker()
+    buffer.press_jump()
+    buffer.press_attack()
 
     buffer.consume_jump()
 

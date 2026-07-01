@@ -4,7 +4,7 @@ from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYE
 import game.settings as settings
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.components.player_combat_state import PlayerCombatState
-from game.input.player_input_state import PlayerInputState
+from game.input.player_input_tracker import PlayerInputTracker
 from game.managers.score_manager import ScoreManager
 from game.settings import (
     PLAYER_GRAB_KNEE_ACTIVE_DURATION,
@@ -83,7 +83,7 @@ class FakeOwner:
         self.movement = FakeMovement()
         self.state_machine = FakeStateMachine()
         self.weapon_slot = FakeWeaponSlot()
-        self.input_state = PlayerInputState()
+        self.input_tracker = PlayerInputTracker()
         self.combat_state = PlayerCombatState()
         self.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
         self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS

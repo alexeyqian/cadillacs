@@ -42,7 +42,7 @@ class PlayerJumpMovement:
             return
 
         if self.air_state.update_jump_arc():  # returns True on landing
-            owner.input_state.jump_attack_pressed = False
+            owner.input_tracker.jump_attack_pressed = False
             if owner.combat_state.current_attack_name == owner.JUMP_ATTACK:
                 owner.combat_controller.cancel_attack(owner)
             if owner.state in [owner.JUMP, owner.JUMP_ATTACK]:

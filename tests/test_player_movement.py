@@ -34,7 +34,7 @@ class FakeOwner:
         self.combat_state = FakeCombatState()
         self.combat_controller = FakeCombatController()
         self.grab_state = FakeGrab()
-        self.input_state = FakeInputState()
+        self.input_tracker = FakeInputState()
         self.state_machine = FakeStateMachine()
 
 

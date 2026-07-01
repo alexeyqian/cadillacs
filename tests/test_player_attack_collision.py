@@ -8,7 +8,7 @@ from game.components.player_grab_state import PlayerGrabState
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYER_ATTACKS
 from game.combat.damage_request import DamageRequest
 from game.combat.hit_reaction import HitReaction
-from game.input.player_input_state import PlayerInputState
+from game.input.player_input_tracker import PlayerInputTracker
 from game.systems.combat_system import CombatSystem
 
 damage_enemy = CombatSystem.damage_enemy
@@ -71,7 +71,7 @@ class FakePlayer:
         self.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
         self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.grab_state = PlayerGrabState()
-        self.input_state = PlayerInputState()
+        self.input_tracker = PlayerInputTracker()
         self.combat_controller.start_attack(self)
         while not self.combat_state.attack_manager.is_active():
             self.combat_controller.update_attack(self)

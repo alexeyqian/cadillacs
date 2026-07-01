@@ -1,7 +1,7 @@
 import pygame
 
 from game.input.player_input import PlayerInput
-from game.input.player_input_state import PlayerInputState
+from game.input.player_input_tracker import PlayerInputTracker
 
 
 class FakeKeys:
@@ -63,9 +63,9 @@ def test_player_input_maps_secondary_action_aliases():
 
 
 def test_player_input_state_defaults_edge_flags_to_false():
-    input_state = PlayerInputState()
+    input_tracker = PlayerInputTracker()
 
-    assert input_state.attack_pressed is False
-    assert input_state.jump_pressed is False
-    assert input_state.jump_attack_pressed is False
-    assert input_state.run_attack_requires_attack_release is False
+    assert input_tracker.attack_pressed is False
+    assert input_tracker.jump_pressed is False
+    assert input_tracker.jump_attack_pressed is False
+    assert input_tracker.run_attack_requires_attack_release is False

@@ -13,7 +13,7 @@ from game.settings import (
 from game.controllers.player_combat_controller import PlayerCombatController
 from game.components.player_combat_state import PlayerCombatState
 from game.components.character_geometry import CharacterGeometry
-from game.input.player_input_state import PlayerInputState
+from game.input.player_input_tracker import PlayerInputTracker
 
 
 class FakeRunMovement:
@@ -71,7 +71,7 @@ class FakeOwner:
         self.combat_state = PlayerCombatState()
         self.combat_state.attacks = DEFAULT_PLAYER_ATTACKS
         self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
-        self.input_state = PlayerInputState()
+        self.input_tracker = PlayerInputTracker()
         self.movement = FakeMovement()
 
     def get_attack_data(self, attack_name):

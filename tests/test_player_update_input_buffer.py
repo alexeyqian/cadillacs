@@ -8,8 +8,8 @@ from game.components.player_intent import PlayerIntent
 from game.data.player_config import DEFAULT_PLAYER_ATTACKS
 from game.entities.player import Player
 from game.entities.player_state_machine import PlayerStateMachine
-from game.input.input_buffer import InputBuffer
-from game.input.player_input_state import PlayerInputState
+from game.input.player_input_tracker import PlayerInputTracker
+from game.input.player_input_tracker import PlayerInputTracker
 
 
 class FakeInput:
@@ -117,8 +117,8 @@ def make_player_like():
     player.state = Player.IDLE
     player.state_machine = PlayerStateMachine(player)
     player.intent = PlayerIntent()
-    player.input_buffer = InputBuffer()
-    player.input_state = PlayerInputState()
+    player.input_tracker = PlayerInputTracker()
+    player.input_tracker = PlayerInputTracker()
     player.movement = FakeMovement()
     player.movement.air = None
     player.combat_controller = PlayerCombatController()
@@ -160,14 +160,14 @@ def test_player_update_uses_buffered_attack_after_recovery():
 
     update_player_frame(player, FakeInput())
     update_player_frame(player, FakeInput(attack=True))
-    assert player.input_buffer.has_attack() is True
+    assert player.input_tracker.has_attack() is True
 
     player.combat_state.attack_manager.has_connected = True
     while player.combat_state.current_attack_name == player.ATTACK:
         update_player_frame(player, FakeInput())
 
     assert player.combat_state.current_attack_name == player.ATTACK2
-    assert player.input_buffer.has_attack() is False
+    assert player.input_tracker.has_attack() is False
 
 
 def test_player_update_jump_buffer_does_not_bypass_attack_lock():
@@ -176,5 +176,5 @@ def test_player_update_jump_buffer_does_not_bypass_attack_lock():
     update_player_frame(player, FakeInput(attack=True))
     update_player_frame(player, FakeInput(jump=True))
 
-    assert player.input_buffer.has_jump() is True
+    assert player.input_tracker.has_jump() is True
     assert player.state == player.ATTACK

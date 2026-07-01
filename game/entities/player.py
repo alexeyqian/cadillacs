@@ -1,3 +1,5 @@
+from pygame.mixer_music import queue
+
 from game.entities.character import Character
 from game.entities.player_state import PlayerState
 from game.data.player_config import get_player_config
@@ -21,8 +23,7 @@ from game.controllers.player_reaction_controller import PlayerReactionController
 from game.combat.damage_request import DamageRequest
 from game.core.events import GameEventQueue
 from game.entities.player_state_machine import PlayerStateMachine
-from game.input.input_buffer import InputBuffer
-from game.input.player_input_state import PlayerInputState
+from game.input.player_input_tracker import PlayerInputTracker
 
 
 class Player(Character, PlayerState):
@@ -59,8 +60,7 @@ class Player(Character, PlayerState):
         self.health = CharacterHealth(config.max_hp)
         self.state_machine = PlayerStateMachine(self)
 
-        self.input_buffer = InputBuffer()
-        self.input_state = PlayerInputState()
+        self.input_tracker = PlayerInputTracker()
         self.intent = PlayerIntent()
 
         self.combat_state = PlayerCombatState()
@@ -156,7 +156,7 @@ class Player(Character, PlayerState):
         self.reaction_controller.update_hit_state(self)
 
     def advance_timers(self):
-        self.input_buffer.advance_timers()
+        self.input_tracker.advance_timers()
         self.combat_controller.advance_timers(self)
         self.grab_controller.advance_timers(self)
         self.movement.run_movement.advance_timers()
@@ -197,7 +197,7 @@ class Player(Character, PlayerState):
         previous_state = self.state
         self.movement.jump_movement.start_jump(self, self.intent.jump_input)
         if self.state != previous_state:
-            self.input_buffer.consume_jump()
+            self.input_tracker.consume_jump()
         self.intent.clear_jump()
 
     def _try_start_fire(self):
@@ -220,7 +220,7 @@ class Player(Character, PlayerState):
         else:
             self.combat_controller.start_attack(self)
         if self.combat_state.current_attack_name != previous_attack_name:
-            self.input_buffer.consume_attack()
+            self.input_tracker.consume_attack()
             self.intent.clear_attack()
             return True
         if clear_if_failed:

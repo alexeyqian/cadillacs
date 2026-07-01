@@ -168,7 +168,7 @@ class PlayerCombatController:
     def _can_start_run_attack(self, owner):
         return (
             owner.movement.run_movement.can_start_run_attack()
-            and not owner.input_state.run_attack_requires_attack_release
+            and not owner.input_tracker.run_attack_requires_attack_release
         )
 
     def _start_run_attack(self, owner):
@@ -177,7 +177,7 @@ class PlayerCombatController:
         cs.attack_manager.start(owner.RUN_ATTACK, move_data)
         owner.movement.start_run_attack_momentum(owner)
         self._reset_combo(owner)
-        owner.input_state.run_attack_requires_attack_release = True
+        owner.input_tracker.run_attack_requires_attack_release = True
         owner.state_machine.change_to(owner, owner.RUN_ATTACK)
         if hasattr(owner, "events"): owner.events.emit("attack")
 

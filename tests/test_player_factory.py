@@ -63,8 +63,8 @@ def test_player_factory_builds_default_player_runtime_groups(monkeypatch):
     assert player.movement.air is not None
     assert player.state_machine is not None
     assert player.intent is not None
-    assert player.input_buffer is not None
-    assert player.input_state is not None
+    assert player.input_tracker is not None
+    assert player.input_tracker is not None
 
     # Capabilities
     assert player.health is not None

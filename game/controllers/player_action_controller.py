@@ -1,23 +1,21 @@
 class PlayerActionController:
-    ATTACK_BUFFER_FRAMES = 12
-    JUMP_BUFFER_FRAMES = 6
 
     def request_actions(self, owner, player_input):
         owner.intent.clear()
         self._update_jump_input(owner, player_input)
         self._update_attack_input(owner, player_input)
         if player_input.drop:
-            owner.weapon_slot.drop(owner)  
+            owner.weapon_slot.drop(owner)
 
     def _update_jump_input(self, owner, player_input):
         if player_input.jump:
-            if not owner.input_state.jump_pressed:
-                owner.input_buffer.press_jump(self.JUMP_BUFFER_FRAMES)
-                owner.input_state.jump_pressed = True
+            if not owner.input_tracker.jump_pressed:
+                owner.input_tracker.press_jump()
+                owner.input_tracker.jump_pressed = True
         else:
-            owner.input_state.jump_pressed = False
+            owner.input_tracker.jump_pressed = False
 
-        if owner.input_buffer.has_jump():
+        if owner.input_tracker.has_jump():
             owner.intent.jump(player_input)
 
     def _update_attack_input(self, owner, player_input):
@@ -25,22 +23,18 @@ class PlayerActionController:
             if owner.movement.is_jumping:
                 pass  # jump attack disabled
             else:
-                if owner.input_state.run_attack_requires_attack_release:
-                    owner.input_state.attack_pressed = True
-                    owner.input_buffer.consume_attack()
+                if owner.input_tracker.run_attack_requires_attack_release:
+                    owner.input_tracker.attack_pressed = True
+                    owner.input_tracker.consume_attack()
                     return
 
-                if not owner.input_state.attack_pressed:
-                    owner.input_buffer.press_attack(self.ATTACK_BUFFER_FRAMES)
-                    owner.input_state.attack_pressed = True
+                if not owner.input_tracker.attack_pressed:
+                    owner.input_tracker.press_attack()
+                    owner.input_tracker.attack_pressed = True
         else:
-            owner.input_state.attack_pressed = False
-            owner.input_state.jump_attack_pressed = False
-            owner.input_state.run_attack_requires_attack_release = False
+            owner.input_tracker.attack_pressed = False
+            owner.input_tracker.jump_attack_pressed = False
+            owner.input_tracker.run_attack_requires_attack_release = False
 
-        if owner.input_buffer.has_attack():
+        if owner.input_tracker.has_attack():
             owner.intent.attack()
-
-    def _update_drop_input(self, owner, player_input):
-        if player_input.drop:
-            owner.weapon_slot.drop(owner)
