@@ -18,13 +18,15 @@ class EnemyReactionController:
         if owner.state == owner.DEAD:
             return
         was_in_hit_stun = owner.reaction_state._hit_stun_remaining > 0
-        self._tick_hit_stun(owner)
+        
         self._apply_knockback(owner)
         rs = owner.reaction_state
         if rs._hit_stun_remaining > 0:
             owner.state = owner.HIT
         elif was_in_hit_stun:
             owner.state = owner.IDLE
+
+        self._tick_hit_stun(owner)
 
     def take_damage(self, owner, damage, attacker_x, reaction=None):
         if owner.state == owner.DEAD:

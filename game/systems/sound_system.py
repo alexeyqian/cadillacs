@@ -14,7 +14,7 @@
 def update_sound(game_state, sound_manager):
     _process_player_sound(game_state.player, sound_manager)
     for enemy in game_state.enemies:
-        _process_entity_sound(enemy, sound_manager)
+        _process_enemy_sound(enemy, sound_manager)
 
 
 def _process_player_sound(player, sound_manager):
@@ -31,8 +31,8 @@ def _process_player_sound(player, sound_manager):
         sound_manager.stop_walk_loop()
 
 
-def _process_entity_sound(entity, sound_manager):
-    if not hasattr(entity, "events"):
+def _process_enemy_sound(enemy, sound_manager):
+    if not hasattr(enemy, "events"):
         return
-    for event in entity.events.drain():
+    for event in enemy.events.drain():
         sound_manager.play(event["type"])

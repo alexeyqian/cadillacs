@@ -60,6 +60,7 @@ def update_gameplay(game_state, keys):
     _update_collisions(game_state)
     _update_combat(game_state, player_context, enemy_context)
     _update_reactions(game_state)
+    _update_states(game_state)
 
     # advance timers
     game_state.player.advance_timers()
@@ -67,8 +68,10 @@ def update_gameplay(game_state, keys):
         enemy.advance_timers()
 
     _update_loot_and_effects(game_state)
-    _update_waves(game_state)
     _cleanup_game_state(game_state)
+    _update_waves(game_state)
+
+    update_sound(game_state, game_state.sound_manager)
     _update_presentation(game_state)
 
 
@@ -111,9 +114,15 @@ def _update_combat(game_state, player_context, enemy_context):
 
 def _update_reactions(game_state):
     game_state.player.update_reactions()
+    # todo: player update reactions?
 
     for enemy in game_state.enemies:
         enemy.update_reactions()
+        
+def _update_states(game_state):
+    # todo: player update reactions?
+    for enemy in game_state.enemies:
+        enemy.update_state()
 
 def _update_loot_and_effects(game_state):
     create_explosions_from_objects(game_state)
@@ -122,7 +131,6 @@ def _update_loot_and_effects(game_state):
     update_loot_pickup(game_state)
     update_life_reward_system(game_state)
     update_effect_system(game_state)
-    
 
 
 def _update_waves(game_state):
@@ -131,17 +139,6 @@ def _update_waves(game_state):
     # spawn/start next wave after cleanup so dead enemies don't delay spawning
     update_wave_system(game_state)
 
-
-def _update_presentation(game_state):
-    game_state.score_manager.update()
-    game_state.announcement_manager.update()
-    game_state.stage_clear_manager.update()
-    game_state.player.update_animation()
-
-    for enemy in game_state.enemies:
-        enemy.update_animation()
-
-    update_sound(game_state, game_state.sound_manager)
 
 def _cleanup_game_state(game_state):
     # remove dead enemies
@@ -165,3 +162,15 @@ def _cleanup_game_state(game_state):
     # clean floating text
     game_state.floating_texts[:] = [item for item in game_state.floating_texts if item.active]
     game_state.explosions[:] = [item for item in game_state.explosions if item.active]
+
+def _update_presentation(game_state):
+    for text in game_state.floating_texts:
+        text.update()
+
+    game_state.score_manager.update()
+    game_state.announcement_manager.update()
+    game_state.stage_clear_manager.update()
+
+    game_state.player.update_animation()
+    for enemy in game_state.enemies:
+        enemy.update_animation()

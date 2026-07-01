@@ -14,77 +14,82 @@ def _get_camera_lock_x(camera_x, level):
     max_lock_x = max(0, level.world_width - SCREEN_WIDTH)
     return max(0, min(camera_x, max_lock_x))
 
-# simple rune for normal stages
-# if level has no waves and player reaches right side of stage:
-#    activate stage clear
 def update_wave_system(game_state):
     level = game_state.level
-    player = game_state.player
-    camera = game_state.camera
-    enemies = game_state.enemies
-    
-    if len(level.waves) == 0: # for transition stage
-        if (_player_is_in_exit_rect(player, level.exit_rect)
-            and not game_state.stage_clear_manager.active):
-            game_state.stage_clear_manager.activate(player)
 
+    if len(level.waves) == 0:
+        _check_stage_exit(game_state)
         return
 
     wave = level.get_current_wave()
     if wave is None:
         level.camera_locked = False
         level.lock_x = None
-        if (_player_is_in_exit_rect(player, level.exit_rect)
-            and not game_state.stage_clear_manager.active):
-            game_state.stage_clear_manager.activate(player)
+        _check_stage_exit(game_state)
         return
 
-    # add wave warning announcement before distance 300
-    player_trigger_x = _get_player_trigger_x(player)
+    _update_wave_announcement(game_state, wave)
+    _update_wave_trigger(game_state, wave)
+    _tick_wave_spawns(game_state, wave)
 
-    if wave and not wave.started and player_trigger_x + 300 >= wave.trigger_x:
-        if isinstance(wave, BossWave):
-            game_state.announcement_manager.show(
-                "WARNING", "BOSS APPROACHING", 120)
-        else:
-            game_state.announcement_manager.show(
-                f"WAVE {game_state.level.current_wave + 1}",
-                "GET READY", 90)
 
-    if wave and not wave.started and player_trigger_x >= wave.trigger_x:
-            # start the wave and initialize pending enemies
-            wave.start(camera.x, level.lane_top, level.lane_bottom, player.x)
-            # lock camera only when wave actually starts
-            # set lock_x to current camera.x so the viewport does not jump
-            # it only freeze camera, not stop player by itself
-            level.camera_locked = True
-            level.lock_x = _get_camera_lock_x(camera.x, level)
+def _check_stage_exit(game_state):
+    if (_player_is_in_exit_rect(game_state.player, game_state.level.exit_rect)
+            and not game_state.stage_clear_manager.active):
+        game_state.stage_clear_manager.activate(game_state.player)
 
-    if wave and wave.started:
-        new_enemies = wave.tick(len(enemies))
-        if new_enemies:
-            enemies.extend(new_enemies)
+
+def _update_wave_announcement(game_state, wave):
+    if wave.started:
+        return
+    player_trigger_x = _get_player_trigger_x(game_state.player)
+    if player_trigger_x + 300 < wave.trigger_x:
+        return
+    if isinstance(wave, BossWave):
+        game_state.announcement_manager.show("WARNING", "BOSS APPROACHING", 120)
+    else:
+        game_state.announcement_manager.show(
+            f"WAVE {game_state.level.current_wave + 1}", "GET READY", 90)
+
+
+def _update_wave_trigger(game_state, wave):
+    if wave.started:
+        return
+    player_trigger_x = _get_player_trigger_x(game_state.player)
+    if player_trigger_x < wave.trigger_x:
+        return
+    level = game_state.level
+    camera = game_state.camera
+    wave.start(camera.x, level.lane_top, level.lane_bottom, game_state.player.x)
+    level.camera_locked = True
+    level.lock_x = _get_camera_lock_x(camera.x, level)
+
+
+def _tick_wave_spawns(game_state, wave):
+    if not wave.started:
+        return
+    new_enemies = wave.tick(len(game_state.enemies))
+    if new_enemies:
+        game_state.enemies.extend(new_enemies)
 
 def update_wave_completion(game_state):
+    wave = game_state.level.get_current_wave()
+    if not wave or not wave.started:
+        return
+    if not _is_wave_finished(game_state, wave):
+        return
+    _complete_wave(game_state, wave)
+
+
+def _is_wave_finished(game_state, wave):
+    return wave.is_spawning_done() and len(game_state.enemies) == 0
+
+
+def _complete_wave(game_state, wave):
     level = game_state.level
-    enemies = game_state.enemies
-
-    wave = level.get_current_wave()
-    if wave and wave.started:
-        wave_finished = False
-        wave_finished = wave.is_spawning_done() and len(enemies) == 0
-
-        if wave_finished:
-            wave.completed = True
-            level.current_wave += 1
-            level.camera_locked = False
-            level.lock_x = None
-
-            all_waves_done = level.current_wave >= len(level.waves)
-            if all_waves_done and _player_is_in_exit_rect(game_state.player, level.exit_rect):
-                if not game_state.stage_clear_manager.active:
-                    game_state.stage_clear_manager.activate(game_state.player)
-
-            #exit_x = level.world_width - 180
-            #if level.current_wave >= len(level.waves) and game_state.player.x >= exit_x:
-            #    game_state.stage_clear_manager.activate(game_state.player)
+    wave.completed = True
+    level.current_wave += 1
+    level.camera_locked = False
+    level.lock_x = None
+    if level.current_wave >= len(level.waves):
+        _check_stage_exit(game_state)
