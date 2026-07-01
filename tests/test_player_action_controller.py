@@ -78,7 +78,7 @@ class FakeOwner:
         self.weapon_slot = FakeWeaponSlot()
         self.intent = PlayerIntent()
         self.input_state = PlayerInputState()
-        self.input_buffer = InputBuffer(default_frames=6)
+        self.input_buffer = InputBuffer()
         from game.components.player_combat_state import PlayerCombatState
         from game.components.player_grab_state import PlayerGrabState
         self.combat_controller = PlayerCombatController()
@@ -110,12 +110,12 @@ class PlayerActionControllerTests(unittest.TestCase):
 
         owner.combat_controller.cancel_attack(owner)
         owner.input_state.attack_pressed = False
-        owner.input_buffer.press("attack")
+        owner.input_buffer.press_attack(12)
         actions.update(owner, FakeInput(attack=True))
         Player._try_start_attack(owner)
 
         self.assertIsNone(owner.combat_state.current_attack_name)
-        self.assertFalse(owner.input_buffer.has("attack"))
+        self.assertFalse(owner.input_buffer.has_attack())
 
         actions.update(owner, FakeInput(attack=False))
         actions.update(owner, FakeInput(attack=True))
@@ -148,7 +148,7 @@ class PlayerActionControllerTests(unittest.TestCase):
         actions.update(owner, FakeInput(attack=False))
         actions.update(owner, FakeInput(attack=True))
         Player._try_start_attack(owner)
-        self.assertTrue(owner.input_buffer.has("attack"))
+        self.assertTrue(owner.input_buffer.has_attack())
 
         owner.combat_state.attack_manager.has_connected = True
         while owner.combat_state.current_attack_name == owner.ATTACK:
@@ -158,7 +158,7 @@ class PlayerActionControllerTests(unittest.TestCase):
             Player._try_start_attack(owner)
 
         self.assertEqual(owner.combat_state.current_attack_name, owner.ATTACK2)
-        self.assertFalse(owner.input_buffer.has("attack"))
+        self.assertFalse(owner.input_buffer.has_attack())
 
 
 if __name__ == "__main__":

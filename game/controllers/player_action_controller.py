@@ -1,7 +1,4 @@
-#  it translates inputs into intent
 class PlayerActionController:
-    ATTACK_ACTION = "attack"
-    JUMP_ACTION = "jump"
     ATTACK_BUFFER_FRAMES = 12
     JUMP_BUFFER_FRAMES = 6
 
@@ -18,18 +15,14 @@ class PlayerActionController:
     def _update_jump_input(self, owner, player_input):
         if player_input.jump:
             if not owner.input_state.jump_pressed:
-                owner.input_buffer.press(self.JUMP_ACTION, frames=self.JUMP_BUFFER_FRAMES)
+                owner.input_buffer.press_jump(self.JUMP_BUFFER_FRAMES)
                 owner.input_state.jump_pressed = True
         else:
             owner.input_state.jump_pressed = False
 
-        if owner.input_buffer.has(self.JUMP_ACTION):
+        if owner.input_buffer.has_jump():
             owner.intent.jump(player_input)
 
-    # avoid doing this:
-    # as soon as the attack timer ends,
-    # holding J immediately starts the next combo step.
-    # So the player can auto-chain punches by holding the button.
     def _update_attack_input(self, owner, player_input):
         if player_input.attack:
             if owner.movement.is_jumping:
@@ -37,16 +30,20 @@ class PlayerActionController:
             else:
                 if owner.input_state.run_attack_requires_attack_release:
                     owner.input_state.attack_pressed = True
-                    owner.input_buffer.consume(self.ATTACK_ACTION)
+                    owner.input_buffer.consume_attack()
                     return
 
                 if not owner.input_state.attack_pressed:
-                    owner.input_buffer.press(self.ATTACK_ACTION, frames=self.ATTACK_BUFFER_FRAMES)
+                    owner.input_buffer.press_attack(self.ATTACK_BUFFER_FRAMES)
                     owner.input_state.attack_pressed = True
         else:
             owner.input_state.attack_pressed = False
             owner.input_state.jump_attack_pressed = False
             owner.input_state.run_attack_requires_attack_release = False
 
-        if owner.input_buffer.has(self.ATTACK_ACTION):
+        if owner.input_buffer.has_attack():
             owner.intent.attack()
+
+    def _update_drop_input(self, owner, player_input):
+        if player_input.drop:
+            owner.weapon_slot.drop(owner)

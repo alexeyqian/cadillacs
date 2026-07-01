@@ -10,4 +10,5 @@ class PlayerInput:
 
         self.jump = keys[pygame.K_k] or keys[pygame.K_SPACE]
         self.attack = keys[pygame.K_j]
+        # todo: add auto drop
         self.drop = keys[pygame.K_q]

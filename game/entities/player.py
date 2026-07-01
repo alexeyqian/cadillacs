@@ -127,21 +127,28 @@ class Player(Character, PlayerState):
     def update_movement(self, context):
         if not self.can_act():
             return
+        if self.state == self.GRAB:
+            self._try_throw_from_direction(context.player_input)
+            return
         self._try_start_jump()
         self.movement.update_movement(self, context.player_input)
         self.movement.jump_movement.update_jump_physics(self, context.player_input)
         self.state_resolver.resolve(self, self.movement.moving)
         self.grab_controller.update_grabbed_enemy_position(self)
 
+    def _try_throw_from_direction(self, player_input):
+        if player_input.right:
+            self.facing_right = True
+            self.grab_controller.throw_grabbed_enemy(self)
+        elif player_input.left:
+            self.facing_right = False
+            self.grab_controller.throw_grabbed_enemy(self)
+
     def update_attack(self, context=None):
         if not self.can_act():
             return
         self._try_start_fire()
         if self.intent.wants_attack():
-            if self.state == self.GRAB:
-                self.grab_controller.throw_grabbed_enemy(self)
-                self.intent.clear_attack()
-                return
             self._try_start_attack(clear_if_failed=False)
         self.combat_controller.update_attack(self)
         if self.intent.wants_attack():
@@ -187,9 +194,9 @@ class Player(Character, PlayerState):
         if not self.intent.wants_jump():
             return
         previous_state = self.state
-        self.movement.jump_movement.start_jump(self, self.intent.jump_input)
+        self.movement.jump_movement.start_jump(self, self.intent.jump_requested)
         if self.state != previous_state:
-            self.input_buffer.consume(PlayerActionController.JUMP_ACTION)
+            self.input_buffer.consume_jump()
         self.intent.clear_jump()
 
     def _try_start_fire(self):
@@ -212,7 +219,7 @@ class Player(Character, PlayerState):
         else:
             self.combat_controller.start_attack(self)
         if self.combat_state.current_attack_name != previous_attack_name:
-            self.input_buffer.consume(PlayerActionController.ATTACK_ACTION)
+            self.input_buffer.consume_attack()
             self.intent.clear_attack()
             return True
         if clear_if_failed:
