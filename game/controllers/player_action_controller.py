@@ -9,8 +9,8 @@ class PlayerActionController:
         owner.intent.clear()
         self._update_jump_input(owner, player_input)
         self._update_attack_input(owner, player_input)
-
-        self._update_drop_input(owner, player_input)
+        if player_input.drop:
+            owner.weapon_slot.drop(owner)
 
     def advance_timers(self, owner):
         owner.input_buffer.update()
@@ -50,7 +50,3 @@ class PlayerActionController:
 
         if owner.input_buffer.has(self.ATTACK_ACTION):
             owner.intent.attack()
-
-    def _update_drop_input(self, owner, player_input):
-        if player_input.drop:
-            owner.weapon_slot.drop(owner)
