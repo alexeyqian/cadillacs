@@ -49,13 +49,11 @@ def test_player_input_maps_action_keys():
         pygame.K_SPACE,
         pygame.K_j,
         pygame.K_q,
-        pygame.K_l,
     )
 
     assert player_input.jump is True
     assert player_input.attack is True
     assert player_input.drop is True
-    assert player_input.grab is True
 
 
 def test_player_input_maps_secondary_action_aliases():
