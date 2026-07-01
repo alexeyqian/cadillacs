@@ -1,23 +1,19 @@
+class ProjectileSystem:
+    @staticmethod
+    def collect_player(game_state):
+        for event in game_state.player.events.drain("spawn_projectile"):
+            game_state.projectiles.append(event["payload"])
 
-def collect_player_projectiles(game_state):
-    player = game_state.player
-    projectiles = game_state.projectiles
+    @staticmethod
+    def collect_enemy(game_state, enemy):
+        if not enemy.pending_projectile:
+            return
+        game_state.enemy_projectiles.append(enemy.pending_projectile)
+        enemy.pending_projectile = None
 
-    for event in player.events.drain("spawn_projectile"):
-        projectiles.append(event["payload"])
-
-def collect_enemy_projectile(game_state, enemy):
-    if not enemy.pending_projectile:
-        return
-
-    game_state.enemy_projectiles.append(enemy.pending_projectile)
-    enemy.pending_projectile = None
-
-def update_projectiles(game_state):
-    # update player projectiles
-    for projectile in game_state.projectiles:
-        projectile.update(game_state.level.world_width)
-
-    # update enemy projectiles
-    for projectile in game_state.enemy_projectiles:
-        projectile.update(game_state.level.world_width)
+    @staticmethod
+    def update(game_state):
+        for projectile in game_state.projectiles:
+            projectile.update(game_state.level.world_width)
+        for projectile in game_state.enemy_projectiles:
+            projectile.update(game_state.level.world_width)

@@ -2,8 +2,11 @@ import unittest
 
 import pygame
 
-from game.systems.inventory_system import update_player_weapon_interaction
-from game.systems.loot_system import update_loot_pickup
+from game.systems.inventory_system import InventorySystem
+from game.systems.loot_system import LootSystem
+
+update_player_weapon_interaction = InventorySystem.update_weapon_interaction
+update_loot_pickup = LootSystem.update_pickup
 
 
 class FakeAir:

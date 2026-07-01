@@ -2,11 +2,11 @@ import unittest
 
 import pygame
 
-from game.systems.collision_system import (
-    enemy_blocks_movement,
-    resolve_enemy_enemy_collisions,
-    resolve_player_enemy_collisions,
-)
+from game.systems.collision_system import CollisionSystem
+
+enemy_blocks_movement = CollisionSystem.enemy_blocks_movement
+resolve_player_enemy_collisions = CollisionSystem.resolve_player_enemy
+resolve_enemy_enemy_collisions = CollisionSystem.resolve_enemy_enemy
 
 
 class FakePlayer:

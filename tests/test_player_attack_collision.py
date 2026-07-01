@@ -9,7 +9,10 @@ from game.data.player_config import DEFAULT_PLAYER_ATTACKS, DEFAULT_WEAPON_PLAYE
 from game.combat.damage_request import DamageRequest
 from game.combat.hit_reaction import HitReaction
 from game.input.player_input_state import PlayerInputState
-from game.systems.combat_system import damage_enemy, handle_player_attack_collision
+from game.systems.combat_system import CombatSystem
+
+damage_enemy = CombatSystem.damage_enemy
+handle_player_attack_collision = CombatSystem.handle_player_attack
 
 
 class FakeRunMovement:

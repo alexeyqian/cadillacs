@@ -1,6 +1,8 @@
 from game.core.events import GameEventQueue
 from game.components.player_weapon_slot import PlayerWeaponSlot
-from game.systems.projectile_system import collect_player_projectiles
+from game.systems.projectile_system import ProjectileSystem
+
+collect_player_projectiles = ProjectileSystem.collect_player
 
 
 def test_event_queue_drains_matching_events_and_keeps_others():

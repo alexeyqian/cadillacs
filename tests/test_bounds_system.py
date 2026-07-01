@@ -1,8 +1,4 @@
-from game.systems.bounds_system import (
-    apply_enemy_level_bounds,
-    apply_level_bounds,
-    apply_player_level_bounds,
-)
+from game.systems.bounds_system import BoundsSystem
 
 
 class FakeCharacter:
@@ -26,26 +22,18 @@ class FakeGameState:
         self.enemies = [FakeCharacter(), FakeCharacter()]
 
 
-def test_apply_level_bounds_uses_character_world_bounds_api():
-    character = FakeCharacter()
-
-    apply_level_bounds(character, FakeLevel())
-
-    assert character.bounds_calls == [(1000, 300, 800)]
-
-
-def test_apply_player_level_bounds_uses_shared_helper():
+def test_apply_player_level_bounds_calls_world_bounds():
     game_state = FakeGameState()
 
-    apply_player_level_bounds(game_state)
+    BoundsSystem.apply_player_level(game_state)
 
     assert game_state.player.bounds_calls == [(1000, 300, 800)]
 
 
-def test_apply_enemy_level_bounds_uses_shared_helper_for_each_enemy():
+def test_apply_enemy_level_bounds_calls_world_bounds_for_each_enemy():
     game_state = FakeGameState()
 
-    apply_enemy_level_bounds(game_state)
+    BoundsSystem.apply_enemy_level(game_state)
 
     assert game_state.enemies[0].bounds_calls == [(1000, 300, 800)]
     assert game_state.enemies[1].bounds_calls == [(1000, 300, 800)]
