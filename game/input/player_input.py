@@ -11,6 +11,5 @@ class PlayerInput:
         self.run = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
         self.jump = keys[pygame.K_k] or keys[pygame.K_SPACE]
         self.attack = keys[pygame.K_j]
-        self.fire = keys[pygame.K_u] or keys[pygame.K_i]
         self.drop = keys[pygame.K_q]
         self.grab = keys[pygame.K_l]

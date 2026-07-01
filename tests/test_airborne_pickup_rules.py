@@ -5,7 +5,7 @@ import pygame
 from game.systems.inventory_system import InventorySystem
 from game.systems.loot_system import LootSystem
 
-update_player_weapon_interaction = InventorySystem.update_weapon_interaction
+update_player_weapon_interaction = InventorySystem.pickup_weapon
 update_loot_pickup = LootSystem.update_pickup
 
 

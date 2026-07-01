@@ -21,7 +21,7 @@ def update_gameplay(game_state, keys):
     _update_decisions(game_state, keys, player_can_act)
     _update_movement(game_state, player_can_act)
     _update_collisions(game_state, old_player_x, old_player_y)
-    _update_combat(game_state, player_can_act)
+    _update_combat(game_state, keys, player_can_act)
     ExplosiveSystem.create_explosions(game_state)  # damage enemies before reactions
     _update_reactions(game_state)
     _update_states(game_state)
@@ -33,6 +33,7 @@ def update_gameplay(game_state, keys):
     LootSystem.create_object_loot(game_state) # add loot score
     # todo: move to next tick
     LootSystem.update_pickup(game_state)
+    InventorySystem.pickup_weapon(game_state)
     # todo: move to somewhere
     LifeRewardSystem.update(game_state) # # ← here, sees latest score
     EffectSystem.update(game_state)
@@ -49,8 +50,6 @@ def _update_decisions(game_state, keys, player_can_act):
     game_state._player_context = player_context  # passed to movement/combat
 
     if player_can_act:
-        InventorySystem.update_weapon_interaction(game_state)
-        CombatSystem.handle_player_grab_or_throw(game_state, keys)
         game_state.player.request_actions(player_context)
 
     enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
@@ -89,9 +88,10 @@ def _update_collisions(game_state, old_player_x, old_player_y):
     ArenaSystem.apply_bounds(game_state)
 
 
-def _update_combat(game_state, player_can_act):
+def _update_combat(game_state, keys, player_can_act):
     if player_can_act:
         game_state.player.update_attack(game_state._player_context)
+        CombatSystem.handle_player_grab_or_throw(game_state, keys)
     CombatSystem.handle_player_attack(game_state)
     for enemy in game_state.enemies:
         enemy.update_attack(game_state._enemy_context)

@@ -192,10 +192,13 @@ class Player(Character, PlayerState):
         self.intent.clear_jump()
 
     def _try_start_fire(self):
-        if not self.intent.wants_fire():
+        weapon = self.weapon_slot.weapon
+        if not weapon or not weapon.is_ranged:
+            return
+        if not self.intent.wants_attack():
             return
         self.weapon_slot.fire(self)
-        self.intent.clear_fire()
+        self.intent.clear_attack()
 
     def _try_start_attack(self, clear_if_failed=True):
         if not self.intent.wants_attack():

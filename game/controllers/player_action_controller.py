@@ -9,7 +9,7 @@ class PlayerActionController:
         owner.intent.clear()
         self._update_jump_input(owner, player_input)
         self._update_attack_input(owner, player_input)
-        self._update_fire_input(owner, player_input)
+
         self._update_drop_input(owner, player_input)
 
     def advance_timers(self, owner):
@@ -50,14 +50,6 @@ class PlayerActionController:
 
         if owner.input_buffer.has(self.ATTACK_ACTION):
             owner.intent.attack()
-
-    def _update_fire_input(self, owner, player_input):
-        if player_input.fire:
-            if not owner.input_state.fire_pressed:
-                owner.intent.fire()
-                owner.input_state.fire_pressed = True
-        else:
-            owner.input_state.fire_pressed = False
 
     def _update_drop_input(self, owner, player_input):
         if player_input.drop:

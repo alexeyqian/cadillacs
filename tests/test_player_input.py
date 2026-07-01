@@ -49,7 +49,6 @@ def test_player_input_maps_action_keys():
         pygame.K_LSHIFT,
         pygame.K_SPACE,
         pygame.K_j,
-        pygame.K_u,
         pygame.K_q,
         pygame.K_l,
     )
@@ -57,7 +56,6 @@ def test_player_input_maps_action_keys():
     assert player_input.run is True
     assert player_input.jump is True
     assert player_input.attack is True
-    assert player_input.fire is True
     assert player_input.drop is True
     assert player_input.grab is True
 
@@ -66,12 +64,10 @@ def test_player_input_maps_secondary_action_aliases():
     player_input = make_input(
         pygame.K_RSHIFT,
         pygame.K_k,
-        pygame.K_i,
     )
 
     assert player_input.run is True
     assert player_input.jump is True
-    assert player_input.fire is True
 
 
 def test_player_input_state_defaults_edge_flags_to_false():
@@ -80,5 +76,4 @@ def test_player_input_state_defaults_edge_flags_to_false():
     assert input_state.attack_pressed is False
     assert input_state.jump_pressed is False
     assert input_state.jump_attack_pressed is False
-    assert input_state.fire_pressed is False
     assert input_state.run_attack_requires_attack_release is False

@@ -1,6 +1,6 @@
 class InventorySystem:
     @staticmethod
-    def update_weapon_interaction(game_state):
+    def pickup_weapon(game_state):
         player = game_state.player
         if not player.movement.air or player.movement.air.is_grounded:
             _try_pickup_weapon(player, game_state.weapons)
