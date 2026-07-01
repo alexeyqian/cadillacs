@@ -34,6 +34,16 @@ class PlayerGrabController:
 
         gs.grabbed_enemy.y = owner.y
 
+    def try_auto_grab(self, owner, enemies, level):
+        if owner.state == owner.GRAB or owner.grab_state.grabbed_enemy:
+            return
+        if not owner.movement.moving:
+            return
+        for enemy in enemies:
+            if self.can_grab_enemy(owner, enemy, level):
+                self.grab_enemy(owner, enemy)
+                return
+
     def can_grab_enemy(self, owner, enemy, level):
         gs = owner.grab_state
         if enemy.state == enemy.DEAD:
@@ -55,8 +65,6 @@ class PlayerGrabController:
         gs = owner.grab_state
         owner._set_action_lock(gs.failed_grab_recovery_duration)
         owner.state_machine.change_to(owner, owner.RECOIL)
-        gs.grab_pressed = True
-        gs.failed_grab_feedback = True
 
     def is_throwing(self, owner):
         return owner.grab_state.throw_remaining > 0

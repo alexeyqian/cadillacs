@@ -87,11 +87,13 @@ def _update_collisions(game_state, old_player_x, old_player_y):
     BoundsSystem.apply_enemy_level(game_state)
     ArenaSystem.apply_bounds(game_state)
 
+    player = game_state.player
+    player.grab_controller.try_auto_grab(player, game_state.enemies, game_state.level)
+
 
 def _update_combat(game_state, keys, player_can_act):
     if player_can_act:
         game_state.player.update_attack(game_state._player_context)
-        CombatSystem.handle_player_grab_or_throw(game_state, keys)
     CombatSystem.handle_player_attack(game_state)
     for enemy in game_state.enemies:
         enemy.update_attack(game_state._enemy_context)

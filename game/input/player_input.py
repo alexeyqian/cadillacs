@@ -11,4 +11,3 @@ class PlayerInput:
         self.jump = keys[pygame.K_k] or keys[pygame.K_SPACE]
         self.attack = keys[pygame.K_j]
         self.drop = keys[pygame.K_q]
-        self.grab = keys[pygame.K_l]

@@ -1,5 +1,4 @@
-import pygame
-from game.colors import ORANGE_COLOR, WHITE_COLOR, YELLOW_COLOR
+from game.colors import WHITE_COLOR, YELLOW_COLOR
 from game.effects.hit_spark import HitSpark
 from game.effects.floating_text import FloatingText
 from game.systems.camera_effect_system import CameraEffectSystem
@@ -31,27 +30,6 @@ class CombatSystem:
             return
         _handle_player_melee_enemy_collision(game_state, attack_rect)
         _handle_player_breakable_collision(game_state, attack_rect)
-
-    @staticmethod
-    def handle_player_grab_or_throw(game_state, keys):
-        player = game_state.player
-        if keys[pygame.K_l]:
-            if player.grab_state.grab_pressed:
-                return
-            player.grab_state.grab_pressed = True
-            if player.grab_state.grabbed_enemy:
-                player.grab_controller.throw_grabbed_enemy(player)
-                return
-            for enemy in game_state.enemies:
-                if player.grab_controller.can_grab_enemy(player, enemy, game_state.level):
-                    player.grab_controller.grab_enemy(player, enemy)
-                    break
-        else:
-            player.grab_state.grab_pressed = False
-        if player.grab_state.failed_grab_feedback:
-            game_state.floating_texts.append(
-                FloatingText(player.x, player.y - 160, "NO GRAB", ORANGE_COLOR))
-            player.grab_state.failed_grab_feedback = False
 
     @staticmethod
     def handle_player_projectile(game_state):

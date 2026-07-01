@@ -136,14 +136,15 @@ class Player(Character, PlayerState):
     def update_attack(self, context=None):
         if not self.can_act():
             return
-        # below tries looks like player action requests, but they are not. 
-        # They are just "try" methods that will only do something if the player has requested it via input.
         self._try_start_fire()
-        attack_was_requested = self.intent.wants_attack()
-        if attack_was_requested:
+        if self.intent.wants_attack():
+            if self.state == self.GRAB:
+                self.grab_controller.throw_grabbed_enemy(self)
+                self.intent.clear_attack()
+                return
             self._try_start_attack(clear_if_failed=False)
         self.combat_controller.update_attack(self)
-        if attack_was_requested and self.intent.wants_attack():
+        if self.intent.wants_attack():
             self._try_start_attack()
 
     def update_animation(self):
