@@ -28,27 +28,36 @@ from game.systems.projectile_system import (
     collect_player_projectiles,
     update_projectiles,
 )
-from game.systems.lifecycle_system import advance_enemy_frame_state, advance_player_frame_state
+
 from game.systems.wave_system import update_wave_completion, update_wave_system
 from game.systems.sound_system import update_sound
 
-# Frame order: system status -> collect inputs 
+# Frame order: read states -> collect inputs 
 # -> enemy decisions and player action request -> movement
 # (after this, all positions are finalized)
 # -> collision -> combat -> reactions -> cleanup -> presentation
 def update_gameplay(game_state, keys):
+    # --- READ: determine who can act this frame ---
+    player_can_act = _get_player_can_act(game_state)
+    active_enemies = _get_active_enemies(game_state)
+
+    # --- LOGIC: decisions → movement → combat → reactions ---
     player_input = PlayerInput(keys)
     player_context = PlayerActionContext(player_input)
-
-    player_can_act = advance_player_frame_state(game_state)
-    active_enemies = advance_enemy_frame_state(game_state)
-
     enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
+
     _update_decisions(game_state, keys, player_context, player_can_act, active_enemies, enemy_context)
     old_player_position = _update_movement(game_state, player_context, player_can_act, active_enemies, enemy_context)
     _update_collisions(game_state, old_player_position)
     _update_combat(game_state, player_context, active_enemies, player_can_act, enemy_context)
     _update_reactions(game_state)
+
+    # --- ADVANCE: state transitions + timers after this frame's reactions are settled ---
+    if player_can_act:
+        game_state.player.advance_timers()
+    for enemy in active_enemies:
+        enemy.advance_timers()
+
     _update_spawn_and_cleanup(game_state)
     _update_presentation(game_state)
 
@@ -147,3 +156,18 @@ def _update_presentation(game_state):
         enemy.update_animation()
 
     update_sound(game_state, game_state.sound_manager)
+
+def _get_active_enemies(game_state):
+    """Return enemies that are alive and not reaction-locked this frame."""
+    return [
+        enemy for enemy in game_state.enemies
+        if enemy.state != enemy.DEAD
+        and not enemy.reaction_controller.is_reaction_blocked(enemy)
+    ]
+
+
+def _get_player_can_act(game_state):
+    """Returns player_can_act based on current state. Pure read."""
+    player = game_state.player
+    is_blocked = player.state == player.DEAD or player.reaction_controller.is_in_hit_stun(player)
+    return not is_blocked
