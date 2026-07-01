@@ -32,16 +32,18 @@ from game.systems.lifecycle_system import advance_enemy_frame_state, advance_pla
 from game.systems.wave_system import update_wave_completion, update_wave_system
 from game.systems.sound_system import update_sound
 
-# Frame order: frame-state -> decisions -> movement -> collision -> combat -> reactions -> cleanup -> presentation
-# Camera and render happen after gameplay in main.py.
+# Frame order: system status -> collect inputs 
+# -> enemy decisions and player action request -> movement
+# (after this, all positions are finalized)
+# -> collision -> combat -> reactions -> cleanup -> presentation
 def update_gameplay(game_state, keys):
     player_input = PlayerInput(keys)
     player_context = PlayerActionContext(player_input)
 
     player_can_act = advance_player_frame_state(game_state)
     active_enemies = advance_enemy_frame_state(game_state)
-    enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
 
+    enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
     _update_decisions(game_state, keys, player_context, player_can_act, active_enemies, enemy_context)
     old_player_position = _update_movement(game_state, player_context, player_can_act, active_enemies, enemy_context)
     _update_collisions(game_state, old_player_position)

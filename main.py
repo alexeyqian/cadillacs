@@ -13,7 +13,6 @@ from game.systems.bounds_system import apply_player_camera_bounds
 from main_draw import main_draw
 
 os.environ["SDL_VIDEO_WINDOW_POS"] = "0,0"
-#info = pygame.display.Info()
 
 def main():
     pygame.mixer.pre_init(44100, -16, 2, 512)
@@ -32,7 +31,6 @@ def main():
         if not game_state.running:
             break
 
-        # 1. collect inputs
         keys = pygame.key.get_pressed()
 
         # 0. Pre-gameplay check, 
@@ -42,8 +40,7 @@ def main():
             and game_state.player.lifecycle_state.lives <= 0
             and game_state.credits > 0):
             game_state.continue_active = True
-
-        # 0.2 continue screen active check and update
+        # continue screen active check and update
         if game_state.continue_active:
             update_continue(game_state, keys)
             main_draw(game_state)
@@ -51,7 +48,7 @@ def main():
             clock.tick(FPS)
             continue
 
-        # 0.3 end of current stage check
+        # 0.2 end of current stage check
         if game_state.stage_clear_manager.active:
             game_state.stage_clear_manager.update()
             game_state.stage_clear_manager.apply_bonus(game_state.score_manager)

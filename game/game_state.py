@@ -43,7 +43,7 @@ class GameState:
         self.stage_clear_manager = stage_clear_manager
 
         self.credits = 3
-        self.continue_timer = 60
+        self.continue_timer = 600
         self.continue_active = False
         self.continue_used = 0
 
