@@ -102,7 +102,7 @@ class PlayerActionControllerTests(unittest.TestCase):
         owner = FakeOwner()
         actions = PlayerActionController()
 
-        actions.update(owner, FakeInput(attack=True))
+        actions.request_actions(owner, FakeInput(attack=True))
         Player._try_start_attack(owner)
 
         self.assertEqual(owner.combat_state.current_attack_name, owner.RUN_ATTACK)
@@ -111,14 +111,14 @@ class PlayerActionControllerTests(unittest.TestCase):
         owner.combat_controller.cancel_attack(owner)
         owner.input_state.attack_pressed = False
         owner.input_buffer.press_attack(12)
-        actions.update(owner, FakeInput(attack=True))
+        actions.request_actions(owner, FakeInput(attack=True))
         Player._try_start_attack(owner)
 
         self.assertIsNone(owner.combat_state.current_attack_name)
         self.assertFalse(owner.input_buffer.has_attack())
 
-        actions.update(owner, FakeInput(attack=False))
-        actions.update(owner, FakeInput(attack=True))
+        actions.request_actions(owner, FakeInput(attack=False))
+        actions.request_actions(owner, FakeInput(attack=True))
         Player._try_start_attack(owner)
 
         self.assertEqual(owner.combat_state.current_attack_name, owner.RUN_ATTACK)
@@ -141,12 +141,12 @@ class PlayerActionControllerTests(unittest.TestCase):
         owner.movement.run_movement._can_run_attack = False
         actions = PlayerActionController()
 
-        actions.update(owner, FakeInput(attack=True))
+        actions.request_actions(owner, FakeInput(attack=True))
         Player._try_start_attack(owner)
         self.assertEqual(owner.combat_state.current_attack_name, owner.ATTACK)
 
-        actions.update(owner, FakeInput(attack=False))
-        actions.update(owner, FakeInput(attack=True))
+        actions.request_actions(owner, FakeInput(attack=False))
+        actions.request_actions(owner, FakeInput(attack=True))
         Player._try_start_attack(owner)
         self.assertTrue(owner.input_buffer.has_attack())
 
@@ -154,7 +154,7 @@ class PlayerActionControllerTests(unittest.TestCase):
         while owner.combat_state.current_attack_name == owner.ATTACK:
             owner.combat_controller.advance_timers(owner)
             owner.combat_controller.update_attack(owner)
-            actions.update(owner, FakeInput(attack=False))
+            actions.request_actions(owner, FakeInput(attack=False))
             Player._try_start_attack(owner)
 
         self.assertEqual(owner.combat_state.current_attack_name, owner.ATTACK2)

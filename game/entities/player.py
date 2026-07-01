@@ -112,17 +112,9 @@ class Player(Character, PlayerState):
 
     # --- Per-frame update (called by systems) ---
 
-    def update_reactions(self):
-        self.reaction_controller.update_hit_state(self)
-
-    def advance_timers(self):
-        self.action_controller.advance_timers(self)
-        self.combat_controller.advance_timers(self)
-        self.grab_controller.advance_timers(self)
-        self.movement.run_movement.advance_timers()
-
+    
     def request_actions(self, context):
-        self.action_controller.update(self, context.player_input)
+        self.action_controller.request_actions(self, context.player_input)
 
     def update_movement(self, context):
         if not self.can_act():
@@ -160,6 +152,15 @@ class Player(Character, PlayerState):
     def update_lifecycle_state(self):
         self.lifecycle_controller.update_respawn(self)
 
+    def update_reactions(self):
+        self.reaction_controller.update_hit_state(self)
+
+    def advance_timers(self):
+        self.input_buffer.advance_timers()
+        self.combat_controller.advance_timers(self)
+        self.grab_controller.advance_timers(self)
+        self.movement.run_movement.advance_timers()
+
     # --- Public API ---
     
     def can_act(self):
@@ -194,7 +195,7 @@ class Player(Character, PlayerState):
         if not self.intent.wants_jump():
             return
         previous_state = self.state
-        self.movement.jump_movement.start_jump(self, self.intent.jump_requested)
+        self.movement.jump_movement.start_jump(self, self.intent.jump_input)
         if self.state != previous_state:
             self.input_buffer.consume_jump()
         self.intent.clear_jump()

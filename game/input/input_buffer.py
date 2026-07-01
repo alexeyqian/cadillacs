@@ -33,7 +33,7 @@ class InputBuffer:
     def consume_attack(self):
         self.attack_frames = 0
 
-    def update(self):
+    def advance_timers(self):
         if self.jump_frames > 0:
             self.jump_frames -= 1
         if self.attack_frames > 0:

@@ -24,6 +24,7 @@ def get_input_axis(negative_down, positive_down):
         return -1
     if positive_down and not negative_down:
         return 1
+    #  handling the case where both are pressed simultaneously (returns 0)
     return 0
 
 

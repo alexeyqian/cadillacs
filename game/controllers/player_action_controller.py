@@ -2,15 +2,12 @@ class PlayerActionController:
     ATTACK_BUFFER_FRAMES = 12
     JUMP_BUFFER_FRAMES = 6
 
-    def update(self, owner, player_input):
+    def request_actions(self, owner, player_input):
         owner.intent.clear()
         self._update_jump_input(owner, player_input)
         self._update_attack_input(owner, player_input)
         if player_input.drop:
-            owner.weapon_slot.drop(owner)
-
-    def advance_timers(self, owner):
-        owner.input_buffer.update()
+            owner.weapon_slot.drop(owner)  
 
     def _update_jump_input(self, owner, player_input):
         if player_input.jump:

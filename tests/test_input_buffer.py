@@ -7,9 +7,9 @@ def test_input_buffer_keeps_attack_until_duration_expires():
     buffer.press_attack(2)
 
     assert buffer.has_attack() is True
-    buffer.update()
+    buffer.advance_timers()
     assert buffer.has_attack() is True
-    buffer.update()
+    buffer.advance_timers()
     assert buffer.has_attack() is False
 
 
