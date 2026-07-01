@@ -126,9 +126,13 @@ class Enemy(Character, EnemyState):
         self.movement.advance_timers()
 
     def update_ai(self, context):
+        if self.reaction_controller.is_reaction_blocked(self):
+            return
         self.ai_controller.update(self, context)
 
     def update_movement(self, context):
+        if self.reaction_controller.is_reaction_blocked(self):
+            return
         if self.state in (self.ATTACK, self.RUN_ATTACK, self.JUMP_ATTACK):
             return
         if self.intent.wants_attack_player() or self.intent.wants_run_attack() or self.intent.wants_jump_attack():
@@ -155,6 +159,8 @@ class Enemy(Character, EnemyState):
             self.movement.separate_from_enemies(self, context.enemies)
 
     def update_attack(self, context):
+        if self.reaction_controller.is_reaction_blocked(self):
+            return
         if self.intent.wants_run_attack() and self.state != self.RUN_ATTACK:
             self.combat_controller.start_run_attack(self)
             self.intent.clear()

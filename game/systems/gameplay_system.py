@@ -39,31 +39,30 @@ from game.systems.sound_system import update_sound
 def update_gameplay(game_state, keys):
     # --- READ: determine who can act this frame ---
     player_can_act = _get_player_can_act(game_state)
-    active_enemies = _get_active_enemies(game_state)
 
     # --- LOGIC: decisions → movement → combat → reactions ---
     player_input = PlayerInput(keys)
     player_context = PlayerActionContext(player_input)
     enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
 
-    _update_decisions(game_state, keys, player_context, player_can_act, active_enemies, enemy_context)
-    old_player_position = _update_movement(game_state, player_context, player_can_act, active_enemies, enemy_context)
+    _update_decisions(game_state, keys, player_context, player_can_act, enemy_context)
+    old_player_position = _update_movement(game_state, player_context, player_can_act, enemy_context)
     _update_collisions(game_state, old_player_position)
-    _update_combat(game_state, player_context, active_enemies, player_can_act, enemy_context)
+    _update_combat(game_state, player_context, player_can_act, enemy_context)
     _update_reactions(game_state)
 
     # --- ADVANCE: state transitions + timers after this frame's reactions are settled ---
     if player_can_act:
         game_state.player.advance_timers()
-    for enemy in active_enemies:
+    for enemy in game_state.enemies:
         enemy.advance_timers()
 
     _update_spawn_and_cleanup(game_state)
     _update_presentation(game_state)
 
 
-def _update_decisions(game_state, keys, player_context, player_can_act, active_enemies, enemy_context):
-    for enemy in active_enemies:
+def _update_decisions(game_state, keys, player_context, player_can_act, enemy_context):
+    for enemy in game_state.enemies:
         enemy.update_ai(enemy_context)
 
     if player_can_act:
@@ -72,13 +71,13 @@ def _update_decisions(game_state, keys, player_context, player_can_act, active_e
         game_state.player.request_actions(player_context)
 
 
-def _update_movement(game_state, player_context, player_can_act, active_enemies, enemy_context):
+def _update_movement(game_state, player_context, player_can_act, enemy_context):
     old_player_position = (game_state.player.x, game_state.player.y)
 
     if player_can_act:
         game_state.player.update_movement(player_context)
 
-    for enemy in active_enemies:
+    for enemy in game_state.enemies:
         enemy.update_movement(enemy_context)
 
     apply_enemy_level_bounds(game_state)
@@ -101,12 +100,12 @@ def _update_collisions(game_state, old_player_position):
     handle_enemy_projectile_collision(game_state)
 
 
-def _update_combat(game_state, player_context, active_enemies, player_can_act, enemy_context):
+def _update_combat(game_state, player_context, player_can_act, enemy_context):
     if player_can_act:
         game_state.player.update_attack(player_context)
     handle_player_attack_collision(game_state)
 
-    for enemy in active_enemies:
+    for enemy in game_state.enemies:
         enemy.update_attack(enemy_context)
 
 
@@ -156,14 +155,6 @@ def _update_presentation(game_state):
         enemy.update_animation()
 
     update_sound(game_state, game_state.sound_manager)
-
-def _get_active_enemies(game_state):
-    """Return enemies that are alive and not reaction-locked this frame."""
-    return [
-        enemy for enemy in game_state.enemies
-        if enemy.state != enemy.DEAD
-        and not enemy.reaction_controller.is_reaction_blocked(enemy)
-    ]
 
 
 def _get_player_can_act(game_state):
