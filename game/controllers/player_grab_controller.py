@@ -1,5 +1,24 @@
 # grab/throw/knee
 class PlayerGrabController:
+    """
+    Grab
+    In the original Cadillacs and Dinosaurs arcade game, 
+    grabbing an enemy is triggered by walking into them — 
+    when the player character makes contact with an enemy at close range while moving toward them, 
+    the grab initiates automatically. There's no dedicated grab button; proximity and movement direction determine it.
+    Some versions also allow grabbing by pressing the attack button 
+    at very close range (point-blank), which transitions into a grab rather than a punch.
+
+    Throw
+    In the original Cadillacs and Dinosaurs, throw is triggered by pressing 
+    the joystick direction away from the enemy (back-throw) or forward while holding them — 
+    it's directional input, not a button press.
+    Specifically:
+    * Forward throw: push joystick toward the enemy while grabbing → throws them forward
+    * Back throw: push joystick away → throws them backward
+    There's no dedicated throw button. 
+    The direction you push during the grab determines throw direction.
+    """
     def __init__(self):
         pass
 
