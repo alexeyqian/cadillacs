@@ -3,7 +3,6 @@ from game.controllers.enemy_ai_context import EnemyAIContext
 from game.controllers.player_action_context import PlayerActionContext
 from game.systems.arena_system import apply_arena_bounds
 from game.systems.bounds_system import apply_enemy_level_bounds, apply_player_level_bounds
-from game.systems.cleanup_system import cleanup_game_state
 from game.systems.collision_system import (
     resolve_enemy_enemy_collisions,
     resolve_player_enemy_collisions,
@@ -58,6 +57,7 @@ def update_gameplay(game_state, keys):
         enemy.advance_timers()
 
     _update_spawn_and_cleanup(game_state)
+    _cleanup_game_state(game_state)
     _update_presentation(game_state)
 
 
@@ -115,7 +115,6 @@ def _update_reactions(game_state):
     for enemy in game_state.enemies:
         enemy.update_reactions()
 
-
 def _update_spawn_and_cleanup(game_state):
     _collect_projectiles(game_state)
     _update_loot_and_effects(game_state)
@@ -135,7 +134,7 @@ def _update_loot_and_effects(game_state):
     update_loot_pickup(game_state)
     update_life_reward_system(game_state)
     update_effect_system(game_state)
-    cleanup_game_state(game_state)
+    
 
 
 def _update_waves(game_state):
@@ -162,3 +161,26 @@ def _get_player_can_act(game_state):
     player = game_state.player
     is_blocked = player.state == player.DEAD or player.reaction_controller.is_in_hit_stun(player)
     return not is_blocked
+
+def _cleanup_game_state(game_state):
+    # remove dead enemies
+    game_state.enemies[:] = [
+        enemy for enemy in game_state.enemies
+        if not enemy.is_ready_to_remove()
+    ]
+    # clean up player projectiles
+    game_state.projectiles[:] = [p for p in game_state.projectiles if p.active]
+    # clean up enemy projectiles
+    game_state.enemy_projectiles[:] = [
+        p for p in game_state.enemy_projectiles
+        if p.active
+    ]
+    # clean up breakables
+    game_state.objects[:] = [obj for obj in game_state.objects if obj.hp > 0]
+    # clean up loots
+    game_state.loot_items[:] = [l for l in game_state.loot_items if l.active]
+    # clean up hit sparks
+    game_state.hit_sparks[:] = [s for s in game_state.hit_sparks if s.active]
+    # clean floating text
+    game_state.floating_texts[:] = [item for item in game_state.floating_texts if item.active]
+    game_state.explosions[:] = [item for item in game_state.explosions if item.active]

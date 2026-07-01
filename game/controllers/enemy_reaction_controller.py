@@ -11,8 +11,8 @@ class EnemyReactionController:
     # --- Public API: reactions ---
 
     def is_reaction_blocked(self, owner):
-        """Pure read — returns True if the enemy is currently locked in a reaction."""
-        return owner.reaction_state._hit_stun_remaining > 0
+        """Pure read — returns True if the enemy cannot act (dead or in hit stun)."""
+        return owner.state == owner.DEAD or owner.reaction_state._hit_stun_remaining > 0
 
     def update_reactions(self, owner):
         if owner.state == owner.DEAD:
