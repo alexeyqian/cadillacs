@@ -18,10 +18,9 @@ class FakeInput:
         self.right = False
         self.up = False
         self.down = False
-        self.run = False
         self.jump = jump
         self.attack = attack
-        self.fire = False
+        self.drop = False
 
 
 class FakeRunMovement:

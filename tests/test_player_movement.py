@@ -52,12 +52,11 @@ class FakeStateMachine:
 
 
 class FakeInput:
-    def __init__(self, left=False, right=False, up=False, down=False, run=False):
+    def __init__(self, left=False, right=False, up=False, down=False):
         self.left = left
         self.right = right
         self.up = up
         self.down = down
-        self.run = run
 
 
 class PlayerMovementTests(unittest.TestCase):
@@ -106,11 +105,9 @@ class PlayerMovementTests(unittest.TestCase):
     def test_player_can_run_diagonally(self):
         owner = FakeOwner()
         movement = PlayerMovement()
+        movement.run_movement._double_tap_run_active = True
 
-        movement.update_movement(
-            owner,
-            FakeInput(right=True, up=True, run=True),
-        )
+        movement.update_movement(owner, FakeInput(right=True, up=True))
 
         self.assertTrue(movement.moving)
         self.assertTrue(movement.is_running)
@@ -120,22 +117,24 @@ class PlayerMovementTests(unittest.TestCase):
     def test_run_attack_requires_configured_run_distance(self):
         owner = FakeOwner()
         movement = PlayerMovement()
+        movement.run_movement._double_tap_run_active = True
         movement.run_movement.run_attack_min_distance = owner.run_speed * 2
 
-        movement.update_movement(owner, FakeInput(right=True, run=True))
+        movement.update_movement(owner, FakeInput(right=True))
 
         self.assertFalse(movement.run_movement.can_start_run_attack())
 
-        movement.update_movement(owner, FakeInput(right=True, run=True))
+        movement.update_movement(owner, FakeInput(right=True))
 
         self.assertTrue(movement.run_movement.can_start_run_attack())
 
     def test_run_attack_distance_resets_when_player_stops_running(self):
         owner = FakeOwner()
         movement = PlayerMovement()
+        movement.run_movement._double_tap_run_active = True
         movement.run_movement.run_attack_min_distance = owner.run_speed
 
-        movement.update_movement(owner, FakeInput(right=True, run=True))
+        movement.update_movement(owner, FakeInput(right=True))
         self.assertTrue(movement.run_movement.can_start_run_attack())
 
         movement.update_movement(owner, FakeInput())
@@ -146,9 +145,10 @@ class PlayerMovementTests(unittest.TestCase):
     def test_run_attack_cooldown_blocks_only_run_attack_eligibility(self):
         owner = FakeOwner()
         movement = PlayerMovement()
+        movement.run_movement._double_tap_run_active = True
         movement.run_movement.run_attack_min_distance = owner.run_speed
 
-        movement.update_movement(owner, FakeInput(right=True, run=True))
+        movement.update_movement(owner, FakeInput(right=True))
         self.assertTrue(movement.run_movement.can_start_run_attack())
 
         movement.run_movement.start_run_attack_cooldown(frames=2)

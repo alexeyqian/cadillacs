@@ -46,14 +46,12 @@ def test_player_input_maps_wasd_aliases():
 
 def test_player_input_maps_action_keys():
     player_input = make_input(
-        pygame.K_LSHIFT,
         pygame.K_SPACE,
         pygame.K_j,
         pygame.K_q,
         pygame.K_l,
     )
 
-    assert player_input.run is True
     assert player_input.jump is True
     assert player_input.attack is True
     assert player_input.drop is True
@@ -61,12 +59,8 @@ def test_player_input_maps_action_keys():
 
 
 def test_player_input_maps_secondary_action_aliases():
-    player_input = make_input(
-        pygame.K_RSHIFT,
-        pygame.K_k,
-    )
+    player_input = make_input(pygame.K_k)
 
-    assert player_input.run is True
     assert player_input.jump is True
 
 

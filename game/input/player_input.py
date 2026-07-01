@@ -8,7 +8,6 @@ class PlayerInput:
         self.up = keys[pygame.K_UP] or keys[pygame.K_w]
         self.down = keys[pygame.K_DOWN] or keys[pygame.K_s]
 
-        self.run = keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]
         self.jump = keys[pygame.K_k] or keys[pygame.K_SPACE]
         self.attack = keys[pygame.K_j]
         self.drop = keys[pygame.K_q]

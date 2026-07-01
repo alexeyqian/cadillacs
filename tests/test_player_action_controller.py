@@ -57,7 +57,7 @@ class FakeInput:
     def __init__(self, attack=False):
         self.attack = attack
         self.jump = False
-        self.fire = False
+        self.drop = False
 
 
 class FakeOwner:

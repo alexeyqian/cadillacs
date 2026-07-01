@@ -38,9 +38,7 @@ class PlayerRunMovement:
         previous_run_direction = self.run_direction
 
         self._update_run_input(player_input.left, player_input.right, horizontal_direction)
-        self.is_running = horizontal_direction != 0 and (
-            player_input.run or self._double_tap_run_active
-        )
+        self.is_running = horizontal_direction != 0 and self._double_tap_run_active
 
         move_speed = owner.run_speed if self.is_running else owner.speed
         self._move_owner(owner, horizontal_direction, vertical_direction, move_speed)
