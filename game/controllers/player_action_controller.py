@@ -1,13 +1,18 @@
 class PlayerActionController:
 
+    # pre tick operation
     def request_actions(self, owner, player_input):
         owner.intent.clear()
-        self._update_jump_input(owner, player_input)
-        self._update_attack_input(owner, player_input)
+        player_can_act = owner.can_act()
+        if not player_can_act:
+            return
+
+        self._update_jump_intent(owner, player_input)
+        self._update_attack_intent(owner, player_input)
         if player_input.drop:
             owner.weapon_slot.drop(owner)
 
-    def _update_jump_input(self, owner, player_input):
+    def _update_jump_intent(self, owner, player_input):
         if player_input.jump:
             if not owner.input_tracker.jump_pressed:
                 owner.input_tracker.press_jump()
@@ -18,7 +23,7 @@ class PlayerActionController:
         if owner.input_tracker.has_jump():
             owner.intent.jump(player_input)
 
-    def _update_attack_input(self, owner, player_input):
+    def _update_attack_intent(self, owner, player_input):
         if player_input.attack:
             if owner.movement.is_jumping:
                 pass  # jump attack disabled

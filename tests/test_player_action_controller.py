@@ -78,7 +78,6 @@ class FakeOwner:
         self.weapon_slot = FakeWeaponSlot()
         self.intent = PlayerIntent()
         self.input_tracker = PlayerInputTracker()
-        self.input_tracker = PlayerInputTracker()
         from game.components.player_combat_state import PlayerCombatState
         from game.components.player_grab_state import PlayerGrabState
         self.combat_controller = PlayerCombatController()
@@ -87,6 +86,9 @@ class FakeOwner:
         self.combat_state.weapon_attacks = DEFAULT_WEAPON_PLAYER_ATTACKS
         self.grab_state = PlayerGrabState()
         self.grab_state.grabbed_enemy = None
+
+    def can_act(self):
+        return self.state != self.DEAD
 
     def get_attack_data(self, attack_name):
         weapon = getattr(self.weapon_slot, "weapon", None)

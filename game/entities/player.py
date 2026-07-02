@@ -120,13 +120,25 @@ class Player(Character, PlayerState):
         if not self.can_act():
             return
         if self.state == self.GRAB:
-            self._try_throw_from_direction(context.player_input)
             return
         self._try_start_jump()
         self.movement.update_movement(self, context.player_input)
         self.movement.jump_movement.update_jump_physics(self, context.player_input)
         self.state_resolver.resolve(self, self.movement.moving)
         self.grab_controller.update_grabbed_enemy_position(self)
+
+    def update_attack(self, context=None):
+        if not self.can_act():
+            return
+        if self.state == self.GRAB:
+            self._try_throw_from_direction(context.player_input)
+            return
+        self._try_start_fire()
+        if self.intent.wants_attack():
+            self._try_start_attack(clear_if_failed=False)
+        self.combat_controller.update_attack(self)
+        if self.intent.wants_attack():
+            self._try_start_attack()
 
     def _try_throw_from_direction(self, player_input):
         if player_input.right:
@@ -135,16 +147,6 @@ class Player(Character, PlayerState):
         elif player_input.left:
             self.facing_right = False
             self.grab_controller.throw_grabbed_enemy(self)
-
-    def update_attack(self, context=None):
-        if not self.can_act():
-            return
-        self._try_start_fire()
-        if self.intent.wants_attack():
-            self._try_start_attack(clear_if_failed=False)
-        self.combat_controller.update_attack(self)
-        if self.intent.wants_attack():
-            self._try_start_attack()
 
     def update_animation(self):
         self.animation_controller.update(self)

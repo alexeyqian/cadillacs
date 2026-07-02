@@ -18,8 +18,8 @@ def update_gameplay(game_state, keys):
     player_can_act = game_state.player.can_act()
     old_player_x, old_player_y = game_state.player.x, game_state.player.y  # capture before movement
 
-    _update_decisions(game_state, keys, player_can_act)
-    _update_movement(game_state, player_can_act)
+    _update_intents(game_state, keys)
+    _update_movement(game_state)
     _update_collisions(game_state, old_player_x, old_player_y)
     _update_combat(game_state, keys, player_can_act)
     ExplosiveSystem.create_explosions(game_state)  # damage enemies before reactions
@@ -45,12 +45,10 @@ def update_gameplay(game_state, keys):
     _update_presentation(game_state)
 
 
-def _update_decisions(game_state, keys, player_can_act):
+def _update_intents(game_state, keys):
     player_context = PlayerActionContext(PlayerInput(keys))
     game_state._player_context = player_context  # passed to movement/combat
-
-    if player_can_act:
-        game_state.player.request_actions(player_context)
+    game_state.player.request_actions(player_context)
 
     enemy_context = EnemyAIContext(game_state.level, game_state.player, game_state.enemies)
     game_state._enemy_context = enemy_context  # passed to movement/combat
@@ -63,12 +61,11 @@ def _update_decisions(game_state, keys, player_can_act):
         ProjectileSystem.collect_enemy(game_state, enemy)
 
 
-def _update_movement(game_state, player_can_act):
+def _update_movement(game_state):
     player_context = game_state._player_context
-    enemy_context = game_state._enemy_context
+    game_state.player.update_movement(player_context)
 
-    if player_can_act:
-        game_state.player.update_movement(player_context)
+    enemy_context = game_state._enemy_context
     for enemy in game_state.enemies:
         enemy.update_movement(enemy_context)
 

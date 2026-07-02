@@ -117,6 +117,14 @@ class Enemy(Character, EnemyState):
         self.animation_controller.reset_current_animation()
 
     # --- Per-frame update ---
+    
+    def can_act(self):
+        return self.state != self.DEAD and self.reaction_state._hit_stun_remaining <= 0
+
+    def update_ai(self, context):
+        if not self.can_act():
+            return
+        self.ai_controller.update(self, context)
 
     def update_state(self):
         self.state_controller.update(self)
@@ -125,10 +133,7 @@ class Enemy(Character, EnemyState):
         self.combat_controller.advance_timers(self)
         self.movement.advance_timers()
 
-    def update_ai(self, context):
-        if self.reaction_controller.is_reaction_blocked(self):
-            return
-        self.ai_controller.update(self, context)
+    
 
     def update_movement(self, context):
         if self.reaction_controller.is_reaction_blocked(self):

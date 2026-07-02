@@ -169,17 +169,17 @@ class EnemyAttackTimingTests(unittest.TestCase):
         enemy = FakeEnemy()
         resolver = enemy.ai_controller
 
-        resolver._prepare_attack_intent(enemy, FakePlayer())
+        resolver._attack_after_delay(enemy, FakePlayer())
         self.assertEqual(enemy.state, enemy.IDLE)
         self.assertEqual(enemy.ai_state._decision_timer, 1)
         self.assertFalse(enemy.intent.wants_attack_player())
 
-        resolver._prepare_attack_intent(enemy, FakePlayer())
+        resolver._attack_after_delay(enemy, FakePlayer())
         self.assertEqual(enemy.state, enemy.IDLE)
         self.assertEqual(enemy.ai_state._decision_timer, 2)
         self.assertFalse(enemy.intent.wants_attack_player())
 
-        resolver._prepare_attack_intent(enemy, FakePlayer())
+        resolver._attack_after_delay(enemy, FakePlayer())
         self.assertTrue(enemy.intent.wants_attack_player())
         self.assertTrue(enemy.combat_state.owns_attack_slot)
         self.assertEqual(enemy.ai_state._decision_timer, 0)
